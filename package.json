@@ -1,0 +1,14 @@
+{
+  "name": "projectpastro",
+  "version": "1.0.0",
+  "description": "Project Pastro is a personal cookbook accessible from anywhere",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Alex Beschler",
+  "license": "SEE LICENSE IN LICENSE",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  }
+}
