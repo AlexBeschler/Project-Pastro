@@ -1,0 +1,45 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.login-form {
+    min-width: 90%;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.signup-form {
+    min-width: 90%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.signup-options-benefit-group {
+    text-align: left;
+}
+
+.buy-subscription-button {
+    border-color: rgb(26, 137, 23);
+    padding: 16px;
+    font-size: 1.25rem;
+}
+
+.loading-page {
+    background-color: #FFFBE6;
+}
+
+
+/* For desktops */
+@media (min-width: 992px) {
+    .login-form {
+        min-width: 500px;
+    }
+    .signup-form {
+        min-width: 500px;
+    }
+}
