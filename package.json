@@ -2,14 +2,17 @@
   "name": "projectpastro",
   "version": "1.0.0",
   "description": "Project Pastro is a personal cookbook accessible from anywhere",
-  "main": "index.js",
+  "author": "Alex Beschler",
   "scripts": {
     "test": "test"
   },
-  "author": "Alex Beschler",
-  "license": "SEE LICENSE IN LICENSE",
+  "main": "index.js",
+  "dependencies": {
+    "register-service-worker": "^1.7.1"
+  },
   "devDependencies": {
+    "@vue/cli-plugin-pwa": "^4.5.13",
     "gulp": "^4.0.2"
   },
-  "dependencies": {}
+  "license": "SEE LICENSE IN LICENSE"
 }
