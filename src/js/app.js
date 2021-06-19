@@ -1,7 +1,6 @@
 (function ($) {
 	var utils = new ProjectPastroUtils();
 	$(document).ready(function () {
-		console.log('Loading...');
 		utils.init();
 		//Add login container to body class
 		//$('body').addClass('body-login-container');
@@ -12,7 +11,7 @@
 				firebase.auth().signInWithRedirect(provider);
 			} else {
 				firebase.auth().signOut().then(function () {
-					window.location.replace('index.html');
+					window.location.replace('../index.html');
 				});
 			}
 		}
@@ -27,7 +26,6 @@
 					template: '#sign-in-layout-template',
 					methods: {
 						signIn: function () {
-							console.log('Sign in clicked');
 							toggleSignIn();
 						}
 					}
@@ -71,7 +69,6 @@
 							});
 						},
 						logOut: function () {
-							console.log('User clicked sign out');
 							toggleSignIn();
 						}
 					}
@@ -123,8 +120,8 @@
 									if (utils.getLocalStorage(utils._IS_DYSLEXIC_FONT_SET) == 'true') {
 										document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
 										//Update settings to reflect this
-										$('#pills-normal-font').removeClass('active');
-										$('#pills-dyslexic-font').addClass('active');
+										//$('#pills-normal-font').removeClass('active');
+										//$('#pills-dyslexic-font').addClass('active');
 									}
 								}).catch(function (error) {
 									/*
@@ -181,24 +178,14 @@
 	}
 
 	function appFunctionality(payload) {
-		function toggleSignIn() {
-			if (!firebase.auth().currentUser) {
-				var provider = new firebase.auth.GoogleAuthProvider();
-				firebase.auth().signInWithRedirect(provider);
-			} else {
-				firebase.auth().signOut().then(function () {
-					window.location.replace('index.html');
-				});
-			}
-		}
-
-		//Load vue dependencies 
+		//Load vue dependencies
 		//Vue.use('infinite-loading', { /* options */ });
 
 		utils.showCookbook();
 
 		new Vue({
 			el: '#appContent',
+			vuetify: new Vuetify(),
 			data: {
 				cookbook: payload,
 
@@ -212,7 +199,27 @@
 				finishByTimeInput: null,
 
 				checkedTagsArray: null,
-				checkedIngredientsArray: null
+				checkedIngredientsArray: null,
+
+				//For use with manage recipes
+				manage_recipeTitle: '',
+				manage_recipeName: '',
+				manage_recipeDescription: '',
+				manage_recipeTagInput: '',
+				manage_recipeTagHolder: [],
+				manage_recipePrepTime: '',
+				manage_recipeCookTime: '',
+				manage_recipeTotalTime: '',
+				manage_recipeActiveTime: '',
+				//Step 3
+				manage_recipeBlocks: [],
+				manage_recipeBlockIngredients: [],
+				manage_recipeBlockSteps: [],
+				manage_recipeBlockHeader: 'Block Header',
+				manage_recipeBlockIngredientAmount: 'Amount',
+				manage_recipeBlockIngredientValue: 'Ingredient',
+				manage_recipeBlockStepValue: 'Step'
+
 				//page: 1
 			},
 			computed: {
@@ -241,9 +248,20 @@
 					self.ingredientsArray = _.uniq(_.union(self.ingredientsArray, _.reject(recipe.ingredients, {
 						parent: null
 					})), false, function (item, key, text) {
-						return item.text;
+						return item.valueIngredient;
 					});
 				});
+				/*
+				this.manage_recipeIngredientSections.push(
+					{
+						header: 'Header',
+						children: [{
+							amount: 'Amount',
+							ingredient: 'Ingredient'
+						}]
+					}
+				);
+				*/
 				//this.fetchData();
 				//*/
 			},
@@ -341,9 +359,6 @@
 			},
 			methods: {
 				updateFilters: function () {
-					//Scan all tags
-					//Find which times to filter by
-					//Scan all ingredients
 					console.log('Update filters');
 				},
 				getFilterTimeDuration: function (currentHours, currentMinutes, inputHours, inputMinutes) {
@@ -372,14 +387,88 @@
 							t += 's';
 						}
 					}
-					t += ' or less'; 
+					t += ' or less';
 					if (t === 'takes or less') {
 						return 'takes any time';
 					}
 					return t;
 				},
-				clickedAddRecipe: function() {
-					console.log('Clicked Add Recipe');
+				clickedAddRecipe: function () {
+					//Do button animation
+					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
+						this.manage_recipeTitle = 'Add Recipe';
+					}
+					/*else {
+						console.log('Clicked close button');
+						$("#addRecipeButton img").attr('src', 'assets/icons/plus.svg');
+						$('#addRecipeButton').attr('data-ps-button-type', 'add');
+					}*/
+				},
+				submitManagedRecipe: function () {
+					console.log('Submitting recipe');
+
+					//Validate form
+					//If recipe is to be submitted, add recipe
+					//If recipe is to be updated, update recipe
+
+					/*
+					// Fetch all the forms we want to apply custom Bootstrap validation styles to
+					var forms = document.querySelectorAll('.needs-validation')
+
+					// Loop over them and prevent submission
+					Array.prototype.slice.call(forms).forEach(function (form) {
+						form.addEventListener('submit', function (event) {
+							form.classList.add('was-validated');
+						}, false);
+					});
+					*/
+				},
+				pushToTagArray: function () {
+					if (this.manage_recipeTagInput !== '' && this.manage_recipeTagInput !== null) {
+						this.manage_recipeTagHolder.push(this.manage_recipeTagInput);
+						this.manage_recipeTagInput = '';
+					}
+				},
+				addIngredient: function() {
+					this.manage_recipeBlockIngredients.push({
+						amount: this.manage_recipeBlockIngredientAmount,
+						value: this.manage_recipeBlockIngredientValue
+					});
+					this.manage_recipeBlockIngredientAmount = '';
+					this.manage_recipeBlockIngredientValue = '';
+				},
+				deleteIngredient: function(index) {
+					this.manage_recipeBlockIngredients.splice(index, 1);
+				},
+				addStep: function() {
+					this.manage_recipeBlockSteps.push({
+						value: this.manage_recipeBlockStepValue
+					});
+					this.manage_recipeBlockStepValue = '';
+				},
+				deleteStep: function(index) {
+					this.manage_recipeBlockSteps.splice(index, 1);
+				},
+				addBlock: function() {
+					this.manage_recipeBlocks.push({
+						header: this.manage_recipeBlockHeader,
+						ingredients: this.manage_recipeBlockIngredients,
+						steps: this.manage_recipeBlockSteps
+					});
+					this.manage_recipeBlockHeader = '';
+					this.manage_recipeBlockIngredients = [];
+					this.manage_recipeBlockSteps = [];
+				},
+
+				//Utilities
+				stripeBillingPortal: function (event) {
+					$(event.target).prop('disabled', true);
+					goToPortal();
+				},
+				signOutApp: function () {
+					firebase.auth().signOut().then(function () {
+						window.location.replace('index.html');
+					});
 				}
 				/*
 				async fetchData() {  
@@ -397,5 +486,18 @@
 				*/
 			}
 		});
+
+		async function goToPortal() {
+			const functionRef = firebase
+				.app()
+				.functions('us-central1')
+				.httpsCallable('ext-firestore-stripe-subscriptions-createPortalLink');
+			const {
+				data
+			} = await functionRef({
+				returnUrl: window.location.origin
+			});
+			window.location.assign(data.url);
+		}
 	}
 })(jQuery);

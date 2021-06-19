@@ -7,8 +7,57 @@
 }
 
 body {
-    font-family: 'Open Sans', sans-serif;
+    background-color: var(--ps-bg-color);
 }
+
+/* ==== Override Vuetify styles ==== */
+
+.v-application, body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.v-application--wrap {
+    /*min-height: initial;*/
+}
+
+.btn-primary {
+    color: #fff;
+}
+
+.theme--light.v-application {
+    background: inherit;
+    color: inherit;
+}
+
+.v-application {
+    display: inherit;
+}
+
+.v-stepper__header {
+    margin-bottom: 12px;
+}
+
+.v-stepper__content {
+    padding: 0;
+}
+
+.v-sheet.v-stepper:not(.v-sheet--outlined), .v-stepper__header {
+    box-shadow: none;
+}
+
+.v-application ol, .v-application ul {
+    padding-left: 0;
+}
+
+.v-application .row {
+    padding: 12px;
+}
+
+.row+.row {
+    margin-top: 0;
+}
+
+/* ==== End Vuetify styles ==== */
 
 .login-form {
     min-width: 90%;
@@ -41,10 +90,6 @@ body {
     background-color: var(--ps-bg-color);
 }
 
-.main-wrap {
-    background-color: var(--ps-bg-color);
-}
-
 .main-wrap h1,
 .main-wrap h2,
 .main-wrap h3,
@@ -54,8 +99,9 @@ body {
     color: var(--ps-secondary-color);
 }
 
-.main-wrap a {
-    color: var(--ps-accent-color) !important;
+.explore-text > a {
+    color: var(--ps-accent-color)!important;
+    cursor: pointer;
 }
 
 .fab {
@@ -75,9 +121,17 @@ body {
 
 .fab:hover {
     box-shadow: 2px 2px 10px 0 #333;
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
+.offcanvas-full {
+    height: 100vh;
+    border-top: none;
+}
+
+.offcanvas-body {
+    padding: 0;
+}
 
 /* For desktops */
 @media (min-width: 992px) {
@@ -87,5 +141,9 @@ body {
 
     .signup-form {
         min-width: 500px;
+    }
+
+    .offcanvas-body {
+        padding: 1rem 1rem;
     }
 }

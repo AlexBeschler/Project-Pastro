@@ -6,12 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cookbook | Project Pastro</title>
+
     <!-- Custom font for fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Bootstrap -->
+
+    <!-- 3rd Party style sheets -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
+    <link href="css/vuetify.min.css" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <!-- 3rd Party style sheets -->
+
     <!-- Core app -->
     <link rel="stylesheet" href="css/app.css">
     <!-- PWA -->
@@ -39,33 +46,33 @@
             <header class="d-flex justify-content-center py-3">
                 <ul class="nav nav-pills" role="tablist">
                     <li class="nav-item">
-                        <button id="pills-explore-tab" class="nav-link active" data-bs-toggle="pill" data-bs-target="#explorePane"
-                            type="button" role="tab" aria-controls="explorePane" aria-selected="true">Explore</button>
+                        <button id="pills-explore-tab" class="nav-link active" data-bs-toggle="pill"
+                            data-bs-target="#explorePane" type="button" role="tab" aria-controls="explorePane"
+                            aria-selected="true">Explore</button>
                     </li>
                     <li class="nav-item">
-                        <button id="pills-search-tab" class="nav-link" data-bs-toggle="pill" data-bs-target="#searchPane" type="button"
-                            role="tab" aria-controls="searchPane" aria-selected="false">Search</button>
+                        <button id="pills-search-tab" class="nav-link" data-bs-toggle="pill"
+                            data-bs-target="#searchPane" type="button" role="tab" aria-controls="searchPane"
+                            aria-selected="false">Search</button>
                     </li>
                     <li class="nav-item">
-                        <button id="pills-options-tab" class="nav-link" data-bs-toggle="pill" data-bs-target="#optionsPane" type="button"
-                            role="tab" aria-controls="optionsPane" aria-selected="false">Options</button>
+                        <button id="pills-options-tab" class="nav-link" data-bs-toggle="pill"
+                            data-bs-target="#optionsPane" type="button" role="tab" aria-controls="optionsPane"
+                            aria-selected="false">Options</button>
                     </li>
                 </ul>
             </header>
         </div>
         <div class="tab-content">
-            <div id="explorePane" class="row tab-pane fade show active" role="tabpanel" aria-labelledby="pills-explore-tab">
+            <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
+                aria-labelledby="pills-explore-tab">
                 <div class="px-4 py-5 my-5">
-                    <h1 class="display-5 fw-bold">I feel like making <a data-bs-toggle="modal"
+                    <h1 class="display-5 fw-bold explore-text">I feel like making <a data-bs-toggle="modal"
                             data-bs-target="#tagsModal">{{ displayTags }}</a> food that <a data-bs-toggle="modal"
                             data-bs-target="#pickTimeModal">{{ displayTime }}</a> and contains <a data-bs-toggle="modal"
                             data-bs-target="#ingredientsModal">{{ displayIngredients }}</a>
                     </h1>
                 </div>
-                <div v-for="(recipe, $index) in cookbook" :key="$index">
-                    <p>{{ $index }}: {{ recipe }}</p>
-                </div>
-
                 <!-- Tags modal -->
                 <div class="modal fade" id="tagsModal" tabindex="-1" aria-labelledby="chooseTags" aria-hidden="true">
                     <div class="modal-dialog">
@@ -138,7 +145,7 @@
                                     <input class="form-check-input" type="checkbox" value=""
                                         v-model="checkedIngredientsArray" :value="ingredient.text">
                                     <label class="form-check-label">
-                                        {{ ingredient.text }}
+                                        {{ ingredient.valueIngredient }}
                                     </label>
                                 </div>
                             </div>
@@ -155,10 +162,210 @@
                 <h1>Search</h1>
             </div>
             <div id="optionsPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-options-tab">
-                <h1>Options</h1>
+                <div class="row">
+                    <h1>Options</h1>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <button class="btn btn-primary" @click="stripeBillingPortal">Stripe Billing Portal</button>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary" @click="signOutApp">Sign Out</button>
+                    </div>
+                </div>
             </div>
         </div>
-        <button class="btn fab" type="button" v-on:click="clickedAddRecipe">+</button>
+        <div class="card">
+            <div class="card-header">
+                Recipes
+            </div>
+            <ul v-for="(recipe, $index) in cookbook" :key="$index" class="list-group list-group-flush">
+                <li class="list-group-item">{{ recipe.title }}</li>
+            </ul>
+        </div>
+        <!--div v-for="(recipe, $index) in cookbook" :key="$index">
+            <p>{{ $index }}: {{ recipe }}</p>
+        </div-->
+        <!--button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
+            data-ps-button-type="add" data-bs-toggle="modal" data-bs-target="#manageRecipeModal">
+            <img src="assets/icons/plus.svg"></img>
+        </button-->
+        <button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
+            data-ps-button-type="add" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
+            data-disablescrolling="false">
+            <img src="assets/icons/plus.svg"></img>
+        </button>
+        <div class="offcanvas offcanvas-bottom offcanvas-full" tabindex="-1" id="offcanvasBottom"
+            aria-labelledby="offcanvasBottomLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasBottomLabel">{{ manage_recipeTitle }}</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <v-app class="offcanvas-body small">
+                <v-stepper non-linear>
+                    <v-stepper-header>
+                        <v-stepper-step step="1" editable>
+                            Step 1
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step step="2" editable>
+                            Step 2
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step step="3" editable>
+                            Step 3
+                        </v-stepper-step>
+                    </v-stepper-header>
+
+                    <v-stepper-items>
+                        <v-stepper-content step="1">
+                            <div class="col-md-12">
+                                <label for="validationCustom01" class="form-label">Recipe name</label>
+                                <input type="text" class="form-control" id="validationCustom01"
+                                    v-model="manage_recipeName" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="validationCustom02" class="form-label">Description</label>
+                                <textarea type="text" class="form-control" id="validationCustom02"
+                                    v-model="manage_recipeDescription" required></textarea>
+                            </div>
+                            <div class="col-md-10">
+                                <label for="validationCustom03" class="form-label">Tags</label>
+                                <input type="text" class="form-control" id="validationCustom03"
+                                    v-model="manage_recipeTagInput" required>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary" @click="pushToTagArray">Add Tag</button>
+                            </div>
+                            <div class="col-md-12">
+                                <ul v-if="manage_recipeTagHolder.length">
+                                    <li v-for="tag in manage_recipeTagHolder">{{ tag }}</li>
+                                </ul>
+                                <p v-else>No tags added</p>
+                            </div>
+                        </v-stepper-content>
+
+                        <v-stepper-content step="2">
+                            <div class="col-md-3">
+                                <label for="validationCustom5" class="form-label">Prep Time</label>
+                                <input type="number" class="form-control" id="validationCustom5"
+                                    v-model="manage_recipePrepTime" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="validationCustom6" class="form-label">Cook Time</label>
+                                <input type="number" class="form-control" id="validationCustom6"
+                                    v-model="manage_recipeCookTime" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="validationCustom7" class="form-label">Total Time</label>
+                                <input type="number" class="form-control" id="validationCustom7"
+                                    v-model="manage_recipeTotalTime" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="validationCustom8" class="form-label">Active Time</label>
+                                <input type="number" class="form-control" id="validationCustom8"
+                                    v-model="manage_recipeActiveTime" required>
+                            </div>
+                        </v-stepper-content>
+
+                        <v-stepper-content step="3">
+                            <div class="row">
+                                <div class="col">
+                                    <input class="form-control" type="text" v-model="manage_recipeBlockHeader">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h5>Ingredients</h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <input class="form-control" type="text"
+                                        v-model="manage_recipeBlockIngredientAmount">
+                                </div>
+                                <div class="col-lg-4">
+                                    <input class="form-control" type="text" v-model="manage_recipeBlockIngredientValue">
+                                </div>
+                                <div class="col-lg-4">
+                                    <button class="btn btn-outline-primary" @click="addIngredient">Add</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <ul class="list-group" v-if="manage_recipeBlockIngredients.length">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                                            v-for="(ingredient, index) in manage_recipeBlockIngredients" :key="index">
+                                            {{ ingredient.amount }} {{ ingredient.value }}
+                                            <span>
+                                                <button class="btn btn-outline-success"
+                                                    @click="deleteIngredient(index)">Delete</button>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                    <p v-else>No ingredients yet!</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h5>Steps</h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <textarea class="form-control" v-model="manage_recipeBlockStepValue"></textarea>
+                                </div>
+                                <div class="col-lg-4">
+                                    <button class="btn btn-outline-primary" @click="addStep">Add</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <ul class="list-group" v-if="manage_recipeBlockSteps.length">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                                            v-for="(step, index) in manage_recipeBlockSteps" :key="index">
+                                            {{ step.value }}
+                                            <span>
+                                                <button class="btn btn-outline-success"
+                                                    @click="deleteStep(index)">Delete</button>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                    <p v-else>No steps yet!</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary" @click="addBlock">Add Block</button>
+                            <v-divider></v-divider>
+                            <ul class="list-group" v-if="manage_recipeBlocks.length">
+                                <li class="list-group-item" v-for="(block, i) in manage_recipeBlocks" :key="i">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ block.header }}</h5>
+                                    </div>
+                                    <h6>Block Ingredients</h6>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item" v-for="(ingredient, j) in block.ingredients" :key="j">{{ ingredient.amount }} {{ ingredient.value }}</li>
+                                    </ul>
+                                    <h6>Block Steps</h6>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">{{ step.value }}</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <p v-else>No recipe blocks yet!</p>
+                        </v-stepper-content>
+                    </v-stepper-items>
+                </v-stepper>
+
+                <v-divider></v-divider>
+                <button type="button" class="btn btn-primary"
+                    @click="submitManagedRecipe">{{ manage_recipeTitle }}</button>
+            </v-app>
+        </div>
     </div>
     <template id="sign-in-layout-template">
         <form class="login-form">
@@ -166,7 +373,7 @@
             <h2>Sign into Pastro</h2>
 
             <p>Sign in with your Google Account</p>
-            <button id="sign-in-button" class="btn btn-success" role="button" v-on:click.stop="signIn()">Sign
+            <button id="sign-in-button" class="btn btn-success" role="button" @click.prevent="signIn">Sign
                 In</button>
             <p class="mt-5 mb-3 text-muted">© 2021</p>
         </form>
@@ -174,7 +381,7 @@
 
     <template id="purchase-subscription-layout-template">
         <form class="signup-form">
-            <h2>Hi ,</h2>
+            <h2>Hi {{ firstname }},</h2>
             <p class="lead text-muted">Sign up below to get started. Cancel anytime.</p>
             <div class="card-body text-center">
                 <div class="signup-options-benefit-group mx-auto">
@@ -184,7 +391,7 @@
                             fill="#1A8917">
                         </path>
                     </svg>
-                    No ads
+                    No ads, forever
                     <br>
                     <svg xmlns="http://www.w3.org/2000/svg" width="21" height="22" viewBox="0 0 21 22" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -210,7 +417,7 @@
                 </button>
             </div>
             <h5 class="mt-5">Wrong account?</h5>
-            <button role="button" class="btn btn-outline-success">Sign Out</button>
+            <button role="button" class="btn btn-outline-success" @click.prevent="logOut">Sign Out</button>
             <p class="mt-5 mb-3 text-muted">© 2021</p>
         </form>
     </template>
@@ -242,6 +449,7 @@
     <!-- 3rd Party Helpers -->
     <!--script src="https://unpkg.com/vue-infinite-loading@^2/dist/vue-infinite-loading.js"></script-->
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.4/dist/vuetify.min.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/app.js"></script>
