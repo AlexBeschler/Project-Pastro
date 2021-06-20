@@ -2,8 +2,6 @@
 	var utils = new ProjectPastroUtils();
 	$(document).ready(function () {
 		utils.init();
-		//Add login container to body class
-		//$('body').addClass('body-login-container');
 
 		function toggleSignIn() {
 			if (!firebase.auth().currentUser) {
@@ -179,7 +177,6 @@
 
 	function appFunctionality(payload) {
 		//Load vue dependencies
-		//Vue.use('infinite-loading', { /* options */ });
 
 		utils.showCookbook();
 
@@ -215,19 +212,12 @@
 				manage_recipeBlocks: [],
 				manage_recipeBlockIngredients: [],
 				manage_recipeBlockSteps: [],
-				manage_recipeBlockHeader: 'Block Header',
-				manage_recipeBlockIngredientAmount: 'Amount',
-				manage_recipeBlockIngredientValue: 'Ingredient',
-				manage_recipeBlockStepValue: 'Step'
-
-				//page: 1
+				manage_recipeBlockHeader: '',
+				manage_recipeBlockIngredientAmount: '',
+				manage_recipeBlockIngredientValue: '',
+				manage_recipeBlockStepValue: ''
 			},
 			computed: {
-				/*
-				url() {
-				    return ["Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World", "Hello World"];
-				}
-				*/
 			},
 			created() {
 				var self = this;
@@ -251,19 +241,6 @@
 						return item.valueIngredient;
 					});
 				});
-				/*
-				this.manage_recipeIngredientSections.push(
-					{
-						header: 'Header',
-						children: [{
-							amount: 'Amount',
-							ingredient: 'Ingredient'
-						}]
-					}
-				);
-				*/
-				//this.fetchData();
-				//*/
 			},
 			watch: {
 				checkedTagsArray: function (b, a) {
@@ -398,58 +375,67 @@
 					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
 						this.manage_recipeTitle = 'Add Recipe';
 					}
-					/*else {
-						console.log('Clicked close button');
-						$("#addRecipeButton img").attr('src', 'assets/icons/plus.svg');
-						$('#addRecipeButton').attr('data-ps-button-type', 'add');
-					}*/
+					else {
+						this.manage_recipeTitle = 'Update Recipe';
+					}
 				},
-				submitManagedRecipe: function () {
-					console.log('Submitting recipe');
-
-					//Validate form
-					//If recipe is to be submitted, add recipe
-					//If recipe is to be updated, update recipe
-
-					/*
-					// Fetch all the forms we want to apply custom Bootstrap validation styles to
-					var forms = document.querySelectorAll('.needs-validation')
-
-					// Loop over them and prevent submission
-					Array.prototype.slice.call(forms).forEach(function (form) {
-						form.addEventListener('submit', function (event) {
-							form.classList.add('was-validated');
-						}, false);
-					});
-					*/
-				},
+				
+				//Manage recipe methods
 				pushToTagArray: function () {
 					if (this.manage_recipeTagInput !== '' && this.manage_recipeTagInput !== null) {
 						this.manage_recipeTagHolder.push(this.manage_recipeTagInput);
 						this.manage_recipeTagInput = '';
 					}
 				},
-				addIngredient: function() {
+				addIngredient: function () {
 					this.manage_recipeBlockIngredients.push({
 						amount: this.manage_recipeBlockIngredientAmount,
-						value: this.manage_recipeBlockIngredientValue
+						value: this.manage_recipeBlockIngredientValue,
+						//TODO: To delete when serializing
+						editMode: false,
+						editModeButtonText: 'Edit'
 					});
 					this.manage_recipeBlockIngredientAmount = '';
 					this.manage_recipeBlockIngredientValue = '';
 				},
-				deleteIngredient: function(index) {
+				editIngredient: function(index) {
+					//If edit button is being clicked
+					if (!this.manage_recipeBlockIngredients[index].editMode) {
+						this.manage_recipeBlockIngredients[index].editMode = true;
+						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Update'
+					//If update button is being clicked
+					} else {
+						this.manage_recipeBlockIngredients[index].editMode = false;
+						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Edit';
+					}
+				},
+				deleteIngredient: function (index) {
 					this.manage_recipeBlockIngredients.splice(index, 1);
 				},
-				addStep: function() {
+				addStep: function () {
 					this.manage_recipeBlockSteps.push({
-						value: this.manage_recipeBlockStepValue
+						value: this.manage_recipeBlockStepValue,
+						//TODO: To delete when serializing
+						editMode: false,
+						editModeButtonText: 'Edit'
 					});
 					this.manage_recipeBlockStepValue = '';
 				},
-				deleteStep: function(index) {
+				editStep: function(index) {
+					//If edit button is being clicked
+					if (!this.manage_recipeBlockSteps[index].editMode) {
+						this.manage_recipeBlockSteps[index].editMode = true;
+						this.manage_recipeBlockSteps[index].editModeButtonText = 'Update'
+					//If update button is being clicked
+					} else {
+						this.manage_recipeBlockSteps[index].editMode = false;
+						this.manage_recipeBlockSteps[index].editModeButtonText = 'Edit';
+					}
+				},
+				deleteStep: function (index) {
 					this.manage_recipeBlockSteps.splice(index, 1);
 				},
-				addBlock: function() {
+				addBlock: function () {
 					this.manage_recipeBlocks.push({
 						header: this.manage_recipeBlockHeader,
 						ingredients: this.manage_recipeBlockIngredients,
@@ -459,8 +445,16 @@
 					this.manage_recipeBlockIngredients = [];
 					this.manage_recipeBlockSteps = [];
 				},
+				deleteBlock: function(index) {
+					this.manage_recipeBlocks.splice(index, 1);
+				},
+				submitManagedRecipe: function () {
+					console.log('Submitting recipe');
 
-				//Utilities
+					//TODO: Validate form
+				},
+
+				//Utility methods
 				stripeBillingPortal: function (event) {
 					$(event.target).prop('disabled', true);
 					goToPortal();
@@ -470,20 +464,6 @@
 						window.location.replace('index.html');
 					});
 				}
-				/*
-				async fetchData() {  
-				    //const response = await axios.get(this.url);
-				    //this.titles = response.data;
-				    const response = this.url;
-				    this.cookbook = response;
-				},
-				infiniteScroll($state) {
-				    this.page++;
-				    //Do axios call
-				    this.cookbook.push(["Hello World"]);
-				    $state.loaded();
-				}
-				*/
 			}
 		});
 

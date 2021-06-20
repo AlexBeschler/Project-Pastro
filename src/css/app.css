@@ -16,10 +16,6 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
-.v-application--wrap {
-    /*min-height: initial;*/
-}
-
 .btn-primary {
     color: #fff;
 }
@@ -35,6 +31,10 @@ body {
 
 .v-stepper__header {
     margin-bottom: 12px;
+}
+
+.theme--light.v-stepper .v-stepper__step--editable:hover {
+    background: none;
 }
 
 .v-stepper__content {
@@ -131,6 +131,11 @@ body {
 
 .offcanvas-body {
     padding: 0;
+}
+
+.center-empty-list {
+    display: flex;
+    justify-content: center;
 }
 
 /* For desktops */

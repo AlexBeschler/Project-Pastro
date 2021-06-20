@@ -224,75 +224,97 @@
 
                     <v-stepper-items>
                         <v-stepper-content step="1">
-                            <div class="col-md-12">
-                                <label for="validationCustom01" class="form-label">Recipe name</label>
-                                <input type="text" class="form-control" id="validationCustom01"
-                                    v-model="manage_recipeName" required>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label for="validationCustom01" class="form-label">Recipe name</label>
+                                    <input type="text" class="form-control" id="validationCustom01"
+                                        v-model="manage_recipeName" required>
+                                </div>
                             </div>
-                            <div class="col-md-12">
-                                <label for="validationCustom02" class="form-label">Description</label>
-                                <textarea type="text" class="form-control" id="validationCustom02"
-                                    v-model="manage_recipeDescription" required></textarea>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label for="validationCustom02" class="form-label">Description</label>
+                                    <textarea type="text" class="form-control" id="validationCustom02"
+                                        v-model="manage_recipeDescription" required></textarea>
+                                </div>
                             </div>
-                            <div class="col-md-10">
-                                <label for="validationCustom03" class="form-label">Tags</label>
-                                <input type="text" class="form-control" id="validationCustom03"
-                                    v-model="manage_recipeTagInput" required>
+                            <div class="row">
+                                <div class="col-lg-10">
+                                    <label for="validationCustom03" class="form-label">Tags</label>
+                                    <input type="text" class="form-control" id="validationCustom03"
+                                        v-model="manage_recipeTagInput" required>
+                                </div>
+                                <div class="col-lg-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-outline-primary" @click="pushToTagArray">Add
+                                        Tag</button>
+                                </div>
                             </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-primary" @click="pushToTagArray">Add Tag</button>
-                            </div>
-                            <div class="col-md-12">
-                                <ul v-if="manage_recipeTagHolder.length">
-                                    <li v-for="tag in manage_recipeTagHolder">{{ tag }}</li>
-                                </ul>
-                                <p v-else>No tags added</p>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <ul v-if="manage_recipeTagHolder.length">
+                                        <li v-for="tag in manage_recipeTagHolder">{{ tag }}</li>
+                                    </ul>
+                                    <p class="center-empty-list" v-else>No tags added</p>
+                                </div>
                             </div>
                         </v-stepper-content>
 
                         <v-stepper-content step="2">
-                            <div class="col-md-3">
-                                <label for="validationCustom5" class="form-label">Prep Time</label>
-                                <input type="number" class="form-control" id="validationCustom5"
-                                    v-model="manage_recipePrepTime" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="validationCustom6" class="form-label">Cook Time</label>
-                                <input type="number" class="form-control" id="validationCustom6"
-                                    v-model="manage_recipeCookTime" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="validationCustom7" class="form-label">Total Time</label>
-                                <input type="number" class="form-control" id="validationCustom7"
-                                    v-model="manage_recipeTotalTime" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="validationCustom8" class="form-label">Active Time</label>
-                                <input type="number" class="form-control" id="validationCustom8"
-                                    v-model="manage_recipeActiveTime" required>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label for="validationCustom5" class="form-label">Prep Time</label>
+                                    <input type="number" class="form-control" id="validationCustom5"
+                                        v-model="manage_recipePrepTime" required>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label for="validationCustom6" class="form-label">Cook Time</label>
+                                    <input type="number" class="form-control" id="validationCustom6"
+                                        v-model="manage_recipeCookTime" required>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label for="validationCustom7" class="form-label">Total Time</label>
+                                    <input type="number" class="form-control" id="validationCustom7"
+                                        v-model="manage_recipeTotalTime" required>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label for="validationCustom8" class="form-label">Active Time</label>
+                                    <input type="number" class="form-control" id="validationCustom8"
+                                        v-model="manage_recipeActiveTime" required>
+                                </div>
                             </div>
                         </v-stepper-content>
 
                         <v-stepper-content step="3">
                             <div class="row">
                                 <div class="col">
-                                    <input class="form-control" type="text" v-model="manage_recipeBlockHeader">
+                                    <label for="manage_blockHeader">Recipe Block Header</label>
+                                    <input id="manage_blockHeader" class="form-control" type="text"
+                                        v-model="manage_recipeBlockHeader">
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col">
-                                    <h5>Ingredients</h5>
+                                <div class="col-lg-12">
+                                    <div v-if="manage_recipeBlockIngredients.length === 1">
+                                        <h5>1 ingredient in block</h5>
+                                    </div>
+                                    <div v-else-if="manage_recipeBlockIngredients.length > 1">
+                                        <h5>{{ manage_recipeBlockIngredients.length }} ingredients in block</h5>
+                                    </div>
+                                    <div v-else>
+                                        <h5>Add ingredients to block</h5>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <input class="form-control" type="text"
+                                <div class="col-lg-5">
+                                    <label for="manage_ing_amount">Ingredient Amount</label>
+                                    <input id="manage_ing_amount" class="form-control" type="text"
                                         v-model="manage_recipeBlockIngredientAmount">
                                 </div>
-                                <div class="col-lg-4">
-                                    <input class="form-control" type="text" v-model="manage_recipeBlockIngredientValue">
+                                <div class="col-lg-5">
+                                    <label for="manage_ing_value">Ingredient</label>
+                                    <input id="manage_ing_value" class="form-control" type="text"
+                                        v-model="manage_recipeBlockIngredientValue">
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-2 d-flex align-items-end">
                                     <button class="btn btn-outline-primary" @click="addIngredient">Add</button>
                                 </div>
                             </div>
@@ -301,69 +323,108 @@
                                     <ul class="list-group" v-if="manage_recipeBlockIngredients.length">
                                         <li class="list-group-item d-flex justify-content-between align-items-center"
                                             v-for="(ingredient, index) in manage_recipeBlockIngredients" :key="index">
-                                            {{ ingredient.amount }} {{ ingredient.value }}
+                                            <div v-if="!ingredient.editMode">
+                                                {{ ingredient.amount }} {{ ingredient.value }}
+                                            </div>
+                                            <div v-else>
+                                                <input class="form-control" type="text" v-model="ingredient.amount">
+                                                <input class="form-control" type="text" v-model="ingredient.value">
+                                            </div>
                                             <span>
-                                                <button class="btn btn-outline-success"
+                                                <button class="btn btn-outline-warning"
+                                                    @click="editIngredient(index)">{{ ingredient.editModeButtonText }}</button>
+                                                <button class="btn btn-outline-danger"
                                                     @click="deleteIngredient(index)">Delete</button>
                                             </span>
                                         </li>
                                     </ul>
-                                    <p v-else>No ingredients yet!</p>
+                                    <p class="center-empty-list" v-else>No ingredients yet!</p>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <h5>Steps</h5>
+                                    <div v-if="manage_recipeBlockSteps.length === 1">
+                                        <h5>1 step in block</h5>
+                                    </div>
+                                    <div v-else-if="manage_recipeBlockSteps.length > 1">
+                                        <h5>{{ manage_recipeBlockSteps.length }} steps in block</h5>
+                                    </div>
+                                    <div v-else>
+                                        <h5>Add steps to block</h5>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-8">
-                                    <textarea class="form-control" v-model="manage_recipeBlockStepValue"></textarea>
+                                <div class="col-lg-10">
+                                    <label for="manage_step_value">Step {{ manage_recipeBlockSteps.length + 1}}</label>
+                                    <textarea id="manage_step_value" class="form-control"
+                                        v-model="manage_recipeBlockStepValue"></textarea>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-2 d-flex align-items-end">
                                     <button class="btn btn-outline-primary" @click="addStep">Add</button>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
                                     <ul class="list-group" v-if="manage_recipeBlockSteps.length">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                                        <li class="list-group-item"
                                             v-for="(step, index) in manage_recipeBlockSteps" :key="index">
-                                            {{ step.value }}
+                                            <div class="mb-2" v-if="!step.editMode">
+                                                {{ index + 1 }}: {{ step.value }}
+                                            </div>
+                                            <div class="mb-2" v-else>
+                                                <textarea class="form-control" v-model="step.value"></textarea>
+                                            </div>
                                             <span>
-                                                <button class="btn btn-outline-success"
+                                                <button class="btn btn-outline-warning"
+                                                    @click="editStep(index)">{{ step.editModeButtonText }}</button>
+                                                <button class="btn btn-outline-danger"
                                                     @click="deleteStep(index)">Delete</button>
                                             </span>
                                         </li>
                                     </ul>
-                                    <p v-else>No steps yet!</p>
+                                    <p class="center-empty-list" v-else>No steps yet!</p>
                                 </div>
                             </div>
-                            <button class="btn btn-outline-primary" @click="addBlock">Add Block</button>
-                            <v-divider></v-divider>
-                            <ul class="list-group" v-if="manage_recipeBlocks.length">
-                                <li class="list-group-item" v-for="(block, i) in manage_recipeBlocks" :key="i">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{ block.header }}</h5>
-                                    </div>
-                                    <h6>Block Ingredients</h6>
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item" v-for="(ingredient, j) in block.ingredients" :key="j">{{ ingredient.amount }} {{ ingredient.value }}</li>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <button class="btn btn-outline-primary" @click="addBlock">Add Block</button>
+                                </div>
+                                <div class="col-lg-12">
+                                    <ul class="list-group" v-if="manage_recipeBlocks.length">
+                                        <li class="list-group-item" v-for="(block, i) in manage_recipeBlocks" :key="i">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h5 class="mb-3">{{ block.header }}</h5>
+                                            </div>
+                                            <h6>Ingredients</h6>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item" v-for="(ingredient, j) in block.ingredients"
+                                                    :key="j">{{ ingredient.amount }} {{ ingredient.value }}</li>
+                                            </ul>
+                                            <h6>Steps</h6>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">
+                                                    {{ step.value }}</li>
+                                            </ul>
+                                            <button class="btn btn-outline-warning mb-2 mr-2">Edit</button>
+                                            <button class="btn btn-outline-danger mb-2">Delete</button>
+                                        </li>
                                     </ul>
-                                    <h6>Block Steps</h6>
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">{{ step.value }}</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            <p v-else>No recipe blocks yet!</p>
+                                    <p class="center-empty-list" v-else>No recipe blocks yet!</p>
+                                </div>
+                            </div>
                         </v-stepper-content>
                     </v-stepper-items>
                 </v-stepper>
-
-                <v-divider></v-divider>
-                <button type="button" class="btn btn-primary"
-                    @click="submitManagedRecipe">{{ manage_recipeTitle }}</button>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <v-divider></v-divider>
+                    </div>
+                    <div class="col-lg-12">
+                        <button type="button" class="btn btn-primary" @click="submitManagedRecipe"
+                            style="width: 100%;">{{ manage_recipeTitle }}</button>
+                    </div>
+                </div>
             </v-app>
         </div>
     </div>
@@ -450,6 +511,14 @@
     <!--script src="https://unpkg.com/vue-infinite-loading@^2/dist/vue-infinite-loading.js"></script-->
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.4/dist/vuetify.min.js"></script>
+    <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
+    <script>
+        var {
+            ContainerMixin,
+            ElementMixin,
+            HandleDirective
+        } = window.VueSlicksort;
+    </script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/app.js"></script>
