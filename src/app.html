@@ -156,7 +156,6 @@
                         </div>
                     </div>
                 </div>
-                <!--infinite-loading @infinite="infiniteScroll"></infinite-loading-->
             </div>
             <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
                 <h1>Search</h1>
@@ -183,13 +182,6 @@
                 <li class="list-group-item">{{ recipe.title }}</li>
             </ul>
         </div>
-        <!--div v-for="(recipe, $index) in cookbook" :key="$index">
-            <p>{{ $index }}: {{ recipe }}</p>
-        </div-->
-        <!--button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
-            data-ps-button-type="add" data-bs-toggle="modal" data-bs-target="#manageRecipeModal">
-            <img src="assets/icons/plus.svg"></img>
-        </button-->
         <button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
             data-ps-button-type="add" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
             data-disablescrolling="false">
@@ -508,7 +500,6 @@
     <!-- Stripe -->
     <script src="https://js.stripe.com/v3/"></script>
     <!-- 3rd Party Helpers -->
-    <!--script src="https://unpkg.com/vue-infinite-loading@^2/dist/vue-infinite-loading.js"></script-->
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.4/dist/vuetify.min.js"></script>
     <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
