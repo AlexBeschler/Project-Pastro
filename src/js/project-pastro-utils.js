@@ -16,18 +16,15 @@ var ProjectPastroUtils = function() {
     }
 
     this.showLoading = function() {
-        //TODO: add body 'height: 100vh'
         $('#login-container').css('visibility', 'hidden');
         $('#loading').css('visibility', 'visible');
         $('#appContent').css('visibility', 'hidden');
     }
     this.showLoginContainer = function() {
-        //TODO: Remove body 100vh
         $('#login-container').css('visibility', 'visible');
         $('#loading').css('visibility', 'hidden');
     }
     this.showCookbook = function() {
-        //TODO: Remove body 100vh
         $('#login-container').remove(); //No need for this anymore
         $('#loading').css('visibility', 'hidden');
         $('#appContent').css('visibility', 'visible');
@@ -39,5 +36,12 @@ var ProjectPastroUtils = function() {
     this.setLocalStorage = function(key, value) {
         var storage = window.localStorage;
         storage.setItem(key, value);
+    }
+    //Utilities
+    this.isNumber = function(toValidate) {
+        return parseInt(toValidate) > 0 && parseInt(toValidate) < 9999 && /^\d+$/.test(parseInt(toValidate));
+    }
+    this.isString = function(toValidate) {
+        return toValidate.length > 0 && toValidate.length < 82;
     }
 }

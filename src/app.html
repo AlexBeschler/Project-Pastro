@@ -216,64 +216,91 @@
 
                     <v-stepper-items>
                         <v-stepper-content step="1">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <label for="validationCustom01" class="form-label">Recipe name</label>
-                                    <input type="text" class="form-control" id="validationCustom01"
-                                        v-model="manage_recipeName" required>
+                            <form class="needs-validation" novalidate>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <label for="manage_form_name" class="form-label">Recipe name</label>
+                                        <input type="text" class="form-control" id="manage_form_name"
+                                            v-model="manage_recipeName" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a name
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <label for="validationCustom02" class="form-label">Description</label>
-                                    <textarea type="text" class="form-control" id="validationCustom02"
-                                        v-model="manage_recipeDescription" required></textarea>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <label for="manage_form_description" class="form-label">Description</label>
+                                        <textarea type="text" class="form-control" id="manage_form_description"
+                                            v-model="manage_recipeDescription" required></textarea>
+                                        <div class="invalid-feedback">
+                                            Please enter a description
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-10">
-                                    <label for="validationCustom03" class="form-label">Tags</label>
-                                    <input type="text" class="form-control" id="validationCustom03"
-                                        v-model="manage_recipeTagInput" required>
+                                <div class="row">
+                                    <div class="col-lg-10">
+                                        <label for="manage_form_tags" class="form-label">Tags</label>
+                                        <input type="text" class="form-control" id="manage_form_tags"
+                                            v-model="manage_recipeTagInput" required>
+                                    </div>
+                                    <div class="col-lg-2 d-flex align-items-end">
+                                        <button type="button" class="btn btn-outline-primary"
+                                            @click="pushToTagArray">Add
+                                            Tag</button>
+                                    </div>
                                 </div>
-                                <div class="col-lg-2 d-flex align-items-end">
-                                    <button type="button" class="btn btn-outline-primary" @click="pushToTagArray">Add
-                                        Tag</button>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <ul v-if="manage_recipeTagHolder.length">
+                                            <li v-for="tag in manage_recipeTagHolder">{{ tag }}</li>
+                                        </ul>
+                                        <p class="center-empty-list" v-else>No tags added</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <ul v-if="manage_recipeTagHolder.length">
-                                        <li v-for="tag in manage_recipeTagHolder">{{ tag }}</li>
-                                    </ul>
-                                    <p class="center-empty-list" v-else>No tags added</p>
-                                </div>
-                            </div>
+                            </form>
                         </v-stepper-content>
 
                         <v-stepper-content step="2">
-                            <div class="row">
-                                <div class="col-lg-3">
-                                    <label for="validationCustom5" class="form-label">Prep Time</label>
-                                    <input type="number" class="form-control" id="validationCustom5"
-                                        v-model="manage_recipePrepTime" required>
+                            <form class="needs-validation" novalidate>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <label for="manage_form_prep_time" class="form-label">Prep Time (in
+                                            minutes)</label>
+                                        <input type="number" class="form-control" id="manage_form_prep_time"
+                                            v-model="manage_recipePrepTime" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a preparation time
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label for="manage_form_cook_time" class="form-label">Cook Time (in
+                                            minutes)</label>
+                                        <input type="number" class="form-control" id="manage_form_cook_time"
+                                            v-model="manage_recipeCookTime" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a cook time
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label for="manage_form_total_time" class="form-label">Total Time (in
+                                            minutes)</label>
+                                        <input type="number" class="form-control" id="manage_form_total_time"
+                                            v-model="manage_recipeTotalTime" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a total time
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label for="manage_form_active_time" class="form-label">Active Time (in
+                                            minutes)</label>
+                                        <input type="number" class="form-control" id="manage_form_active_time"
+                                            v-model="manage_recipeActiveTime" required>
+                                        <div class="invalid-feedback">
+                                            Please enter an active time
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-lg-3">
-                                    <label for="validationCustom6" class="form-label">Cook Time</label>
-                                    <input type="number" class="form-control" id="validationCustom6"
-                                        v-model="manage_recipeCookTime" required>
-                                </div>
-                                <div class="col-lg-3">
-                                    <label for="validationCustom7" class="form-label">Total Time</label>
-                                    <input type="number" class="form-control" id="validationCustom7"
-                                        v-model="manage_recipeTotalTime" required>
-                                </div>
-                                <div class="col-lg-3">
-                                    <label for="validationCustom8" class="form-label">Active Time</label>
-                                    <input type="number" class="form-control" id="validationCustom8"
-                                        v-model="manage_recipeActiveTime" required>
-                                </div>
-                            </div>
+                            </form>
                         </v-stepper-content>
 
                         <v-stepper-content step="3">
@@ -359,8 +386,8 @@
                             <div class="row">
                                 <div class="col">
                                     <ul class="list-group" v-if="manage_recipeBlockSteps.length">
-                                        <li class="list-group-item"
-                                            v-for="(step, index) in manage_recipeBlockSteps" :key="index">
+                                        <li class="list-group-item" v-for="(step, index) in manage_recipeBlockSteps"
+                                            :key="index">
                                             <div class="mb-2" v-if="!step.editMode">
                                                 {{ index + 1 }}: {{ step.value }}
                                             </div>
@@ -398,8 +425,9 @@
                                                 <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">
                                                     {{ step.value }}</li>
                                             </ul>
-                                            <button class="btn btn-outline-warning mb-2 mr-2">Edit</button>
-                                            <button class="btn btn-outline-danger mb-2">Delete</button>
+                                            <!--button class="btn btn-outline-warning mb-2 mr-2">Edit</button-->
+                                            <button class="btn btn-outline-danger mb-2"
+                                                @click="deleteBlock(i)">Delete</button>
                                         </li>
                                     </ul>
                                     <p class="center-empty-list" v-else>No recipe blocks yet!</p>
@@ -500,6 +528,7 @@
     <!-- Stripe -->
     <script src="https://js.stripe.com/v3/"></script>
     <!-- 3rd Party Helpers -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.4/dist/vuetify.min.js"></script>
     <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>

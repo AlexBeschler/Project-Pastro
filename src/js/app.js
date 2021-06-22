@@ -449,9 +449,91 @@
 					this.manage_recipeBlocks.splice(index, 1);
 				},
 				submitManagedRecipe: function () {
-					console.log('Submitting recipe');
+					var anyInvalid = false;
+					var serializedRecipe = {};
 
-					//TODO: Validate form
+					/* **** Clear all form valid classes **** */
+					$('#manage_form_name').removeClass('is-valid');
+					$('#manage_form_name').removeClass('is-invalid');
+
+					$('#manage_form_prep_time').removeClass('is-valid');
+					$('#manage_form_prep_time').removeClass('is-invalid');
+
+					$('#manage_form_cook_time').removeClass('is-valid');
+					$('#manage_form_cook_time').removeClass('is-invalid');
+
+					$('#manage_form_total_time').removeClass('is-valid');
+					$('#manage_form_total_time').removeClass('is-invalid');
+
+					$('#manage_form_active_time').removeClass('is-valid');
+					$('#manage_form_active_time').removeClass('is-invalid');
+					/* ************************************** */
+
+
+					/* **** Validate all form valid classes **** */
+					//Check name
+					if (utils.isString(this.manage_recipeName)) {
+						$('#manage_form_name').addClass('is-valid');
+						serializedRecipe.title = this.manage_recipeName.toString();
+					} else {
+						$('#manage_form_name').addClass('is-invalid');
+						anyInvalid = true;
+					}
+						
+					//Serialize tag array
+					if (this.manage_recipeTagHolder.length > 0) {
+						serializedRecipe.tags = Array.from(this.manage_recipeTagHolder);
+					}
+
+					//Check prep time
+					if (utils.isNumber(this.manage_recipePrepTime)) {
+						$('#manage_form_prep_time').addClass('is-valid');
+						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
+					}
+					else {
+						$('#manage_form_prep_time').addClass('is-invalid');
+						anyInvalid = true;
+					}
+						
+					//Check cook time
+					if (utils.isNumber(this.manage_recipeCookTime)) {
+						$('#manage_form_cook_time').addClass('is-valid');
+						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
+					}
+					else {
+						$('#manage_form_cook_time').addClass('is-invalid');
+						anyInvalid = true;
+					}
+						
+					//Check total time
+					if (utils.isNumber(this.manage_recipeTotalTime)) {
+						$('#manage_form_total_time').addClass('is-valid');
+						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
+					}
+					else {
+						$('#manage_form_total_time').addClass('is-invalid');
+						anyInvalid = true;
+					}
+						
+					//Check active time
+					if (utils.isNumber(this.manage_recipeActiveTime)) {
+						$('#manage_form_active_time').addClass('is-valid');
+						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
+					}
+					else {
+						$('#manage_form_active_time').addClass('is-invalid');
+						anyInvalid = true;
+					}
+
+					if (anyInvalid) return;
+
+					serializedRecipe.coverPhotoURL = null;
+					serializedRecipe.docID = uuidv4();
+					serializedRecipe.addDate = Date.now();
+					
+					console.log('Submitting recipe');
+						
+					/* ************************************** */
 				},
 
 				//Utility methods
