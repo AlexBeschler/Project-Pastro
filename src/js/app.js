@@ -215,9 +215,23 @@
 				manage_recipeBlockHeader: '',
 				manage_recipeBlockIngredientAmount: '',
 				manage_recipeBlockIngredientValue: '',
-				manage_recipeBlockStepValue: ''
-			},
-			computed: {
+				manage_recipeBlockStepValue: '',
+				//Quill
+				quillInstance: null,
+				quillContent: null,
+				toolbarOptions: [
+					['bold', 'italic'],
+					[{
+						'list': 'ordered'
+					}, {
+						'list': 'bullet'
+					}, {
+						'indent': '-1'
+					}, {
+						'indent': '+1'
+					}],
+					['clean']
+				]
 			},
 			created() {
 				var self = this;
@@ -241,6 +255,12 @@
 						return item.valueIngredient;
 					});
 				});
+			},
+			mounted() {
+				this.initQuill();
+			},
+			beforeDestroy() {
+				this.quillInstance.off('text-change');
 			},
 			watch: {
 				checkedTagsArray: function (b, a) {
@@ -332,9 +352,33 @@
 						});
 						this.displayIngredients = t.slice(0, -2);
 					}
+				},
+				quillValue: function (newVal) {
+					// Only update the content if it's changed from an external source
+					// or else it'll act weird when you try to type anything
+					if (newVal !== this.quillContent) {
+						this.quillInstance.pasteHTML(newVal)
+					}
 				}
 			},
 			methods: {
+				initQuill: function () {
+					this.quillInstance = new Quill('#editor', {
+						modules: {
+							toolbar: this.toolbarOptions
+						},
+						theme: 'snow'
+					});
+					this.quillInstance.on('text-change', this.onQuillContentChange);
+					this.setQuillContent();
+				},
+				onQuillContentChange: function () {
+					this.setQuillContent();
+					this.$emit('input', this.quillContent)
+				},
+				setQuillContent: function () {
+					this.quillContent = this.quillInstance.getText().trim() ? this.quillInstance.root.innerHTML : ''
+				},
 				updateFilters: function () {
 					console.log('Update filters');
 				},
@@ -374,12 +418,11 @@
 					//Do button animation
 					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
 						this.manage_recipeTitle = 'Add Recipe';
-					}
-					else {
+					} else {
 						this.manage_recipeTitle = 'Update Recipe';
 					}
 				},
-				
+
 				//Manage recipe methods
 				pushToTagArray: function () {
 					if (this.manage_recipeTagInput !== '' && this.manage_recipeTagInput !== null) {
@@ -398,12 +441,12 @@
 					this.manage_recipeBlockIngredientAmount = '';
 					this.manage_recipeBlockIngredientValue = '';
 				},
-				editIngredient: function(index) {
+				editIngredient: function (index) {
 					//If edit button is being clicked
 					if (!this.manage_recipeBlockIngredients[index].editMode) {
 						this.manage_recipeBlockIngredients[index].editMode = true;
 						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Update'
-					//If update button is being clicked
+						//If update button is being clicked
 					} else {
 						this.manage_recipeBlockIngredients[index].editMode = false;
 						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Edit';
@@ -421,12 +464,12 @@
 					});
 					this.manage_recipeBlockStepValue = '';
 				},
-				editStep: function(index) {
+				editStep: function (index) {
 					//If edit button is being clicked
 					if (!this.manage_recipeBlockSteps[index].editMode) {
 						this.manage_recipeBlockSteps[index].editMode = true;
 						this.manage_recipeBlockSteps[index].editModeButtonText = 'Update'
-					//If update button is being clicked
+						//If update button is being clicked
 					} else {
 						this.manage_recipeBlockSteps[index].editMode = false;
 						this.manage_recipeBlockSteps[index].editModeButtonText = 'Edit';
@@ -445,7 +488,7 @@
 					this.manage_recipeBlockIngredients = [];
 					this.manage_recipeBlockSteps = [];
 				},
-				deleteBlock: function(index) {
+				deleteBlock: function (index) {
 					this.manage_recipeBlocks.splice(index, 1);
 				},
 				submitManagedRecipe: function () {
@@ -479,7 +522,15 @@
 						$('#manage_form_name').addClass('is-invalid');
 						anyInvalid = true;
 					}
-						
+
+					//Check description
+					if (utils.isBigString(this.quillContent)) {
+						serializedRecipe.description = this.quillContent;
+					} else {
+						$('#editor').addClass('is-invalid');
+						anyInvalid = true;
+					}
+
 					//Serialize tag array
 					if (this.manage_recipeTagHolder.length > 0) {
 						serializedRecipe.tags = Array.from(this.manage_recipeTagHolder);
@@ -489,39 +540,54 @@
 					if (utils.isNumber(this.manage_recipePrepTime)) {
 						$('#manage_form_prep_time').addClass('is-valid');
 						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
-					}
-					else {
+					} else {
 						$('#manage_form_prep_time').addClass('is-invalid');
 						anyInvalid = true;
 					}
-						
+
 					//Check cook time
 					if (utils.isNumber(this.manage_recipeCookTime)) {
 						$('#manage_form_cook_time').addClass('is-valid');
 						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
-					}
-					else {
+					} else {
 						$('#manage_form_cook_time').addClass('is-invalid');
 						anyInvalid = true;
 					}
-						
+
 					//Check total time
 					if (utils.isNumber(this.manage_recipeTotalTime)) {
 						$('#manage_form_total_time').addClass('is-valid');
 						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
-					}
-					else {
+					} else {
 						$('#manage_form_total_time').addClass('is-invalid');
 						anyInvalid = true;
 					}
-						
+
 					//Check active time
 					if (utils.isNumber(this.manage_recipeActiveTime)) {
 						$('#manage_form_active_time').addClass('is-valid');
 						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
-					}
-					else {
+					} else {
 						$('#manage_form_active_time').addClass('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Serialize recipe block for push to Firebase
+					if (this.manage_recipeBlocks.length > 0) {
+						serializedRecipe.blocks = [];
+						for (var i = 0; i < this.manage_recipeBlocks.length; i++) {
+							let o = {};
+							o.header = this.manage_recipeBlocks[i].header;
+							o.ingredients = _.map(this.manage_recipeBlocks[i].ingredients, function (row) {
+								console.log('Row: ' + row);
+								return _.omit(row, ['editMode', 'editModeButtonText']);
+							});
+							o.steps = _.map(this.manage_recipeBlocks[i].steps, function (row) {
+								return _.omit(row, ['editMode', 'editModeButtonText']);
+							});
+							serializedRecipe.blocks.push(o);
+						}
+					} else {
 						anyInvalid = true;
 					}
 
@@ -530,9 +596,9 @@
 					serializedRecipe.coverPhotoURL = null;
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
-					
-					console.log('Submitting recipe');
-						
+
+					console.log(serializedRecipe);
+
 					/* ************************************** */
 				},
 

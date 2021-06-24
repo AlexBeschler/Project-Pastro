@@ -44,4 +44,7 @@ var ProjectPastroUtils = function() {
     this.isString = function(toValidate) {
         return toValidate.length > 0 && toValidate.length < 82;
     }
+    this.isBigString = function(toValidate) {
+        return toValidate.length > 0 & toValidate.length < 9999;
+    }
 }

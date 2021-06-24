@@ -15,6 +15,7 @@
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
     <link href="css/vuetify.min.css" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -229,12 +230,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <label for="manage_form_description" class="form-label">Description</label>
-                                        <textarea type="text" class="form-control" id="manage_form_description"
-                                            v-model="manage_recipeDescription" required></textarea>
-                                        <div class="invalid-feedback">
-                                            Please enter a description
-                                        </div>
+                                        <label for="editor" class="form-label">Description</label>
+                                        <div id="editor"></div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -539,6 +536,7 @@
             HandleDirective
         } = window.VueSlicksort;
     </script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/app.js"></script>
