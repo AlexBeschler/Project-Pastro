@@ -144,9 +144,9 @@
                             <div class="modal-body">
                                 <div v-for="(ingredient, $index) in ingredientsArray" :key="$index">
                                     <input class="form-check-input" type="checkbox" value=""
-                                        v-model="checkedIngredientsArray" :value="ingredient.valueIngredient">
+                                        v-model="checkedIngredientsArray" :value="ingredient">
                                     <label class="form-check-label">
-                                        {{ ingredient.valueIngredient }}
+                                        {{ ingredient }}
                                     </label>
                                 </div>
                             </div>

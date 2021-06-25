@@ -244,16 +244,19 @@
 				this.checkedIngredientsArray = [];
 
 				//TODO: Use underscore's sortBy function
+				var zippedIngredients = [];
 				payload.forEach(recipe => {
 					//Tags
 					self.tagsArray = _.uniq(_.union(self.tagsArray, recipe.tags), false);
 
 					//Ingredients
-					self.ingredientsArray = _.uniq(_.union(self.ingredientsArray, _.reject(recipe.ingredients, {
-						parent: null
-					})), false, function (item, key, text) {
-						return item.valueIngredient;
+					recipe.blocks.forEach(block => {
+						let x = _.pluck(block.ingredients, 'value');
+						x.forEach(ingredient => {
+							zippedIngredients.push(utils.capitalizeFirstLetter(ingredient));
+						})
 					});
+					self.ingredientsArray = _.uniq(zippedIngredients);
 				});
 			},
 			mounted() {
