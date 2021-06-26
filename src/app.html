@@ -184,11 +184,11 @@
             </ul>
         </div>
         <button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
-            data-ps-button-type="add" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
+            data-ps-button-type="add" data-bs-toggle="offcanvas" data-bs-target="#manage-recipe-offcanvas"
             data-disablescrolling="false">
             <img src="assets/icons/plus.svg"></img>
         </button>
-        <div class="offcanvas offcanvas-bottom offcanvas-full" tabindex="-1" id="offcanvasBottom"
+        <div class="offcanvas offcanvas-bottom offcanvas-full" tabindex="-1" id="manage-recipe-offcanvas"
             aria-labelledby="offcanvasBottomLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasBottomLabel">{{ manage_recipeTitle }}</h5>
@@ -445,6 +445,15 @@
             </v-app>
         </div>
     </div>
+    <template id="tag-draggable-template">
+        <!-- TODO -->
+    </template>
+    <template id="ingredients-draggable-template">
+        <!-- TODO -->
+    </template>
+    <template id="steps-draggable-template">
+        <!-- TODO -->
+    </template>
     <template id="sign-in-layout-template">
         <form class="login-form">
             <img class="mb-4" src="assets/logo/pastro.svg" alt="" width="72" height="57">

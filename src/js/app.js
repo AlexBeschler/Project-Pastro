@@ -184,8 +184,11 @@
 			el: '#appContent',
 			vuetify: new Vuetify(),
 			data: {
+				//Utils
+				db: null,
 				cookbook: payload,
 
+				//Explore pane
 				displayTags: '',
 				displayTime: '',
 				displayIngredients: '',
@@ -235,6 +238,8 @@
 			},
 			created() {
 				var self = this;
+
+				this.db = firebase.firestore();
 
 				this.tagsArray = [];
 				this.displayTime = 'takes any time';
@@ -495,12 +500,16 @@
 					this.manage_recipeBlocks.splice(index, 1);
 				},
 				submitManagedRecipe: function () {
+					var self = this;
 					var anyInvalid = false;
 					var serializedRecipe = {};
 
 					/* **** Clear all form valid classes **** */
 					$('#manage_form_name').removeClass('is-valid');
 					$('#manage_form_name').removeClass('is-invalid');
+
+					$('.ql-container.ql-snow').removeClass('is-valid');
+					$('.ql-container.ql-snow').removeClass('is-invalid');
 
 					$('#manage_form_prep_time').removeClass('is-valid');
 					$('#manage_form_prep_time').removeClass('is-invalid');
@@ -513,7 +522,6 @@
 
 					$('#manage_form_active_time').removeClass('is-valid');
 					$('#manage_form_active_time').removeClass('is-invalid');
-					/* ************************************** */
 
 
 					/* **** Validate all form valid classes **** */
@@ -575,6 +583,11 @@
 						anyInvalid = true;
 					}
 
+					if (anyInvalid) return;
+
+					//Merge tags to Explore pane
+					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(this.manage_recipeTagHolder));
+
 					//Serialize recipe block for push to Firebase
 					if (this.manage_recipeBlocks.length > 0) {
 						serializedRecipe.blocks = [];
@@ -585,6 +598,10 @@
 								console.log('Row: ' + row);
 								return _.omit(row, ['editMode', 'editModeButtonText']);
 							});
+							//Merge ingredients to Explore pane
+							self.ingredientsArray = _.union(Array.from(self.ingredientsArray), _.pluck(o.ingredients, 'value').map(f => {
+								return utils.capitalizeFirstLetter(f);
+							}));
 							o.steps = _.map(this.manage_recipeBlocks[i].steps, function (row) {
 								return _.omit(row, ['editMode', 'editModeButtonText']);
 							});
@@ -594,15 +611,46 @@
 						anyInvalid = true;
 					}
 
-					if (anyInvalid) return;
-
 					serializedRecipe.coverPhotoURL = null;
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
 
-					console.log(serializedRecipe);
+					//Push serialized recipe to cookbook
+					this.cookbook.push(serializedRecipe);
 
-					/* ************************************** */
+					//If recipe is being added
+					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
+						this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
+							self.cleanupManageRecipe();
+						}).catch(function (error) {
+							console.error(error);
+						});
+					} else {
+						//
+					}
+				},
+				cleanupManageRecipe: function () {
+					//Reset manage recipe values
+					this.manage_recipeName = '';
+					this.manage_recipeTagInput = '';
+					this.manage_recipeTagHolder = [];
+					this.manage_recipePrepTime = '';
+					this.manage_recipeCookTime = '';
+					this.manage_recipeTotalTime = '';
+					this.manage_recipeActiveTime = '';
+					this.manage_recipeBlocks = [];
+					this.manage_recipeBlockIngredients = [];
+					this.manage_recipeBlockSteps = [];
+					this.manage_recipeBlockHeader = '';
+					this.manage_recipeBlockIngredientAmount = '';
+					this.manage_recipeBlockIngredientValue = '';
+					this.manage_recipeBlockStepValue = '';
+					this.quillContent = this.quillInstance.setText('');
+
+					//Toggle offcanvas
+					var offcanvas = document.getElementById('manage-recipe-offcanvas');
+					var bsOffcanvas = new bootstrap.Offcanvas(offcanvas);
+					bsOffcanvas.toggle();
 				},
 
 				//Utility methods
