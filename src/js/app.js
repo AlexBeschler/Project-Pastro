@@ -177,8 +177,20 @@
 
 	function appFunctionality(payload) {
 		//Load vue dependencies
+		Vue.use('vue-slicksort');
 
 		utils.showCookbook();
+
+		Vue.component('sortable-list', {
+			mixins: [ContainerMixin],
+			template: '#tag-draggable-list-template'
+		});
+
+		Vue.component('sortable-item', {
+			mixins: [ElementMixin],
+			props: ['tag'],
+			template: '#tag-draggable-item-template'
+		});
 
 		new Vue({
 			el: '#appContent',
