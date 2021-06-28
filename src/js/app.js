@@ -181,6 +181,7 @@
 
 		utils.showCookbook();
 
+		//Manage tag component
 		Vue.component('sortable-list', {
 			mixins: [ContainerMixin],
 			template: '#tag-draggable-list-template'
@@ -190,6 +191,30 @@
 			mixins: [ElementMixin],
 			props: ['tag'],
 			template: '#tag-draggable-item-template'
+		});
+
+		//Manage ingredients component
+		Vue.component('ingredients-draggable-list', {
+			mixins: [ContainerMixin],
+			template: '#ingredients-draggable-list-template'
+		});
+
+		Vue.component('ingredients-draggable-item', {
+			mixins: [ElementMixin],
+			props: ['ingredient'],
+			template: '#ingredients-draggable-item-template'
+		});
+
+		//Manage steps component
+		Vue.component('steps-draggable-list', {
+			mixins: [ContainerMixin],
+			template: '#steps-draggable-list-template'
+		});
+
+		Vue.component('steps-draggable-item', {
+			mixins: [ElementMixin],
+			props: ['step'],
+			template: '#steps-draggable-item-template'
 		});
 
 		new Vue({

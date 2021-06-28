@@ -175,14 +175,10 @@
                 </div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header">
-                Recipes
-            </div>
-            <ul v-for="(recipe, $index) in cookbook" :key="$index" class="list-group list-group-flush">
-                <li class="list-group-item">{{ recipe.title }}</li>
-            </ul>
-        </div>
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-secondary">Recipes</li>
+            <li class="list-group-item" v-for="(recipe, $index) in cookbook" :key="$index">{{ recipe.title }}</li>
+        </ul>
         <button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
             data-ps-button-type="add" data-bs-toggle="offcanvas" data-bs-target="#manage-recipe-offcanvas"
             data-disablescrolling="false">
@@ -249,9 +245,11 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div v-if="manage_recipeTagHolder.length">
-                                            <sortable-list :lock-axis="'y'" :press-delay.number=200 v-model="manage_recipeTagHolder">
+                                            <sortable-list :lock-axis="'y'" :press-delay.number=200
+                                                v-model="manage_recipeTagHolder">
                                                 <li class="list-group-item list-group-item-secondary">Added Tags</li>
-                                                <sortable-item v-for="(tag, index) in manage_recipeTagHolder" :index="index" :key="index" :tag="tag" />
+                                                <sortable-item v-for="(tag, index) in manage_recipeTagHolder"
+                                                    :index="index" :key="index" :tag="tag" />
                                             </sortable-list>
                                         </div>
                                         <p class="center-empty-list" v-else>No tags added</p>
@@ -339,24 +337,21 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <ul class="list-group" v-if="manage_recipeBlockIngredients.length">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center"
-                                            v-for="(ingredient, index) in manage_recipeBlockIngredients" :key="index">
-                                            <div v-if="!ingredient.editMode">
-                                                {{ ingredient.amount }} {{ ingredient.value }}
-                                            </div>
-                                            <div v-else>
-                                                <input class="form-control" type="text" v-model="ingredient.amount">
-                                                <input class="form-control" type="text" v-model="ingredient.value">
-                                            </div>
-                                            <span>
-                                                <button class="btn btn-outline-warning"
-                                                    @click="editIngredient(index)">{{ ingredient.editModeButtonText }}</button>
-                                                <button class="btn btn-outline-danger"
-                                                    @click="deleteIngredient(index)">Delete</button>
-                                            </span>
-                                        </li>
-                                    </ul>
+                                    <div v-if="manage_recipeBlockIngredients.length">
+                                        <ingredients-draggable-list :lock-axis="'y'" :press-delay.number=200
+                                            v-model="manage_recipeBlockIngredients">
+                                            <li class="list-group-item list-group-item-secondary">Added Ingredients</li>
+                                            <ingredients-draggable-item
+                                                v-for="(ingredient, index) in manage_recipeBlockIngredients"
+                                                :index="index" :key="index" :ingredient="ingredient"
+                                                :amount="ingredient.amount" :value="ingredient.value"
+                                                :edit-mode="ingredient.editMode"
+                                                :edit-mode-button-text="ingredient.editModeButtonText"
+                                                v-on:edit-ingredient="editIngredient(index)"
+                                                v-on:delete-ingredient="editIngredient(index)">
+                                            </ingredients-draggable-item>
+                                        </ingredients-draggable-list>
+                                    </div>
                                     <p class="center-empty-list" v-else>No ingredients yet!</p>
                                 </div>
                             </div>
@@ -385,23 +380,18 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <ul class="list-group" v-if="manage_recipeBlockSteps.length">
-                                        <li class="list-group-item" v-for="(step, index) in manage_recipeBlockSteps"
-                                            :key="index">
-                                            <div class="mb-2" v-if="!step.editMode">
-                                                {{ index + 1 }}: {{ step.value }}
-                                            </div>
-                                            <div class="mb-2" v-else>
-                                                <textarea class="form-control" v-model="step.value"></textarea>
-                                            </div>
-                                            <span>
-                                                <button class="btn btn-outline-warning"
-                                                    @click="editStep(index)">{{ step.editModeButtonText }}</button>
-                                                <button class="btn btn-outline-danger"
-                                                    @click="deleteStep(index)">Delete</button>
-                                            </span>
-                                        </li>
-                                    </ul>
+                                    <div class="list-group" v-if="manage_recipeBlockSteps.length">
+                                        <steps-draggable-list :lock-axis="'y'" :press-delay.number=200
+                                            v-model="manage_recipeBlockSteps">
+                                            <li class="list-group-item list-group-item-secondary">Added Steps</li>
+                                            <steps-draggable-item v-for="(step, index) in manage_recipeBlockSteps"
+                                                :index="index" :key="index" :step="step" :value="step.value"
+                                                :edit-mode="step.editMode"
+                                                :edit-mode-button-text="step.editModeButtonText"
+                                                v-on:edit-step="editStep(index)" v-on:delete-step="editStep(index)">
+                                            </steps-draggable-item>
+                                        </steps-draggable-list>
+                                    </div>
                                     <p class="center-empty-list" v-else>No steps yet!</p>
                                 </div>
                             </div>
@@ -448,6 +438,7 @@
             </v-app>
         </div>
     </div>
+    <!-- Manage tags draggables -->
     <template id="tag-draggable-list-template">
         <ul class="list-group">
             <slot />
@@ -456,12 +447,52 @@
     <template id="tag-draggable-item-template">
         <li class="list-group-item">{{ tag }}</li>
     </template>
-    <template id="ingredients-draggable-template">
-        <!-- TODO -->
+
+    <!-- Manage ingredients draggables -->
+    <template id="ingredients-draggable-list-template">
+        <ul class="list-group">
+            <slot />
+        </ul>
     </template>
-    <template id="steps-draggable-template">
-        <!-- TODO -->
+    <template id="ingredients-draggable-item-template">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div v-if="!ingredient.editMode">
+                {{ ingredient.amount }} {{ ingredient.value }}
+            </div>
+            <div v-else>
+                <input class="form-control" type="text" v-model="ingredient.amount">
+                <input class="form-control" type="text" v-model="ingredient.value">
+            </div>
+            <span>
+                <button class="btn btn-outline-warning"
+                    @click="$emit('edit-ingredient', index)">{{ ingredient.editModeButtonText }}</button>
+                <button class="btn btn-outline-danger" @click="$emit('delete-ingredient', index)">Delete</button>
+            </span>
+        </li>
     </template>
+
+    <!-- Manage steps draggables -->
+    <template id="steps-draggable-list-template">
+        <ul class="list-group">
+            <slot />
+        </ul>
+    </template>
+    <template id="steps-draggable-item-template">
+        <li class="list-group-item">
+            <div class="mb-2" v-if="!step.editMode">
+                {{ index + 1 }}: {{ step.value }}
+            </div>
+            <div class="mb-2" v-else>
+                <textarea class="form-control" v-model="step.value"></textarea>
+            </div>
+            <span>
+                <button class="btn btn-outline-warning"
+                    @click="$emit('edit-step', index)">{{ step.editModeButtonText }}</button>
+                <button class="btn btn-outline-danger" @click="$emit('delete-step', index)">Delete</button>
+            </span>
+        </li>
+    </template>
+
     <template id="sign-in-layout-template">
         <form class="login-form">
             <img class="mb-4" src="assets/logo/pastro.svg" alt="" width="72" height="57">
