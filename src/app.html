@@ -328,8 +328,9 @@
                                 </div>
                                 <div class="col-lg-5">
                                     <label for="manage_ing_value">Ingredient</label>
-                                    <input id="manage_ing_value" class="form-control" type="text"
-                                        v-model="manage_recipeBlockIngredientValue">
+                                    <input id="manage_ing_value" class="form-control" type="text" v-model="manage_recipeBlockIngredientValue">
+                                    <div id="ingredient-invalid-feedback" class="invalid-feedback">
+                                    </div>
                                 </div>
                                 <div class="col-lg-2 d-flex align-items-end">
                                     <button class="btn btn-outline-primary" @click="addIngredient">Add</button>
@@ -348,7 +349,7 @@
                                                 :edit-mode="ingredient.editMode"
                                                 :edit-mode-button-text="ingredient.editModeButtonText"
                                                 v-on:edit-ingredient="editIngredient(index)"
-                                                v-on:delete-ingredient="editIngredient(index)">
+                                                v-on:delete-ingredient="deleteIngredient(index)">
                                             </ingredients-draggable-item>
                                         </ingredients-draggable-list>
                                     </div>
@@ -373,6 +374,8 @@
                                     <label for="manage_step_value">Step {{ manage_recipeBlockSteps.length + 1}}</label>
                                     <textarea id="manage_step_value" class="form-control"
                                         v-model="manage_recipeBlockStepValue"></textarea>
+                                    <div id="step-invalid-feedback" class="invalid-feedback">
+                                    </div>
                                 </div>
                                 <div class="col-lg-2 d-flex align-items-end">
                                     <button class="btn btn-outline-primary" @click="addStep">Add</button>
@@ -388,7 +391,7 @@
                                                 :index="index" :key="index" :step="step" :value="step.value"
                                                 :edit-mode="step.editMode"
                                                 :edit-mode-button-text="step.editModeButtonText"
-                                                v-on:edit-step="editStep(index)" v-on:delete-step="editStep(index)">
+                                                v-on:edit-step="editStep(index)" v-on:delete-step="deleteStep(index)">
                                             </steps-draggable-item>
                                         </steps-draggable-list>
                                     </div>

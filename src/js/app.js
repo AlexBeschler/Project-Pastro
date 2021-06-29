@@ -476,10 +476,19 @@
 					}
 				},
 				addIngredient: function () {
+					var ingredientValueBox = $('#manage_ing_value');
+					ingredientValueBox.removeClass('is-invalid');
+					if ((this.manage_recipeBlockIngredientAmount === '' || this.manage_recipeBlockIngredientAmount === null) && (this.manage_recipeBlockIngredientValue === '' || this.manage_recipeBlockIngredientValue === null)) {
+						return;
+					}
+					if (this.manage_recipeBlockIngredientValue === '' || this.manage_recipeBlockIngredientValue === null) {
+						$('#ingredient-invalid-feedback').text('Cannot be blank. Use this for ingredients that don\'t require an amount.');
+						ingredientValueBox.addClass('is-invalid');
+						return;
+					}
 					this.manage_recipeBlockIngredients.push({
 						amount: this.manage_recipeBlockIngredientAmount,
 						value: this.manage_recipeBlockIngredientValue,
-						//TODO: To delete when serializing
 						editMode: false,
 						editModeButtonText: 'Edit'
 					});
@@ -501,9 +510,15 @@
 					this.manage_recipeBlockIngredients.splice(index, 1);
 				},
 				addStep: function () {
+					var stepValueBox = $('#manage_step_value');
+					stepValueBox.removeClass('is-invalid');
+					if ((this.manage_recipeBlockStepValue === '' || this.manage_recipeBlockStepValue === null) && this.manage_recipeBlockSteps.length === 0) {
+						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
+						stepValueBox.addClass('is-invalid');
+						return;
+					}
 					this.manage_recipeBlockSteps.push({
 						value: this.manage_recipeBlockStepValue,
-						//TODO: To delete when serializing
 						editMode: false,
 						editModeButtonText: 'Edit'
 					});
