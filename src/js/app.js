@@ -502,6 +502,12 @@
 						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Update'
 						//If update button is being clicked
 					} else {
+						if ((this.manage_recipeBlockIngredientAmount === '' || this.manage_recipeBlockIngredientAmount === null) && (this.manage_recipeBlockIngredientValue === '' || this.manage_recipeBlockIngredientValue === null)) {
+							return;
+						}
+						if (this.manage_recipeBlockIngredientValue === '' || this.manage_recipeBlockIngredientValue === null) {
+							return;
+						}
 						this.manage_recipeBlockIngredients[index].editMode = false;
 						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Edit';
 					}
@@ -531,6 +537,9 @@
 						this.manage_recipeBlockSteps[index].editModeButtonText = 'Update'
 						//If update button is being clicked
 					} else {
+						if ((this.manage_recipeBlockStepValue === '' || this.manage_recipeBlockStepValue === null) && this.manage_recipeBlockSteps.length === 0) {
+							return;
+						}
 						this.manage_recipeBlockSteps[index].editMode = false;
 						this.manage_recipeBlockSteps[index].editModeButtonText = 'Edit';
 					}
@@ -539,6 +548,11 @@
 					this.manage_recipeBlockSteps.splice(index, 1);
 				},
 				addBlock: function () {
+					if (this.manage_recipeBlockSteps.length < 1) {
+						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
+						$('#manage_step_value').addClass('is-invalid');
+						return;
+					}
 					this.manage_recipeBlocks.push({
 						header: this.manage_recipeBlockHeader,
 						ingredients: this.manage_recipeBlockIngredients,
@@ -632,6 +646,13 @@
 						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
 					} else {
 						$('#manage_form_active_time').addClass('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check if any blocks have been added
+					if (this.manage_recipeBlocks.length < 1) {
+						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
+						$('#manage_step_value').addClass('is-invalid');
 						anyInvalid = true;
 					}
 
