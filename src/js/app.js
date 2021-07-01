@@ -502,10 +502,7 @@
 						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Update'
 						//If update button is being clicked
 					} else {
-						if ((this.manage_recipeBlockIngredientAmount === '' || this.manage_recipeBlockIngredientAmount === null) && (this.manage_recipeBlockIngredientValue === '' || this.manage_recipeBlockIngredientValue === null)) {
-							return;
-						}
-						if (this.manage_recipeBlockIngredientValue === '' || this.manage_recipeBlockIngredientValue === null) {
+						if (this.manage_recipeBlockIngredients[index].value === '' || this.manage_recipeBlockIngredients[index].value === null) {
 							return;
 						}
 						this.manage_recipeBlockIngredients[index].editMode = false;
@@ -537,7 +534,7 @@
 						this.manage_recipeBlockSteps[index].editModeButtonText = 'Update'
 						//If update button is being clicked
 					} else {
-						if ((this.manage_recipeBlockStepValue === '' || this.manage_recipeBlockStepValue === null) && this.manage_recipeBlockSteps.length === 0) {
+						if (this.manage_recipeBlockSteps[index].value === '' || this.manage_recipeBlockSteps[index].value === null) {
 							return;
 						}
 						this.manage_recipeBlockSteps[index].editMode = false;
