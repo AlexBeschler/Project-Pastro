@@ -415,6 +415,8 @@
 						theme: 'snow'
 					});
 					this.quillInstance.on('text-change', this.onQuillContentChange);
+					//Apply GKeyboard fix
+					this.quillInstance.on('editor-change', this.applyGoogleKeyboardFix);
 					this.setQuillContent();
 				},
 				onQuillContentChange: function () {
@@ -423,6 +425,26 @@
 				},
 				setQuillContent: function () {
 					this.quillContent = this.quillInstance.getText().trim() ? this.quillInstance.root.innerHTML : ''
+				},
+				applyGoogleKeyboardFix: function(eventName, ...args) {
+					var self = this;
+					if (eventName === 'text-change') {
+						var ops = args[0]['ops'];
+						var oldSelection = self.quillInstance.getSelection();
+						var oldPosition = oldSelection.index;
+						var oldSelectionLength = oldSelection.length;
+
+						if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["insert"] != "\n"  || oldSelectionLength > 0) {
+							return;
+						}
+
+						setTimeout(function() {
+							var newPosition = self.quillInstance.getSelection().index;
+							if (newPosition === oldPosition) {
+								self.quillInstance.setSelection(self.quillInstance.getSelection().index + 1, 0);
+							}
+						}, 15);
+					}
 				},
 				updateFilters: function () {
 					console.log('Update filters');
