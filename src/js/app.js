@@ -248,6 +248,7 @@
 				manage_recipeCookTime: '',
 				manage_recipeTotalTime: '',
 				manage_recipeActiveTime: '',
+				manage_recipeYield: '',
 				//Step 3
 				manage_recipeBlocks: [],
 				manage_recipeBlockIngredients: [],
@@ -608,6 +609,8 @@
 					$('#manage_form_active_time').removeClass('is-valid');
 					$('#manage_form_active_time').removeClass('is-invalid');
 
+					$('#manage_form_yield').removeClass('is-valid');
+					$('#manage_form_yield').removeClass('is-invalid');
 
 					/* **** Validate all form valid classes **** */
 					//Check name
@@ -665,6 +668,14 @@
 						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
 					} else {
 						$('#manage_form_active_time').addClass('is-invalid');
+						anyInvalid = true;
+					}
+
+					if (utils.isString(this.manage_recipeYield.toString())) {
+						$('#manage_form_yield').addClass('is-valid');
+						serializedRecipe.yield = this.manage_recipeActiveTime.toString();
+					} else {
+						$('#manage_form_yield').addClass('is-invalid');
 						anyInvalid = true;
 					}
 
