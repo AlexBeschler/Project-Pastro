@@ -254,7 +254,7 @@
                                                 v-model="manage_recipeTagHolder">
                                                 <li class="list-group-item list-group-item-secondary">Added Tags</li>
                                                 <sortable-item v-for="(tag, index) in manage_recipeTagHolder"
-                                                    :index="index" :key="index" :tag="tag" />
+                                                    :index="index" :key="index" :tag="tag" @touchstart.native="scrollStop" @touchend.native="scrollMove"/>
                                             </sortable-list>
                                         </div>
                                         <p class="center-empty-list" v-else>No tags added</p>

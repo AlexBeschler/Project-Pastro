@@ -732,7 +732,22 @@
 					firebase.auth().signOut().then(function () {
 						window.location.replace('index.html');
 					});
-				}
+				},
+				scrollStop: function() {
+					document.body.addEventListener('touchmove', this.touchMove(), {
+						passive: false
+					});
+				},
+				scrollMove: function() {
+					document.body.removeEventListener('touchmove', this.touchMove());
+				},
+				touchMove: function (event) {
+					try {
+						event.preventDefault();
+					} catch(e) {
+						//
+					}
+				},
 			}
 		});
 
