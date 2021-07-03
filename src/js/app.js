@@ -494,9 +494,29 @@
 				//Manage recipe methods
 				pushToTagArray: function () {
 					if (this.manage_recipeTagInput !== '' && this.manage_recipeTagInput !== null) {
-						this.manage_recipeTagHolder.push(this.manage_recipeTagInput);
+						this.manage_recipeTagHolder.push({
+							value: this.manage_recipeTagInput,
+							editMode: false,
+							editModeButtonText: 'Edit'
+						});
 						this.manage_recipeTagInput = '';
 					}
+				},
+				editTag: function (index) {
+					if (!this.manage_recipeTagHolder[index].editMode) {
+						this.manage_recipeTagHolder[index].editMode = true;
+						this.manage_recipeTagHolder[index].editModeButtonText = 'Update'
+						//If update button is being clicked
+					} else {
+						if (this.manage_recipeTagHolder[index].value === '' || this.manage_recipeTagHolder[index].value === null) {
+							return;
+						}
+						this.manage_recipeTagHolder[index].editMode = false;
+						this.manage_recipeTagHolder[index].editModeButtonText = 'Edit';
+					}
+				},
+				deleteTag: function (index) {
+					this.manage_recipeTagHolder.splice(index, 1);
 				},
 				addIngredient: function () {
 					var ingredientValueBox = $('#manage_ing_value');
@@ -632,7 +652,7 @@
 
 					//Serialize tag array
 					if (this.manage_recipeTagHolder.length > 0) {
-						serializedRecipe.tags = Array.from(this.manage_recipeTagHolder);
+						serializedRecipe.tags = _.uniq(_.pluck(this.manage_recipeTagHolder, 'value'), false);
 					}
 
 					//Check prep time

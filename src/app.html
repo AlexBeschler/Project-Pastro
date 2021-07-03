@@ -218,7 +218,7 @@
 
                     <v-stepper-items>
                         <v-stepper-content step="1">
-                            <form class="needs-validation" novalidate>
+                            <form class="needs-validation" onsubmit="return false;" novalidate>
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <label for="manage_form_name" class="form-label">Recipe name</label>
@@ -254,7 +254,11 @@
                                                 v-model="manage_recipeTagHolder">
                                                 <li class="list-group-item list-group-item-secondary">Added Tags</li>
                                                 <sortable-item v-for="(tag, index) in manage_recipeTagHolder"
-                                                    :index="index" :key="index" :tag="tag" @touchstart.native="scrollStop" @touchend.native="scrollMove"/>
+                                                    :index="index" :key="index" :tag="tag" :value="tag.value"
+                                                    :edit-mode="tag.editMode"
+                                                    :edit-mode-button-text="tag.editModeButtonText"
+                                                    v-on:edit-tag="editTag(index)" v-on:delete-tag="deleteTag(index)"
+                                                    @touchstart.native="scrollStop" @touchend.native="scrollMove" />
                                             </sortable-list>
                                         </div>
                                         <p class="center-empty-list" v-else>No tags added</p>
@@ -341,7 +345,8 @@
                                 </div>
                                 <div class="col-lg-5">
                                     <label for="manage_ing_value">Ingredient</label>
-                                    <input id="manage_ing_value" class="form-control" type="text" v-model="manage_recipeBlockIngredientValue">
+                                    <input id="manage_ing_value" class="form-control" type="text"
+                                        v-model="manage_recipeBlockIngredientValue">
                                     <div id="ingredient-invalid-feedback" class="invalid-feedback">
                                     </div>
                                 </div>
@@ -362,7 +367,8 @@
                                                 :edit-mode="ingredient.editMode"
                                                 :edit-mode-button-text="ingredient.editModeButtonText"
                                                 v-on:edit-ingredient="editIngredient(index)"
-                                                v-on:delete-ingredient="deleteIngredient(index)">
+                                                v-on:delete-ingredient="deleteIngredient(index)"
+                                                @touchstart.native="scrollStop" @touchend.native="scrollMove">
                                             </ingredients-draggable-item>
                                         </ingredients-draggable-list>
                                     </div>
@@ -404,7 +410,8 @@
                                                 :index="index" :key="index" :step="step" :value="step.value"
                                                 :edit-mode="step.editMode"
                                                 :edit-mode-button-text="step.editModeButtonText"
-                                                v-on:edit-step="editStep(index)" v-on:delete-step="deleteStep(index)">
+                                                v-on:edit-step="editStep(index)" v-on:delete-step="deleteStep(index)"
+                                                @touchstart.native="scrollStop" @touchend.native="scrollMove">
                                             </steps-draggable-item>
                                         </steps-draggable-list>
                                     </div>
@@ -461,7 +468,23 @@
         </ul>
     </template>
     <template id="tag-draggable-item-template">
-        <li class="list-group-item">{{ tag }}</li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div v-if="!tag.editMode">
+                {{ tag.value }}
+            </div>
+            <div v-else>
+                <input class="form-control" type="text" v-model="tag.value">
+            </div>
+            <span>
+                <button class="btn btn-outline-warning" @click="$emit('edit-tag', index)">
+                    <img v-if="!tag.editMode" src="assets/icons/edit.svg">
+                    <img v-else src="assets/icons/check.svg">
+                </button>
+                <button class="btn btn-outline-danger" @click="$emit('delete-tag', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </span>
+        </li>
     </template>
 
     <!-- Manage ingredients draggables -->
