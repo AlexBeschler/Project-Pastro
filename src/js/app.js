@@ -239,6 +239,7 @@
 				checkedIngredientsArray: null,
 
 				//For use with manage recipes
+				manageOffcanvas: null,
 				manage_recipeTitle: '',
 				manage_recipeName: '',
 				manage_recipeDescription: '',
@@ -427,19 +428,23 @@
 				setQuillContent: function () {
 					this.quillContent = this.quillInstance.getText().trim() ? this.quillInstance.root.innerHTML : ''
 				},
-				applyGoogleKeyboardFix: function(eventName, ...args) {
+				applyGoogleKeyboardFix: function (eventName, ...args) {
 					var self = this;
 					if (eventName === 'text-change') {
 						var ops = args[0]['ops'];
 						var oldSelection = self.quillInstance.getSelection();
+						//Fix for #3
+						if (oldSelection === null || typeof oldSelection === 'undefined') {
+							return;
+						}
 						var oldPosition = oldSelection.index;
 						var oldSelectionLength = oldSelection.length;
 
-						if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["insert"] != "\n"  || oldSelectionLength > 0) {
+						if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["insert"] != "\n" || oldSelectionLength > 0) {
 							return;
 						}
 
-						setTimeout(function() {
+						setTimeout(function () {
 							var newPosition = self.quillInstance.getSelection().index;
 							if (newPosition === oldPosition) {
 								self.quillInstance.setSelection(self.quillInstance.getSelection().index + 1, 0);
@@ -489,6 +494,10 @@
 					} else {
 						this.manage_recipeTitle = 'Update Recipe';
 					}
+					if (this.manageOffcanvas === null) {
+						this.manageOffcanvas = new bootstrap.Offcanvas(document.getElementById('manage-recipe-offcanvas'));
+					}
+					this.manageOffcanvas.show();
 				},
 
 				//Manage recipe methods
@@ -706,11 +715,6 @@
 						anyInvalid = true;
 					}
 
-					if (anyInvalid) return;
-
-					//Merge tags to Explore pane
-					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(this.manage_recipeTagHolder));
-
 					//Serialize recipe block for push to Firebase
 					if (this.manage_recipeBlocks.length > 0) {
 						serializedRecipe.blocks = [];
@@ -718,7 +722,6 @@
 							let o = {};
 							o.header = this.manage_recipeBlocks[i].header;
 							o.ingredients = _.map(this.manage_recipeBlocks[i].ingredients, function (row) {
-								console.log('Row: ' + row);
 								return _.omit(row, ['editMode', 'editModeButtonText']);
 							});
 							//Merge ingredients to Explore pane
@@ -733,6 +736,13 @@
 					} else {
 						anyInvalid = true;
 					}
+
+					if (anyInvalid) return;
+
+					//Merge tags to Explore pane
+					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
+
+					$('#submitRecipeButton').addProp('disabled', true);
 
 					serializedRecipe.coverPhotoURL = null;
 					serializedRecipe.docID = uuidv4();
@@ -761,6 +771,7 @@
 					this.manage_recipeCookTime = '';
 					this.manage_recipeTotalTime = '';
 					this.manage_recipeActiveTime = '';
+					this.manage_recipeYield = '';
 					this.manage_recipeBlocks = [];
 					this.manage_recipeBlockIngredients = [];
 					this.manage_recipeBlockSteps = [];
@@ -768,12 +779,21 @@
 					this.manage_recipeBlockIngredientAmount = '';
 					this.manage_recipeBlockIngredientValue = '';
 					this.manage_recipeBlockStepValue = '';
-					this.quillContent = this.quillInstance.setText('');
+					this.quillInstance.setText('\n');
 
+					/* **** Clear all form valid classes **** */
+					$('#manage_form_name').removeClass('is-valid');
+					$('.ql-container.ql-snow').removeClass('is-valid');
+					$('#manage_form_prep_time').removeClass('is-valid');
+					$('#manage_form_cook_time').removeClass('is-valid');
+					$('#manage_form_total_time').removeClass('is-valid');
+					$('#manage_form_active_time').removeClass('is-valid');
+					$('#manage_form_yield').removeClass('is-valid');
+
+					//Re-enable submit button
+					$('#submitRecipeButton').addProp('disabled', true);
 					//Toggle offcanvas
-					var offcanvas = document.getElementById('manage-recipe-offcanvas');
-					var bsOffcanvas = new bootstrap.Offcanvas(offcanvas);
-					bsOffcanvas.toggle();
+					this.manageOffcanvas.hide();
 				},
 
 				//Utility methods
@@ -786,18 +806,18 @@
 						window.location.replace('index.html');
 					});
 				},
-				scrollStop: function() {
+				scrollStop: function () {
 					document.body.addEventListener('touchmove', this.touchMove(), {
 						passive: false
 					});
 				},
-				scrollMove: function() {
+				scrollMove: function () {
 					document.body.removeEventListener('touchmove', this.touchMove());
 				},
 				touchMove: function (event) {
 					try {
 						event.preventDefault();
-					} catch(e) {
+					} catch (e) {
 						//
 					}
 				},

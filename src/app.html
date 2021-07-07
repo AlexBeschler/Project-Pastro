@@ -185,8 +185,7 @@
             <li class="list-group-item" v-for="(recipe, $index) in cookbook" :key="$index">{{ recipe.title }}</li>
         </ul>
         <button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
-            data-ps-button-type="add" data-bs-toggle="offcanvas" data-bs-target="#manage-recipe-offcanvas"
-            data-disablescrolling="false">
+            data-ps-button-type="add" data-disablescrolling="false">
             <img src="assets/icons/plus.svg"></img>
         </button>
         <div class="offcanvas offcanvas-bottom offcanvas-full" tabindex="-1" id="manage-recipe-offcanvas"
@@ -311,7 +310,7 @@
                                         <input type="text" class="form-control" id="manage_form_yield"
                                             v-model="manage_recipeYield" required>
                                         <div class="invalid-feedback">
-                                            Please enter an active time
+                                            Please enter a yield
                                         </div>
                                     </div>
                                 </div>
@@ -454,7 +453,7 @@
                         <v-divider></v-divider>
                     </div>
                     <div class="col-lg-12">
-                        <button type="button" class="btn btn-primary" @click="submitManagedRecipe"
+                        <button id="submitRecipeButton" type="button" class="btn btn-primary" @click="submitManagedRecipe"
                             style="width: 100%;">{{ manage_recipeTitle }}</button>
                     </div>
                 </div>
@@ -623,6 +622,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.4/dist/vuetify.min.js"></script>
+    <script src="https://hammerjs.github.io/dist/hammer.js"></script>
     <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
     <script>
         var {
