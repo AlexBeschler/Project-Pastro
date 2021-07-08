@@ -42,10 +42,10 @@ var ProjectPastroUtils = function () {
         return parseInt(toValidate) > 0 && parseInt(toValidate) < 9999 && /^\d+$/.test(parseInt(toValidate));
     }
     this.isString = function (toValidate) {
-        return toValidate.length > 0 && toValidate.length < 82;
+        return toValidate.trim().length > 0 && toValidate.trim().length < 82;
     }
     this.isBigString = function (toValidate) {
-        return toValidate.length > 0 & toValidate.length < 9999;
+        return toValidate.trim().length > 0 & toValidate.trim().length < 9999;
     }
     this.capitalizeFirstLetter = function (s) {
         return s.charAt(0).toUpperCase() + s.slice(1);

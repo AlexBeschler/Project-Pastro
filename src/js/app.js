@@ -756,7 +756,8 @@
 					//Merge tags to Explore pane
 					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
 
-					$('#submitRecipeButton').addProp('disabled', true);
+					//TODO: #4
+					//$('#submitRecipeButton').addProp('disabled', true);
 
 					serializedRecipe.coverPhotoURL = null;
 					serializedRecipe.docID = uuidv4();
@@ -804,8 +805,9 @@
 					$('#manage_form_active_time').removeClass('is-valid');
 					$('#manage_form_yield').removeClass('is-valid');
 
+					//TODO: #4
 					//Re-enable submit button
-					$('#submitRecipeButton').addProp('disabled', true);
+					//$('#submitRecipeButton').addProp('disabled', false);
 					//Toggle offcanvas
 					this.manageOffcanvas.hide();
 				},
