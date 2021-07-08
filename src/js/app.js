@@ -226,6 +226,8 @@
 				cookbook: payload,
 
 				//Explore pane
+				exploreOffcanvas: null,
+				explorePaneOffcanvasType: '',
 				displayTags: '',
 				displayTime: '',
 				displayIngredients: '',
@@ -451,6 +453,18 @@
 							}
 						}, 15);
 					}
+				},
+				/*==== Offcanvas helpers ====*/
+				toggleExplorePaneOffcanvas: function(toggleType) {
+					//Set v-if value
+					if (typeof toggleType === 'string') {
+						this.explorePaneOffcanvasType = toggleType;
+					}
+					//Create new offcanvas object if not already created
+					if (this.exploreOffcanvas === null || typeof this.exploreOffcanvas === 'undefined') {
+						this.exploreOffcanvas = new bootstrap.Offcanvas(document.getElementById('explore-pane-filter-offcanvas'));
+					}
+					this.exploreOffcanvas.toggle();
 				},
 				updateFilters: function () {
 					console.log('Update filters');

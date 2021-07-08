@@ -152,6 +152,13 @@ body {
     cursor: pointer;
 }
 
+#explore-pane-filter-offcanvas {
+    max-height: 50%;
+    height: auto;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
 .fab {
     width: 70px;
     height: 70px;

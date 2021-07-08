@@ -73,94 +73,10 @@
             <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
                 aria-labelledby="pills-explore-tab">
                 <div class="px-4 py-5 my-5">
-                    <h1 class="display-5 fw-bold explore-text">I feel like making <a data-bs-toggle="modal"
-                            data-bs-target="#tagsModal">{{ displayTags }}</a> food that <a data-bs-toggle="modal"
-                            data-bs-target="#pickTimeModal">{{ displayTime }}</a> and contains <a data-bs-toggle="modal"
-                            data-bs-target="#ingredientsModal">{{ displayIngredients }}</a>
-                    </h1>
-                </div>
-                <!-- Tags modal -->
-                <div class="modal fade" id="tagsModal" tabindex="-1" aria-labelledby="chooseTags" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="chooseTags">Choose tags</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div v-for="(tag, $index) in tagsArray" :key="$index">
-                                    <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray"
-                                        :value="tag">
-                                    <label class="form-check-label">
-                                        {{ tag }}
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                    v-on:click="updateFilters">Done</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Pick time modal -->
-                <div class="modal fade" id="pickTimeModal" tabindex="-1" aria-labelledby="chooseTime"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="chooseTime">Choose times</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <!-- Time pickers here -->
-                                <h4>Total recipe time</h4>
-                                <div class="form-floating mb-3">
-                                    <input type="number" class="form-control" id="totalTimeInput" placeholder="10"
-                                        v-model="totalRecipeTimeInput">
-                                    <label for="totalTimeInput">Total recipe time (in minutes)</label>
-                                </div>
-                                <h4>Or pick a time to be finished by</h4>
-                                <div class="form-floating mb-3">
-                                    <input type="time" class="form-control" id="totalTimeInput" placeholder="10"
-                                        v-model="finishByTimeInput">
-                                    <label for="totalTimeInput">Finish by</label>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                    v-on:click="updateFilters">Done</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Ingredients modal -->
-                <div class="modal fade" id="ingredientsModal" tabindex="-1" aria-labelledby="chooseIngredients"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="chooseIngredients">Choose ingredients</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div v-for="(ingredient, $index) in ingredientsArray" :key="$index">
-                                    <input class="form-check-input" type="checkbox" value=""
-                                        v-model="checkedIngredientsArray" :value="ingredient">
-                                    <label class="form-check-label">
-                                        {{ ingredient }}
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                    v-on:click="updateFilters">Done</button>
-                            </div>
-                        </div>
-                    </div>
+                    <h1 class="display-5 fw-bold explore-text">I feel like making <a
+                            @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
+                            @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a> and contains <a
+                            @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a></h1>
                 </div>
             </div>
             <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
@@ -188,6 +104,49 @@
             data-ps-button-type="add" data-disablescrolling="false">
             <img src="assets/icons/plus.svg"></img>
         </button>
+        <!-- Explore pane offcanvas -->
+        <div class="offcanvas offcanvas-bottom pb-5" tabindex="-1" id="explore-pane-filter-offcanvas"
+            aria-labelledby="exploreOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="exploreOffcanvasLabel">Filter</h5>
+                <button type="button" class="btn-close text-reset" @click.prevent="toggleExplorePaneOffcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body px-3">
+                <div v-if="explorePaneOffcanvasType === 'tag'">
+                    <div v-for="(tag, $index) in tagsArray" :key="$index">
+                        <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray"
+                            :value="tag">
+                        <label class="form-check-label">
+                            {{ tag }}
+                        </label>
+                    </div>
+                </div>
+                <div v-else-if="explorePaneOffcanvasType === 'time'">
+                    <h4>Total recipe time</h4>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="totalTimeInput" placeholder="10"
+                            v-model="totalRecipeTimeInput">
+                        <label for="totalTimeInput">Total recipe time (in minutes)</label>
+                    </div>
+                    <h4>Or pick a time to be finished by</h4>
+                    <div class="form-floating mb-3">
+                        <input type="time" class="form-control" id="totalTimeInput" placeholder="10"
+                            v-model="finishByTimeInput">
+                        <label for="totalTimeInput">Finish by</label>
+                    </div>
+                </div>
+                <div v-else-if="explorePaneOffcanvasType === 'ingredient'">
+                    <div v-for="(ingredient, $index) in ingredientsArray" :key="$index">
+                        <input class="form-check-input" type="checkbox" value=""
+                            v-model="checkedIngredientsArray" :value="ingredient">
+                        <label class="form-check-label">
+                            {{ ingredient }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="offcanvas offcanvas-bottom offcanvas-full" tabindex="-1" id="manage-recipe-offcanvas"
             aria-labelledby="offcanvasBottomLabel">
             <div class="offcanvas-header">
@@ -453,8 +412,8 @@
                         <v-divider></v-divider>
                     </div>
                     <div class="col-lg-12">
-                        <button id="submitRecipeButton" type="button" class="btn btn-primary" @click="submitManagedRecipe"
-                            style="width: 100%;">{{ manage_recipeTitle }}</button>
+                        <button id="submitRecipeButton" type="button" class="btn btn-primary"
+                            @click="submitManagedRecipe" style="width: 100%;">{{ manage_recipeTitle }}</button>
                     </div>
                 </div>
             </v-app>
