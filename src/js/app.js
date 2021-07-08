@@ -99,7 +99,8 @@
 						console.log('User is signed in');
 						utils._USER = user;
 						utils._UID = user.uid;
-						utils._FIRSTNAME = utils._USER.displayName.substr(0, utils._USER.displayName.indexOf(' '));
+						//Fix for when people's Google account name is all caps
+						utils._FIRSTNAME = utils.capitalizeFirstLetter(utils._USER.displayName.substr(0, utils._USER.displayName.indexOf(' ')).toLowerCase());
 						$('#loading-text').text('Hi ' + utils._FIRSTNAME);
 						$('#loading-subtext').text('Loading your cookbook...');
 						//Check if user is paying customer
@@ -516,9 +517,9 @@
 
 				//Manage recipe methods
 				pushToTagArray: function () {
-					if (this.manage_recipeTagInput !== '' && this.manage_recipeTagInput !== null) {
+					if (this.manage_recipeTagInput.trim() !== '' && this.manage_recipeTagInput.trim() !== null) {
 						this.manage_recipeTagHolder.push({
-							value: this.manage_recipeTagInput,
+							value: this.manage_recipeTagInput.trim(),
 							editMode: false,
 							editModeButtonText: 'Edit'
 						});
@@ -531,7 +532,7 @@
 						this.manage_recipeTagHolder[index].editModeButtonText = 'Update'
 						//If update button is being clicked
 					} else {
-						if (this.manage_recipeTagHolder[index].value === '' || this.manage_recipeTagHolder[index].value === null) {
+						if (this.manage_recipeTagHolder[index].value.trim() === '' || this.manage_recipeTagHolder[index].value.trim() === null) {
 							return;
 						}
 						this.manage_recipeTagHolder[index].editMode = false;
@@ -544,17 +545,17 @@
 				addIngredient: function () {
 					var ingredientValueBox = $('#manage_ing_value');
 					ingredientValueBox.removeClass('is-invalid');
-					if ((this.manage_recipeBlockIngredientAmount === '' || this.manage_recipeBlockIngredientAmount === null) && (this.manage_recipeBlockIngredientValue === '' || this.manage_recipeBlockIngredientValue === null)) {
+					if ((this.manage_recipeBlockIngredientAmount.trim() === '' || this.manage_recipeBlockIngredientAmount.trim() === null) && (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null)) {
 						return;
 					}
-					if (this.manage_recipeBlockIngredientValue === '' || this.manage_recipeBlockIngredientValue === null) {
+					if (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null) {
 						$('#ingredient-invalid-feedback').text('Cannot be blank. Use this for ingredients that don\'t require an amount.');
 						ingredientValueBox.addClass('is-invalid');
 						return;
 					}
 					this.manage_recipeBlockIngredients.push({
-						amount: this.manage_recipeBlockIngredientAmount,
-						value: this.manage_recipeBlockIngredientValue,
+						amount: this.manage_recipeBlockIngredientAmount.trim(),
+						value: this.manage_recipeBlockIngredientValue.trim(),
 						editMode: false,
 						editModeButtonText: 'Edit'
 					});
@@ -568,7 +569,7 @@
 						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Update'
 						//If update button is being clicked
 					} else {
-						if (this.manage_recipeBlockIngredients[index].value === '' || this.manage_recipeBlockIngredients[index].value === null) {
+						if (this.manage_recipeBlockIngredients[index].value.trim() === '' || this.manage_recipeBlockIngredients[index].value.trim() === null) {
 							return;
 						}
 						this.manage_recipeBlockIngredients[index].editMode = false;
@@ -581,13 +582,13 @@
 				addStep: function () {
 					var stepValueBox = $('#manage_step_value');
 					stepValueBox.removeClass('is-invalid');
-					if ((this.manage_recipeBlockStepValue === '' || this.manage_recipeBlockStepValue === null) && this.manage_recipeBlockSteps.length === 0) {
+					if ((this.manage_recipeBlockStepValue.trim() === '' || this.manage_recipeBlockStepValue.trim() === null) && this.manage_recipeBlockSteps.length === 0) {
 						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
 						stepValueBox.addClass('is-invalid');
 						return;
 					}
 					this.manage_recipeBlockSteps.push({
-						value: this.manage_recipeBlockStepValue,
+						value: this.manage_recipeBlockStepValue.trim(),
 						editMode: false,
 						editModeButtonText: 'Edit'
 					});
@@ -600,7 +601,7 @@
 						this.manage_recipeBlockSteps[index].editModeButtonText = 'Update'
 						//If update button is being clicked
 					} else {
-						if (this.manage_recipeBlockSteps[index].value === '' || this.manage_recipeBlockSteps[index].value === null) {
+						if (this.manage_recipeBlockSteps[index].value.trim() === '' || this.manage_recipeBlockSteps[index].value.trim() === null) {
 							return;
 						}
 						this.manage_recipeBlockSteps[index].editMode = false;
@@ -624,6 +625,9 @@
 					this.manage_recipeBlockHeader = '';
 					this.manage_recipeBlockIngredients = [];
 					this.manage_recipeBlockSteps = [];
+				},
+				editBlock: function(index) {
+					//TODO: #5
 				},
 				deleteBlock: function (index) {
 					this.manage_recipeBlocks.splice(index, 1);
@@ -659,7 +663,7 @@
 					//Check name
 					if (utils.isString(this.manage_recipeName)) {
 						$('#manage_form_name').addClass('is-valid');
-						serializedRecipe.title = this.manage_recipeName.toString();
+						serializedRecipe.title = this.manage_recipeName.toString().trim();
 					} else {
 						$('#manage_form_name').addClass('is-invalid');
 						anyInvalid = true;
@@ -714,9 +718,9 @@
 						anyInvalid = true;
 					}
 
-					if (utils.isString(this.manage_recipeYield.toString())) {
+					if (utils.isString(this.manage_recipeYield.toString().trim())) {
 						$('#manage_form_yield').addClass('is-valid');
-						serializedRecipe.yield = this.manage_recipeActiveTime.toString();
+						serializedRecipe.yield = this.manage_recipeActiveTime.toString().trim();
 					} else {
 						$('#manage_form_yield').addClass('is-invalid');
 						anyInvalid = true;
