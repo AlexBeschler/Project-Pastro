@@ -413,7 +413,7 @@
                     </div>
                     <div class="col-lg-12">
                         <button id="submitRecipeButton" type="button" class="btn btn-primary"
-                            @click="submitManagedRecipe" style="width: 100%;">{{ manage_recipeTitle }}</button>
+                            @click="submitManagedRecipe" style="width: 100%;" :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
                     </div>
                 </div>
             </v-app>

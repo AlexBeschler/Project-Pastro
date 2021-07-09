@@ -243,6 +243,7 @@
 
 				//For use with manage recipes
 				manageOffcanvas: null,
+				isRecipeSubmitDisabled: false,
 				manage_recipeTitle: '',
 				manage_recipeName: '',
 				manage_recipeDescription: '',
@@ -760,8 +761,7 @@
 					//Merge tags to Explore pane
 					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
 
-					//TODO: #4
-					//$('#submitRecipeButton').addProp('disabled', true);
+					this.isRecipeSubmitDisabled = true;
 
 					serializedRecipe.coverPhotoURL = null;
 					serializedRecipe.docID = uuidv4();
@@ -809,9 +809,8 @@
 					$('#manage_form_active_time').removeClass('is-valid');
 					$('#manage_form_yield').removeClass('is-valid');
 
-					//TODO: #4
 					//Re-enable submit button
-					//$('#submitRecipeButton').addProp('disabled', false);
+					this.isRecipeSubmitDisabled = true;
 					//Toggle offcanvas
 					this.manageOffcanvas.hide();
 				},
