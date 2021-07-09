@@ -72,11 +72,13 @@
         <div class="tab-content">
             <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
                 aria-labelledby="pills-explore-tab">
-                <div class="px-4 py-5 my-5">
+                <div class="px-4 py-4 my-5">
                     <h1 class="display-5 fw-bold explore-text">I feel like making <a
                             @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
-                            @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a> and contains <a
-                            @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a></h1>
+                            @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
+                            @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a>, and
+                        has <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
+                    </h1>
                 </div>
             </div>
             <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
@@ -138,11 +140,53 @@
                 </div>
                 <div v-else-if="explorePaneOffcanvasType === 'ingredient'">
                     <div v-for="(ingredient, $index) in ingredientsArray" :key="$index">
-                        <input class="form-check-input" type="checkbox" value=""
-                            v-model="checkedIngredientsArray" :value="ingredient">
+                        <input class="form-check-input" type="checkbox" value="" v-model="checkedIngredientsArray"
+                            :value="ingredient">
                         <label class="form-check-label">
                             {{ ingredient }}
                         </label>
+                    </div>
+                </div>
+                <div v-else-if="explorePaneOffcanvasType === 'nutrition'">
+                    <div class="input-group my-3">
+                        <label class="input-group-text">Calories</label>
+                        <input type="number" class="form-control" v-model="nCalories">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Total Fat</label>
+                        <input type="number" class="form-control" v-model="nFat">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Cholesterol</label>
+                        <input type="number" class="form-control" v-model="nCholesterol">
+                        <span class="input-group-text">mg</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Sodium</label>
+                        <input type="number" class="form-control" v-model="nSodium">
+                        <span class="input-group-text">mg</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Carbohydrate</label>
+                        <input type="number" class="form-control" v-model="nCarbohydrate">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Fiber</label>
+                        <input type="number" class="form-control" v-model="nFiber">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Sugars</label>
+                        <input type="number" class="form-control" v-model="nSugars">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Protein</label>
+                        <input type="number" class="form-control" v-model="nProtein">
+                        <span class="input-group-text">g</span>
                     </div>
                 </div>
             </div>
@@ -171,6 +215,12 @@
 
                         <v-stepper-step step="3" editable>
                             Step 3
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step step="4" editable>
+                            Step 4
                         </v-stepper-step>
                     </v-stepper-header>
 
@@ -405,6 +455,56 @@
                                 </div>
                             </div>
                         </v-stepper-content>
+
+                        <v-stepper-content step="4">
+                            <div class="row py-0 mb-1"
+                                style="display: flex;justify-content: space-between;align-items: center;">
+                                <h5 class="mb-0" style="width: auto;">Nutritional Facts</h5>
+                                <span class="text-muted" style="width: auto;">Optional</span>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 input-group">
+                                    <label class="input-group-text">Calories</label>
+                                    <input type="number" class="form-control" v-model="manage_nCalories">
+                                    <span class="input-group-text">g</span>
+                                </div>
+                                <div class="col-lg-3 input-group">
+                                    <label class="input-group-text">Total Fat</label>
+                                    <input type="number" class="form-control" v-model="manage_nFat">
+                                    <span class="input-group-text">g</span>
+                                </div>
+                                <div class="col-lg-3 input-group">
+                                    <label class="input-group-text">Cholesterol</label>
+                                    <input type="number" class="form-control" v-model="manage_nCholesterol">
+                                    <span class="input-group-text">mg</span>
+                                </div>
+                                <div class="col-lg-3 input-group">
+                                    <label class="input-group-text">Sodium</label>
+                                    <input type="number" class="form-control" v-model="manage_nSodium">
+                                    <span class="input-group-text">mg</span>
+                                </div>
+                                <div class="col-lg-3 input-group">
+                                    <label class="input-group-text">Carbohydrate</label>
+                                    <input type="number" class="form-control" v-model="manage_nCarbohydrate">
+                                    <span class="input-group-text">g</span>
+                                </div>
+                                <div class="col-lg-3 input-group">
+                                    <label class="input-group-text">Fiber</label>
+                                    <input type="number" class="form-control" v-model="manage_nFiber">
+                                    <span class="input-group-text">g</span>
+                                </div>
+                                <div class="col-lg-3 input-group">
+                                    <label class="input-group-text">Sugars</label>
+                                    <input type="number" class="form-control" v-model="manage_nSugars">
+                                    <span class="input-group-text">g</span>
+                                </div>
+                                <div class="col-lg-3 input-group">
+                                    <label class="input-group-text">Protein</label>
+                                    <input type="number" class="form-control" v-model="manage_nProtein">
+                                    <span class="input-group-text">g</span>
+                                </div>
+                            </div>
+                        </v-stepper-content>
                     </v-stepper-items>
                 </v-stepper>
                 <div class="row">
@@ -413,7 +513,8 @@
                     </div>
                     <div class="col-lg-12">
                         <button id="submitRecipeButton" type="button" class="btn btn-primary"
-                            @click="submitManagedRecipe" style="width: 100%;" :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
+                            @click="submitManagedRecipe" style="width: 100%;"
+                            :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
                     </div>
                 </div>
             </v-app>

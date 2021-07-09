@@ -232,6 +232,7 @@
 				displayTags: '',
 				displayTime: '',
 				displayIngredients: '',
+				displayNutrition: '',
 
 				tagsArray: null,
 				ingredientsArray: null,
@@ -241,14 +242,25 @@
 				checkedTagsArray: null,
 				checkedIngredientsArray: null,
 
+				nCalories: null,
+				nFat: null,
+				nCholesterol: null,
+				nSodium: null,
+				nCarbohydrate: null,
+				nFiber: null,
+				nSugars: null,
+				nProtein: null,
+
 				//For use with manage recipes
 				manageOffcanvas: null,
 				isRecipeSubmitDisabled: false,
+				//Step 1
 				manage_recipeTitle: '',
 				manage_recipeName: '',
 				manage_recipeDescription: '',
 				manage_recipeTagInput: '',
 				manage_recipeTagHolder: [],
+				//Step 2
 				manage_recipePrepTime: '',
 				manage_recipeCookTime: '',
 				manage_recipeTotalTime: '',
@@ -262,6 +274,15 @@
 				manage_recipeBlockIngredientAmount: '',
 				manage_recipeBlockIngredientValue: '',
 				manage_recipeBlockStepValue: '',
+				//Step 4
+				manage_nCalories: '',
+				manage_nFat: '',
+				manage_nCholesterol: '',
+				manage_nSodium: '',
+				manage_nCarbohydrate: '',
+				manage_nFiber: '',
+				manage_nSugars: '',
+				manage_nProtein: '',
 				//Quill
 				quillInstance: null,
 				quillContent: null,
@@ -290,6 +311,15 @@
 
 				this.checkedTagsArray = [];
 				this.checkedIngredientsArray = [];
+
+				this.nCalories = 0;
+				this.nFat = 0;
+				this.nCholesterol = 0;
+				this.nSodium = 0;
+				this.nCarbohydrate = 0;
+				this.nFiber = 0;
+				this.nSugars = 0;
+				this.nProtein = 0;
 
 				//TODO: Use underscore's sortBy function
 				var zippedIngredients = [];
@@ -331,6 +361,7 @@
 						});
 						this.displayTags = t.slice(0, -2);
 					}
+					this.updateFilters();
 				},
 				totalRecipeTimeInput: function (b, a) {
 					//TODO: Check if both boxes have been filled
@@ -365,6 +396,7 @@
 						t += ' or less';
 						this.displayTime = t;
 					}
+					this.updateFilters();
 				},
 				finishByTimeInput: function (b, a) {
 					//TODO: Check if both boxes have been filled
@@ -385,6 +417,7 @@
 							console.error(e);
 						}
 					}
+					this.updateFilters();
 				},
 				checkedIngredientsArray: function (b, a) {
 					if (this.checkedIngredientsArray.length < 1) {
@@ -403,6 +436,31 @@
 						});
 						this.displayIngredients = t.slice(0, -2);
 					}
+					this.updateFilters();
+				},
+				nCalories: function (b, a) {
+					this.checkNutritionInfo(b, a);
+				},
+				nFat: function (b, a) {
+					this.checkNutritionInfo(b, a);
+				},
+				nCholesterol: function (b, a) {
+					this.checkNutritionInfo(b, a);
+				},
+				nSodium: function (b, a) {
+					this.checkNutritionInfo(b, a);
+				},
+				nCarbohydrate: function (b, a) {
+					this.checkNutritionInfo(b, a);
+				},
+				nFiber: function (b, a) {
+					this.checkNutritionInfo(b, a);
+				},
+				nSugars: function (b, a) {
+					this.checkNutritionInfo(b, a);
+				},
+				nProtein: function (b, a) {
+					this.checkNutritionInfo(b, a);
 				},
 				quillValue: function (newVal) {
 					// Only update the content if it's changed from an external source
@@ -413,6 +471,12 @@
 				}
 			},
 			methods: {
+				checkNutritionInfo: function (b, a) {
+					if (true) {
+						this.displayNutrition = 'any nutritional value';
+					}
+					this.updateFilters();
+				},
 				initQuill: function () {
 					this.quillInstance = new Quill('#editor', {
 						modules: {
@@ -457,7 +521,7 @@
 					}
 				},
 				/*==== Offcanvas helpers ====*/
-				toggleExplorePaneOffcanvas: function(toggleType) {
+				toggleExplorePaneOffcanvas: function (toggleType) {
 					//Set v-if value
 					if (typeof toggleType === 'string') {
 						this.explorePaneOffcanvasType = toggleType;
@@ -627,7 +691,7 @@
 					this.manage_recipeBlockIngredients = [];
 					this.manage_recipeBlockSteps = [];
 				},
-				editBlock: function(index) {
+				editBlock: function (index) {
 					//TODO: #5
 				},
 				deleteBlock: function (index) {
