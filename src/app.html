@@ -77,7 +77,7 @@
                             @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
                             @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
                             @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a>, and
-                        has <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
+                        <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
                     </h1>
                 </div>
             </div>
@@ -151,7 +151,6 @@
                     <div class="input-group my-3">
                         <label class="input-group-text">Calories</label>
                         <input type="number" class="form-control" v-model="nCalories">
-                        <span class="input-group-text">g</span>
                     </div>
                     <div class="input-group mb-3">
                         <label class="input-group-text">Total Fat</label>

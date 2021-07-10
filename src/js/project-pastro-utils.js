@@ -50,4 +50,7 @@ var ProjectPastroUtils = function () {
     this.capitalizeFirstLetter = function (s) {
         return s.charAt(0).toUpperCase() + s.slice(1);
     }
+    this.isBlank = function(toValidate) {
+        return parseInt(toValidate) === 0 || toValidate === '';
+    }
 }

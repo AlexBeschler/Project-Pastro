@@ -472,8 +472,48 @@
 			},
 			methods: {
 				checkNutritionInfo: function (b, a) {
-					if (true) {
-						this.displayNutrition = 'any nutritional value';
+					if ((utils.isBlank(this.nCalories)) &&
+						(utils.isBlank(this.nFat)) &&
+						(utils.isBlank(this.nCholesterol)) &&
+						(utils.isBlank(this.nSodium)) &&
+						(utils.isBlank(this.nCarbohydrate)) &&
+						(utils.isBlank(this.nFiber)) &&
+						(utils.isBlank(this.nSugars)) &&
+						(utils.isBlank(this.nProtein))) {
+						this.displayNutrition = 'has any nutritional value';
+					} else {
+						var t = '';
+						//Update display text
+						if (!utils.isBlank(this.nCalories)) {
+							t += this.nCalories + ' calories;';
+						}
+						if (!utils.isBlank(this.nFat)) {
+							t += this.nFat + 'g fat;';
+						}
+						if (!utils.isBlank(this.nCholesterol)) {
+							t += this.nCholesterol + 'mg cholesterol;';
+						}
+						if (!utils.isBlank(this.nSodium)) {
+							t += this.nSodium + 'mg sodium;';
+						}
+						if (!utils.isBlank(this.nCarbohydrate)) {
+							t += this.nCarbohydrate + 'g carbs;';
+						}
+						if (!utils.isBlank(this.nFiber)) {
+							t += this.nFiber + 'g fibers;';
+						}
+						if (!utils.isBlank(this.nSugars)) {
+							t += this.nSugars + 'g sugars;';
+						}
+						if (!utils.isBlank(this.nProtein)) {
+							t += this.nProtein + 'g proteins;';
+						}
+						var u = '';
+						t.split(';').forEach(element => {
+							element !== '' ? u += element + ', ' : '';
+						});
+						u = u.replace(/,\s*$/, '');
+						this.displayNutrition = 'has ' + u + ' or less';
 					}
 					this.updateFilters();
 				},
@@ -822,10 +862,20 @@
 
 					if (anyInvalid) return;
 
+					this.isRecipeSubmitDisabled = true;
+
+					//Serialize nutrition facts
+					serializedRecipe.nCalories = utils.isNumber(this.manage_nCalories) ? parseInt(this.manage_nCalories) : 0;
+					serializedRecipe.nCarbohydrate = utils.isNumber(this.manage_nCarbohydrate) ? parseInt(this.manage_nCarbohydrate) : 0;
+					serializedRecipe.nCholesterol = utils.isNumber(this.manage_nCholesterol) ? parseInt(this.manage_nCholesterol) : 0;
+					serializedRecipe.nFat = utils.isNumber(this.manage_nFat) ? parseInt(this.manage_nFat) : 0;
+					serializedRecipe.nFiber = utils.isNumber(this.manage_nFiber) ? parseInt(this.manage_nFiber) : 0;
+					serializedRecipe.nProtein = utils.isNumber(this.manage_nProtein) ? parseInt(this.manage_nProtein) : 0;
+					serializedRecipe.nSodium = utils.isNumber(this.manage_nSodium) ? parseInt(this.manage_nSodium) : 0;
+					serializedRecipe.nSugars = utils.isNumber(this.manage_nSugars) ? parseInt(this.manage_nSugars) : 0;
+
 					//Merge tags to Explore pane
 					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
-
-					this.isRecipeSubmitDisabled = true;
 
 					serializedRecipe.coverPhotoURL = null;
 					serializedRecipe.docID = uuidv4();
