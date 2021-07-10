@@ -12,9 +12,12 @@ body {
 
 /* ==== Override Vuetify styles ==== */
 
-.v-application,
 body {
     font-family: 'Montserrat', sans-serif;
+}
+
+.v-application {
+    font-family: inherit;
 }
 
 .btn-primary {
@@ -147,6 +150,22 @@ body {
     color: var(--ps-secondary-color);
 }
 
+.top-nav-bar-pill-item>button {
+    border-radius: 1.5rem !important;
+    background-color: transparent !important;
+    color: var(--ps-secondary-color);
+    font-weight: bold;
+    margin: 2px 0;
+    border: 2px solid transparent !important;
+}
+
+.top-nav-bar-pill-item>button.active {
+    border: 2px solid var(--ps-primary-color) !important;
+    margin: 0;
+    color: #ffffff !important;
+    background-color: var(--ps-primary-color) !important;
+}
+
 .explore-text>a {
     color: var(--ps-accent-color) !important;
     cursor: pointer;
@@ -157,6 +176,24 @@ body {
     height: auto;
     border-top-left-radius: 0.75rem;
     border-top-right-radius: 0.75rem;
+}
+
+.backdrop-front {
+    z-index: 1;
+    box-shadow: 2px -1px 10px rgb(0 0 0 / 20%);
+    border-radius: 1em 1em 0 0;
+    padding: 1em;
+    background-color: white;
+    bottom: 0;
+    position: absolute;
+    min-height: 42%;
+}
+
+.backdrop-subheader {
+    margin-bottom: 1em;
+    border-bottom: 1px solid #ccc;
+    padding: 0.5em 0;
+    /* z-index: 0; */
 }
 
 .fab {
@@ -172,6 +209,7 @@ body {
     right: 30px;
     bottom: 30px;
     border-color: var(--ps-primary-color);
+    z-index: 2;
 }
 
 .fab:hover {
@@ -196,6 +234,11 @@ body {
     min-height: 3rem;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
+}
+
+.options-list-item {
+    background-color: inherit;
+    padding: 1rem;
 }
 
 /* For desktops */

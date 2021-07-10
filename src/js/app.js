@@ -116,11 +116,8 @@
 								dys_font.load().then(function (loaded_face) {
 									document.fonts.add(loaded_face);
 									dyslexicFont = loaded_face;
-									if (utils.getLocalStorage(utils._IS_DYSLEXIC_FONT_SET) == 'true') {
+									if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
 										document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-										//Update settings to reflect this
-										//$('#pills-normal-font').removeClass('active');
-										//$('#pills-dyslexic-font').addClass('active');
 									}
 								}).catch(function (error) {
 									/*
@@ -298,7 +295,9 @@
 						'indent': '+1'
 					}],
 					['clean']
-				]
+				],
+				isDyslexicFontSet: 'false',
+				dyslexicFontClass: false
 			},
 			created() {
 				var self = this;
@@ -336,6 +335,9 @@
 					});
 					self.ingredientsArray = _.uniq(zippedIngredients);
 				});
+
+				//Get dyslexic font value
+				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true' ? true : false;
 			},
 			mounted() {
 				this.initQuill();
@@ -468,6 +470,9 @@
 					if (newVal !== this.quillContent) {
 						this.quillInstance.pasteHTML(newVal)
 					}
+				},
+				isDyslexicFontSet: function (b, a) {
+					this.dyslexicFontClass = (this.isDyslexicFontSet === 'true');
 				}
 			},
 			methods: {
@@ -647,6 +652,9 @@
 				deleteTag: function (index) {
 					this.manage_recipeTagHolder.splice(index, 1);
 				},
+				autofillActiveTime: function () {
+					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
+				},
 				addIngredient: function () {
 					var ingredientValueBox = $('#manage_ing_value');
 					ingredientValueBox.removeClass('is-invalid');
@@ -732,7 +740,10 @@
 					this.manage_recipeBlockSteps = [];
 				},
 				editBlock: function (index) {
-					//TODO: #5
+					this.manage_recipeBlockHeader = this.manage_recipeBlocks[index].header;
+					this.manage_recipeBlockIngredients = this.manage_recipeBlocks[index].ingredients;
+					this.manage_recipeBlockSteps = this.manage_recipeBlocks[index].steps;
+					this.deleteBlock(index);
 				},
 				deleteBlock: function (index) {
 					this.manage_recipeBlocks.splice(index, 1);
@@ -930,6 +941,16 @@
 				},
 
 				//Utility methods
+				toggleFont: function () {
+					if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
+						document.body.style.fontFamily = '"Montserrat", sans-serif';
+						this.isDyslexicFontSet = 'false';
+					} else {
+						document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
+						this.isDyslexicFontSet = 'true';
+					}
+					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
+				},
 				stripeBillingPortal: function (event) {
 					$(event.target).prop('disabled', true);
 					goToPortal();

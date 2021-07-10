@@ -29,6 +29,7 @@
     <link rel="prefetch" href="assets/icons/edit.svg">
     <link rel="prefetch" href="assets/icons/check.svg">
     <link rel="prefetch" href="assets/icons/trash.svg">
+    <link rel="prefetch" href="assets/icons/lightning.svg">
 </head>
 
 <body>
@@ -49,19 +50,19 @@
     </div>
     <div id="appContent" class="container my-4 main-wrap" style="visibility: hidden;">
         <div id="navigationBar">
-            <header class="d-flex justify-content-center py-3">
-                <ul class="nav nav-pills" role="tablist">
-                    <li class="nav-item">
+            <header class="d-flex pt-3 px-3">
+                <ul class="nav nav-pills w-100 justify-content-between align-items-center" role="tablist">
+                    <li class="nav-item top-nav-bar-pill-item">
                         <button id="pills-explore-tab" class="nav-link active" data-bs-toggle="pill"
                             data-bs-target="#explorePane" type="button" role="tab" aria-controls="explorePane"
                             aria-selected="true">Explore</button>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item top-nav-bar-pill-item">
                         <button id="pills-search-tab" class="nav-link" data-bs-toggle="pill"
                             data-bs-target="#searchPane" type="button" role="tab" aria-controls="searchPane"
                             aria-selected="false">Search</button>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item top-nav-bar-pill-item">
                         <button id="pills-options-tab" class="nav-link" data-bs-toggle="pill"
                             data-bs-target="#optionsPane" type="button" role="tab" aria-controls="optionsPane"
                             aria-selected="false">Options</button>
@@ -80,28 +81,52 @@
                         <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
                     </h1>
                 </div>
+                <div class="backdrop-front w-100">
+                    <div class="backdrop-subheader">
+                        <p class="mb-0">Recipes</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" v-for="(recipe, $index) in cookbook" :key="$index">{{ recipe.title }}</li>
+                    </ul>
+                </div>
             </div>
             <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
                 <h1>Search</h1>
+                <div class="backdrop-front w-100">
+                    <div class="backdrop-subheader">
+                        <p class="mb-0">Recipes</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" v-for="(recipe, $index) in cookbook" :key="$index">{{ recipe.title }}</li>
+                    </ul>
+                </div>
             </div>
             <div id="optionsPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-options-tab">
-                <div class="row">
-                    <h1>Options</h1>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <button class="btn btn-primary" @click="stripeBillingPortal">Stripe Billing Portal</button>
-                    </div>
-                    <div class="col-12">
-                        <button class="btn btn-primary" @click="signOutApp">Sign Out</button>
-                    </div>
-                </div>
+                <ul class="list-group list-group-flush" style="padding: 0;">
+                    <li class="list-group-item options-list-item">
+                        <div class="fw-bold h5 mb-3">Font</div>
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" v-bind:class="{ active: !dyslexicFontClass }"
+                                    @click="toggleFont">Montserrat</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" v-bind:class="{ active: dyslexicFontClass }"
+                                    @click="toggleFont">OpenDyslexic</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item options-list-item">
+                        <div class="fw-bold h5 mb-3">Stripe Payments</div>
+                        <button class="btn btn-outline-primary" @click="stripeBillingPortal">Billing Portal</button>
+                    </li>
+                    <li class="list-group-item options-list-item">
+                        <div class="fw-bold h5 mb-3">Account</div>
+                        <button class="btn btn-outline-danger" @click="signOutApp">Sign Out</button>
+                    </li>
+                </ul>
             </div>
         </div>
-        <ul class="list-group">
-            <li class="list-group-item list-group-item-secondary">Recipes</li>
-            <li class="list-group-item" v-for="(recipe, $index) in cookbook" :key="$index">{{ recipe.title }}</li>
-        </ul>
         <button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
             data-ps-button-type="add" data-disablescrolling="false">
             <img src="assets/icons/plus.svg"></img>
@@ -305,12 +330,18 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
-                                        <label for="manage_form_active_time" class="form-label">Active Time (in
+                                        <label for="time" class="form-label">Active Time (in
                                             minutes)</label>
-                                        <input type="number" class="form-control" id="manage_form_active_time"
-                                            v-model="manage_recipeActiveTime" required>
-                                        <div class="invalid-feedback">
-                                            Please enter an active time
+                                        <div id="active-time-group" class="input-group mb-3">
+                                            <input type="number" class="form-control" id="manage_form_active_time"
+                                                v-model="manage_recipeActiveTime" required>
+                                            <div class="invalid-feedback">
+                                                Please enter an active time
+                                            </div>
+                                            <button class="btn btn-outline-primary" type="button"
+                                                @click.prevent="autofillActiveTime" style="padding: 0.375rem;">
+                                                <img src="assets/icons/lightning.svg">
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
@@ -328,7 +359,7 @@
                         <v-stepper-content step="3">
                             <div class="row">
                                 <div class="col">
-                                    <label for="manage_blockHeader">Recipe Block Header</label>
+                                    <label for="manage_blockHeader">Recipe Block Name</label>
                                     <input id="manage_blockHeader" class="form-control" type="text"
                                         v-model="manage_recipeBlockHeader">
                                 </div>
@@ -346,13 +377,13 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-5">
-                                    <label for="manage_ing_amount">Ingredient Amount</label>
+                                    <label for="manage_ing_amount">Amount</label>
                                     <input id="manage_ing_amount" class="form-control" type="text"
-                                        v-model="manage_recipeBlockIngredientAmount">
+                                        placeholder="i.e. 1 tbps" v-model="manage_recipeBlockIngredientAmount">
                                 </div>
                                 <div class="col-lg-5">
                                     <label for="manage_ing_value">Ingredient</label>
-                                    <input id="manage_ing_value" class="form-control" type="text"
+                                    <input id="manage_ing_value" class="form-control" type="text" placeholder="butter"
                                         v-model="manage_recipeBlockIngredientValue">
                                     <div id="ingredient-invalid-feedback" class="invalid-feedback">
                                     </div>
@@ -433,7 +464,8 @@
                                     <ul class="list-group" v-if="manage_recipeBlocks.length">
                                         <li class="list-group-item" v-for="(block, i) in manage_recipeBlocks" :key="i">
                                             <div class="d-flex w-100 justify-content-between">
-                                                <h5 class="mb-3">{{ block.header }}</h5>
+                                                <h5 class="mb-3" style="color: var(--ps-accent-color);">
+                                                    {{ block.header }}</h5>
                                             </div>
                                             <h6>Ingredients</h6>
                                             <ul class="list-group list-group-flush">
@@ -445,7 +477,8 @@
                                                 <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">
                                                     {{ step.value }}</li>
                                             </ul>
-                                            <!--button class="btn btn-outline-warning mb-2 mr-2">Edit</button-->
+                                            <button class="btn btn-outline-warning mb-2 mr-2"
+                                                @click="editBlock(i)">Edit</button>
                                             <button class="btn btn-outline-danger mb-2"
                                                 @click="deleteBlock(i)">Delete</button>
                                         </li>

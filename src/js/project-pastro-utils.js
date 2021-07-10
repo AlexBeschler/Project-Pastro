@@ -9,7 +9,7 @@ var ProjectPastroUtils = function () {
     this._SUCCESS_URL = 'http://localhost:5000/app.html';
     this._CANCEL_URL = 'http://localhost:5000/';
     this._STRIPE_CODE = 'pk_test_51IinkiCwcvKw4V4OGf5Yv6eCKrA3tSXGgUUvF6tPmdlpRmgoX4yq8NApouvHn5Q0BkVre82I9qKDECymsTct3MNx00ekEDzexj';
-    this._IS_DYSLEXIC_FONT_SET = 'isDyslexicFontSet';
+    this.DYSLEXIC_FONT_SET = 'isDyslexicFontSet';
 
     this.init = function () {
         //this._NANOBAR = new Nanobar();
