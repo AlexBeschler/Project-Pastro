@@ -351,7 +351,7 @@
                                     <div class="col-lg-3">
                                         <label for="manage_form_yield" class="form-label">Yield</label>
                                         <input type="text" class="form-control" id="manage_form_yield"
-                                            v-model="manage_recipeYield" required>
+                                            v-model="manage_recipeYield" placeholder="i.e. 2 servings" required>
                                         <div class="invalid-feedback">
                                             Please enter a yield
                                         </div>
@@ -371,13 +371,13 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div v-if="manage_recipeBlockIngredients.length === 1">
-                                        <h5>1 ingredient in block</h5>
+                                        <h5>1 ingredient added</h5>
                                     </div>
                                     <div v-else-if="manage_recipeBlockIngredients.length > 1">
-                                        <h5>{{ manage_recipeBlockIngredients.length }} ingredients in block</h5>
+                                        <h5>{{ manage_recipeBlockIngredients.length }} ingredients added</h5>
                                     </div>
                                     <div v-else>
-                                        <h5>Add ingredients to block</h5>
+                                        <h5>Ingredients</h5>
                                     </div>
                                 </div>
                                 <div class="col-lg-5">
@@ -387,7 +387,7 @@
                                 </div>
                                 <div class="col-lg-5">
                                     <label for="manage_ing_value">Ingredient</label>
-                                    <input id="manage_ing_value" class="form-control" type="text" placeholder="butter"
+                                    <input id="manage_ing_value" class="form-control" type="text" placeholder="i.e. butter"
                                         v-model="manage_recipeBlockIngredientValue">
                                     <div id="ingredient-invalid-feedback" class="invalid-feedback">
                                     </div>
@@ -420,13 +420,13 @@
                             <div class="row">
                                 <div class="col">
                                     <div v-if="manage_recipeBlockSteps.length === 1">
-                                        <h5>1 step in block</h5>
+                                        <h5>1 step added</h5>
                                     </div>
                                     <div v-else-if="manage_recipeBlockSteps.length > 1">
-                                        <h5>{{ manage_recipeBlockSteps.length }} steps in block</h5>
+                                        <h5>{{ manage_recipeBlockSteps.length }} steps added</h5>
                                     </div>
                                     <div v-else>
-                                        <h5>Add steps to block</h5>
+                                        <h5>Steps</h5>
                                     </div>
                                 </div>
                             </div>
