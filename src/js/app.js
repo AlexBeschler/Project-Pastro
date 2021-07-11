@@ -231,8 +231,11 @@
 				displayIngredients: '',
 				displayNutrition: '',
 
+				//All tags and ingredients in cookbook
 				tagsArray: null,
 				ingredientsArray: null,
+
+				//Filters
 				totalRecipeTimeInput: null,
 				finishByTimeInput: null,
 
@@ -579,6 +582,34 @@
 				},
 				updateFilters: function () {
 					console.log('Update filters');
+				},
+				//Clear filters
+				clearFilters: function () {
+					var self = this;
+					switch (this.explorePaneOffcanvasType) {
+						case 'tag':
+							self.checkedTagsArray = [];
+							break;
+						case 'time':
+							self.totalRecipeTimeInput = '';
+							self.finishByTimeInput = '';
+							break;
+						case 'ingredient':
+							self.checkedIngredientsArray = [];
+							break;
+						case 'nutrition':
+							self.nCalories = '';
+							self.nFat = '';
+							self.nCholesterol = '';
+							self.nSodium = '';
+							self.nCarbohydrate = '';
+							self.nFiber = '';
+							self.nSugars = '';
+							self.nProtein = '';
+							break;
+						default:
+							//
+					}
 				},
 				getFilterTimeDuration: function (currentHours, currentMinutes, inputHours, inputMinutes) {
 					var currentTotalMinutes = (currentHours * 60) + currentMinutes;

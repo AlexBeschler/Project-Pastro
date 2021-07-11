@@ -178,6 +178,24 @@ body {
     border-top-right-radius: 0.75rem;
 }
 
+.search-box {
+    padding: 0 0.175rem 0.1em 0.175rem;
+    border: none;
+    border-bottom: 4px solid var(--ps-secondary-color);
+    background-color: inherit!important;
+    border-radius: 0;
+    color: var(--ps-accent-color)!important;
+    box-shadow: none!important;
+    font-size: 7vw;
+    line-height: 1;
+    font-weight: 600;
+    transition: border .15s ease-in-out;
+}
+
+.search-box:focus {
+    border-bottom-color: var(--ps-primary-color);
+}
+
 .backdrop-front {
     z-index: 1;
     box-shadow: 2px -1px 10px rgb(0 0 0 / 20%);
