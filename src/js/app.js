@@ -116,9 +116,17 @@
 								dys_font.load().then(function (loaded_face) {
 									document.fonts.add(loaded_face);
 									dyslexicFont = loaded_face;
-									if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
-										document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-									}
+									//Get cloud settings for default font
+									firebase.firestore().collection('users').doc(utils._UID).get().then((doc) => {
+										if (doc.data().dyslexicFontSet === 'true') {
+											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
+										}
+									}).catch((error) => {
+										//Couldn't get default font set, rely on local storage
+										if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
+											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
+										}
+									});
 								}).catch(function (error) {
 									/*
 									$.toast({
@@ -985,6 +993,16 @@
 
 				//Utility methods
 				toggleFont: function () {
+					var r = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true' ? 'false' : 'true';
+					//Write to cloud
+					this.db.collection('users').doc(utils._UID).set({
+						dyslexicFontSet: r
+					}).then(() => {
+						console.log('Wrote new font settings to cloud');
+					}).catch((error) => {
+						console.error('Error writing cloud font preference: ', error);
+					});
+					//Write to local storage to prevent cloud syncing issues
 					if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
 						document.body.style.fontFamily = '"Montserrat", sans-serif';
 						this.isDyslexicFontSet = 'false';
@@ -992,6 +1010,7 @@
 						document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
 						this.isDyslexicFontSet = 'true';
 					}
+					
 					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
 				},
 				stripeBillingPortal: function (event) {
