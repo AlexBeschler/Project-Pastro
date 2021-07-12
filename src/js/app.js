@@ -215,6 +215,18 @@
 			template: '#steps-draggable-item-template'
 		});
 
+		//Manage steps
+		Vue.component('blocks-draggable-list', {
+			mixins: [ContainerMixin],
+			template: '#blocks-draggable-list-template'
+		});
+
+		Vue.component('blocks-draggable-item', {
+			mixins: [ElementMixin],
+			props: ['block'],
+			template: '#blocks-draggable-item-template'
+		});
+
 		new Vue({
 			el: '#appContent',
 			vuetify: new Vuetify(),

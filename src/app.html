@@ -93,7 +93,8 @@
             </div>
             <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
                 <div class="px-4 py-4 my-5">
-                    <input type="text" class="form-control search-box" placeholder="Search" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search'">
+                    <input type="text" class="form-control search-box" placeholder="Search"
+                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search'">
                 </div>
                 <div class="backdrop-front w-100">
                     <div class="backdrop-subheader">
@@ -387,8 +388,8 @@
                                 </div>
                                 <div class="col-lg-5">
                                     <label for="manage_ing_value">Ingredient</label>
-                                    <input id="manage_ing_value" class="form-control" type="text" placeholder="i.e. butter"
-                                        v-model="manage_recipeBlockIngredientValue">
+                                    <input id="manage_ing_value" class="form-control" type="text"
+                                        placeholder="i.e. butter" v-model="manage_recipeBlockIngredientValue">
                                     <div id="ingredient-invalid-feedback" class="invalid-feedback">
                                     </div>
                                 </div>
@@ -465,28 +466,17 @@
                                     <button class="btn btn-outline-primary" @click="addBlock">Add Block</button>
                                 </div>
                                 <div class="col-lg-12">
-                                    <ul class="list-group" v-if="manage_recipeBlocks.length">
-                                        <li class="list-group-item" v-for="(block, i) in manage_recipeBlocks" :key="i">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h5 class="mb-3" style="color: var(--ps-accent-color);">
-                                                    {{ block.header }}</h5>
-                                            </div>
-                                            <h6>Ingredients</h6>
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item" v-for="(ingredient, j) in block.ingredients"
-                                                    :key="j">{{ ingredient.amount }} {{ ingredient.value }}</li>
-                                            </ul>
-                                            <h6>Steps</h6>
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">
-                                                    {{ step.value }}</li>
-                                            </ul>
-                                            <button class="btn btn-outline-warning mb-2 mr-2"
-                                                @click="editBlock(i)">Edit</button>
-                                            <button class="btn btn-outline-danger mb-2"
-                                                @click="deleteBlock(i)">Delete</button>
-                                        </li>
-                                    </ul>
+                                    <div class="list-group" v-if="manage_recipeBlocks.length">
+                                        <blocks-draggable-list :lock-axis="'y'" :press-delay.number=200
+                                            v-model="manage_recipeBlocks">
+                                            <blocks-draggable-item class="list-group-item"
+                                                v-for="(block, index) in manage_recipeBlocks" :key="index" :index="index"
+                                                :block="block" :header="block.header" :ingredient="block.ingredient"
+                                                :step="block.step" v-on:edit-block="editBlock(index)"
+                                                v-on:delete-block="deleteBlock(index)" @touchstart.native="scrollStop"
+                                                @touchend.native="scrollMove"></blocks-draggable-item>
+                                        </blocks-draggable-list>
+                                    </div>
                                     <p class="center-empty-list" v-else>No recipe blocks yet!</p>
                                 </div>
                             </div>
@@ -632,6 +622,31 @@
                     <img src="assets/icons/trash.svg">
                 </button>
             </span>
+        </li>
+    </template>
+
+    <!-- Manage blocks draggables -->
+    <template id="blocks-draggable-list-template">
+        <ul class="list-group">
+            <slot />
+        </ul>
+    </template>
+    <template id="blocks-draggable-item-template">
+        <li class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-3" style="color: var(--ps-accent-color);">{{ block.header }}</h5>
+            </div>
+            <h6>Ingredients</h6>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" v-for="(ingredient, j) in block.ingredients" :key="j">
+                    {{ ingredient.amount }} {{ ingredient.value }}</li>
+            </ul>
+            <h6>Steps</h6>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">{{ step.value }}</li>
+            </ul>
+            <button class="btn btn-outline-warning mb-2 mr-2" @click="$emit('edit-block', index)">Edit</button>
+            <button class="btn btn-outline-danger mb-2" @click="$emit('delete-block', index)">Delete</button>
         </li>
     </template>
 
