@@ -86,8 +86,10 @@
                         <p class="mb-0">Recipes</p>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="(recipe, $index) in cookbook" :key="$index">
-                            {{ recipe.title }}</li>
+                        <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index">
+                            {{ recipe.title }}
+                            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Toggle</button>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -101,7 +103,7 @@
                         <p class="mb-0">Recipes</p>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="(recipe, $index) in cookbook" :key="$index">
+                        <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index">
                             {{ recipe.title }}</li>
                     </ul>
                 </div>
@@ -218,6 +220,19 @@
                         <span class="input-group-text">g</span>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- Full recipe view -->
+        <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas-header">
+                <h5 id="offcanvasRightLabel">Clicked Recipe</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <h1>Recipe Title</h1>
+                <p>Description</p>
+                <p>Block 1</p>
             </div>
         </div>
         <div class="offcanvas offcanvas-bottom offcanvas-full" tabindex="-1" id="manage-recipe-offcanvas"
@@ -470,9 +485,10 @@
                                         <blocks-draggable-list :lock-axis="'y'" :press-delay.number=200
                                             v-model="manage_recipeBlocks">
                                             <blocks-draggable-item class="list-group-item"
-                                                v-for="(block, index) in manage_recipeBlocks" :key="index" :index="index"
-                                                :block="block" :header="block.header" :ingredient="block.ingredient"
-                                                :step="block.step" v-on:edit-block="editBlock(index)"
+                                                v-for="(block, index) in manage_recipeBlocks" :key="index"
+                                                :index="index" :block="block" :header="block.header"
+                                                :ingredient="block.ingredient" :step="block.step"
+                                                v-on:edit-block="editBlock(index)"
                                                 v-on:delete-block="deleteBlock(index)" @touchstart.native="scrollStop"
                                                 @touchend.native="scrollMove"></blocks-draggable-item>
                                         </blocks-draggable-list>

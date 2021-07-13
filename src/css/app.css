@@ -244,6 +244,12 @@ body {
     padding: 0;
 }
 
+.recipe-offcanvas {
+    width: 100vw;
+    background-clip: inherit;
+    border-left: none;
+}
+
 .center-empty-list {
     display: flex;
     justify-content: center;

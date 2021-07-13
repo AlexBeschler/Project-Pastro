@@ -242,6 +242,7 @@
 				//Utils
 				db: null,
 				cookbook: payload,
+				filteredCookbook: payload,
 
 				//Explore pane
 				exploreOffcanvas: null,
@@ -256,8 +257,8 @@
 				ingredientsArray: null,
 
 				//Filters
-				totalRecipeTimeInput: null,
-				finishByTimeInput: null,
+				totalRecipeTimeInput: '',
+				finishByTimeInput: '',
 
 				checkedTagsArray: null,
 				checkedIngredientsArray: null,
@@ -333,15 +334,14 @@
 
 				this.checkedTagsArray = [];
 				this.checkedIngredientsArray = [];
-
-				this.nCalories = 0;
-				this.nFat = 0;
-				this.nCholesterol = 0;
-				this.nSodium = 0;
-				this.nCarbohydrate = 0;
-				this.nFiber = 0;
-				this.nSugars = 0;
-				this.nProtein = 0;
+				this.nCalories = '';
+				this.nFat = '';
+				this.nCholesterol = '';
+				this.nSodium = '';
+				this.nCarbohydrate = '';
+				this.nFiber = '';
+				this.nSugars = '';
+				this.nProtein = '';
 
 				//TODO: Use underscore's sortBy function
 				var zippedIngredients = [];
@@ -354,7 +354,7 @@
 						let x = _.pluck(block.ingredients, 'value');
 						x.forEach(ingredient => {
 							zippedIngredients.push(utils.capitalizeFirstLetter(ingredient));
-						})
+						});
 					});
 					self.ingredientsArray = _.uniq(zippedIngredients);
 				});
@@ -601,7 +601,54 @@
 					this.exploreOffcanvas.toggle();
 				},
 				updateFilters: function () {
-					console.log('Update filters');
+					if (this.checkedTagsArray.length > 0) {
+						filtersApplied = true;
+					}
+					if (this.checkedIngredientsArray.length > 0) {
+						filtersApplied = true;
+					}
+					if (this.finishByTimeInput !== '') {
+						filtersApplied = true;
+					}
+					if (this.totalRecipeTimeInput !== '') {
+						filtersApplied = true;
+					}
+					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
+						filtersApplied = true;
+
+					}
+					if (this.nFat != '' && parseInt(this.nFat) !== 0) {
+						filtersApplied = true;
+
+					}
+					if (this.nCholesterol != '' && parseInt(this.nCholesterol) !== 0) {
+						filtersApplied = true;
+
+					}
+					if (this.nSodium != '' && parseInt(this.nSodium) !== 0) {
+						filtersApplied = true;
+
+					}
+					if (this.nCarbohydrate != '' && parseInt(this.nCarbohydrate) !== 0) {
+						filtersApplied = true;
+
+					}
+					if (this.nFiber != '' && parseInt(this.nFiber) !== 0) {
+						filtersApplied = true;
+
+					}
+					if (this.nSugars != '' && parseInt(this.nSugars) !== 0) {
+						filtersApplied = true;
+
+					}
+					if (this.nProtein != '' && parseInt(this.nProtein) !== 0) {
+						filtersApplied = true;
+
+					}
+					if (!filtersApplied) {
+						this.filteredCookbook = this.cookbook;
+						return;
+					};
 				},
 				//Clear filters
 				clearFilters: function () {
@@ -1010,7 +1057,6 @@
 						document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
 						this.isDyslexicFontSet = 'true';
 					}
-					
 					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
 				},
 				stripeBillingPortal: function (event) {
