@@ -159,8 +159,14 @@
 	function getCookbook() {
 		//utils._NANOBAR.go(75);
 		var payload = [];
+		var sortedTagsIndex = [];
+		var sortedTimeIndex = [];
+		var sortedIngredientsIndex = [];
+		var sortedNutritionIndex = [];
 
-		///*
+		var listOfIngredients = [];
+		var listOfTags = [];
+
 		firebase.firestore().collection("users/" + utils._UID + "/recipes").onSnapshot({
 			includeMetadataChanges: true
 		}, function (snapshot) {
@@ -171,17 +177,42 @@
 		});
 		firebase.firestore().collection("users/" + utils._UID + "/recipes").get().then(function (querySnapshot) {
 			querySnapshot.forEach(function (doc) {
-				payload.push(doc.data());
+				var recipe = doc.data();
+				var docID = recipe.docID;
+				
+				//Adds recipe to sorted position
+				if (payload.length > 0) {
+					payload.splice(_.sortedIndex(payload, recipe, 'docID'), 0, recipe);
+				} else {
+					payload.push(recipe);
+				}
+				
+				///Build sorted indices and list of ingredients/tags
+				//Tags
+				recipe.tags.forEach(tag => {
+					sortedTagsIndex = utils.insertSortedPosition(sortedTagsIndex, docID, tag.toLowerCase(), 'value');
+					listOfTags = _.union(listOfTags, recipe.tags);
+				});
+				
+				//Time
+				sortedTimeIndex = utils.insertSortedPosition(sortedTimeIndex, docID, recipe.totalTime, 'value');
+				
+				recipe.blocks.forEach(block => {
+					//Ingredients
+					block.ingredients.forEach(ingredient => {
+						sortedIngredientsIndex = utils.insertSortedPosition(sortedIngredientsIndex, docID, ingredient.value, 'value');
+						listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
+					});
+				});
 			});
 		}).then(function () {
 			//utils.showCookbook();
 			//utils._NANOBAR.go(100);
-			appFunctionality(payload);
+			appFunctionality(payload, sortedTagsIndex, sortedTimeIndex, sortedIngredientsIndex, sortedNutritionIndex, listOfIngredients, listOfTags);
 		});
-		//*/
 	}
 
-	function appFunctionality(payload) {
+	function appFunctionality(payload, sortedTagsIndex, sortedTimeIndex, sortedIngredientsIndex, sortedNutritionIndex, listOfIngredients, listOfTags) {
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -253,12 +284,13 @@
 				displayNutrition: '',
 
 				//All tags and ingredients in cookbook
-				tagsArray: null,
-				ingredientsArray: null,
+				tagsArray: listOfTags,
+				ingredientsArray: listOfIngredients,
 
 				//Filters
 				totalRecipeTimeInput: '',
 				finishByTimeInput: '',
+				finishByTimeInputInMinutes: '',
 
 				checkedTagsArray: null,
 				checkedIngredientsArray: null,
@@ -271,6 +303,12 @@
 				nFiber: null,
 				nSugars: null,
 				nProtein: null,
+
+				//Indices
+				index_tags: sortedTagsIndex,
+				index_times: sortedTimeIndex,
+				index_ingredients: sortedIngredientsIndex,
+				index_nutritional: null,
 
 				//For use with manage recipes
 				manageOffcanvas: null,
@@ -324,13 +362,9 @@
 				dyslexicFontClass: false
 			},
 			created() {
-				var self = this;
-
 				this.db = firebase.firestore();
 
-				this.tagsArray = [];
 				this.displayTime = 'takes any time';
-				this.ingredientsArray = [];
 
 				this.checkedTagsArray = [];
 				this.checkedIngredientsArray = [];
@@ -342,22 +376,6 @@
 				this.nFiber = '';
 				this.nSugars = '';
 				this.nProtein = '';
-
-				//TODO: Use underscore's sortBy function
-				var zippedIngredients = [];
-				payload.forEach(recipe => {
-					//Tags
-					self.tagsArray = _.uniq(_.union(self.tagsArray, recipe.tags), false);
-
-					//Ingredients
-					recipe.blocks.forEach(block => {
-						let x = _.pluck(block.ingredients, 'value');
-						x.forEach(ingredient => {
-							zippedIngredients.push(utils.capitalizeFirstLetter(ingredient));
-						});
-					});
-					self.ingredientsArray = _.uniq(zippedIngredients);
-				});
 
 				//Get dyslexic font value
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true' ? true : false;
@@ -601,41 +619,47 @@
 					this.exploreOffcanvas.toggle();
 				},
 				updateFilters: function () {
+					var self = this;
+					var filterIDs = [];
+					var filtersApplied = false;
+					
 					if (this.checkedTagsArray.length > 0) {
 						filtersApplied = true;
+						this.checkedTagsArray.forEach(checkedTag => {
+							filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_tags, checkedTag.toLowerCase()));
+						});
 					}
 					if (this.checkedIngredientsArray.length > 0) {
 						filtersApplied = true;
+						this.checkedIngredientsArray.forEach(checkedIngredient => {
+							filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_ingredients, checkedIngredient.toLowerCase()));
+						});
 					}
 					if (this.finishByTimeInput !== '') {
 						filtersApplied = true;
+						filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.finishByTimeInputInMinutes)));
 					}
 					if (this.totalRecipeTimeInput !== '') {
 						filtersApplied = true;
+						filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.totalRecipeTimeInput)));
 					}
 					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
 						filtersApplied = true;
-
 					}
 					if (this.nFat != '' && parseInt(this.nFat) !== 0) {
 						filtersApplied = true;
-
 					}
 					if (this.nCholesterol != '' && parseInt(this.nCholesterol) !== 0) {
 						filtersApplied = true;
-
 					}
 					if (this.nSodium != '' && parseInt(this.nSodium) !== 0) {
 						filtersApplied = true;
-
 					}
 					if (this.nCarbohydrate != '' && parseInt(this.nCarbohydrate) !== 0) {
 						filtersApplied = true;
-
 					}
 					if (this.nFiber != '' && parseInt(this.nFiber) !== 0) {
 						filtersApplied = true;
-
 					}
 					if (this.nSugars != '' && parseInt(this.nSugars) !== 0) {
 						filtersApplied = true;
@@ -649,6 +673,10 @@
 						this.filteredCookbook = this.cookbook;
 						return;
 					};
+					this.filteredCookbook = [];
+					filterIDs.forEach(id => {
+						self.filteredCookbook.push(utils.getRecipeFromID(self.cookbook, id));
+					});
 				},
 				//Clear filters
 				clearFilters: function () {
@@ -660,6 +688,7 @@
 						case 'time':
 							self.totalRecipeTimeInput = '';
 							self.finishByTimeInput = '';
+							self.finishByTimeInputInMinutes = '';
 							break;
 						case 'ingredient':
 							self.checkedIngredientsArray = [];
@@ -708,6 +737,9 @@
 					if (t === 'takes or less') {
 						return 'takes any time';
 					}
+					//Set time
+					let x = (hours * 60) + minutes
+					this.finishByTimeInputInMinutes = x.toString();
 					return t;
 				},
 				clickedAddRecipe: function () {
@@ -990,8 +1022,32 @@
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
 
-					//Push serialized recipe to cookbook
-					this.cookbook.push(serializedRecipe);
+					//Push serialized recipe into sorted position to cookbook
+
+
+
+
+
+
+
+
+
+					//TODO: Critical: Insert indices into sorted positions
+
+
+
+
+
+
+
+
+
+
+					if (this.cookbook.length > 0) {
+						this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'docID'), 0, serializedRecipe);
+					} else {
+						this.cookbook.push(serializedRecipe);
+					}
 
 					//If recipe is being added
 					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
