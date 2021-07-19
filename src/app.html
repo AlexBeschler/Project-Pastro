@@ -26,10 +26,10 @@
     <link rel="manifest" href="../manifest.json" crossorigin="use-credentials">
 
     <!-- Prefetch some assets we will use later -->
-    <link rel="prefetch" href="assets/icons/edit.svg">
     <link rel="prefetch" href="assets/icons/check.svg">
-    <link rel="prefetch" href="assets/icons/trash.svg">
+    <link rel="prefetch" href="assets/icons/edit.svg">
     <link rel="prefetch" href="assets/icons/lightning.svg">
+    <link rel="prefetch" href="assets/icons/trash.svg">
 </head>
 
 <body>
@@ -83,12 +83,19 @@
                 </div>
                 <div class="backdrop-front w-100">
                     <div class="backdrop-subheader">
-                        <p class="mb-0">Recipes</p>
+                        <div class="row py-0 mb-1"
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <h6 class="mb-0" style="width: auto;">Recipes</h6>
+                            <button type="button" class="btn btn-outline-primary btn-sm mx-3 add-recipe-button"
+                                style="width: auto;" v-on:click="clickedAddRecipe" data-ps-button-type="add"
+                                data-disablescrolling="false">Add Recipe</button>
+                        </div>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index">
                             {{ recipe.title }}
-                            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Toggle</button>
+                            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
+                                data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Toggle</button>
                         </li>
                     </ul>
                 </div>
@@ -100,7 +107,13 @@
                 </div>
                 <div class="backdrop-front w-100">
                     <div class="backdrop-subheader">
-                        <p class="mb-0">Recipes</p>
+                        <div class="row py-0 mb-1"
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <h6 class="mb-0" style="width: auto;">Recipes</h6>
+                            <button type="button" class="btn btn-outline-primary btn-sm mx-3 add-recipe-button"
+                                style="width: auto;" v-on:click="clickedAddRecipe" data-ps-button-type="add"
+                                data-disablescrolling="false">Add Recipe</button>
+                        </div>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index">
@@ -134,10 +147,6 @@
                 </ul>
             </div>
         </div>
-        <button id="addRecipeButton" class="btn fab" type="button" v-on:click="clickedAddRecipe"
-            data-ps-button-type="add" data-disablescrolling="false">
-            <img src="assets/icons/plus.svg"></img>
-        </button>
         <!-- Explore pane offcanvas -->
         <div class="offcanvas offcanvas-bottom pb-5" tabindex="-1" id="explore-pane-filter-offcanvas"
             aria-labelledby="exploreOffcanvasLabel">
@@ -223,7 +232,8 @@
             </div>
         </div>
         <!-- Full recipe view -->
-        <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="offcanvasRight"
+            aria-labelledby="offcanvasRightLabel">
             <div class="offcanvas-header">
                 <h5 id="offcanvasRightLabel">Clicked Recipe</h5>
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
@@ -246,30 +256,39 @@
                 <v-stepper non-linear>
                     <v-stepper-header>
                         <v-stepper-step step="1" editable>
-                            Step 1
+                            OCR or Manual Entry
                         </v-stepper-step>
 
                         <v-divider></v-divider>
 
                         <v-stepper-step step="2" editable>
-                            Step 2
+                            Recipe Info
                         </v-stepper-step>
 
                         <v-divider></v-divider>
 
                         <v-stepper-step step="3" editable>
-                            Step 3
+                            Time/Yield
                         </v-stepper-step>
 
                         <v-divider></v-divider>
 
                         <v-stepper-step step="4" editable>
-                            Step 4
+                            Blocks
                         </v-stepper-step>
                     </v-stepper-header>
 
                     <v-stepper-items>
                         <v-stepper-content step="1">
+                            <div class="row">
+                                <div class="col">
+                                    <h6 class="display-5">Welcome Screen</h6>
+                                    <h6 class="text-muted">Todo: Add OCR support here</h6>
+                                </div>
+                            </div>
+                        </v-stepper-content>
+
+                        <v-stepper-content step="2">
                             <form class="needs-validation" onsubmit="return false;" novalidate>
                                 <div class="row">
                                     <div class="col-lg-12">
@@ -319,7 +338,7 @@
                             </form>
                         </v-stepper-content>
 
-                        <v-stepper-content step="2">
+                        <v-stepper-content step="3">
                             <form class="needs-validation" novalidate>
                                 <div class="row">
                                     <div class="col-lg-3">
@@ -376,7 +395,7 @@
                             </form>
                         </v-stepper-content>
 
-                        <v-stepper-content step="3">
+                        <v-stepper-content step="4">
                             <div class="row">
                                 <div class="col">
                                     <label for="manage_blockHeader">Recipe Block Name</label>
@@ -476,6 +495,64 @@
                                     <p class="center-empty-list" v-else>No steps yet!</p>
                                 </div>
                             </div>
+                            <div class="row mb-1"
+                                style="display: flex; justify-content: space-between; align-items: center;">
+                                <h5 class="mb-0" style="width: auto;">Nutritional Facts</h5>
+                                <span class="text-muted" style="width: auto;">Optional</span>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <p>
+                                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseBlockNutritionFacts" aria-expanded="false"
+                                            aria-controls="collapseExample" style="width: 100%;" @click="toggleNutritionFacts">{{ nutritionFactsButtonExpandedText }}</button>
+                                    </p>
+                                    <div class="collapse" id="collapseBlockNutritionFacts">
+                                        <div class="row">
+                                            <div class="col-lg-3 input-group">
+                                                <label class="input-group-text">Calories</label>
+                                                <input type="number" class="form-control" v-model="manage_nCalories">
+                                                <span class="input-group-text">g</span>
+                                            </div>
+                                            <div class="col-lg-3 input-group">
+                                                <label class="input-group-text">Total Fat</label>
+                                                <input type="number" class="form-control" v-model="manage_nFat">
+                                                <span class="input-group-text">g</span>
+                                            </div>
+                                            <div class="col-lg-3 input-group">
+                                                <label class="input-group-text">Cholesterol</label>
+                                                <input type="number" class="form-control" v-model="manage_nCholesterol">
+                                                <span class="input-group-text">mg</span>
+                                            </div>
+                                            <div class="col-lg-3 input-group">
+                                                <label class="input-group-text">Sodium</label>
+                                                <input type="number" class="form-control" v-model="manage_nSodium">
+                                                <span class="input-group-text">mg</span>
+                                            </div>
+                                            <div class="col-lg-3 input-group">
+                                                <label class="input-group-text">Carbohydrate</label>
+                                                <input type="number" class="form-control" v-model="manage_nCarbohydrate">
+                                                <span class="input-group-text">g</span>
+                                            </div>
+                                            <div class="col-lg-3 input-group">
+                                                <label class="input-group-text">Fiber</label>
+                                                <input type="number" class="form-control" v-model="manage_nFiber">
+                                                <span class="input-group-text">g</span>
+                                            </div>
+                                            <div class="col-lg-3 input-group">
+                                                <label class="input-group-text">Sugars</label>
+                                                <input type="number" class="form-control" v-model="manage_nSugars">
+                                                <span class="input-group-text">g</span>
+                                            </div>
+                                            <div class="col-lg-3 input-group">
+                                                <label class="input-group-text">Protein</label>
+                                                <input type="number" class="form-control" v-model="manage_nProtein">
+                                                <span class="input-group-text">g</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-12">
                                     <button class="btn btn-outline-primary" @click="addBlock">Add Block</button>
@@ -494,56 +571,6 @@
                                         </blocks-draggable-list>
                                     </div>
                                     <p class="center-empty-list" v-else>No recipe blocks yet!</p>
-                                </div>
-                            </div>
-                        </v-stepper-content>
-
-                        <v-stepper-content step="4">
-                            <div class="row py-0 mb-1"
-                                style="display: flex;justify-content: space-between;align-items: center;">
-                                <h5 class="mb-0" style="width: auto;">Nutritional Facts</h5>
-                                <span class="text-muted" style="width: auto;">Optional</span>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-3 input-group">
-                                    <label class="input-group-text">Calories</label>
-                                    <input type="number" class="form-control" v-model="manage_nCalories">
-                                    <span class="input-group-text">g</span>
-                                </div>
-                                <div class="col-lg-3 input-group">
-                                    <label class="input-group-text">Total Fat</label>
-                                    <input type="number" class="form-control" v-model="manage_nFat">
-                                    <span class="input-group-text">g</span>
-                                </div>
-                                <div class="col-lg-3 input-group">
-                                    <label class="input-group-text">Cholesterol</label>
-                                    <input type="number" class="form-control" v-model="manage_nCholesterol">
-                                    <span class="input-group-text">mg</span>
-                                </div>
-                                <div class="col-lg-3 input-group">
-                                    <label class="input-group-text">Sodium</label>
-                                    <input type="number" class="form-control" v-model="manage_nSodium">
-                                    <span class="input-group-text">mg</span>
-                                </div>
-                                <div class="col-lg-3 input-group">
-                                    <label class="input-group-text">Carbohydrate</label>
-                                    <input type="number" class="form-control" v-model="manage_nCarbohydrate">
-                                    <span class="input-group-text">g</span>
-                                </div>
-                                <div class="col-lg-3 input-group">
-                                    <label class="input-group-text">Fiber</label>
-                                    <input type="number" class="form-control" v-model="manage_nFiber">
-                                    <span class="input-group-text">g</span>
-                                </div>
-                                <div class="col-lg-3 input-group">
-                                    <label class="input-group-text">Sugars</label>
-                                    <input type="number" class="form-control" v-model="manage_nSugars">
-                                    <span class="input-group-text">g</span>
-                                </div>
-                                <div class="col-lg-3 input-group">
-                                    <label class="input-group-text">Protein</label>
-                                    <input type="number" class="form-control" v-model="manage_nProtein">
-                                    <span class="input-group-text">g</span>
                                 </div>
                             </div>
                         </v-stepper-content>

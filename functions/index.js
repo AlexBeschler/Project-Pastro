@@ -26,6 +26,14 @@ async function createAccount(uid) {
             'addDate': Date.now(),
             'blocks': [{
                 'header': 'Header 1',
+                'nCalories': '0',
+                'nCarbohydrate': '0',
+                'nCholesterol': '0',
+                'nFat': '0',
+                'nFiber': '0',
+                'nProtein': '0',
+                'nSodium': '0',
+                'nSugars': '0',
                 'ingredients': [{
                     'amount': 'amount 1',
                     'value': 'value 1'
