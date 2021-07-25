@@ -29,6 +29,7 @@
     <link rel="prefetch" href="assets/icons/check.svg">
     <link rel="prefetch" href="assets/icons/edit.svg">
     <link rel="prefetch" href="assets/icons/lightning.svg">
+    <link rel="prefetch" href="assets/icons/recipe-close.svg">
     <link rel="prefetch" href="assets/icons/trash.svg">
 </head>
 
@@ -81,22 +82,23 @@
                         <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
                     </h1>
                 </div>
+                <!-- Recipe Bottom Half -->
                 <div class="backdrop-front w-100">
+                    <div class="bottom-sheet-notch-container" ref="bottom-sheet-notch-container-1">
+                        <div class="bottom-sheet-notch"></div>
+                    </div>
                     <div class="backdrop-subheader">
                         <div class="row py-0 mb-1"
                             style="display: flex; justify-content: space-between; align-items: center;">
-                            <h6 class="mb-0" style="width: auto;">Recipes</h6>
+                            <h5 class="mb-0" style="width: auto;">Recipes</h5>
                             <button type="button" class="btn btn-outline-primary btn-sm mx-3 add-recipe-button"
                                 style="width: auto;" v-on:click="clickedAddRecipe" data-ps-button-type="add"
-                                data-disablescrolling="false">Add Recipe</button>
+                                data-disablescrolling="false" ref="refAddRecipeButton">Add Recipe</button>
                         </div>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index">
-                            {{ recipe.title }}
-                            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
-                                data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Toggle</button>
-                        </li>
+                        <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index"
+                            @click="toggleRecipeOffcanvas($index)">{{ recipe.title }}</li>
                     </ul>
                 </div>
             </div>
@@ -105,19 +107,23 @@
                     <input type="text" class="form-control search-box" placeholder="Search"
                         onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search'">
                 </div>
+                <!-- Recipe Bottom Half -->
                 <div class="backdrop-front w-100">
+                    <div class="bottom-sheet-notch-container">
+                        <div class="bottom-sheet-notch"></div>
+                    </div>
                     <div class="backdrop-subheader">
                         <div class="row py-0 mb-1"
                             style="display: flex; justify-content: space-between; align-items: center;">
-                            <h6 class="mb-0" style="width: auto;">Recipes</h6>
+                            <h5 class="mb-0" style="width: auto;">Recipes</h5>
                             <button type="button" class="btn btn-outline-primary btn-sm mx-3 add-recipe-button"
                                 style="width: auto;" v-on:click="clickedAddRecipe" data-ps-button-type="add"
                                 data-disablescrolling="false">Add Recipe</button>
                         </div>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index">
-                            {{ recipe.title }}</li>
+                        <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index"
+                            @click="toggleRecipeOffcanvas($index)">{{ recipe.title }}</li>
                     </ul>
                 </div>
             </div>
@@ -145,6 +151,9 @@
                         <button class="btn btn-outline-danger" @click="signOutApp">Sign Out</button>
                     </li>
                 </ul>
+                <div class="my-4 d-flex justify-content-center">Made with <span class="heart-emoji"
+                        style="margin: 0em 0.25em;">❤</span> by <a href="https://alexbeschler.com" target="_blank"
+                        rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a></div>
             </div>
         </div>
         <!-- Explore pane offcanvas -->
@@ -232,21 +241,137 @@
             </div>
         </div>
         <!-- Full recipe view -->
-        <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="offcanvasRight"
-            aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="recipeOffcanvas" ref="recipeView">
+            <div class="offcanvas-body">
+                <button type="button" class="recipe-close-button text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close">
+                    <img class="recipe-close-img" src="assets/icons/recipe-close.svg">
+                </button>
+                <img src="img/lily-banse--stock-photo.jpg" class="img-fluid">
+                <div class="container py-0">
+                    <div class="card d-flex align-items-center recipe-title shadow-sm">
+                        <div class="card-body display-6">{{ proto_title }}</div>
+                    </div>
+                </div>
+                <div class="container pt-0">
+                    <div v-html="proto_description"></div>
+                </div>
+                <div class="container pb-1">
+                    <div class="row">
+                        <div class="col-6">
+                            Active Time: <i>{{ proto_activetime }} minutes</i>
+                        </div>
+                        <div class="col-6">
+                            Yields {{ proto_yield }}
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Prep Time</span>
+                            <span><b>{{ proto_preptime }} minutes</b> ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Cook Time</span>
+                            <span><b>{{ proto_cooktime }} minutes</b> ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Total Time</span>
+                            <span><b>{{ proto_totaltime }} minutes</b> ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="container py-0">
+                    <hr>
+                </div>
+                <div class="container">
+                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
+                        <h5 class="card-title mb-3">{{ block.header }}</h5>
+                        <ul class="nav nav-pills mb-3 justify-content-between" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="recipe-pills-ingredients-tab" data-bs-toggle="pill"
+                                    data-bs-target="#recipe-ingredients" type="button" role="tab">Ingredients</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="recipe-pills-steps-tab" data-bs-toggle="pill"
+                                    data-bs-target="#recipe-steps" type="button" role="tab">Steps</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="recipe-pills-nutrition-tab" data-bs-toggle="pill"
+                                    data-bs-target="#pills-nutrition" type="button" role="tab">Nutrition</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="recipe-ingredients" role="tabpanel"
+                                aria-labelledby="recipe-pills-ingredients-tab">
+                                <ul class="list-group list-group-flush">
+                                    <li v-for="(ingredient, ingredientIndex) in block.ingredients"
+                                        :key="ingredientIndex" class="list-group-item">
+                                        <input class="form-check-input" type="checkbox" value="">
+                                        <label class="strikeable">
+                                            <span
+                                                class="ingredient-amount-badge mx-2">{{ ingredient.amount }}</span>{{ ingredient.value }}
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="recipe-steps" role="tabpanel"
+                                aria-labelledby="recipe-pills-steps-tab">
+                                <ul class="list-group list-group-flush">
+                                    <li v-for="(step, stepIndex) in block.steps" :key="stepIndex"
+                                        class="list-group-item">
+                                        <input class="form-check-input" type="checkbox" value="">
+                                        <label class="strikeable">
+                                            <span
+                                                class="ingredient-amount-badge mx-2">{{ stepIndex + 1 }}</span>{{ step.value }}
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="pills-nutrition" role="tabpanel"
+                                aria-labelledby="recipe-pills-nutrition-tab">
+                                <ul class="list-group list-group-flush mb-4">
+                                    <li class="list-group-item">Calories: {{ block.nCalories }} g</li>
+                                    <li class="list-group-item">Total Fat: {{ block.nFat }} g</li>
+                                    <li class="list-group-item">Cholesterol: {{ block.nCholesterol }} mg</li>
+                                    <li class="list-group-item">Sodium: {{ block.nSodium }} mg</li>
+                                    <li class="list-group-item">Carbohydrate: {{ block.nCarbohydrate }} g</li>
+                                    <li class="list-group-item">Fiber: {{ block.nFiber }} g</li>
+                                    <li class="list-group-item">Sugar: {{ block.nSugars }} g</li>
+                                    <li class="list-group-item">Protein: {{ block.nProtein }} g</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container mt-0">
+                    <button class="btn btn-outline-warning" @click="editRecipe">Edit</button>
+                    <button class="btn btn-outline-danger" @click="deleteRecipe">Delete</button>
+                </div>
+            </div>
+        </div>
+        <!-- Delete recipe confirmation offcanvas -->
+        <div class="offcanvas offcanvas-bottom recipe-delete-offcanvas" tabindex="-1" id="recipeDeleteOffcanvas"
+            ref="recipeDeleteOffcanvas">
             <div class="offcanvas-header">
-                <h5 id="offcanvasRightLabel">Clicked Recipe</h5>
+                <h5 class="offcanvas-title">Delete confirmation</h5>
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
                     aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body">
-                <h1>Recipe Title</h1>
-                <p>Description</p>
-                <p>Block 1</p>
+            <div class="offcanvas-body recipe-delete-offcanvas-body">
+                <p>Are you sure you want to delete <i>{{ proto_title }}</i>?
+                    <br><br>
+                    This process is <b>irreversible</b> and the
+                    recipe <b>cannot</b> be recovered.</p>
+            </div>
+            <div class="delete-confirmation-footer">
+                <button type="button" class="btn btn-danger" @click="deleteRecipeHelper">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Cancel</button>
             </div>
         </div>
+        <!-- Manage recipe offcanvas -->
         <div class="offcanvas offcanvas-bottom offcanvas-full" tabindex="-1" id="manage-recipe-offcanvas"
-            aria-labelledby="offcanvasBottomLabel">
+            aria-labelledby="offcanvasBottomLabel" ref="manageRecipeView">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasBottomLabel">{{ manage_recipeTitle }}</h5>
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
@@ -505,7 +630,8 @@
                                     <p>
                                         <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
                                             data-bs-target="#collapseBlockNutritionFacts" aria-expanded="false"
-                                            aria-controls="collapseExample" style="width: 100%;" @click="toggleNutritionFacts">{{ nutritionFactsButtonExpandedText }}</button>
+                                            aria-controls="collapseExample" style="width: 100%;"
+                                            @click="toggleNutritionFacts">{{ nutritionFactsButtonExpandedText }}</button>
                                     </p>
                                     <div class="collapse" id="collapseBlockNutritionFacts">
                                         <div class="row">
@@ -531,7 +657,8 @@
                                             </div>
                                             <div class="col-lg-3 input-group">
                                                 <label class="input-group-text">Carbohydrate</label>
-                                                <input type="number" class="form-control" v-model="manage_nCarbohydrate">
+                                                <input type="number" class="form-control"
+                                                    v-model="manage_nCarbohydrate">
                                                 <span class="input-group-text">g</span>
                                             </div>
                                             <div class="col-lg-3 input-group">

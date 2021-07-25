@@ -1,6 +1,6 @@
 (function ($) {
 	var utils = new ProjectPastroUtils();
-	$(document).ready(function () {
+	window.addEventListener("load", function (event) {
 		utils.init();
 
 		function toggleSignIn() {
@@ -207,7 +207,7 @@
 				recipe.blocks.forEach(block => {
 					//Ingredients
 					block.ingredients.forEach(ingredient => {
-						sortedIngredientsIndex = utils.insertSortedPosition(sortedIngredientsIndex, docID, ingredient.value, 'value');
+						sortedIngredientsIndex = utils.insertSortedPosition(sortedIngredientsIndex, docID, ingredient.value.toLowerCase(), 'value');
 						listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
 					});
 					//Nutrition Facts
@@ -299,6 +299,10 @@
 				displayIngredients: '',
 				displayNutrition: '',
 
+				//Recipe
+				recipeOffcanvas: null,
+				deleteRecipeOffcanvas: null,
+
 				//All tags and ingredients in cookbook
 				tagsArray: listOfTags,
 				ingredientsArray: listOfIngredients,
@@ -332,6 +336,17 @@
 				index_protein: sortedProtein,
 				index_sodium: sortedSodium,
 				index_sugars: sortedSugars,
+
+				proto_index: 0,
+				proto_title: '',
+				proto_description: '',
+				proto_coverPhotoURL: '',
+				proto_preptime: '',
+				proto_cooktime: '',
+				proto_totaltime: '',
+				proto_activetime: '',
+				proto_yield: '',
+				proto_blocks: [],
 
 				//For use with manage recipes
 				manageOffcanvas: null,
@@ -402,9 +417,14 @@
 
 				//Get dyslexic font value
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true' ? true : false;
+				this.dyslexicFontClass = this.isDyslexicFontSet;
 			},
 			mounted() {
 				this.initQuill();
+				this.recipeOffcanvas = new bootstrap.Offcanvas(document.getElementById('recipeOffcanvas'));
+				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
+
+				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
@@ -641,6 +661,19 @@
 					}
 					this.exploreOffcanvas.toggle();
 				},
+				toggleRecipeOffcanvas: function (index) {
+					this.proto_index = index;
+					this.proto_title = this.filteredCookbook[index].title;
+					this.proto_description = this.filteredCookbook[index].description;
+					this.proto_blocks = this.filteredCookbook[index].blocks;
+					this.proto_preptime = this.filteredCookbook[index].prepTime;
+					this.proto_cooktime = this.filteredCookbook[index].cookTime;
+					this.proto_totaltime = this.filteredCookbook[index].totalTime;
+					this.proto_activetime = this.filteredCookbook[index].activeTime;
+					this.proto_yield = this.filteredCookbook[index].yield;
+
+					this.recipeOffcanvas.show();
+				},
 				updateFilters: function () {
 					var self = this;
 					var filterIDs = [];
@@ -766,19 +799,149 @@
 					this.finishByTimeInputInMinutes = x.toString();
 					return t;
 				},
+				//Recipe View methods
+				getTimeFromNowUsingMinutes: function (sMinutes) {
+					var minutes = parseInt(sMinutes);
+					var now = new Date(Date.now());
+					var nowHours = parseInt(now.getHours());
+					var nowMinutes = parseInt(now.getMinutes());
+					var hours = 0;
+
+					var futureMinutes = nowMinutes + minutes;
+
+					if (futureMinutes > 59) {
+						hours += Math.floor(futureMinutes / 60);
+						futureMinutes = futureMinutes % 60;
+						return hours.toString() + ':' + futureMinutes.toString();
+					} else {
+						return nowHours.toString() + ':' + futureMinutes.toString();
+					}
+				},
+				editRecipe: function () {
+					//Populate Manage Recipe fields
+					this.manage_recipeName = this.filteredCookbook[this.proto_index].title;
+
+					this.manage_recipePrepTime = this.filteredCookbook[this.proto_index].prepTime;
+					this.manage_recipeCookTime = this.filteredCookbook[this.proto_index].cookTime;
+					this.manage_recipeTotalTime = this.filteredCookbook[this.proto_index].totalTime;
+					this.manage_recipeActiveTime = this.filteredCookbook[this.proto_index].activeTime;
+					this.manage_recipeYield = this.filteredCookbook[this.proto_index].yield;
+					this.manage_recipeBlocks = this.filteredCookbook[this.proto_index].blocks;
+
+					this.filteredCookbook[this.proto_index].tags.forEach(tag => {
+						this.manage_recipeTagHolder.push({
+							editMode: false,
+							editModeButtonText: 'Edit',
+							value: tag
+						});
+					});
+
+					this.quillContent = this.filteredCookbook[this.proto_index].description;
+					this.quillInstance.clipboard.dangerouslyPasteHTML(1, this.filteredCookbook[this.proto_index].description);
+					//Remove newline character that shows up
+					this.quillInstance.deleteText(0, 1);
+
+					//Change DOM from Add to Edit
+					$(this.$refs.refAddRecipeButton).attr('data-ps-button-type', 'manage');
+
+					//Add listener
+					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.recipeViewListener);
+
+					this.recipeOffcanvas.hide();
+				},
+				checkForCancelRecipe: function () {
+					//Check if the user closed out of an edit screen
+					if ($('.add-recipe-button').attr('data-ps-button-type') == 'manage') {
+						this.cleanupManageRecipe();
+					}
+				},
+				deleteRecipe: function () {
+					//Add listener
+					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.deleteRecipeViewListener);
+					this.recipeOffcanvas.hide();
+				},
+				deleteRecipeViewListener: function () {
+					//Remove recipeView listener
+					this.$refs.recipeView.removeEventListener('hidden.bs.offcanvas', this.deleteRecipeViewListener);
+					this.deleteRecipeOffcanvas.show();
+				},
+				deleteRecipeHelper: function () {
+					var self = this;
+					var docIDToDelete = this.filteredCookbook[this.proto_index].docID;
+
+					//Remove all references to this recipe from indices
+					utils.removeIndices(this.index_times, this.filteredCookbook[this.proto_index].totalTime, docIDToDelete);
+					this.filteredCookbook[this.proto_index].tags.forEach(tag => {
+						utils.removeIndices(this.index_tags, tag.toLowerCase(), docIDToDelete);
+					});
+					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
+						block.ingredients.forEach(ingredient => {
+							utils.removeIndices(this.index_ingredients, ingredient.value.toLowerCase(), docIDToDelete);
+						});
+						utils.removeIndices(this.index_calories, block.nCalories, docIDToDelete);
+						utils.removeIndices(this.index_carbohydrate, block.nCarbohydrate, docIDToDelete);
+						utils.removeIndices(this.index_cholesterol, block.nCholesterol, docIDToDelete);
+						utils.removeIndices(this.index_fat, block.nFat, docIDToDelete);
+						utils.removeIndices(this.index_fiber, block.nFiber, docIDToDelete);
+						utils.removeIndices(this.index_protein, block.nProtein, docIDToDelete);
+						utils.removeIndices(this.index_sodium, block.nSodium, docIDToDelete);
+						utils.removeIndices(this.index_sugars, block.nSugars, docIDToDelete);
+					});
+					//Delete old recipe in cookbook
+					this.cookbook.splice(_.sortedIndex(this.cookbook, this.filteredCookbook[this.proto_index], 'docID'), 1);
+
+					//Rebuild tags and ingredients array by doing the thing I'm avoiding
+					this.cookbook.forEach(recipe => {
+						recipe.tags.forEach(tag => {
+							self.tagsArray = _.union(self.tagsArray, recipe.tags);
+						});
+						recipe.blocks.forEach(block => {
+							//Ingredients
+							block.ingredients.forEach(ingredient => {
+								self.ingredientsArray = _.union(self.ingredientsArray, [utils.capitalizeFirstLetter(ingredient.value)]);
+							});
+						});
+					});
+
+					//Execute cloud variables
+					this.db.collection('users/' + utils._UID + '/recipes').doc(this.filteredCookbook[this.proto_index].docID).delete().then(() => {
+						self.proto_index = 0;
+						self.proto_title = '';
+						self.proto_description = '';
+						self.proto_coverPhotoURL = '';
+						self.proto_preptime = '';
+						self.proto_cooktime = '';
+						self.proto_totaltime = '';
+						self.proto_activetime = '';
+						self.proto_yield = '';
+						self.proto_blocks = [];
+
+						//Update filters
+						self.updateFilters();
+
+						//Dismiss offcanvas
+						self.deleteRecipeOffcanvas.hide();
+					}).catch((error) => {
+						console.error("Error removing document: ", error);
+					});
+				},
+				recipeViewListener: function () {
+					this.clickedAddRecipe();
+				},
 				clickedAddRecipe: function () {
 					//Do button animation
 					if ($('.add-recipe-button').attr('data-ps-button-type') == 'add') {
 						this.manage_recipeTitle = 'Add Recipe';
 					} else {
 						this.manage_recipeTitle = 'Update Recipe';
+						//Remove recipeView listener
+						this.$refs.recipeView.removeEventListener('hidden.bs.offcanvas', this.recipeViewListener);
 					}
 					if (this.manageOffcanvas === null) {
 						this.manageOffcanvas = new bootstrap.Offcanvas(document.getElementById('manage-recipe-offcanvas'));
 					}
 					this.manageOffcanvas.show();
 				},
-
 				//Manage recipe methods
 				pushToTagArray: function () {
 					if (this.manage_recipeTagInput.trim() !== '' && this.manage_recipeTagInput.trim() !== null) {
@@ -1019,7 +1182,7 @@
 
 					if (utils.isString(this.manage_recipeYield.toString().trim())) {
 						$('#manage_form_yield').addClass('is-valid');
-						serializedRecipe.yield = this.manage_recipeActiveTime.toString().trim();
+						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
 					} else {
 						$('#manage_form_yield').addClass('is-invalid');
 						anyInvalid = true;
@@ -1041,10 +1204,7 @@
 							o.ingredients = _.map(this.manage_recipeBlocks[i].ingredients, function (row) {
 								return _.omit(row, ['editMode', 'editModeButtonText']);
 							});
-							//Merge ingredients to Explore pane
-							self.ingredientsArray = _.union(Array.from(self.ingredientsArray), _.pluck(o.ingredients, 'value').map(f => {
-								return utils.capitalizeFirstLetter(f);
-							}));
+
 							o.steps = _.map(this.manage_recipeBlocks[i].steps, function (row) {
 								return _.omit(row, ['editMode', 'editModeButtonText']);
 							});
@@ -1069,12 +1229,62 @@
 
 					this.isRecipeSubmitDisabled = true;
 
-					//Merge tags to Explore pane
-					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
-
 					serializedRecipe.coverPhotoURL = null;
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
+
+					if ($('.add-recipe-button').attr('data-ps-button-type') == 'add') {
+						//Push serialized recipe into sorted position to cookbook
+						if (this.cookbook.length > 0) {
+							this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'docID'), 0, serializedRecipe);
+						} else {
+							this.cookbook.push(serializedRecipe);
+						}
+					} else if ($('.add-recipe-button').attr('data-ps-button-type') == 'manage') {
+						var docIDToUpdate = this.filteredCookbook[this.proto_index].docID;
+						serializedRecipe.docID = docIDToUpdate;
+
+						//Remove all references to this recipe from indices
+						utils.removeIndices(this.index_times, this.filteredCookbook[this.proto_index].totalTime, docIDToUpdate);
+						this.filteredCookbook[this.proto_index].tags.forEach(tag => {
+							utils.removeIndices(this.index_tags, tag.toLowerCase(), docIDToUpdate);
+						});
+						this.filteredCookbook[this.proto_index].blocks.forEach(block => {
+							block.ingredients.forEach(ingredient => {
+								utils.removeIndices(this.index_ingredients, ingredient.value.toLowerCase(), docIDToUpdate);
+							});
+							utils.removeIndices(this.index_calories, block.nCalories, docIDToUpdate);
+							utils.removeIndices(this.index_carbohydrate, block.nCarbohydrate, docIDToUpdate);
+							utils.removeIndices(this.index_cholesterol, block.nCholesterol, docIDToUpdate);
+							utils.removeIndices(this.index_fat, block.nFat, docIDToUpdate);
+							utils.removeIndices(this.index_fiber, block.nFiber, docIDToUpdate);
+							utils.removeIndices(this.index_protein, block.nProtein, docIDToUpdate);
+							utils.removeIndices(this.index_sodium, block.nSodium, docIDToUpdate);
+							utils.removeIndices(this.index_sugars, block.nSugars, docIDToUpdate);
+						});
+						//Replace old recipe in cookbook 
+						if (this.cookbook.length > 0) {
+							this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'docID'), 1, serializedRecipe);
+						} else {
+							this.cookbook.push(serializedRecipe);
+						}
+
+						//Rebuild tags and ingredients array by doing the thing I'm avoiding
+						this.cookbook.forEach(recipe => {
+							recipe.tags.forEach(tag => {
+								self.tagsArray = _.union(self.tagsArray, recipe.tags);
+							});
+							recipe.blocks.forEach(block => {
+								//Ingredients
+								block.ingredients.forEach(ingredient => {
+									self.ingredientsArray = _.union(self.ingredientsArray, [utils.capitalizeFirstLetter(ingredient.value)]);
+								});
+							});
+						});
+					}
+
+					//Merge tags to Explore pane
+					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
 
 					//Insert tags
 					serializedRecipe.tags.forEach(tag => {
@@ -1085,6 +1295,10 @@
 					this.index_times = utils.insertSortedPosition(this.index_times, serializedRecipe.docID, serializedRecipe.totalTime, 'value');
 
 					serializedRecipe.blocks.forEach(block => {
+						//Merge ingredients to Explore pane
+						self.ingredientsArray = _.union(Array.from(self.ingredientsArray), block.ingredients.map(f => {
+							return utils.capitalizeFirstLetter(f.value);
+						}));
 						//Insert ingredients
 						block.ingredients.forEach(ingredient => {
 							this.index_ingredients = utils.insertSortedPosition(this.index_ingredients, serializedRecipe.docID, ingredient.value.toLowerCase(), 'value');
@@ -1100,25 +1314,20 @@
 						this.index_sugars = utils.insertSortedPosition(this.index_sugars, serializedRecipe.docID, block.nSugars, 'value');
 					});
 
-					//Push serialized recipe into sorted position to cookbook
-					if (this.cookbook.length > 0) {
-						this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'docID'), 0, serializedRecipe);
-					} else {
-						this.cookbook.push(serializedRecipe);
-					}
+					this.updateFilters();
 
-					//If recipe is being added
-					if ($('.add-recipe-button').attr('data-ps-button-type') == 'add') {
-						this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
-							self.cleanupManageRecipe();
-						}).catch(function (error) {
-							console.error(error);
-						});
-					} else {
-						//Update Firebase doc
-					}
+					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
+						self.cleanupManageRecipe();
+						//Toggle offcanvas
+						self.manageOffcanvas.hide();
+					}).catch(function (error) {
+						console.error(error);
+					});
 				},
 				cleanupManageRecipe: function () {
+					//Reset DOM
+					$(this.$refs.refAddRecipeButton).attr('data-ps-button-type', 'add');
+
 					//Reset manage recipe values
 					this.manage_recipeName = '';
 					this.manage_recipeTagInput = '';
@@ -1148,8 +1357,6 @@
 
 					//Re-enable submit button
 					this.isRecipeSubmitDisabled = true;
-					//Toggle offcanvas
-					this.manageOffcanvas.hide();
 				},
 
 				//Utility methods

@@ -67,6 +67,51 @@ var ProjectPastroUtils = function () {
             }
         }
     }
+    this.removeIndices = function(index, criteria, docID) {
+        criteria = criteria;
+        var firstMatchIndex = -1;
+        var lastMatchIndex = -1;
+        var low = 0;
+        var mid = 0;
+        var high = index.length - 1;
+        while (low <= high) {
+            mid = Math.floor((low + high) / 2);
+
+            if (index[mid].value === criteria) {
+                lastMatchIndex = mid;
+                firstMatchIndex = mid;
+                while (lastMatchIndex + 1 < index.length && index[lastMatchIndex + 1].value === criteria) {
+                    lastMatchIndex++;
+                }
+                while (firstMatchIndex - 1 >= 0 && index[firstMatchIndex - 1].value === criteria) {
+                    firstMatchIndex--;
+                }
+                var range = {
+                    low: firstMatchIndex,
+                    high: lastMatchIndex
+                };
+                if (firstMatchIndex < 0) {
+                    return index;
+                }
+                //Cycle through range to remove by docID
+                while (range.low <= range.high) {
+                    if (index[range.low].docID === docID) {
+                        index.splice(range.low, 1);
+                        //Knock the range high down since we spliced, and offset the low range
+                        range.high--;
+                        range.low--;
+                    }
+                    range.low++;
+                }
+                return index;
+            } else if (index[mid].value > criteria) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return index;
+    }
     //Perform binary search for all document ids with the specified toSearch from the given list
     //Designed for list to contain duplicates, and list must be array of { docID: xx, value: yy }
     //Returns array of docIDs
@@ -81,7 +126,6 @@ var ProjectPastroUtils = function () {
             mid = Math.floor((low + high) / 2);
 
             if (list[mid].value === toSearch) {
-                0
                 lastMatchIndex = mid;
                 firstMatchIndex = mid;
                 while (lastMatchIndex + 1 < list.length && list[lastMatchIndex + 1].value === toSearch) {
@@ -114,7 +158,6 @@ var ProjectPastroUtils = function () {
     }
     this.getDocIDsFromSortedList_Range = function (list, toSearch) {
         var docIDs = [];
-        //
         var left = 0;
         var right = list.length;
         var mid;
@@ -165,7 +208,7 @@ var ProjectPastroUtils = function () {
         return toValidate.trim().length > 0 & toValidate.trim().length < 9999;
     }
     this.capitalizeFirstLetter = function (s) {
-        return s.charAt(0).toUpperCase() + s.slice(1);
+        return s.trim().charAt(0).toUpperCase() + s.slice(1);
     }
     this.isBlank = function (toValidate) {
         return parseInt(toValidate) === 0 || toValidate === '';
