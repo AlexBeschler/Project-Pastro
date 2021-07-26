@@ -683,23 +683,40 @@
 					if (this.checkedTagsArray.length > 0) {
 						filtersApplied = true;
 						this.checkedTagsArray.forEach(checkedTag => {
-							filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_tags, checkedTag.toLowerCase()));
+							if (filterIDs.length < 1) {
+								filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_tags, checkedTag.toLowerCase()));
+							} else {
+								filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_tags, checkedTag.toLowerCase()));
+							}
 						});
 					}
 					if (this.checkedIngredientsArray.length > 0) {
 						filtersApplied = true;
 						this.checkedIngredientsArray.forEach(checkedIngredient => {
-							filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_ingredients, checkedIngredient.toLowerCase()));
+							if (filterIDs.length < 1) {
+								filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_ingredients, checkedIngredient.toLowerCase()));
+							} else {
+								filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_ingredients, checkedIngredient.toLowerCase()));
+							}
 						});
 					}
 					if (this.finishByTimeInput !== '') {
 						filtersApplied = true;
-						filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.finishByTimeInputInMinutes)));
+						if (filterIDs.length < 1) {
+							filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.finishByTimeInputInMinutes)));
+						} else {
+							filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.finishByTimeInputInMinutes)));
+						}
 					}
 					if (this.totalRecipeTimeInput !== '') {
 						filtersApplied = true;
-						filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.totalRecipeTimeInput)));
+						if (filterIDs.length < 1) {
+							filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.totalRecipeTimeInput)));
+						} else {
+							filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.totalRecipeTimeInput)));
+						}
 					}
+					//TODO: Add filtering by nutritional values
 					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
 						filtersApplied = true;
 					}
@@ -809,12 +826,14 @@
 
 					var futureMinutes = nowMinutes + minutes;
 
+					const zeroPad = (num) => String(num).padStart(2, '0');
+
 					if (futureMinutes > 59) {
 						hours += Math.floor(futureMinutes / 60);
 						futureMinutes = futureMinutes % 60;
-						return hours.toString() + ':' + futureMinutes.toString();
+						return zeroPad(nowHours + hours).toString() + ':' + zeroPad(futureMinutes).toString();
 					} else {
-						return nowHours.toString() + ':' + futureMinutes.toString();
+						return zeroPad(nowHours).toString() + ':' + zeroPad(futureMinutes).toString();
 					}
 				},
 				editRecipe: function () {
