@@ -49,7 +49,7 @@
             </div>
         </div>
     </div>
-    <div id="appContent" class="container my-4 main-wrap" style="visibility: hidden;">
+    <div id="appContent" class="container-fluid my-4 main-wrap" style="visibility: hidden;">
         <div id="navigationBar">
             <header class="d-flex pt-3 px-3">
                 <ul class="nav nav-pills w-100 justify-content-between align-items-center" role="tablist">
@@ -266,15 +266,18 @@
                         </div>
                         <div class="col-12 d-flex justify-content-between">
                             <span>Prep Time</span>
-                            <span><b>{{ proto_preptime }} minutes</b> ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
+                            <span><b>{{ proto_preptime }} minutes</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
                         </div>
                         <div class="col-12 d-flex justify-content-between">
                             <span>Cook Time</span>
-                            <span><b>{{ proto_cooktime }} minutes</b> ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
+                            <span><b>{{ proto_cooktime }} minutes</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
                         </div>
                         <div class="col-12 d-flex justify-content-between">
                             <span>Total Time</span>
-                            <span><b>{{ proto_totaltime }} minutes</b> ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
+                            <span><b>{{ proto_totaltime }} minutes</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
                         </div>
                     </div>
                 </div>
@@ -441,6 +444,7 @@
                                         <button type="button" class="btn btn-outline-primary"
                                             @click="pushToTagArray">Add
                                             Tag</button>
+                                        <button class="btn btn-primary mt-3" @click="pasteFromClipboard('tags')">Paste From Clipboard</button>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -554,6 +558,7 @@
                                 </div>
                                 <div class="col-lg-2 d-flex align-items-end">
                                     <button class="btn btn-outline-primary" @click="addIngredient">Add</button>
+                                    <button class="btn btn-primary mt-3" @click="pasteFromClipboard('ingredients')">Paste From Clipboard</button>
                                 </div>
                             </div>
                             <div class="row">
@@ -600,6 +605,7 @@
                                 </div>
                                 <div class="col-lg-2 d-flex align-items-end">
                                     <button class="btn btn-outline-primary" @click="addStep">Add</button>
+                                    <button class="btn btn-primary mt-3" @click="pasteFromClipboard('steps')">Paste From Clipboard</button>
                                 </div>
                             </div>
                             <div class="row">

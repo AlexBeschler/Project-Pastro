@@ -213,4 +213,7 @@ var ProjectPastroUtils = function () {
     this.isBlank = function (toValidate) {
         return parseInt(toValidate) === 0 || toValidate === '';
     }
+    this.isEmpty = function(toValidate) {
+        return (toValidate.length === 0 || !toValidate.trim());
+    }
 }

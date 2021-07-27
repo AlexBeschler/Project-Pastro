@@ -961,6 +961,77 @@
 					}
 					this.manageOffcanvas.show();
 				},
+				pasteFromClipboard: function (pasteDestination) {
+					var self = this;
+					navigator.clipboard.readText()
+						.then(text => {
+							//Split by newline character
+							var lines = text.split('\n');
+							switch (pasteDestination) {
+								case 'tags':
+									lines.forEach(line => {
+										if (!utils.isEmpty(line)) {
+											try {
+												self.manage_recipeTagHolder.push({
+													value: utils.capitalizeFirstLetter(line.trim()),
+													editMode: false,
+													editModeButtonText: 'Edit'
+												});
+											} catch (e) {
+												console.log(e);
+											}
+										}
+									});
+									break;
+								case 'ingredients':
+									lines.forEach(line => {
+										if (!utils.isEmpty(line)) {
+											var words = line.split(' ');
+											if (words.length <= 2 && words.length > 0) {
+												self.manage_recipeBlockIngredients.push({
+													amount: '',
+													value: line.trim(),
+													editMode: false,
+													editModeButtonText: 'Edit'
+												});
+											} else if (words.length > 2) {
+												var t = '';
+												for (var i = 2; i < words.length; i++) {
+													t += words[i] + ' ';
+												}
+												self.manage_recipeBlockIngredients.push({
+													amount: words[0].trim() + ' ' + words[1].trim(),
+													value: t.trim(),
+													editMode: false,
+													editModeButtonText: 'Edit'
+												});
+											}
+										}
+									});
+									break;
+								case 'steps':
+									lines.forEach(line => {
+										if (!utils.isEmpty(line)) {
+											try {
+												self.manage_recipeBlockSteps.push({
+													value: utils.capitalizeFirstLetter(line.trim()),
+													editMode: false,
+													editModeButtonText: 'Edit'
+												});
+											} catch (e) {
+												console.log(e);
+											}
+										}
+									});
+									break;
+								default:
+									break;
+							}
+						})
+						.catch(err => {
+							console.error('Failed to read clipboard contents: ', err);
+						});
+				},
 				//Manage recipe methods
 				pushToTagArray: function () {
 					if (this.manage_recipeTagInput.trim() !== '' && this.manage_recipeTagInput.trim() !== null) {

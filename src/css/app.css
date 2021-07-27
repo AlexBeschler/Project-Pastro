@@ -328,10 +328,6 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     border: 2px solid #fd552340;
 }
 
-#deleteWarningModal {
-    z-index: 1800;
-}
-
 .center-empty-list {
     display: flex;
     justify-content: center;
