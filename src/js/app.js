@@ -3,6 +3,11 @@
 	window.addEventListener("load", function (event) {
 		utils.init();
 
+		//Prevent unintended back button clicking
+		window.onbeforeunload = function () {
+			return "Your work will be lost.";
+		};
+
 		function toggleSignIn() {
 			if (!firebase.auth().currentUser) {
 				var provider = new firebase.auth.GoogleAuthProvider();
@@ -347,6 +352,9 @@
 				proto_activetime: '',
 				proto_yield: '',
 				proto_blocks: [],
+
+				//For use in search queries
+				model_search: '',
 
 				//For use with manage recipes
 				manageOffcanvas: null,
