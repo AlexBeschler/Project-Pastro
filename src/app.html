@@ -26,9 +26,13 @@
     <link rel="manifest" href="../manifest.json" crossorigin="use-credentials">
 
     <!-- Prefetch some assets we will use later -->
+    <link rel="prefetch" href="assets/icons/basket.svg">
     <link rel="prefetch" href="assets/icons/check.svg">
+    <link rel="prefetch" href="assets/icons/clock.svg">
     <link rel="prefetch" href="assets/icons/edit.svg">
+    <link rel="prefetch" href="assets/icons/info.svg">
     <link rel="prefetch" href="assets/icons/lightning.svg">
+    <link rel="prefetch" href="assets/icons/list-ol.svg">
     <link rel="prefetch" href="assets/icons/recipe-close.svg">
     <link rel="prefetch" href="assets/icons/trash.svg">
 </head>
@@ -253,56 +257,64 @@
                         <div class="card-body display-6">{{ proto_title }}</div>
                     </div>
                 </div>
-                <div class="container pt-0">
-                    <div v-html="proto_description"></div>
-                </div>
-                <div class="container pb-1">
-                    <div class="row">
-                        <div class="col-6">
-                            Active Time: <i>{{ proto_activetime }} minutes</i>
-                        </div>
-                        <div class="col-6">
-                            Yields {{ proto_yield }}
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Prep Time</span>
-                            <span><b>{{ proto_preptime }} minutes</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Cook Time</span>
-                            <span><b>{{ proto_cooktime }} minutes</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Total Time</span>
-                            <span><b>{{ proto_totaltime }} minutes</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="container py-0">
-                    <hr>
-                </div>
                 <div class="container">
                     <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
                         <h5 class="card-title mb-3">{{ block.header }}</h5>
                         <ul class="nav nav-pills mb-3 justify-content-between" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="recipe-pills-ingredients-tab" data-bs-toggle="pill"
-                                    data-bs-target="#recipe-ingredients" type="button" role="tab">Ingredients</button>
+                                <button class="nav-link active" id="recipe-pills-times-tab" data-bs-toggle="pill"
+                                    data-bs-target="#recipe-times" type="button" role="tab">
+                                    <img src="assets/icons/clock.svg">
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="recipe-pills-ingredients-tab" data-bs-toggle="pill"
+                                    data-bs-target="#recipe-ingredients" type="button" role="tab">
+                                    <img src="assets/icons/basket.svg">
+                                </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="recipe-pills-steps-tab" data-bs-toggle="pill"
-                                    data-bs-target="#recipe-steps" type="button" role="tab">Steps</button>
+                                    data-bs-target="#recipe-steps" type="button" role="tab">
+                                    <img src="assets/icons/list-ol.svg">
+                                </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="recipe-pills-nutrition-tab" data-bs-toggle="pill"
-                                    data-bs-target="#pills-nutrition" type="button" role="tab">Nutrition</button>
+                                    data-bs-target="#pills-nutrition" type="button" role="tab">
+                                    <img src="assets/icons/info.svg">
+                                </button>
                             </li>
                         </ul>
                         <div class="tab-content">
-                            <div class="tab-pane fade show active" id="recipe-ingredients" role="tabpanel"
+                            <div class="tab-pane fade show active" id="recipe-times" role="tabpanel">
+                                <div v-html="proto_description" class="mb-4"></div>
+                                <div class="row">
+                                    <div class="col-12 d-flex justify-content-between mb-2">
+                                        <span>Active Time</span>
+                                        <span><b>{{ proto_activetime }} minutes</b></span>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-between">
+                                        <span>Prep Time</span>
+                                        <span><b>{{ proto_preptime }} minutes</b>
+                                            ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-between">
+                                        <span>Cook Time</span>
+                                        <span><b>{{ proto_cooktime }} minutes</b>
+                                            ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-between">
+                                        <span>Total Time</span>
+                                        <span><b>{{ proto_totaltime }} minutes</b>
+                                            ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        Yields {{ proto_yield }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="recipe-ingredients" role="tabpanel"
                                 aria-labelledby="recipe-pills-ingredients-tab">
                                 <ul class="list-group list-group-flush">
                                     <li v-for="(ingredient, ingredientIndex) in block.ingredients"
@@ -444,7 +456,8 @@
                                         <button type="button" class="btn btn-outline-primary"
                                             @click="pushToTagArray">Add
                                             Tag</button>
-                                        <button class="btn btn-primary mt-3" @click="pasteFromClipboard('tags')">Paste From Clipboard</button>
+                                        <button class="btn btn-primary mt-3" @click="pasteFromClipboard('tags')">Paste
+                                            From Clipboard</button>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -558,7 +571,8 @@
                                 </div>
                                 <div class="col-lg-2 d-flex align-items-end">
                                     <button class="btn btn-outline-primary" @click="addIngredient">Add</button>
-                                    <button class="btn btn-primary mt-3" @click="pasteFromClipboard('ingredients')">Paste From Clipboard</button>
+                                    <button class="btn btn-primary mt-3"
+                                        @click="pasteFromClipboard('ingredients')">Paste From Clipboard</button>
                                 </div>
                             </div>
                             <div class="row">
@@ -605,7 +619,8 @@
                                 </div>
                                 <div class="col-lg-2 d-flex align-items-end">
                                     <button class="btn btn-outline-primary" @click="addStep">Add</button>
-                                    <button class="btn btn-primary mt-3" @click="pasteFromClipboard('steps')">Paste From Clipboard</button>
+                                    <button class="btn btn-primary mt-3" @click="pasteFromClipboard('steps')">Paste From
+                                        Clipboard</button>
                                 </div>
                             </div>
                             <div class="row">
@@ -706,19 +721,19 @@
                                     <p class="center-empty-list" v-else>No recipe blocks yet!</p>
                                 </div>
                             </div>
+                            <div class="row mb-5">
+                                <div class="col-lg-12">
+                                    <v-divider></v-divider>
+                                </div>
+                                <div class="col-lg-12">
+                                    <button id="submitRecipeButton" type="button" class="btn btn-primary"
+                                        @click="submitManagedRecipe" style="width: 100%;"
+                                        :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
+                                </div>
+                            </div>
                         </v-stepper-content>
                     </v-stepper-items>
                 </v-stepper>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <v-divider></v-divider>
-                    </div>
-                    <div class="col-lg-12">
-                        <button id="submitRecipeButton" type="button" class="btn btn-primary"
-                            @click="submitManagedRecipe" style="width: 100%;"
-                            :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
-                    </div>
-                </div>
             </v-app>
         </div>
     </div>
