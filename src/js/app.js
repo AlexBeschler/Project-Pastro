@@ -839,9 +839,9 @@
 					if (futureMinutes > 59) {
 						hours += Math.floor(futureMinutes / 60);
 						futureMinutes = futureMinutes % 60;
-						return zeroPad(nowHours + hours).toString() + ':' + zeroPad(futureMinutes).toString();
+						return zeroPad((nowHours + hours) % 24).toString() + ':' + zeroPad(futureMinutes).toString();
 					} else {
-						return zeroPad(nowHours).toString() + ':' + zeroPad(futureMinutes).toString();
+						return zeroPad(nowHours % 24).toString() + ':' + zeroPad(futureMinutes).toString();
 					}
 				},
 				editRecipe: function () {
