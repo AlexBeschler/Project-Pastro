@@ -179,6 +179,15 @@
 		var listOfIngredients = [];
 		var listOfTags = [];
 
+		const indexedRecipes = new FlexSearch.Document({
+			document: {
+				id: "id",
+				index: ["title"]
+			},
+			tokenize: 'full'
+		});
+		var flexIndex = 0;
+
 		firebase.firestore().collection("users/" + utils._UID + "/recipes").onSnapshot({
 			includeMetadataChanges: true
 		}, function (snapshot) {
@@ -192,12 +201,19 @@
 				var recipe = doc.data();
 				var docID = recipe.docID;
 
+				//Inject id for FlexSearch during runtime
+				recipe.id = flexIndex;
+				flexIndex++;
+
 				//Adds recipe to sorted position
 				if (payload.length > 0) {
 					payload.splice(_.sortedIndex(payload, recipe, 'docID'), 0, recipe);
 				} else {
 					payload.push(recipe);
 				}
+
+				//Index recipe titles
+				indexedRecipes.add(recipe);
 
 				///Build sorted indices and list of ingredients/tags
 				//Tags
@@ -229,11 +245,11 @@
 		}).then(function () {
 			//utils.showCookbook();
 			//utils._NANOBAR.go(100);
-			appFunctionality(payload, sortedTagsIndex, sortedTimeIndex, sortedIngredientsIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags);
+			appFunctionality(payload, sortedTagsIndex, sortedTimeIndex, sortedIngredientsIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
 		});
 	}
 
-	function appFunctionality(payload, sortedTagsIndex, sortedTimeIndex, sortedIngredientsIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags) {
+	function appFunctionality(payload, sortedTagsIndex, sortedTimeIndex, sortedIngredientsIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex) {
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -361,6 +377,8 @@
 
 				//For use in search queries
 				model_search: '',
+				flexSearch: indexedRecipes,
+				startingFlexSearchIndex: flexIndex,
 
 				//For use with manage recipes
 				manageOffcanvas: null,
@@ -564,6 +582,21 @@
 					if (newVal !== this.quillContent) {
 						this.quillInstance.pasteHTML(newVal)
 					}
+				},
+				model_search: function(b, a) {
+					if (this.model_search === '') {
+						this.filteredCookbook = this.cookbook;
+						return;
+					}
+					this.filteredCookbook = [];
+					var query = this.flexSearch.search(this.model_search);
+					if (query.length === 0) {
+						return;
+					}
+					//For future - change query[0] to something dynamic
+					query[0].result.forEach(result => {
+						this.filteredCookbook.push(this.cookbook[result]);
+					});
 				},
 				isDyslexicFontSet: function (b, a) {
 					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
