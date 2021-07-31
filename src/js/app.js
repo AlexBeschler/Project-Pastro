@@ -853,15 +853,41 @@
 				editRecipe: function () {
 					//Populate Manage Recipe fields
 					this.manage_recipeName = this.filteredCookbook[this.proto_index].title;
-
 					this.manage_recipePrepTime = this.filteredCookbook[this.proto_index].prepTime;
 					this.manage_recipeCookTime = this.filteredCookbook[this.proto_index].cookTime;
 					this.manage_recipeTotalTime = this.filteredCookbook[this.proto_index].totalTime;
 					this.manage_recipeActiveTime = this.filteredCookbook[this.proto_index].activeTime;
 					this.manage_recipeYield = this.filteredCookbook[this.proto_index].yield;
-					//TODO: Bug fix bonanza 3 - foreach ingredient and step, add editMode and EditModeButtonText properties 
-					this.manage_recipeBlocks = this.filteredCookbook[this.proto_index].blocks;
-
+					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
+						var o = {};
+						o.header = block.header;
+						o.nCalories = block.nCalories;
+						o.nCarbohydrate = block.nCarbohydrate;
+						o.nCholesterol = block.nCholesterol;
+						o.nFat = block.nFat;
+						o.nFiber = block.nFiber;
+						o.nProtein = block.nProtein;
+						o.nSodium = block.nSodium;
+						o.nSugars = block.nSugars;
+						o.ingredients = [];
+						o.steps = [];
+						block.ingredients.forEach(ingredient => {
+							o.ingredients.push({
+								amount: ingredient.amount,
+								editMode: false,
+								editModeButtonText: 'Edit',
+								value: ingredient.value
+							});
+						});
+						block.steps.forEach(step => {
+							o.steps.push({
+								editMode: false,
+								editModeButtonText: 'Edit',
+								value: step.value
+							});
+						});
+						this.manage_recipeBlocks.push(o);
+					});
 					this.filteredCookbook[this.proto_index].tags.forEach(tag => {
 						this.manage_recipeTagHolder.push({
 							editMode: false,
