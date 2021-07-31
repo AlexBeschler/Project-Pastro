@@ -239,6 +239,12 @@
 
 		utils.showCookbook();
 
+		//Bottom Sheet
+		Vue.component('bottom-sheet', {
+			template: '#bottom-sheet-template',
+			props: ['filteredCookbook']
+		});
+
 		//Manage tag component
 		Vue.component('sortable-list', {
 			mixins: [ContainerMixin],

@@ -87,50 +87,16 @@
                         <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
                     </h1>
                 </div>
-                <!-- Recipe Bottom Half -->
-                <div class="backdrop-front w-100">
-                    <div class="bottom-sheet-notch-container" ref="bottom-sheet-notch-container-1">
-                        <div class="bottom-sheet-notch"></div>
-                    </div>
-                    <div class="backdrop-subheader">
-                        <div class="row py-0 mb-1"
-                            style="display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="mb-0" style="width: auto;">Recipes</h5>
-                            <button type="button" class="btn btn-outline-primary btn-sm mx-3 add-recipe-button"
-                                style="width: auto;" v-on:click="clickedAddRecipe" data-ps-button-type="add"
-                                data-disablescrolling="false" ref="refAddRecipeButton">Add Recipe</button>
-                        </div>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index"
-                            @click="toggleRecipeOffcanvas($index)">{{ recipe.title }}</li>
-                    </ul>
-                </div>
+                <bottom-sheet :filtered-cookbook="filteredCookbook" v-on:clicked-add-recipe="clickedAddRecipe"
+                    v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
             </div>
             <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
                 <div class="px-4 py-4 my-5">
                     <input type="text" class="form-control search-box" placeholder="Search"
                         onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search'" v-model="model_search">
                 </div>
-                <!-- Recipe Bottom Half -->
-                <div class="backdrop-front w-100">
-                    <div class="bottom-sheet-notch-container">
-                        <div class="bottom-sheet-notch"></div>
-                    </div>
-                    <div class="backdrop-subheader">
-                        <div class="row py-0 mb-1"
-                            style="display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="mb-0" style="width: auto;">Recipes</h5>
-                            <button type="button" class="btn btn-outline-primary btn-sm mx-3 add-recipe-button"
-                                style="width: auto;" v-on:click="clickedAddRecipe" data-ps-button-type="add"
-                                data-disablescrolling="false">Add Recipe</button>
-                        </div>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="(recipe, $index) in filteredCookbook" :key="$index"
-                            @click="toggleRecipeOffcanvas($index)">{{ recipe.title }}</li>
-                    </ul>
-                </div>
+                <bottom-sheet :filtered-cookbook="filteredCookbook" v-on:clicked-add-recipe="clickedAddRecipe"
+                    v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
             </div>
             <div id="optionsPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-options-tab">
                 <h6 class="m-0 mt-4 py-2 px-4 text-muted">General</h6>
@@ -195,7 +161,7 @@
                     <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto">
                             <div class="fw-bold">Dark Mode</div>
-                            Change the colors to a noir setting 
+                            Change the colors to a noir setting
                         </div>
                         <span class="form-check form-switch align-self-center">
                             <input class="form-check-input" type="checkbox">
@@ -233,14 +199,16 @@
                         <div class="ms-2" style="width: 100%;">
                             <div class="fw-bold">Stripe Billing Portal</div>
                             Update your payment options and manage your subscription
-                            <button class="btn btn-outline-primary" @click="stripeBillingPortal" style="width: 100%;">Billing Portal</button>
+                            <button class="btn btn-outline-primary" @click="stripeBillingPortal"
+                                style="width: 100%;">Billing Portal</button>
                         </div>
                     </li>
                     <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
                         <div class="ms-2" style="width: 100%;">
                             <div class="fw-bold">Sign Out</div>
                             Sign out on this device
-                            <button class="btn btn-outline-danger" @click="signOutApp" style="width: 100%;">Sign Out</button>
+                            <button class="btn btn-outline-danger" @click="signOutApp" style="width: 100%;">Sign
+                                Out</button>
                         </div>
                     </li>
                 </ul>
@@ -254,7 +222,8 @@
                         </span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;" href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
+                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
+                            href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
                             Terms of Service
                         </a>
                         <span class="form-check form-switch align-self-center">
@@ -262,7 +231,8 @@
                         </span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;" href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
+                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
+                            href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
                             Privacy Policy
                         </a>
                         <span class="form-check form-switch align-self-center">
@@ -301,7 +271,6 @@
                 <div v-else-if="explorePaneOffcanvasType === 'time'">
                     <h4>Total recipe time</h4>
                     <div class="mb-3">
-                        <!--label for="totalTimeInput" class="form-label">Total recipe time (in minutes)</label-->
                         <input type="number" class="form-control" id="totalTimeInput" v-model="totalRecipeTimeInput"
                             placeholder="i.e. 25">
                     </div>
@@ -441,7 +410,8 @@
                                         :key="ingredientIndex" class="list-group-item">
                                         <input class="form-check-input" type="checkbox" value="">
                                         <label class="strikeable">
-                                            <span class="ingredient-amount-badge" v-if="ingredient.amount" style="margin-left: .5rem;">{{ ingredient.amount }}</span>
+                                            <span class="ingredient-amount-badge" v-if="ingredient.amount"
+                                                style="margin-left: .5rem;">{{ ingredient.amount }}</span>
                                             <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
                                         </label>
                                     </li>
@@ -857,6 +827,28 @@
             </v-app>
         </div>
     </div>
+
+    <!-- BottomSheet -->
+    <template id="bottom-sheet-template">
+        <!-- Recipe Bottom Half -->
+        <div class="backdrop-front w-100">
+            <div class="bottom-sheet-notch-container">
+                <div class="bottom-sheet-notch"></div>
+            </div>
+            <div class="backdrop-subheader">
+                <div class="row py-0 mb-1" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h5 class="mb-0" style="width: auto;">Recipes</h5>
+                    <button type="button" class="btn btn-outline-primary btn-sm mx-3 add-recipe-button"
+                        style="width: auto;" @click="$emit('clicked-add-recipe')" data-ps-button-type="add"
+                        data-disablescrolling="false" ref="refAddRecipeButton">Add Recipe</button>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index" :index="index"
+                    @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
+            </ul>
+        </div>
+    </template>
     <!-- Manage tags draggables -->
     <template id="tag-draggable-list-template">
         <ul class="list-group">
