@@ -405,7 +405,8 @@
 					['clean']
 				],
 				isDyslexicFontSet: 'false',
-				dyslexicFontClass: false
+				dyslexicFontClass: false,
+				userID: utils._UID
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -853,6 +854,7 @@
 					this.manage_recipeTotalTime = this.filteredCookbook[this.proto_index].totalTime;
 					this.manage_recipeActiveTime = this.filteredCookbook[this.proto_index].activeTime;
 					this.manage_recipeYield = this.filteredCookbook[this.proto_index].yield;
+					//TODO: Bug fix bonanza 3 - foreach ingredient and step, add editMode and EditModeButtonText properties 
 					this.manage_recipeBlocks = this.filteredCookbook[this.proto_index].blocks;
 
 					this.filteredCookbook[this.proto_index].tags.forEach(tag => {
