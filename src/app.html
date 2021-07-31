@@ -26,6 +26,7 @@
     <link rel="manifest" href="../manifest.json" crossorigin="use-credentials">
 
     <!-- Prefetch some assets we will use later -->
+    <link rel="prefetch" href="assets/icons/arrow-up-right.svg">
     <link rel="prefetch" href="assets/icons/basket.svg">
     <link rel="prefetch" href="assets/icons/check.svg">
     <link rel="prefetch" href="assets/icons/clock.svg">
@@ -132,30 +133,149 @@
                 </div>
             </div>
             <div id="optionsPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-options-tab">
-                <ul class="list-group list-group-flush" style="padding: 0;">
-                    <li class="list-group-item options-list-item">
-                        <div class="fw-bold h5 mb-3">Font</div>
-                        <ul class="nav nav-pills">
-                            <li class="nav-item">
-                                <a class="nav-link" v-bind:class="{ active: !dyslexicFontClass }"
-                                    @click="toggleFont">Montserrat</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" v-bind:class="{ active: dyslexicFontClass }"
-                                    @click="toggleFont">OpenDyslexic</a>
-                            </li>
-                        </ul>
+                <h6 class="m-0 mt-4 py-2 px-4 text-muted">General</h6>
+                <ul class="list-group px-2">
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">12 Hr Time Format</div>
+                            Use an AM/PM format instead of 00:00
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <input class="form-check-input" type="checkbox">
+                        </span>
                     </li>
-                    <li class="list-group-item options-list-item">
-                        <div class="fw-bold h5 mb-3">Stripe Payments</div>
-                        <button class="btn btn-outline-primary" @click="stripeBillingPortal">Billing Portal</button>
-                    </li>
-                    <li class="list-group-item options-list-item">
-                        <div class="fw-bold h5 mb-3">Account</div>
-                        <button class="btn btn-outline-danger" @click="signOutApp">Sign Out</button>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Language</div>
+                            Change the app language. Powered by Google Translate.
+                            <select class="form-select">
+                                <option value="1" selected>English</option>
+                                <option value="2">Spanish</option>
+                                <option value="3">French</option>
+                            </select>
+                        </div>
                     </li>
                 </ul>
-                <div class="my-4 d-flex justify-content-center">Made with <span class="heart-emoji"
+                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Explore Pane</h6>
+                <ul class="list-group px-2">
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Customize</div>
+                            Choose which filters are most useful to you
+                            <hr>
+                            <div class="form-check">
+                                <label class="form-check-label" for="tagsCheck">
+                                    Tags
+                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="tagsCheck">
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label" for="timeCheck">
+                                    Time
+                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="timeCheck">
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label" for="ingredientsCheck">
+                                    Ingredients
+                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="ingredientsCheck">
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label" for="nutritionCheck">
+                                    Nutrition
+                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="nutritionCheck">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Accessibility</h6>
+                <ul class="list-group px-2">
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Dark Mode</div>
+                            Change the colors to a noir setting 
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <input class="form-check-input" type="checkbox">
+                        </span>
+                    </li>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Font Size</div>
+                            Increase the size of the font
+                            <input type="range" class="form-range" min="0" max="2" step="0.5">
+                        </div>
+                    </li>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Use Dyslexic Font</div>
+                            Use a font that makes it easier to read for those with dyslexia. Powered by OpenDyslexic.
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <input class="form-check-input" type="checkbox" v-model="isDyslexicFontSet">
+                        </span>
+                    </li>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">High Contrast Mode</div>
+                            Use colors that contrast 4.5:1
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <input class="form-check-input" type="checkbox">
+                        </span>
+                    </li>
+                </ul>
+                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Billing & Account</h6>
+                <ul class="list-group px-2">
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2" style="width: 100%;">
+                            <div class="fw-bold">Stripe Billing Portal</div>
+                            Update your payment options and manage your subscription
+                            <button class="btn btn-outline-primary" @click="stripeBillingPortal" style="width: 100%;">Billing Portal</button>
+                        </div>
+                    </li>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2" style="width: 100%;">
+                            <div class="fw-bold">Sign Out</div>
+                            Sign out on this device
+                            <button class="btn btn-outline-danger" @click="signOutApp" style="width: 100%;">Sign Out</button>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="list-group m-0 mt-4 px-2">
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            FAQ / Contact Me
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <img src="assets/icons/arrow-up-right.svg">
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;" href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
+                            Terms of Service
+                        </a>
+                        <span class="form-check form-switch align-self-center">
+                            <img src="assets/icons/arrow-up-right.svg">
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;" href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
+                            Privacy Policy
+                        </a>
+                        <span class="form-check form-switch align-self-center">
+                            <img src="assets/icons/arrow-up-right.svg">
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            Firebase UID: {{ userID }}
+                        </div>
+                    </li>
+                </ul>
+                <div class="my-4 mb-5 d-flex justify-content-center">Made with <span class="heart-emoji"
                         style="margin: 0em 0.25em;">❤</span> by <a href="https://alexbeschler.com" target="_blank"
                         rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a></div>
             </div>
@@ -321,8 +441,8 @@
                                         :key="ingredientIndex" class="list-group-item">
                                         <input class="form-check-input" type="checkbox" value="">
                                         <label class="strikeable">
-                                            <span
-                                                class="ingredient-amount-badge mx-2">{{ ingredient.amount }}</span>{{ ingredient.value }}
+                                            <span class="ingredient-amount-badge" v-if="ingredient.amount" style="margin-left: .5rem;">{{ ingredient.amount }}</span>
+                                            <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
                                         </label>
                                     </li>
                                 </ul>

@@ -404,8 +404,8 @@
 					}],
 					['clean']
 				],
-				isDyslexicFontSet: 'false',
-				dyslexicFontClass: false
+				isDyslexicFontSet: utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true',
+				userID: utils._UID
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -422,10 +422,6 @@
 				this.nFiber = '';
 				this.nSugars = '';
 				this.nProtein = '';
-
-				//Get dyslexic font value
-				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true' ? true : false;
-				this.dyslexicFontClass = this.isDyslexicFontSet;
 			},
 			mounted() {
 				this.initQuill();
@@ -564,7 +560,17 @@
 					}
 				},
 				isDyslexicFontSet: function (b, a) {
-					this.dyslexicFontClass = (this.isDyslexicFontSet === 'true');
+					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
+					//Write to local storage
+					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
+					//Write to cloud
+					this.db.collection('users').doc(utils._UID).set({
+						dyslexicFontSet: this.isDyslexicFontSet.toString()
+					}).then(() => {
+						console.log('Wrote new font settings to cloud');
+					}).catch((error) => {
+						console.error('Error writing cloud font preference: ', error);
+					});
 				}
 			},
 			methods: {
@@ -847,14 +853,41 @@
 				editRecipe: function () {
 					//Populate Manage Recipe fields
 					this.manage_recipeName = this.filteredCookbook[this.proto_index].title;
-
 					this.manage_recipePrepTime = this.filteredCookbook[this.proto_index].prepTime;
 					this.manage_recipeCookTime = this.filteredCookbook[this.proto_index].cookTime;
 					this.manage_recipeTotalTime = this.filteredCookbook[this.proto_index].totalTime;
 					this.manage_recipeActiveTime = this.filteredCookbook[this.proto_index].activeTime;
 					this.manage_recipeYield = this.filteredCookbook[this.proto_index].yield;
-					this.manage_recipeBlocks = this.filteredCookbook[this.proto_index].blocks;
-
+					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
+						var o = {};
+						o.header = block.header;
+						o.nCalories = block.nCalories;
+						o.nCarbohydrate = block.nCarbohydrate;
+						o.nCholesterol = block.nCholesterol;
+						o.nFat = block.nFat;
+						o.nFiber = block.nFiber;
+						o.nProtein = block.nProtein;
+						o.nSodium = block.nSodium;
+						o.nSugars = block.nSugars;
+						o.ingredients = [];
+						o.steps = [];
+						block.ingredients.forEach(ingredient => {
+							o.ingredients.push({
+								amount: ingredient.amount,
+								editMode: false,
+								editModeButtonText: 'Edit',
+								value: ingredient.value
+							});
+						});
+						block.steps.forEach(step => {
+							o.steps.push({
+								editMode: false,
+								editModeButtonText: 'Edit',
+								value: step.value
+							});
+						});
+						this.manage_recipeBlocks.push(o);
+					});
 					this.filteredCookbook[this.proto_index].tags.forEach(tag => {
 						this.manage_recipeTagHolder.push({
 							editMode: false,
@@ -1458,26 +1491,6 @@
 				},
 
 				//Utility methods
-				toggleFont: function () {
-					var r = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true' ? 'false' : 'true';
-					//Write to cloud
-					this.db.collection('users').doc(utils._UID).set({
-						dyslexicFontSet: r
-					}).then(() => {
-						console.log('Wrote new font settings to cloud');
-					}).catch((error) => {
-						console.error('Error writing cloud font preference: ', error);
-					});
-					//Write to local storage to prevent cloud syncing issues
-					if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
-						document.body.style.fontFamily = '"Montserrat", sans-serif';
-						this.isDyslexicFontSet = 'false';
-					} else {
-						document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-						this.isDyslexicFontSet = 'true';
-					}
-					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
-				},
 				stripeBillingPortal: function (event) {
 					$(event.target).prop('disabled', true);
 					goToPortal();
