@@ -404,8 +404,7 @@
 					}],
 					['clean']
 				],
-				isDyslexicFontSet: 'false',
-				dyslexicFontClass: false,
+				isDyslexicFontSet: utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true',
 				userID: utils._UID
 			},
 			created() {
@@ -423,10 +422,6 @@
 				this.nFiber = '';
 				this.nSugars = '';
 				this.nProtein = '';
-
-				//Get dyslexic font value
-				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true' ? true : false;
-				this.dyslexicFontClass = this.isDyslexicFontSet;
 			},
 			mounted() {
 				this.initQuill();
@@ -565,7 +560,17 @@
 					}
 				},
 				isDyslexicFontSet: function (b, a) {
-					this.dyslexicFontClass = (this.isDyslexicFontSet === 'true');
+					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
+					//Write to local storage
+					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
+					//Write to cloud
+					this.db.collection('users').doc(utils._UID).set({
+						dyslexicFontSet: this.isDyslexicFontSet.toString()
+					}).then(() => {
+						console.log('Wrote new font settings to cloud');
+					}).catch((error) => {
+						console.error('Error writing cloud font preference: ', error);
+					});
 				}
 			},
 			methods: {
@@ -1460,26 +1465,6 @@
 				},
 
 				//Utility methods
-				toggleFont: function () {
-					var r = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true' ? 'false' : 'true';
-					//Write to cloud
-					this.db.collection('users').doc(utils._UID).set({
-						dyslexicFontSet: r
-					}).then(() => {
-						console.log('Wrote new font settings to cloud');
-					}).catch((error) => {
-						console.error('Error writing cloud font preference: ', error);
-					});
-					//Write to local storage to prevent cloud syncing issues
-					if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
-						document.body.style.fontFamily = '"Montserrat", sans-serif';
-						this.isDyslexicFontSet = 'false';
-					} else {
-						document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-						this.isDyslexicFontSet = 'true';
-					}
-					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
-				},
 				stripeBillingPortal: function (event) {
 					$(event.target).prop('disabled', true);
 					goToPortal();
