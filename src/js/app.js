@@ -182,7 +182,7 @@
 		const indexedRecipes = new FlexSearch.Document({
 			document: {
 				id: "id",
-				index: ["title"]
+				index: ["title", "tags"]
 			},
 			tokenize: 'full'
 		});
@@ -583,19 +583,23 @@
 						this.quillInstance.pasteHTML(newVal)
 					}
 				},
-				model_search: function(b, a) {
+				model_search: function (b, a) {
 					if (this.model_search === '') {
 						this.filteredCookbook = this.cookbook;
 						return;
 					}
 					this.filteredCookbook = [];
-					var query = this.flexSearch.search(this.model_search);
-					if (query.length === 0) {
+					var queryResults = this.flexSearch.search(this.model_search);
+					if (queryResults.length === 0) {
 						return;
 					}
 					//For future - change query[0] to something dynamic
-					query[0].result.forEach(result => {
-						this.filteredCookbook.push(this.cookbook[result]);
+					queryResults.forEach(queryResult => {
+						if (queryResult.field === 'title') {
+							queryResult.result.forEach(result => {
+								this.filteredCookbook.push(this.cookbook[result]);
+							});
+						}
 					});
 				},
 				isDyslexicFontSet: function (b, a) {
@@ -735,11 +739,26 @@
 
 					if (this.checkedTagsArray.length > 0) {
 						filtersApplied = true;
+						
 						this.checkedTagsArray.forEach(checkedTag => {
+							var o = [];
+							//Get indices of specified tags
+							var queryResults = this.flexSearch.search(checkedTag.toLowerCase());
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'tags') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
 							if (filterIDs.length < 1) {
-								filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_tags, checkedTag.toLowerCase()));
+								filterIDs = _.union(filterIDs, o);
 							} else {
-								filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_tags, checkedTag.toLowerCase()));
+								filterIDs = _.intersection(filterIDs, o);
 							}
 						});
 					}
@@ -802,7 +821,7 @@
 					};
 					this.filteredCookbook = [];
 					filterIDs.forEach(id => {
-						self.filteredCookbook.push(utils.getRecipeFromID(self.cookbook, id));
+						this.filteredCookbook.push(this.cookbook[id]);
 					});
 				},
 				//Clear filters
