@@ -68,7 +68,6 @@ var ProjectPastroUtils = function () {
         }
     }
     this.removeIndices = function(index, criteria, docID) {
-        criteria = criteria;
         var firstMatchIndex = -1;
         var lastMatchIndex = -1;
         var low = 0;
