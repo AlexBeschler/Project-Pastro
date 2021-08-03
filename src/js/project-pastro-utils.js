@@ -50,23 +50,6 @@ var ProjectPastroUtils = function () {
         }
         return array;
     }
-    //Get recipe from cookbook using docID
-    this.getRecipeFromID = function (list, toSearch) {
-        var low = 0;
-        var mid = 0;
-        var high = list.length - 1;
-        while (low <= high) {
-            mid = Math.floor((low + high) / 2);
-
-            if (list[mid].docID === toSearch) {
-                return list[mid];
-            } else if (list[mid].docID > toSearch) {
-                high = mid - 1;
-            } else {
-                low = mid + 1;
-            }
-        }
-    }
     this.removeIndices = function(index, criteria, docID) {
         var firstMatchIndex = -1;
         var lastMatchIndex = -1;
@@ -110,50 +93,6 @@ var ProjectPastroUtils = function () {
             }
         }
         return index;
-    }
-    //Perform binary search for all document ids with the specified toSearch from the given list
-    //Designed for list to contain duplicates, and list must be array of { docID: xx, value: yy }
-    //Returns array of docIDs
-    this.getDocIDsFromSortedList_Exact = function (list, toSearch) {
-        var docIDs = [];
-        var firstMatchIndex = -1;
-        var lastMatchIndex = -1;
-        var low = 0;
-        var mid = 0;
-        var high = list.length - 1;
-        while (low <= high) {
-            mid = Math.floor((low + high) / 2);
-
-            if (list[mid].value === toSearch) {
-                lastMatchIndex = mid;
-                firstMatchIndex = mid;
-                while (lastMatchIndex + 1 < list.length && list[lastMatchIndex + 1].value === toSearch) {
-                    lastMatchIndex++;
-                }
-                while (firstMatchIndex - 1 >= 0 && list[firstMatchIndex - 1].value === toSearch) {
-                    firstMatchIndex--;
-                }
-                var range = {
-                    low: firstMatchIndex,
-                    high: lastMatchIndex
-                };
-                if (range.low === range.high) {
-                    docIDs.push(list[range.low].docID);
-                } else {
-                    var x = range.low;
-                    while (x <= range.high) {
-                        docIDs.push(list[x].docID);
-                        x += 1;
-                    }
-                }
-                return docIDs;
-            } else if (list[mid].value > toSearch) {
-                high = mid - 1;
-            } else {
-                low = mid + 1;
-            }
-        }
-        return docIDs;
     }
     this.getDocIDsFromSortedList_Range = function (list, toSearch) {
         var docIDs = [];
