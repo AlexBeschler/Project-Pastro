@@ -165,14 +165,14 @@
 		//utils._NANOBAR.go(75);
 		var payload = [];
 		var sortedTimeIndex = new ProjectPastroRangeIndex();
-		var sortedCalories = [];
-		var sortedCarbohydrate = [];
-		var sortedCholesterol = [];
-		var sortedFat = [];
-		var sortedFiber = [];
-		var sortedProtein = [];
-		var sortedSodium = [];
-		var sortedSugars = [];
+		var sortedCalories = new ProjectPastroRangeIndex();
+		var sortedCarbohydrate = new ProjectPastroRangeIndex();
+		var sortedCholesterol = new ProjectPastroRangeIndex();
+		var sortedFat = new ProjectPastroRangeIndex();
+		var sortedFiber = new ProjectPastroRangeIndex();
+		var sortedProtein = new ProjectPastroRangeIndex();
+		var sortedSodium = new ProjectPastroRangeIndex();
+		var sortedSugars = new ProjectPastroRangeIndex();
 
 		var listOfIngredients = [];
 		var listOfTags = [];
@@ -218,7 +218,7 @@
 				listOfTags = _.union(listOfTags, recipe.tags);
 
 				//Time
-				sortedTimeIndex.add(docID, recipe.totalTime);
+				sortedTimeIndex.add(docID, parseInt(recipe.totalTime));
 
 				recipe.blocks.forEach(block => {
 					//Ingredients
@@ -226,18 +226,17 @@
 						listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
 					});
 					//Nutrition Facts
-					sortedCalories = utils.insertSortedPosition(sortedCalories, docID, block.nCalories, 'value');
-					sortedCarbohydrate = utils.insertSortedPosition(sortedCarbohydrate, docID, block.nCarbohydrate, 'value');
-					sortedCholesterol = utils.insertSortedPosition(sortedCholesterol, docID, block.nCholesterol, 'value');
-					sortedFat = utils.insertSortedPosition(sortedFat, docID, block.nFat, 'value');
-					sortedFiber = utils.insertSortedPosition(sortedFiber, docID, block.nFiber, 'value');
-					sortedProtein = utils.insertSortedPosition(sortedProtein, docID, block.nProtein, 'value');
-					sortedSodium = utils.insertSortedPosition(sortedSodium, docID, block.nSodium, 'value');
-					sortedSugars = utils.insertSortedPosition(sortedSugars, docID, block.nSugars, 'value');
+					sortedCalories.add(docID, parseInt(block.nCalories));
+					sortedCarbohydrate.add(docID, parseInt(block.nCarbohydrate));
+					sortedCholesterol.add(docID, parseInt(block.nCholesterol));
+					sortedFat.add(docID, parseInt(block.nFat));
+					sortedFiber.add(docID, parseInt(block.nFiber));
+					sortedProtein.add(docID, parseInt(block.nProtein));
+					sortedSodium.add(docID, parseInt(block.nSodium));
+					sortedSugars.add(docID, parseInt(block.nSugars));
 				});
 			});
 		}).then(function () {
-			//utils.showCookbook();
 			//utils._NANOBAR.go(100);
 			appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
 		});
@@ -779,29 +778,187 @@
 					}
 					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
 						filtersApplied = true;
+						var a = this.index_calories.search(parseInt(this.nCalories));
+						a.forEach(x => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(x, {
+								index: 'docID'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'docID') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
+							filterIDs = _.union(filterIDs, o);
+						});
 					}
 					if (this.nFat != '' && parseInt(this.nFat) !== 0) {
 						filtersApplied = true;
+						var a = this.index_fat.search(parseInt(this.nFat));
+						a.forEach(x => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(x, {
+								index: 'docID'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'docID') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
+							filterIDs = _.union(filterIDs, o);
+						});
 					}
 					if (this.nCholesterol != '' && parseInt(this.nCholesterol) !== 0) {
 						filtersApplied = true;
+						var a = this.index_cholesterol.search(parseInt(this.nCholesterol));
+						a.forEach(x => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(x, {
+								index: 'docID'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'docID') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
+							filterIDs = _.union(filterIDs, o);
+						});
 					}
 					if (this.nSodium != '' && parseInt(this.nSodium) !== 0) {
 						filtersApplied = true;
+						var a = this.index_sodium.search(parseInt(this.nSodium));
+						a.forEach(x => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(x, {
+								index: 'docID'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'docID') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
+							filterIDs = _.union(filterIDs, o);
+						});
 					}
 					if (this.nCarbohydrate != '' && parseInt(this.nCarbohydrate) !== 0) {
 						filtersApplied = true;
+						var a = this.index_carbohydrate.search(parseInt(this.nCarbohydrate));
+						a.forEach(x => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(x, {
+								index: 'docID'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'docID') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
+							filterIDs = _.union(filterIDs, o);
+						});
 					}
 					if (this.nFiber != '' && parseInt(this.nFiber) !== 0) {
 						filtersApplied = true;
+						var a = this.index_fiber.search(parseInt(this.nFiber));
+						a.forEach(x => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(x, {
+								index: 'docID'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'docID') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
+							filterIDs = _.union(filterIDs, o);
+						});
 					}
 					if (this.nSugars != '' && parseInt(this.nSugars) !== 0) {
 						filtersApplied = true;
-
+						var a = this.index_sugars.search(parseInt(this.nSugars));
+						a.forEach(x => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(x, {
+								index: 'docID'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'docID') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
+							filterIDs = _.union(filterIDs, o);
+						});
 					}
 					if (this.nProtein != '' && parseInt(this.nProtein) !== 0) {
 						filtersApplied = true;
-
+						var a = this.index_protein.search(parseInt(this.nProtein));
+						a.forEach(x => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(x, {
+								index: 'docID'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'docID') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
+							filterIDs = _.union(filterIDs, o);
+						});
 					}
 
 					//Exact matching parameters
