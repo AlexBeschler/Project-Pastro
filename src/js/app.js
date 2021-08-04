@@ -164,17 +164,15 @@
 	function getCookbook() {
 		//utils._NANOBAR.go(75);
 		var payload = [];
-		var sortedTagsIndex = [];
-		var sortedTimeIndex = [];
-		var sortedIngredientsIndex = [];
-		var sortedCalories = [];
-		var sortedCarbohydrate = [];
-		var sortedCholesterol = [];
-		var sortedFat = [];
-		var sortedFiber = [];
-		var sortedProtein = [];
-		var sortedSodium = [];
-		var sortedSugars = [];
+		var sortedTimeIndex = new ProjectPastroRangeIndex();
+		var sortedCalories = new ProjectPastroRangeIndex();
+		var sortedCarbohydrate = new ProjectPastroRangeIndex();
+		var sortedCholesterol = new ProjectPastroRangeIndex();
+		var sortedFat = new ProjectPastroRangeIndex();
+		var sortedFiber = new ProjectPastroRangeIndex();
+		var sortedProtein = new ProjectPastroRangeIndex();
+		var sortedSodium = new ProjectPastroRangeIndex();
+		var sortedSugars = new ProjectPastroRangeIndex();
 
 		var listOfIngredients = [];
 		var listOfTags = [];
@@ -182,7 +180,7 @@
 		const indexedRecipes = new FlexSearch.Document({
 			document: {
 				id: "id",
-				index: ["title", "tags"]
+				index: ["docID", "title", "tags", "blocks[]:ingredients[]:value"]
 			},
 			tokenize: 'full'
 		});
@@ -207,7 +205,7 @@
 
 				//Adds recipe to sorted position
 				if (payload.length > 0) {
-					payload.splice(_.sortedIndex(payload, recipe, 'docID'), 0, recipe);
+					payload.splice(_.sortedIndex(payload, recipe, 'id'), 0, recipe);
 				} else {
 					payload.push(recipe);
 				}
@@ -217,39 +215,34 @@
 
 				///Build sorted indices and list of ingredients/tags
 				//Tags
-				recipe.tags.forEach(tag => {
-					sortedTagsIndex = utils.insertSortedPosition(sortedTagsIndex, docID, tag.toLowerCase(), 'value');
-					listOfTags = _.union(listOfTags, recipe.tags);
-				});
+				listOfTags = _.union(listOfTags, recipe.tags);
 
 				//Time
-				sortedTimeIndex = utils.insertSortedPosition(sortedTimeIndex, docID, recipe.totalTime, 'value');
+				sortedTimeIndex.add(docID, parseInt(recipe.totalTime));
 
 				recipe.blocks.forEach(block => {
 					//Ingredients
 					block.ingredients.forEach(ingredient => {
-						sortedIngredientsIndex = utils.insertSortedPosition(sortedIngredientsIndex, docID, ingredient.value.toLowerCase(), 'value');
 						listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
 					});
 					//Nutrition Facts
-					sortedCalories = utils.insertSortedPosition(sortedCalories, docID, block.nCalories, 'value');
-					sortedCarbohydrate = utils.insertSortedPosition(sortedCarbohydrate, docID, block.nCarbohydrate, 'value');
-					sortedCholesterol = utils.insertSortedPosition(sortedCholesterol, docID, block.nCholesterol, 'value');
-					sortedFat = utils.insertSortedPosition(sortedFat, docID, block.nFat, 'value');
-					sortedFiber = utils.insertSortedPosition(sortedFiber, docID, block.nFiber, 'value');
-					sortedProtein = utils.insertSortedPosition(sortedProtein, docID, block.nProtein, 'value');
-					sortedSodium = utils.insertSortedPosition(sortedSodium, docID, block.nSodium, 'value');
-					sortedSugars = utils.insertSortedPosition(sortedSugars, docID, block.nSugars, 'value');
+					sortedCalories.add(docID, parseInt(block.nCalories));
+					sortedCarbohydrate.add(docID, parseInt(block.nCarbohydrate));
+					sortedCholesterol.add(docID, parseInt(block.nCholesterol));
+					sortedFat.add(docID, parseInt(block.nFat));
+					sortedFiber.add(docID, parseInt(block.nFiber));
+					sortedProtein.add(docID, parseInt(block.nProtein));
+					sortedSodium.add(docID, parseInt(block.nSodium));
+					sortedSugars.add(docID, parseInt(block.nSugars));
 				});
 			});
 		}).then(function () {
-			//utils.showCookbook();
 			//utils._NANOBAR.go(100);
-			appFunctionality(payload, sortedTagsIndex, sortedTimeIndex, sortedIngredientsIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
+			appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
 		});
 	}
 
-	function appFunctionality(payload, sortedTagsIndex, sortedTimeIndex, sortedIngredientsIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex) {
+	function appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex) {
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -352,9 +345,7 @@
 				nProtein: null,
 
 				//Indices
-				index_tags: sortedTagsIndex,
 				index_times: sortedTimeIndex,
-				index_ingredients: sortedIngredientsIndex,
 				index_calories: sortedCalories,
 				index_carbohydrate: sortedCarbohydrate,
 				index_cholesterol: sortedCholesterol,
@@ -378,7 +369,7 @@
 				//For use in search queries
 				model_search: '',
 				flexSearch: indexedRecipes,
-				startingFlexSearchIndex: flexIndex,
+				injectedSearchIndexID: flexIndex,
 
 				//For use with manage recipes
 				manageOffcanvas: null,
@@ -732,14 +723,88 @@
 					this.recipeOffcanvas.show();
 				},
 				updateFilters: function () {
-					var self = this;
 					var filterIDs = [];
 					var filtersApplied = false;
 					this.filteredCookbook = [];
 
+					//Ranges come first
+					//This is due to the fact that ranges are overly broad parameters and we want all possible
+					// results added, later intersected by more narrow results
+					if (this.finishByTimeInput !== '') {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_times.search(parseInt(this.finishByTimeInputInMinutes)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.totalRecipeTimeInput !== '') {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_times.search(parseInt(this.totalRecipeTimeInput)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_calories.search(parseInt(this.nCalories)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.nFat != '' && parseInt(this.nFat) !== 0) {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_fat.search(parseInt(this.nFat)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.nCholesterol != '' && parseInt(this.nCholesterol) !== 0) {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_cholesterol.search(parseInt(this.nCholesterol)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.nSodium != '' && parseInt(this.nSodium) !== 0) {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_sodium.search(parseInt(this.nSodium)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.nCarbohydrate != '' && parseInt(this.nCarbohydrate) !== 0) {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_carbohydrate.search(parseInt(this.nCarbohydrate)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.nFiber != '' && parseInt(this.nFiber) !== 0) {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_fiber.search(parseInt(this.nFiber)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.nSugars != '' && parseInt(this.nSugars) !== 0) {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_sugars.search(parseInt(this.nSugars)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+					if (this.nProtein != '' && parseInt(this.nProtein) !== 0) {
+						filtersApplied = true;
+						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_protein.search(parseInt(this.nProtein)));
+						if (result != null) {
+							filterIDs = _.union(filterIDs, result);
+						}
+					}
+
+					//Exact matching parameters
 					if (this.checkedTagsArray.length > 0) {
 						filtersApplied = true;
-						
+
 						this.checkedTagsArray.forEach(checkedTag => {
 							var o = [];
 							//Get indices of specified tags
@@ -765,56 +830,30 @@
 					if (this.checkedIngredientsArray.length > 0) {
 						filtersApplied = true;
 						this.checkedIngredientsArray.forEach(checkedIngredient => {
+							var o = [];
+							//Get indices of specified ingredients
+							var queryResults = this.flexSearch.search(checkedIngredient.toLowerCase(), {
+								index: 'blocks[]:ingredients[]:value'
+							});
+							if (queryResults.length === 0) {
+								return;
+							}
+							queryResults.forEach(queryResult => {
+								if (queryResult.field === 'blocks[]:ingredients[]:value') {
+									queryResult.result.forEach(result => {
+										o.push(result);
+									});
+								}
+							});
+							//Push to filterIDs
 							if (filterIDs.length < 1) {
-								filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_ingredients, checkedIngredient.toLowerCase()));
+								filterIDs = _.union(filterIDs, o);
 							} else {
-								filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Exact(self.index_ingredients, checkedIngredient.toLowerCase()));
+								filterIDs = _.intersection(filterIDs, o);
 							}
 						});
 					}
-					if (this.finishByTimeInput !== '') {
-						filtersApplied = true;
-						if (filterIDs.length < 1) {
-							filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.finishByTimeInputInMinutes)));
-						} else {
-							filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.finishByTimeInputInMinutes)));
-						}
-					}
-					if (this.totalRecipeTimeInput !== '') {
-						filtersApplied = true;
-						if (filterIDs.length < 1) {
-							filterIDs = _.union(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.totalRecipeTimeInput)));
-						} else {
-							filterIDs = _.intersection(filterIDs, utils.getDocIDsFromSortedList_Range(this.index_times, parseInt(this.totalRecipeTimeInput)));
-						}
-					}
-					//TODO: Add filtering by nutritional values
-					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
-						filtersApplied = true;
-					}
-					if (this.nFat != '' && parseInt(this.nFat) !== 0) {
-						filtersApplied = true;
-					}
-					if (this.nCholesterol != '' && parseInt(this.nCholesterol) !== 0) {
-						filtersApplied = true;
-					}
-					if (this.nSodium != '' && parseInt(this.nSodium) !== 0) {
-						filtersApplied = true;
-					}
-					if (this.nCarbohydrate != '' && parseInt(this.nCarbohydrate) !== 0) {
-						filtersApplied = true;
-					}
-					if (this.nFiber != '' && parseInt(this.nFiber) !== 0) {
-						filtersApplied = true;
-					}
-					if (this.nSugars != '' && parseInt(this.nSugars) !== 0) {
-						filtersApplied = true;
 
-					}
-					if (this.nProtein != '' && parseInt(this.nProtein) !== 0) {
-						filtersApplied = true;
-
-					}
 					if (!filtersApplied) {
 						this.filteredCookbook = this.cookbook;
 						return;
@@ -988,31 +1027,28 @@
 					var docIDToDelete = this.filteredCookbook[this.proto_index].docID;
 
 					//Remove all references to this recipe from indices
-					utils.removeIndices(this.index_times, this.filteredCookbook[this.proto_index].totalTime, docIDToDelete);
-					this.filteredCookbook[this.proto_index].tags.forEach(tag => {
-						utils.removeIndices(this.index_tags, tag.toLowerCase(), docIDToDelete);
-					});
+					this.index_times.remove(docIDToDelete, this.filteredCookbook[this.proto_index].totalTime);
+
+					this.flexSearch.remove(this.filteredCookbook[this.proto_index]);
+
 					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
-						block.ingredients.forEach(ingredient => {
-							utils.removeIndices(this.index_ingredients, ingredient.value.toLowerCase(), docIDToDelete);
-						});
-						utils.removeIndices(this.index_calories, block.nCalories, docIDToDelete);
-						utils.removeIndices(this.index_carbohydrate, block.nCarbohydrate, docIDToDelete);
-						utils.removeIndices(this.index_cholesterol, block.nCholesterol, docIDToDelete);
-						utils.removeIndices(this.index_fat, block.nFat, docIDToDelete);
-						utils.removeIndices(this.index_fiber, block.nFiber, docIDToDelete);
-						utils.removeIndices(this.index_protein, block.nProtein, docIDToDelete);
-						utils.removeIndices(this.index_sodium, block.nSodium, docIDToDelete);
-						utils.removeIndices(this.index_sugars, block.nSugars, docIDToDelete);
+						this.index_calories.remove(docIDToDelete, block.nCalories);
+						this.index_carbohydrate.remove(docIDToDelete, block.nCarbohydrate);
+						this.index_cholesterol.remove(docIDToDelete, block.nCholesterol);
+						this.index_fat.remove(docIDToDelete, block.nFat);
+						this.index_fiber.remove(docIDToDelete, block.nFiber);
+						this.index_protein.remove(docIDToDelete, block.nProtein);
+						this.index_sodium.remove(docIDToDelete, block.nSodium);
+						this.index_sugars.remove(docIDToDelete, block.nSugars);
 					});
 					//Delete old recipe in cookbook
-					this.cookbook.splice(_.sortedIndex(this.cookbook, this.filteredCookbook[this.proto_index], 'docID'), 1);
+					this.cookbook.splice(_.sortedIndex(this.cookbook, this.filteredCookbook[this.proto_index], 'id'), 1);
 
 					//Rebuild tags and ingredients array by doing the thing I'm avoiding
+					this.tagsArray = [];
+					this.ingredientsArray = [];
 					this.cookbook.forEach(recipe => {
-						recipe.tags.forEach(tag => {
-							self.tagsArray = _.union(self.tagsArray, recipe.tags);
-						});
+						self.tagsArray = _.union(self.tagsArray, recipe.tags);
 						recipe.blocks.forEach(block => {
 							//Ingredients
 							block.ingredients.forEach(ingredient => {
@@ -1022,7 +1058,7 @@
 					});
 
 					//Execute cloud variables
-					this.db.collection('users/' + utils._UID + '/recipes').doc(this.filteredCookbook[this.proto_index].docID).delete().then(() => {
+					this.db.collection('users/' + utils._UID + '/recipes').doc(docIDToDelete).delete().then(() => {
 						self.proto_index = 0;
 						self.proto_title = '';
 						self.proto_description = '';
@@ -1423,9 +1459,13 @@
 					serializedRecipe.addDate = Date.now();
 
 					if ($('.add-recipe-button').attr('data-ps-button-type') == 'add') {
+						//Add runtime-injected ID for index
+						serializedRecipe.id = this.injectedSearchIndexID;
+						//Increase for next time
+						this.injectedSearchIndexID++;
 						//Push serialized recipe into sorted position to cookbook
 						if (this.cookbook.length > 0) {
-							this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'docID'), 0, serializedRecipe);
+							this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'id'), 0, serializedRecipe);
 						} else {
 							this.cookbook.push(serializedRecipe);
 						}
@@ -1434,26 +1474,24 @@
 						serializedRecipe.docID = docIDToUpdate;
 
 						//Remove all references to this recipe from indices
-						utils.removeIndices(this.index_times, this.filteredCookbook[this.proto_index].totalTime, docIDToUpdate);
-						this.filteredCookbook[this.proto_index].tags.forEach(tag => {
-							utils.removeIndices(this.index_tags, tag.toLowerCase(), docIDToUpdate);
-						});
+						this.index_times.remove(docIDToUpdate, this.filteredCookbook[this.proto_index].totalTime);
+
+						//Remove document from FlexSearch
+						this.flexSearch.remove(this.filteredCookbook[this.proto_index]);
+
 						this.filteredCookbook[this.proto_index].blocks.forEach(block => {
-							block.ingredients.forEach(ingredient => {
-								utils.removeIndices(this.index_ingredients, ingredient.value.toLowerCase(), docIDToUpdate);
-							});
-							utils.removeIndices(this.index_calories, block.nCalories, docIDToUpdate);
-							utils.removeIndices(this.index_carbohydrate, block.nCarbohydrate, docIDToUpdate);
-							utils.removeIndices(this.index_cholesterol, block.nCholesterol, docIDToUpdate);
-							utils.removeIndices(this.index_fat, block.nFat, docIDToUpdate);
-							utils.removeIndices(this.index_fiber, block.nFiber, docIDToUpdate);
-							utils.removeIndices(this.index_protein, block.nProtein, docIDToUpdate);
-							utils.removeIndices(this.index_sodium, block.nSodium, docIDToUpdate);
-							utils.removeIndices(this.index_sugars, block.nSugars, docIDToUpdate);
+							this.index_calories.remove(docIDToUpdate, block.nCalories);
+							this.index_carbohydrate.remove(docIDToUpdate, block.nCarbohydrate);
+							this.index_cholesterol.remove(docIDToUpdate, block.nCholesterol);
+							this.index_fat.remove(docIDToUpdate, block.nFat);
+							this.index_fiber.remove(docIDToUpdate, block.nFiber);
+							this.index_protein.remove(docIDToUpdate, block.nProtein);
+							this.index_sodium.remove(docIDToUpdate, block.nSodium);
+							this.index_sugars.remove(docIDToUpdate, block.nSugars);
 						});
 						//Replace old recipe in cookbook 
 						if (this.cookbook.length > 0) {
-							this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'docID'), 1, serializedRecipe);
+							this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'id'), 1, serializedRecipe);
 						} else {
 							this.cookbook.push(serializedRecipe);
 						}
@@ -1475,35 +1513,32 @@
 					//Merge tags to Explore pane
 					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
 
-					//Insert tags
-					serializedRecipe.tags.forEach(tag => {
-						this.index_tags = utils.insertSortedPosition(this.index_tags, serializedRecipe.docID, tag.toLowerCase(), 'value');
-					});
+					//Insert into index
+					this.flexSearch.add(serializedRecipe);
 
 					//Insert time
-					this.index_times = utils.insertSortedPosition(this.index_times, serializedRecipe.docID, serializedRecipe.totalTime, 'value');
+					this.index_times.add(serializedRecipe.docID, serializedRecipe.totalTime);
 
 					serializedRecipe.blocks.forEach(block => {
 						//Merge ingredients to Explore pane
 						self.ingredientsArray = _.union(Array.from(self.ingredientsArray), block.ingredients.map(f => {
 							return utils.capitalizeFirstLetter(f.value);
 						}));
-						//Insert ingredients
-						block.ingredients.forEach(ingredient => {
-							this.index_ingredients = utils.insertSortedPosition(this.index_ingredients, serializedRecipe.docID, ingredient.value.toLowerCase(), 'value');
-						});
 						//Insert nutrition facts
-						this.index_calories = utils.insertSortedPosition(this.index_calories, serializedRecipe.docID, block.nCalories, 'value');
-						this.index_carbohydrate = utils.insertSortedPosition(this.index_carbohydrate, serializedRecipe.docID, block.nCarbohydrate, 'value');
-						this.index_cholesterol = utils.insertSortedPosition(this.index_cholesterol, serializedRecipe.docID, block.nCholesterol, 'value');
-						this.index_fat = utils.insertSortedPosition(this.index_fat, serializedRecipe.docID, block.nFat, 'value');
-						this.index_fiber = utils.insertSortedPosition(this.index_fiber, serializedRecipe.docID, block.nFiber, 'value');
-						this.index_protein = utils.insertSortedPosition(this.index_protein, serializedRecipe.docID, block.nProtein, 'value');
-						this.index_sodium = utils.insertSortedPosition(this.index_sodium, serializedRecipe.docID, block.nSodium, 'value');
-						this.index_sugars = utils.insertSortedPosition(this.index_sugars, serializedRecipe.docID, block.nSugars, 'value');
+						this.index_calories.add(serializedRecipe.docID, parseInt(block.nCalories));
+						this.index_carbohydrate.add(serializedRecipe.docID, parseInt(block.nCarbohydrate));
+						this.index_cholesterol.add(serializedRecipe.docID, parseInt(block.nCholesterol));
+						this.index_fat.add(serializedRecipe.docID, parseInt(block.nFat));
+						this.index_fiber.add(serializedRecipe.docID, parseInt(block.nFiber));
+						this.index_protein.add(serializedRecipe.docID, parseInt(block.nProtein));
+						this.index_sodium.add(serializedRecipe.docID, parseInt(block.nSodium));
+						this.index_sugars.add(serializedRecipe.docID, parseInt(block.nSugars));
 					});
 
 					this.updateFilters();
+
+					//Remove runtime-injected ID before submitting to Firebase
+					delete serializedRecipe.id;
 
 					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
 						self.cleanupManageRecipe();
