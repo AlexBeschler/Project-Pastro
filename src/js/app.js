@@ -999,7 +999,7 @@
 					this.quillInstance.deleteText(0, 1);
 
 					//Change DOM from Add to Edit
-					$(this.$refs.refAddRecipeButton).attr('data-ps-button-type', 'manage');
+					$('#addRecipeButton').attr('data-ps-button-type', 'manage');
 
 					//Add listener
 					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.recipeViewListener);
@@ -1008,7 +1008,7 @@
 				},
 				checkForCancelRecipe: function () {
 					//Check if the user closed out of an edit screen
-					if ($('.add-recipe-button').attr('data-ps-button-type') == 'manage') {
+					if ($('#addRecipeButton').attr('data-ps-button-type') == 'manage') {
 						this.cleanupManageRecipe();
 					}
 				},
@@ -1084,7 +1084,7 @@
 				},
 				clickedAddRecipe: function () {
 					//Do button animation
-					if ($('.add-recipe-button').attr('data-ps-button-type') == 'add') {
+					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
 						this.manage_recipeTitle = 'Add Recipe';
 					} else {
 						this.manage_recipeTitle = 'Update Recipe';
@@ -1458,7 +1458,7 @@
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
 
-					if ($('.add-recipe-button').attr('data-ps-button-type') == 'add') {
+					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
 						//Add runtime-injected ID for index
 						serializedRecipe.id = this.injectedSearchIndexID;
 						//Increase for next time
@@ -1469,7 +1469,7 @@
 						} else {
 							this.cookbook.push(serializedRecipe);
 						}
-					} else if ($('.add-recipe-button').attr('data-ps-button-type') == 'manage') {
+					} else if ($('#addRecipeButton').attr('data-ps-button-type') == 'manage') {
 						var docIDToUpdate = this.filteredCookbook[this.proto_index].docID;
 						serializedRecipe.docID = docIDToUpdate;
 
@@ -1550,7 +1550,7 @@
 				},
 				cleanupManageRecipe: function () {
 					//Reset DOM
-					$(this.$refs.refAddRecipeButton).attr('data-ps-button-type', 'add');
+					$('#addRecipeButton').attr('data-ps-button-type', 'add');
 
 					//Reset manage recipe values
 					this.manage_recipeName = '';
