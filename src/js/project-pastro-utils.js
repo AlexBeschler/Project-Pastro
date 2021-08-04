@@ -38,104 +38,6 @@ var ProjectPastroUtils = function () {
         storage.setItem(key, value);
     }
     //Utilities
-    this.insertSortedPosition = function (array, docID, value, toSortBy) {
-        var index = {
-            docID: docID,
-            value: value
-        };
-        if (array.length > 0) {
-            array.splice(_.sortedIndex(array, index, toSortBy), 0, index);
-        } else {
-            array.push(index);
-        }
-        return array;
-    }
-    this.removeIndices = function(index, criteria, docID) {
-        var firstMatchIndex = -1;
-        var lastMatchIndex = -1;
-        var low = 0;
-        var mid = 0;
-        var high = index.length - 1;
-        while (low <= high) {
-            mid = Math.floor((low + high) / 2);
-
-            if (index[mid].value === criteria) {
-                lastMatchIndex = mid;
-                firstMatchIndex = mid;
-                while (lastMatchIndex + 1 < index.length && index[lastMatchIndex + 1].value === criteria) {
-                    lastMatchIndex++;
-                }
-                while (firstMatchIndex - 1 >= 0 && index[firstMatchIndex - 1].value === criteria) {
-                    firstMatchIndex--;
-                }
-                var range = {
-                    low: firstMatchIndex,
-                    high: lastMatchIndex
-                };
-                if (firstMatchIndex < 0) {
-                    return index;
-                }
-                //Cycle through range to remove by docID
-                while (range.low <= range.high) {
-                    if (index[range.low].docID === docID) {
-                        index.splice(range.low, 1);
-                        //Knock the range high down since we spliced, and offset the low range
-                        range.high--;
-                        range.low--;
-                    }
-                    range.low++;
-                }
-                return index;
-            } else if (index[mid].value > criteria) {
-                high = mid - 1;
-            } else {
-                low = mid + 1;
-            }
-        }
-        return index;
-    }
-    this.getDocIDsFromSortedList_Range = function (list, toSearch) {
-        var docIDs = [];
-        var left = 0;
-        var right = list.length;
-        var mid;
-
-        while (left < right) {
-            mid = (right + left) >> 1;
-
-            // Check if key is present in array
-            if (list[mid].value == toSearch) {
-
-                // If duplicates are present it returns the position of last element
-                while ((mid + 1) < list.length && list[mid + 1].value == toSearch) {
-                    mid++;
-                }
-                break;
-            }
-
-            // If key is smaller, ignore right half
-            else if (list[mid].value > toSearch)
-                right = mid;
-
-            // If key is greater, ignore left half
-            else
-                left = mid + 1;
-        }
-
-        // If key is not found in array then it will be before mid
-        while (mid > -1 && list[mid].value > toSearch)
-            mid--;
-
-        if (mid == -1) {
-            return docIDs;
-        } else {
-            while (mid >= 0) {
-                docIDs.push(list[mid].docID);
-                mid -= 1;
-            }
-        }
-        return docIDs;
-    }
     this.isNumber = function (toValidate) {
         return parseInt(toValidate) > 0 && parseInt(toValidate) < 9999 && /^\d+$/.test(parseInt(toValidate));
     }
@@ -151,7 +53,31 @@ var ProjectPastroUtils = function () {
     this.isBlank = function (toValidate) {
         return parseInt(toValidate) === 0 || toValidate === '';
     }
-    this.isEmpty = function(toValidate) {
+    this.isEmpty = function (toValidate) {
         return (toValidate.length === 0 || !toValidate.trim());
+    }
+    //FlexSearch utils
+    this.queryAndParseFlexSearchResults = function (index, queryResults) {
+        var filterIDs = [];
+        queryResults.forEach(x => {
+            var o = [];
+            //Get indices of specified ingredients
+            var qResults = index.search(x, {
+                index: 'docID'
+            });
+            if (qResults.length === 0) {
+                return;
+            }
+            qResults.forEach(q => {
+                if (q.field === 'docID') {
+                    q.result.forEach(result => {
+                        o.push(result);
+                    });
+                }
+            });
+            //Push to filterIDs
+            filterIDs = _.union(filterIDs, o);
+        });
+        return filterIDs;
     }
 }
