@@ -370,6 +370,9 @@
 				//For use with manage recipes
 				manageOffcanvas: null,
 				isRecipeSubmitDisabled: false,
+				//Step 1
+				manage_filePondCoverPhoto: null,
+				manage_coverPhotoURL: '',
 				//Step 2
 				manage_recipeTitle: '',
 				manage_recipeName: '',
@@ -440,6 +443,40 @@
 				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
 
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
+
+				this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
+				var self = this;
+				this.manage_filePondCoverPhoto.setOptions({
+					server: {
+						process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+							console.log('Processing and uploading...');
+							var photoID = uuidv4();
+							var fileEndingRegex = /(?:\.([^.]+))?$/;
+							var fileType = fileEndingRegex.exec(file.name)[1];
+							var coverPhotoID = photoID + '.' + fileType;
+
+							var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + coverPhotoID);
+							uploadTask.put(file).then(function () {
+								uploadTask.getDownloadURL().then((url) => {
+									self.manage_coverPhotoURL = url;
+									load();
+								}).catch(function (e) {
+									console.log('Error getting download URL: ' + e);
+									error('Error getting download URL: ' + e);
+								});
+							}).catch(function (e) {
+								console.log('Error uploading file: ' + e);
+								error('Error uploading file: ' + e);
+							});
+
+							return {
+								abort: () => {
+									abort();
+								},
+							};
+						}
+					}
+				})
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
@@ -1534,7 +1571,10 @@
 
 					//Destructure object before submitting to Firebase
 					//delete keyword seems to modify object in RAM
-					var {id, ...sR} = serializedRecipe;
+					var {
+						id,
+						...sR
+					} = serializedRecipe;
 
 					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(sR).then(function () {
 						self.cleanupManageRecipe();
