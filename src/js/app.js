@@ -204,11 +204,7 @@
 				flexIndex++;
 
 				//Adds recipe to sorted position
-				if (payload.length > 0) {
-					payload.splice(_.sortedIndex(payload, recipe, 'id'), 0, recipe);
-				} else {
-					payload.push(recipe);
-				}
+				payload.push(recipe);
 
 				//Index recipe titles
 				indexedRecipes.add(recipe);
@@ -1042,7 +1038,7 @@
 						this.index_sugars.remove(docIDToDelete, block.nSugars);
 					});
 					//Delete old recipe in cookbook
-					this.cookbook.splice(_.sortedIndex(this.cookbook, this.filteredCookbook[this.proto_index], 'id'), 1);
+					this.cookbook.splice(this.proto_index, 1);
 
 					//Rebuild tags and ingredients array by doing the thing I'm avoiding
 					this.tagsArray = [];
@@ -1464,14 +1460,13 @@
 						//Increase for next time
 						this.injectedSearchIndexID++;
 						//Push serialized recipe into sorted position to cookbook
-						if (this.cookbook.length > 0) {
-							this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'id'), 0, serializedRecipe);
-						} else {
-							this.cookbook.push(serializedRecipe);
-						}
+						this.cookbook.push(serializedRecipe);
 					} else if ($('#addRecipeButton').attr('data-ps-button-type') == 'manage') {
 						var docIDToUpdate = this.filteredCookbook[this.proto_index].docID;
 						serializedRecipe.docID = docIDToUpdate;
+
+						//Inherit same runtime ID
+						serializedRecipe.id = this.filteredCookbook[this.proto_index].id;
 
 						//Remove all references to this recipe from indices
 						this.index_times.remove(docIDToUpdate, this.filteredCookbook[this.proto_index].totalTime);
@@ -1491,7 +1486,7 @@
 						});
 						//Replace old recipe in cookbook 
 						if (this.cookbook.length > 0) {
-							this.cookbook.splice(_.sortedIndex(this.cookbook, serializedRecipe, 'id'), 1, serializedRecipe);
+							this.cookbook.splice(this.proto_index, 1, serializedRecipe);
 						} else {
 							this.cookbook.push(serializedRecipe);
 						}
@@ -1537,10 +1532,11 @@
 
 					this.updateFilters();
 
-					//Remove runtime-injected ID before submitting to Firebase
-					delete serializedRecipe.id;
+					//Destructure object before submitting to Firebase
+					//delete keyword seems to modify object in RAM
+					var {id, ...sR} = serializedRecipe;
 
-					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
+					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(sR).then(function () {
 						self.cleanupManageRecipe();
 						//Toggle offcanvas
 						self.manageOffcanvas.hide();
@@ -1580,7 +1576,7 @@
 					$('#manage_form_yield').removeClass('is-valid');
 
 					//Re-enable submit button
-					this.isRecipeSubmitDisabled = true;
+					this.isRecipeSubmitDisabled = false;
 				},
 
 				//Utility methods
