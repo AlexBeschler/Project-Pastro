@@ -28,14 +28,15 @@
 
     <!-- Prefetch some assets we will use later -->
     <link rel="prefetch" href="assets/icons/arrow-up-right.svg">
-    <link rel="prefetch" href="assets/icons/basket.svg">
+    <!--link rel="prefetch" href="assets/icons/basket.svg"-->
     <link rel="prefetch" href="assets/icons/check.svg">
-    <link rel="prefetch" href="assets/icons/clock.svg">
+    <!--link rel="prefetch" href="assets/icons/clock.svg"-->
     <link rel="prefetch" href="assets/icons/edit.svg">
-    <link rel="prefetch" href="assets/icons/info.svg">
+    <!--link rel="prefetch" href="assets/icons/info.svg"-->
     <link rel="prefetch" href="assets/icons/lightning.svg">
-    <link rel="prefetch" href="assets/icons/list-ol.svg">
+    <!--link rel="prefetch" href="assets/icons/list-ol.svg"-->
     <link rel="prefetch" href="assets/icons/recipe-close.svg">
+    <link rel="prefetch" href="assets/icons/share.svg">
     <link rel="prefetch" href="assets/icons/trash.svg">
 </head>
 
@@ -337,123 +338,114 @@
         <!-- Full recipe view -->
         <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="recipeOffcanvas" ref="recipeView">
             <div class="offcanvas-body">
-                <button type="button" class="recipe-close-button text-reset" data-bs-dismiss="offcanvas"
-                    aria-label="Close">
+                <div class="recipeview-nav">
+                    <div class="px-3 lead">{{ proto_title }}</div>
+                    <button type="button" class="recipe-close-button text-reset" data-bs-dismiss="offcanvas" aria-label="Close">
                     <img class="recipe-close-img" src="assets/icons/recipe-close.svg">
                 </button>
-                <img v-if="proto_coverPhotoURL" v-bind:src="proto_coverPhotoURL" class="img-fluid">
-                <img v-else src="img/lily-banse--stock-photo.jpg" class="img-fluid">
+                </div>
+                <img v-if="proto_coverPhotoURL" v-bind:src="proto_coverPhotoURL" class="img-fluid recipe-cover-photo">
+                <img v-else src="img/lily-banse--stock-photo.jpg" class="img-fluid recipe-cover-photo">
                 <div class="container py-0">
                     <div class="card d-flex align-items-center recipe-title shadow-sm">
                         <div class="card-body display-6">{{ proto_title }}</div>
                     </div>
+                    <div class="container mt-0 py-0 d-flex" style="justify-content: space-around;transform: translateY(-50%)">
+                        <button class="btn btn-outline-warning" @click="editRecipe">
+                            <img src="assets/icons/edit.svg">
+                        </button>
+                        <button class="btn btn-outline-success">
+                            <img src="assets/icons/share.svg">
+                        </button>
+                        <button class="btn btn-outline-danger" @click="deleteRecipe">
+                            <img src="assets/icons/trash.svg">
+                        </button>
+                    </div>
                 </div>
                 <div class="container">
-                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
-                        <h5 class="card-title mb-3">{{ block.header }}</h5>
-                        <ul class="nav nav-pills mb-3 justify-content-between" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="recipe-pills-times-tab" data-bs-toggle="pill"
-                                    data-bs-target="#recipe-times" type="button" role="tab">
-                                    <img src="assets/icons/clock.svg">
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="recipe-pills-ingredients-tab" data-bs-toggle="pill"
-                                    data-bs-target="#recipe-ingredients" type="button" role="tab">
-                                    <img src="assets/icons/basket.svg">
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="recipe-pills-steps-tab" data-bs-toggle="pill"
-                                    data-bs-target="#recipe-steps" type="button" role="tab">
-                                    <img src="assets/icons/list-ol.svg">
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="recipe-pills-nutrition-tab" data-bs-toggle="pill"
-                                    data-bs-target="#pills-nutrition" type="button" role="tab">
-                                    <img src="assets/icons/info.svg">
-                                </button>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane fade show active" id="recipe-times" role="tabpanel">
-                                <div v-html="proto_description" class="mb-4"></div>
-                                <div class="row">
-                                    <div class="col-12 d-flex justify-content-between mb-2">
-                                        <span>Active Time</span>
-                                        <span><b>{{ proto_activetime }} minutes</b></span>
-                                    </div>
-                                    <div class="col-12 d-flex justify-content-between">
-                                        <span>Prep Time</span>
-                                        <span><b>{{ proto_preptime }} minutes</b>
-                                            ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
-                                    </div>
-                                    <div class="col-12 d-flex justify-content-between">
-                                        <span>Cook Time</span>
-                                        <span><b>{{ proto_cooktime }} minutes</b>
-                                            ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
-                                    </div>
-                                    <div class="col-12 d-flex justify-content-between">
-                                        <span>Total Time</span>
-                                        <span><b>{{ proto_totaltime }} minutes</b>
-                                            ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
-                                    </div>
-                                    <div class="col-12 mt-2">
-                                        Yields {{ proto_yield }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="recipe-ingredients" role="tabpanel"
-                                aria-labelledby="recipe-pills-ingredients-tab">
-                                <ul class="list-group list-group-flush">
-                                    <li v-for="(ingredient, ingredientIndex) in block.ingredients"
-                                        :key="ingredientIndex" class="list-group-item">
-                                        <input class="form-check-input" type="checkbox" value="">
-                                        <label class="strikeable">
-                                            <span class="ingredient-amount-badge" v-if="ingredient.amount"
-                                                style="margin-left: .5rem;">{{ ingredient.amount }}</span>
-                                            <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
-                                        </label>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-pane fade" id="recipe-steps" role="tabpanel"
-                                aria-labelledby="recipe-pills-steps-tab">
-                                <ul class="list-group list-group-flush">
-                                    <li v-for="(step, stepIndex) in block.steps" :key="stepIndex"
-                                        class="list-group-item">
-                                        <input class="form-check-input" type="checkbox" value="">
-                                        <label class="strikeable">
-                                            <span
-                                                class="ingredient-amount-badge mx-2">{{ stepIndex + 1 }}</span>{{ step.value }}
-                                        </label>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="tab-pane fade" id="pills-nutrition" role="tabpanel"
-                                aria-labelledby="recipe-pills-nutrition-tab">
-                                <ul class="list-group list-group-flush mb-4">
-                                    <li class="list-group-item">Calories: {{ block.nCalories }} g</li>
-                                    <li class="list-group-item">Total Fat: {{ block.nFat }} g</li>
-                                    <li class="list-group-item">Cholesterol: {{ block.nCholesterol }} mg</li>
-                                    <li class="list-group-item">Sodium: {{ block.nSodium }} mg</li>
-                                    <li class="list-group-item">Carbohydrate: {{ block.nCarbohydrate }} g</li>
-                                    <li class="list-group-item">Fiber: {{ block.nFiber }} g</li>
-                                    <li class="list-group-item">Sugar: {{ block.nSugars }} g</li>
-                                    <li class="list-group-item">Protein: {{ block.nProtein }} g</li>
-                                </ul>
-                            </div>
+                    <div v-html="proto_description" class="mb-4"></div>
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-between mb-2">
+                            <span>Active Time</span>
+                            <span><b>{{ proto_activetime }} min</b></span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Prep Time</span>
+                            <span><b>{{ proto_preptime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Cook Time</span>
+                            <span><b>{{ proto_cooktime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Total Time</span>
+                            <span><b>{{ proto_totaltime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
+                        </div>
+                        <div class="col-12">
+                            Yields {{ proto_yield }}
                         </div>
                     </div>
                 </div>
                 <div class="container">
                     <hr>
                 </div>
-                <div class="container mt-0">
-                    <button class="btn btn-outline-warning" @click="editRecipe">Edit</button>
-                    <button class="btn btn-outline-danger" @click="deleteRecipe">Delete</button>
+                <div class="container">
+                    <h5 class="lead">Ingredients</h5>
+                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
+                        <ul class="list-group list-group-flush">
+                            <li v-for="(ingredient, ingredientIndex) in block.ingredients"
+                                :key="ingredientIndex" class="list-group-item">
+                                <input class="form-check-input" type="checkbox" value="">
+                                <label class="strikeable">
+                                    <span class="ingredient-amount-badge" v-if="ingredient.amount"
+                                        style="margin-left: .5rem;">{{ ingredient.amount }}</span>
+                                    <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container">
+                    <h5 class="lead">Steps</h5>
+                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
+                        <ul class="list-group list-group-flush">
+                            <li v-for="(step, stepIndex) in block.steps" :key="stepIndex"
+                                class="list-group-item">
+                                <input class="form-check-input" type="checkbox" value="">
+                                <label class="strikeable">
+                                    <span
+                                        class="ingredient-amount-badge mx-2">{{ stepIndex + 1 }}</span>{{ step.value }}
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container">
+                    <h5 class="lead">Nutrition</h5>
+                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">Calories: {{ block.nCalories }} g</li>
+                            <li class="list-group-item">Total Fat: {{ block.nFat }} g</li>
+                            <li class="list-group-item">Cholesterol: {{ block.nCholesterol }} mg</li>
+                            <li class="list-group-item">Sodium: {{ block.nSodium }} mg</li>
+                            <li class="list-group-item">Carbohydrate: {{ block.nCarbohydrate }} g</li>
+                            <li class="list-group-item">Fiber: {{ block.nFiber }} g</li>
+                            <li class="list-group-item">Sugar: {{ block.nSugars }} g</li>
+                            <li class="list-group-item">Protein: {{ block.nProtein }} g</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
