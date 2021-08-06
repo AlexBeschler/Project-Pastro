@@ -191,6 +191,10 @@ body {
     background: rgba(0,0,0,.3);
 }
 
+.recipe-list-group-item {
+    cursor: pointer;
+}
+
 .search-box {
     padding: 0 0.175rem 0.1em 0.175rem;
     border: none;
@@ -268,16 +272,40 @@ body {
     margin: .25rem;
 }
 
-.recipe-close-button {
+.recipeview-nav {
     position: absolute;
     display: flex;
-    right: 0;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background-color: #f8f9fa!important;
+    z-index: 1200;
+    box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 5%), inset 0 -1px 0 rgb(0 0 0 / 15%);
+}
+
+.recipe-close-button {
     padding: 1em;
 }
 
 .recipe-close-img {
     width: 1.5em;
     height: 1.5em;
+    opacity: .5;
+}
+
+.recipe-cover-photo {
+    margin-top: calc(1.5rem + 2em);
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.subheading {
+    letter-spacing: 0.1rem;
+    font-size: 0.975em;
+    letter-spacing: 0.1rem;
+    padding: 0.25rem 0!important;
 }
 
 span.ingredient-amount-badge {
@@ -326,6 +354,10 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     text-decoration: line-through;
     color: #ccc;
     border: 2px solid #fd552340;
+}
+
+.manage-tag-list-group-item, .manage-ingredients-list-group-item, .manage-steps-list-group-item, .manage-blocks-list-group-item {
+    cursor: grab;
 }
 
 .center-empty-list {

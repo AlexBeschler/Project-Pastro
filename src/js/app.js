@@ -3,11 +3,6 @@
 	window.addEventListener("load", function (event) {
 		utils.init();
 
-		//Prevent unintended back button clicking
-		window.onbeforeunload = function () {
-			return "Your work will be lost.";
-		};
-
 		function toggleSignIn() {
 			if (!firebase.auth().currentUser) {
 				var provider = new firebase.auth.GoogleAuthProvider();
@@ -125,6 +120,8 @@
 									firebase.firestore().collection('users').doc(utils._UID).get().then((doc) => {
 										if (doc.data().dyslexicFontSet === 'true') {
 											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
+											//Set local storage which will be read by Vue instance being mounted
+											utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
 										}
 									}).catch((error) => {
 										//Couldn't get default font set, rely on local storage
@@ -239,6 +236,11 @@
 	}
 
 	function appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex) {
+		//Prevent unintended back button clicking
+		window.onbeforeunload = function () {
+			return "Your work will be lost.";
+		};
+		
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -418,7 +420,7 @@
 					}],
 					['clean']
 				],
-				isDyslexicFontSet: utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true',
+				isDyslexicFontSet: '',
 				userID: utils._UID
 			},
 			created() {
@@ -477,6 +479,9 @@
 						}
 					}
 				});
+
+				//Load settings
+				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
