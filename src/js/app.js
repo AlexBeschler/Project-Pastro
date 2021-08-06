@@ -371,7 +371,7 @@
 				manageOffcanvas: null,
 				isRecipeSubmitDisabled: false,
 				//Step 1
-				manage_filePondCoverPhoto: null,
+				manage_filePondCoverPhoto: '',
 				manage_coverPhotoURL: '',
 				//Step 2
 				manage_recipeTitle: '',
@@ -476,7 +476,7 @@
 							};
 						}
 					}
-				})
+				});
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
@@ -752,6 +752,8 @@
 					this.proto_totaltime = this.filteredCookbook[index].totalTime;
 					this.proto_activetime = this.filteredCookbook[index].activeTime;
 					this.proto_yield = this.filteredCookbook[index].yield;
+
+					this.proto_coverPhotoURL = this.filteredCookbook[index].coverPhotoURL;
 
 					this.recipeOffcanvas.show();
 				},
@@ -1487,7 +1489,7 @@
 
 					this.isRecipeSubmitDisabled = true;
 
-					serializedRecipe.coverPhotoURL = null;
+					this.manage_coverPhotoURL !== '' ? serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL : serializedRecipe.coverPhotoURL = '';
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
 

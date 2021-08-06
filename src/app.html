@@ -341,7 +341,8 @@
                     aria-label="Close">
                     <img class="recipe-close-img" src="assets/icons/recipe-close.svg">
                 </button>
-                <img src="img/lily-banse--stock-photo.jpg" class="img-fluid">
+                <img v-if="proto_coverPhotoURL" v-bind:src="proto_coverPhotoURL" class="img-fluid">
+                <img v-else src="img/lily-banse--stock-photo.jpg" class="img-fluid">
                 <div class="container py-0">
                     <div class="card d-flex align-items-center recipe-title shadow-sm">
                         <div class="card-body display-6">{{ proto_title }}</div>
