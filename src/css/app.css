@@ -191,6 +191,10 @@ body {
     background: rgba(0,0,0,.3);
 }
 
+.recipe-list-group-item {
+    cursor: pointer;
+}
+
 .search-box {
     padding: 0 0.175rem 0.1em 0.175rem;
     border: none;
@@ -326,6 +330,10 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     text-decoration: line-through;
     color: #ccc;
     border: 2px solid #fd552340;
+}
+
+.manage-tag-list-group-item, .manage-ingredients-list-group-item, .manage-steps-list-group-item, .manage-blocks-list-group-item {
+    cursor: grab;
 }
 
 .center-empty-list {

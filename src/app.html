@@ -851,7 +851,7 @@
                 </div>
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index" :index="index"
+                <li class="list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index" :index="index"
                     @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
             </ul>
         </div>
@@ -863,7 +863,7 @@
         </ul>
     </template>
     <template id="tag-draggable-item-template">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
+        <li class="list-group-item manage-tag-list-group-item d-flex justify-content-between align-items-center">
             <div v-if="!tag.editMode">
                 {{ tag.value }}
             </div>
@@ -889,7 +889,7 @@
         </ul>
     </template>
     <template id="ingredients-draggable-item-template">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
+        <li class="list-group-item manage-ingredients-list-group-item d-flex justify-content-between align-items-center">
             <div v-if="!ingredient.editMode">
                 {{ ingredient.amount }} {{ ingredient.value }}
             </div>
@@ -916,7 +916,7 @@
         </ul>
     </template>
     <template id="steps-draggable-item-template">
-        <li class="list-group-item">
+        <li class="list-group-item manage-steps-list-group-item">
             <div class="mb-2" v-if="!step.editMode">
                 {{ index + 1 }}: {{ step.value }}
             </div>
@@ -942,7 +942,7 @@
         </ul>
     </template>
     <template id="blocks-draggable-item-template">
-        <li class="list-group-item">
+        <li class="list-group-item manage-blocks-list-group-item">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-3" style="color: var(--ps-accent-color);">{{ block.header }}</h5>
             </div>
