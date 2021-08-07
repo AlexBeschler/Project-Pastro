@@ -66,6 +66,12 @@ async function createAccount(uid) {
     });
 }
 
+//Notify admin of any application errors
+exports.notifyLoggedError = functions.firestore.document('errors/{docId}').onCreate((snap, context) => {
+    const o = snap.data();
+    console.log(o.type + ' reported for user \'' + o.uid + '\' in document ' + o.docID);
+});
+
 exports.ocrTextDetection = functions.https.onRequest((req, res) => {
     cors(req, res, () => {
         const postPicture = async () => {

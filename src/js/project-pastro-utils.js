@@ -1,4 +1,5 @@
 var ProjectPastroUtils = function () {
+    this.errorCollection = null;
     this._FIRSTNAME = '';
     this._USER = null;
     this._UID = null;
@@ -12,7 +13,7 @@ var ProjectPastroUtils = function () {
     this.DYSLEXIC_FONT_SET = 'isDyslexicFontSet';
 
     this.init = function () {
-        //this._NANOBAR = new Nanobar();
+        this.errorCollection = firebase.firestore().collection('errors');
     }
 
     this.showLoading = function () {
@@ -79,5 +80,15 @@ var ProjectPastroUtils = function () {
             filterIDs = _.union(filterIDs, o);
         });
         return filterIDs;
+    }
+    //Error Reporting
+    this.reportError = function(type, message) {
+        var docID = uuidv4();
+        this.errorCollection.doc(docID).set({
+            docID: docID,
+            uid: this._UID,
+            type: type,
+            message: message
+        });
     }
 }

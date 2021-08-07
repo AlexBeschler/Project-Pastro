@@ -130,13 +130,6 @@
 										}
 									});
 								}).catch(function (error) {
-									/*
-									$.toast({
-									    title: 'Error. Check console for more details',
-									    type: 'error',
-									    delay: 5000
-									});
-									*/
 									console.log(error);
 								});
 								getCookbook();
