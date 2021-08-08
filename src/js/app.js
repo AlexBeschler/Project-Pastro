@@ -988,6 +988,9 @@
 					this.manage_recipeTotalTime = this.filteredCookbook[this.proto_index].totalTime;
 					this.manage_recipeActiveTime = this.filteredCookbook[this.proto_index].activeTime;
 					this.manage_recipeYield = this.filteredCookbook[this.proto_index].yield;
+					
+					this.manage_coverPhotoURL = this.filteredCookbook[this.proto_index].coverPhotoURL;
+					
 					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
 						var o = {};
 						o.header = block.header;
@@ -1487,11 +1490,11 @@
 
 					this.isRecipeSubmitDisabled = true;
 
-					this.manage_coverPhotoURL !== '' ? serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL : serializedRecipe.coverPhotoURL = '';
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
 
 					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
+						this.manage_coverPhotoURL !== '' ? serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL : serializedRecipe.coverPhotoURL = '';
 						//Add runtime-injected ID for index
 						serializedRecipe.id = this.injectedSearchIndexID;
 						//Increase for next time
@@ -1499,6 +1502,8 @@
 						//Push serialized recipe into sorted position to cookbook
 						this.cookbook.push(serializedRecipe);
 					} else if ($('#addRecipeButton').attr('data-ps-button-type') == 'manage') {
+						serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL;
+
 						var docIDToUpdate = this.filteredCookbook[this.proto_index].docID;
 						serializedRecipe.docID = docIDToUpdate;
 
