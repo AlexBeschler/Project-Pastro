@@ -82,13 +82,14 @@ var ProjectPastroUtils = function () {
         return filterIDs;
     }
     //Error Reporting
-    this.reportError = function(type, message) {
+    this.reportError = function(type, message, description) {
         var docID = uuidv4();
         this.errorCollection.doc(docID).set({
             docID: docID,
             uid: this._UID,
             type: type,
-            message: message
+            message: message,
+            description: description
         });
     }
 }

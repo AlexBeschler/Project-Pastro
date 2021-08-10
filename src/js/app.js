@@ -1205,7 +1205,7 @@
 						var fileType = '';
 						try {
 							fileType = blob.type.split('/')[1];
-						} catch(e) {
+						} catch (e) {
 							console.log(e);
 						}
 						if (fileType === '') {
@@ -1217,7 +1217,10 @@
 									fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName + '.' + fileType
 								})
 								.then(res => {
-									//TODO: Delete temp OCR file
+									//Asynchronously delete temp OCR file
+									firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName + '.' + fileType).delete().catch((error) => {
+										utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName + '.' + fileType);
+									});
 									switch (type) {
 										case 'nameAndDescription':
 											self.ocr_nameAndDescriptionEditMode = false;
