@@ -19,7 +19,20 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+        integrity="sha512-0SPWAwpC/17yYyZ/4HSllgaK7/gg9OlVozq8K7rf3J8LvCjYEEIfzzpnA2/SSjpGIunCSD18r3UhvDcu/xncWA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <link href="https://unpkg.com/filepond@4.28.2/dist/filepond.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+        rel="stylesheet" />
+    <link href="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.css"
+        rel="stylesheet" />
+
+    <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.js"></script>
+    <script src="https://unpkg.com/filepond@4.28.2/dist/filepond.min.js"></script>
 
     <!-- Core app -->
     <link rel="stylesheet" href="css/app.css">
@@ -340,9 +353,10 @@
             <div class="offcanvas-body">
                 <div class="recipeview-nav">
                     <div class="px-3 lead">{{ proto_title }}</div>
-                    <button type="button" class="recipe-close-button text-reset" data-bs-dismiss="offcanvas" aria-label="Close">
-                    <img class="recipe-close-img" src="assets/icons/recipe-close.svg">
-                </button>
+                    <button type="button" class="recipe-close-button text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close">
+                        <img class="recipe-close-img" src="assets/icons/recipe-close.svg">
+                    </button>
                 </div>
                 <img v-if="proto_coverPhotoURL" v-bind:src="proto_coverPhotoURL" class="img-fluid recipe-cover-photo">
                 <img v-else src="img/lily-banse--stock-photo.jpg" class="img-fluid recipe-cover-photo">
@@ -350,7 +364,8 @@
                     <div class="card d-flex align-items-center recipe-title shadow-sm">
                         <div class="card-body display-6">{{ proto_title }}</div>
                     </div>
-                    <div class="container mt-0 py-0 d-flex" style="justify-content: space-around;transform: translateY(-50%)">
+                    <div class="container mt-0 py-0 d-flex"
+                        style="justify-content: space-around;transform: translateY(-50%)">
                         <button class="btn btn-outline-warning" @click="editRecipe">
                             <img src="assets/icons/edit.svg">
                         </button>
@@ -397,8 +412,8 @@
                     <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
                         <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
                         <ul class="list-group list-group-flush">
-                            <li v-for="(ingredient, ingredientIndex) in block.ingredients"
-                                :key="ingredientIndex" class="list-group-item">
+                            <li v-for="(ingredient, ingredientIndex) in block.ingredients" :key="ingredientIndex"
+                                class="list-group-item">
                                 <input class="form-check-input" type="checkbox" value="">
                                 <label class="strikeable">
                                     <span class="ingredient-amount-badge" v-if="ingredient.amount"
@@ -417,8 +432,7 @@
                     <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
                         <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
                         <ul class="list-group list-group-flush">
-                            <li v-for="(step, stepIndex) in block.steps" :key="stepIndex"
-                                class="list-group-item">
+                            <li v-for="(step, stepIndex) in block.steps" :key="stepIndex" class="list-group-item">
                                 <input class="form-check-input" type="checkbox" value="">
                                 <label class="strikeable">
                                     <span
@@ -506,8 +520,24 @@
                         <v-stepper-content step="1">
                             <div class="row">
                                 <div class="col">
-                                    <h6 class="display-5">Welcome Screen</h6>
-                                    <h6 class="text-muted">Todo: Add OCR support here</h6>
+                                    <label for="ocrNameAndDescriptionInput" class="form-label">Name and
+                                        Description</label>
+                                    <input id="ocrNameAndDescriptionInput" type="file" data-max-file-size="6MB" />
+                                    <div id="ocrNameAndDescriptionCropWrapper" class="cropperImg"
+                                        v-show="ocr_nameAndDescriptionEditMode"></div>
+                                    <button class="btn btn-success" v-show="ocr_nameAndDescriptionEditMode"
+                                        @click="handleOCR('nameAndDescription')">Crop</button>
+
+                                    <label for="ocrIngredientsInput" class="form-label">Ingredients, one picture per
+                                        block</label>
+                                    <input id="ocrIngredientsInput" type="file" data-allow-reorder="true"
+                                        data-max-file-size="6MB" data-max-files="6" multiple />
+
+                                    <label for="ocrStepsInput" class="form-label">Steps, one picture per block</label>
+                                    <input id="ocrStepsInput" type="file" data-allow-reorder="true"
+                                        data-max-file-size="6MB" data-max-files="6" multiple />
+                                    <!--h6 class="display-5">Welcome Screen</h6>
+                                    <h6 class="text-muted">Todo: Add OCR support here</h6-->
                                 </div>
                             </div>
                         </v-stepper-content>
@@ -838,14 +868,15 @@
             <div class="backdrop-subheader">
                 <div class="row py-0 mb-1" style="display: flex; justify-content: space-between; align-items: center;">
                     <h5 class="mb-0" style="width: auto;">Recipes</h5>
-                    <button id="addRecipeButton" type="button" class="btn btn-outline-primary btn-sm mx-3 add-recipe-button"
-                        style="width: auto;" @click="$emit('clicked-add-recipe')" data-ps-button-type="add"
-                        data-disablescrolling="false">Add Recipe</button>
+                    <button id="addRecipeButton" type="button"
+                        class="btn btn-outline-primary btn-sm mx-3 add-recipe-button" style="width: auto;"
+                        @click="$emit('clicked-add-recipe')" data-ps-button-type="add" data-disablescrolling="false">Add
+                        Recipe</button>
                 </div>
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index" :index="index"
-                    @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
+                <li class="list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook"
+                    :key="index" :index="index" @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
             </ul>
         </div>
     </template>
@@ -882,7 +913,8 @@
         </ul>
     </template>
     <template id="ingredients-draggable-item-template">
-        <li class="list-group-item manage-ingredients-list-group-item d-flex justify-content-between align-items-center">
+        <li
+            class="list-group-item manage-ingredients-list-group-item d-flex justify-content-between align-items-center">
             <div v-if="!ingredient.editMode">
                 {{ ingredient.amount }} {{ ingredient.value }}
             </div>
@@ -1047,7 +1079,10 @@
         } = window.VueSlicksort;
     </script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-    <script src="https://unpkg.com/filepond@4.28.2/dist/filepond.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"
+        integrity="sha512-ooSWpxJsiXe6t4+PPjCgYmVfr1NS5QXJACcR/FPpsdm6kqG1FmQ2SVyg2RXeVuCRBLr0lWHnWJP6Zs1Efvxzww=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/range-index.js"></script>

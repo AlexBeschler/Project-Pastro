@@ -188,7 +188,7 @@ body {
     height: 0.2rem;
     margin: 0 auto;
     cursor: pointer;
-    background: rgba(0,0,0,.3);
+    background: rgba(0, 0, 0, .3);
 }
 
 .recipe-list-group-item {
@@ -278,7 +278,7 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    background-color: #f8f9fa!important;
+    background-color: #f8f9fa !important;
     z-index: 1200;
     box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 5%), inset 0 -1px 0 rgb(0 0 0 / 15%);
 }
@@ -305,7 +305,7 @@ body {
     letter-spacing: 0.1rem;
     font-size: 0.975em;
     letter-spacing: 0.1rem;
-    padding: 0.25rem 0!important;
+    padding: 0.25rem 0 !important;
 }
 
 span.ingredient-amount-badge {
@@ -356,8 +356,25 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     border: 2px solid #fd552340;
 }
 
-.manage-tag-list-group-item, .manage-ingredients-list-group-item, .manage-steps-list-group-item, .manage-blocks-list-group-item {
+.manage-tag-list-group-item,
+.manage-ingredients-list-group-item,
+.manage-steps-list-group-item,
+.manage-blocks-list-group-item {
     cursor: grab;
+}
+
+.cropperImg {
+    margin: auto;
+    width: 66%;
+}
+
+.cropperImg > img {
+    display: block;
+    max-width: 100%;
+}
+
+.cropper-canvas, .cropper-crop-box, .cropper-drag-box, .cropper-modal, .cropper-wrap-box {
+    border-radius: 4px;
 }
 
 .center-empty-list {

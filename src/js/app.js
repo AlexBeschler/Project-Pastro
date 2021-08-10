@@ -233,7 +233,7 @@
 		window.onbeforeunload = function () {
 			return "Your work will be lost.";
 		};
-		
+
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -365,21 +365,38 @@
 				//For use with manage recipes
 				manageOffcanvas: null,
 				isRecipeSubmitDisabled: false,
+
 				//Step 1
 				manage_filePondCoverPhoto: '',
 				manage_coverPhotoURL: '',
+
+				ocrNameFileBeforeCrop: null,
+				ocrNameAndDescriptionInput: null,
+				ocrNameAndDescriptionCropper: null,
+				ocr_nameAndDescriptionEditMode: false,
+
+				ocr_ingredientsInput: null,
+				ocrIngredientsCropper: null,
+				ocr_ingredientsEditMode: false,
+
+				ocr_stepsInput: null,
+				ocrStepsCropper: null,
+				ocr_stepsEditMode: false,
+
 				//Step 2
 				manage_recipeTitle: '',
 				manage_recipeName: '',
 				manage_recipeDescription: '',
 				manage_recipeTagInput: '',
 				manage_recipeTagHolder: [],
+
 				//Step 3
 				manage_recipePrepTime: '',
 				manage_recipeCookTime: '',
 				manage_recipeTotalTime: '',
 				manage_recipeActiveTime: '',
 				manage_recipeYield: '',
+
 				//Step 4
 				manage_recipeBlocks: [],
 				manage_recipeBlockIngredients: [],
@@ -397,6 +414,7 @@
 				manage_nSugars: '',
 				manage_nProtein: '',
 				nutritionFactsButtonExpandedText: 'Expand Nutrition Facts',
+
 				//Quill
 				quillInstance: null,
 				quillContent: null,
@@ -434,6 +452,43 @@
 			},
 			mounted() {
 				this.initQuill();
+
+				FilePond.registerPlugin(FilePondPluginImageTransform);
+				FilePond.registerPlugin(FilePondPluginImagePreview);
+				FilePond.registerPlugin(FilePondPluginImageEdit);
+				var self = this;
+
+				var filePondEditor = {
+					// Called by FilePond to edit the image
+					// - should open your image editor
+					// - receives file object and image edit instructions      
+					open: (file, instructions) => {
+						var reader = new FileReader();
+						reader.onloadend = function () {
+							self.ocr_nameAndDescriptionEditMode = true;
+							var image = new Image();
+							image.src = reader.result;
+							image.id = 'nameAndDescriptionCropper';
+							document.getElementById('ocrNameAndDescriptionCropWrapper').appendChild(image);
+							self.ocrNameAndDescriptionCropper = new Cropper(document.getElementById('nameAndDescriptionCropper'));
+						}
+						reader.readAsDataURL(file);
+					},
+
+					// Callback set by FilePond
+					// - should be called by the editor when user confirms editing
+					// - should receive output object, resulting edit information
+					onconfirm: (output) => {},
+
+					// Callback set by FilePond
+					// - should be called by the editor when user cancels editing
+					oncancel: () => {},
+
+					// Callback set by FilePond
+					// - should be called by the editor when user closes the editor
+					onclose: () => {}
+				}
+
 				this.recipeOffcanvas = new bootstrap.Offcanvas(document.getElementById('recipeOffcanvas'));
 				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
 
@@ -472,6 +527,17 @@
 						}
 					}
 				});
+
+				this.ocrNameAndDescriptionInput = FilePond.create(document.getElementById('ocrNameAndDescriptionInput'));
+				this.ocrNameAndDescriptionInput.setOptions({
+					allowImageEdit: true,
+					styleImageEditButtonEditItemPosition: 'bottom center',
+					imageEditAllowEdit: true,
+					imageEditEditor: filePondEditor
+				});
+
+				this.ocr_ingredientsInput = FilePond.create(document.getElementById('ocrIngredientsInput'));
+				this.ocr_stepsInput = FilePond.create(document.getElementById('ocrStepsInput'));
 
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
@@ -988,9 +1054,9 @@
 					this.manage_recipeTotalTime = this.filteredCookbook[this.proto_index].totalTime;
 					this.manage_recipeActiveTime = this.filteredCookbook[this.proto_index].activeTime;
 					this.manage_recipeYield = this.filteredCookbook[this.proto_index].yield;
-					
+
 					this.manage_coverPhotoURL = this.filteredCookbook[this.proto_index].coverPhotoURL;
-					
+
 					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
 						var o = {};
 						o.header = block.header;
@@ -1131,6 +1197,48 @@
 						this.manageOffcanvas = new bootstrap.Offcanvas(document.getElementById('manage-recipe-offcanvas'));
 					}
 					this.manageOffcanvas.show();
+				},
+				handleOCR: function (type) {
+					var self = this;
+					this.ocrNameAndDescriptionCropper.getCroppedCanvas().toBlob((blob) => {
+						var fileName = uuidv4();
+						var fileType = '';
+						try {
+							fileType = blob.type.split('/')[1];
+						} catch(e) {
+							console.log(e);
+						}
+						if (fileType === '') {
+							return;
+						}
+						firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName + '.' + fileType).put(blob).then((snapshot) => {
+							axios
+								.post('http://localhost:5001/project-pastro-c95b1/us-central1/ocrTextDetection', {
+									fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName + '.' + fileType
+								})
+								.then(res => {
+									//TODO: Delete temp OCR file
+									switch (type) {
+										case 'nameAndDescription':
+											self.ocr_nameAndDescriptionEditMode = false;
+											self.ocrNameAndDescriptionCropper.destroy();
+											var results = res.data.recognizedText[0].description.split('\n');
+											console.log(results);
+											if (results.length > 1) {
+												self.manage_recipeName = utils.capitalizeFirstLetter(results[0].toLowerCase());
+												var description = '';
+												for (var i = 1; i < results.length; i++) {
+													description += utils.capitalizeFirstLetter(results[i].toLowerCase());
+												}
+												self.quillInstance.setText(description);
+											} else {
+												self.manage_recipeName = utils.capitalizeFirstLetter(results[0].toLowerCase());
+											}
+									}
+								})
+								.catch(err => console.log(err));
+						});
+					});
 				},
 				pasteFromClipboard: function (pasteDestination) {
 					var self = this;

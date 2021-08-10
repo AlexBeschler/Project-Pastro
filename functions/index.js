@@ -5,6 +5,14 @@ const cors = require('cors')({
     origin: true
 });
 const axios = require('axios');
+const {
+    v4: uuidv4
+} = require('uuid');
+
+const vision = require('@google-cloud/vision');
+const ocrClient = new vision.ImageAnnotatorClient({
+    keyFilename: './project-pastro-c95b1-cb36ad6fa145.json'
+});
 
 admin.initializeApp();
 
@@ -66,43 +74,44 @@ async function createAccount(uid) {
     });
 }
 
-//Notify admin of any application errors
+exports.ocrTextDetection = functions.https.onRequest((req, res) => {
+    cors(req, res, () => {
+        visionImageAnnotator(req, res);
+    });
+});
+
+async function visionImageAnnotator(req, res) {
+    try {
+        const [result] = await ocrClient.textDetection(req.body.fileLocation);
+        const detections = result.textAnnotations;
+        return res.status(200).send({
+            recognizedText: detections
+        });
+    } catch (error) {
+        reportError('Error', error)
+        return res.status(400).send({
+            message: 'Check console'
+        });
+    }
+}
+
+//Notify admin of any Pastro errors
 exports.notifyLoggedError = functions.firestore.document('errors/{docId}').onCreate((snap, context) => {
     const o = snap.data();
     console.log(o.type + ' reported for user \'' + o.uid + '\' in document ' + o.docID);
 });
 
-exports.ocrTextDetection = functions.https.onRequest((req, res) => {
-    cors(req, res, () => {
-        const postPicture = async () => {
-            try {
-                const visionResponse = await axios.post('https://vision.googleapis.com/v1/images:annotate?key=' + config.pastro.cloud_vision_api_key, {
-                    "requests": [{
-                        "image": {
-                            "content": req.body.payload
-                        },
-                        "features": [{
-                            "type": "TEXT_DETECTION"
-                        }]
-                    }]
-                });
-                var annotationResponse = [];
-                annotationResponse = visionResponse.data.responses[0].textAnnotations;
-                /*
-                //For debug purposes
-                annotationResponse.forEach(element => {
-                    console.log(element);
-                });
-                */
-                return res.status(200).send({
-                    recognizedText: annotationResponse[0]
-                });
-            } catch (error) {
-                console.log('Error parsing OCR data');
-                return res.status(400).send({
-                    message: 'Check console'
-                });
-            }
-        }
-    });
+//Notify of any Functions errors
+exports.notifyFunctionsError = functions.firestore.document('functions_errors/{docId}').onCreate((snap, context) => {
+    const o = snap.data();
+    console.log(o.type + ' reported: ' + o.message);
 });
+
+//Util functions
+function reportError(type, message) {
+    var docID = uuidv4();
+    db.collection('functions_errors').doc(docID).set({
+        type: type,
+        message: message
+    });
+}
