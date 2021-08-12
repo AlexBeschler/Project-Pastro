@@ -1,5 +1,6 @@
 (function ($) {
 	var utils = new ProjectPastroUtils();
+
 	window.addEventListener("load", function (event) {
 		utils.init();
 
@@ -370,7 +371,6 @@
 				manage_filePondCoverPhoto: '',
 				manage_coverPhotoURL: '',
 
-				ocrNameFileBeforeCrop: null,
 				ocrNameAndDescriptionInput: null,
 				ocrNameAndDescriptionCropper: null,
 				ocr_nameAndDescriptionEditMode: false,
@@ -458,10 +458,7 @@
 				FilePond.registerPlugin(FilePondPluginImageEdit);
 				var self = this;
 
-				var filePondEditor = {
-					// Called by FilePond to edit the image
-					// - should open your image editor
-					// - receives file object and image edit instructions      
+				var nameAndDescriptionEditor = {
 					open: (file, instructions) => {
 						var reader = new FileReader();
 						reader.onloadend = function () {
@@ -475,17 +472,61 @@
 						reader.readAsDataURL(file);
 					},
 
-					// Callback set by FilePond
-					// - should be called by the editor when user confirms editing
-					// - should receive output object, resulting edit information
+					//Should be called by the editor when user confirms editing, should receive output object, resulting edit information
 					onconfirm: (output) => {},
 
-					// Callback set by FilePond
-					// - should be called by the editor when user cancels editing
+					//Should be called by the editor when user cancels editing
 					oncancel: () => {},
 
-					// Callback set by FilePond
-					// - should be called by the editor when user closes the editor
+					//Should be called by the editor when user closes the editor
+					onclose: () => {}
+				}
+
+				var ingredientsEditor = {
+					open: (file, instructions) => {
+						var reader = new FileReader();
+						reader.onloadend = function () {
+							self.ocr_ingredientsEditMode = true;
+							var image = new Image();
+							image.src = reader.result;
+							image.id = 'ingredientsCropper';
+							document.getElementById('ocrIngredientsCropWrapper').appendChild(image);
+							self.ocrIngredientsCropper = new Cropper(document.getElementById('ocrIngredientsCropWrapper'));
+						}
+						reader.readAsDataURL(file);
+					},
+
+					//Should be called by the editor when user confirms editing, should receive output object, resulting edit information
+					onconfirm: (output) => {},
+
+					//Should be called by the editor when user cancels editing
+					oncancel: () => {},
+
+					//Should be called by the editor when user closes the editor
+					onclose: () => {}
+				}
+
+				var stepsEditor = {
+					open: (file, instructions) => {
+						var reader = new FileReader();
+						reader.onloadend = function () {
+							self.ocr_stepsEditMode = true;
+							var image = new Image();
+							image.src = reader.result;
+							image.id = 'stepsCropper';
+							document.getElementById('ocrStepsCropWrapper').appendChild(image);
+							self.ocrStepsCropper = new Cropper(document.getElementById('ocrStepsCropWrapper'));
+						}
+						reader.readAsDataURL(file);
+					},
+
+					//Should be called by the editor when user confirms editing, should receive output object, resulting edit information
+					onconfirm: (output) => {},
+
+					//Should be called by the editor when user cancels editing
+					oncancel: () => {},
+
+					//Should be called by the editor when user closes the editor
 					onclose: () => {}
 				}
 
@@ -533,11 +574,24 @@
 					allowImageEdit: true,
 					styleImageEditButtonEditItemPosition: 'bottom center',
 					imageEditAllowEdit: true,
-					imageEditEditor: filePondEditor
+					imageEditEditor: nameAndDescriptionEditor
 				});
 
 				this.ocr_ingredientsInput = FilePond.create(document.getElementById('ocrIngredientsInput'));
+				this.ocr_ingredientsInput.setOptions({
+					allowImageEdit: true,
+					styleImageEditButtonEditItemPosition: 'bottom center',
+					imageEditAllowEdit: true,
+					imageEditEditor: ingredientsEditor
+				});
+
 				this.ocr_stepsInput = FilePond.create(document.getElementById('ocrStepsInput'));
+				this.ocr_stepsInput.setOptions({
+					allowImageEdit: true,
+					styleImageEditButtonEditItemPosition: 'bottom center',
+					imageEditAllowEdit: true,
+					imageEditEditor: stepsEditor
+				});
 
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
@@ -1200,6 +1254,7 @@
 				},
 				handleOCR: function (type) {
 					var self = this;
+					
 					this.ocrNameAndDescriptionCropper.getCroppedCanvas().toBlob((blob) => {
 						var fileName = uuidv4();
 						var fileType = '';
