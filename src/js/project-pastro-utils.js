@@ -57,6 +57,9 @@ var ProjectPastroUtils = function () {
     this.isEmpty = function (toValidate) {
         return (toValidate.length === 0 || !toValidate.trim());
     }
+    this.isAllUppercase = function(s) {
+        return s === s.toUpperCase();
+    }
     //FlexSearch utils
     this.queryAndParseFlexSearchResults = function (index, queryResults) {
         var filterIDs = [];

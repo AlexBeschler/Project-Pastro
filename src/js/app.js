@@ -371,17 +371,11 @@
 				manage_filePondCoverPhoto: '',
 				manage_coverPhotoURL: '',
 
-				ocrNameAndDescriptionInput: null,
-				ocrNameAndDescriptionCropper: null,
-				ocr_nameAndDescriptionEditMode: false,
+				ocr_DescriptionFilePond: null,
+				ocr_DescriptionCropperObject: null,
+				ocr_DescriptionPondEditor: null,
+				ocr_DescriptionEditMode: false,
 
-				ocr_ingredientsInput: null,
-				ocrIngredientsCropper: null,
-				ocr_ingredientsEditMode: false,
-
-				ocr_stepsInput: null,
-				ocrStepsCropper: null,
-				ocr_stepsEditMode: false,
 
 				//Step 2
 				manage_recipeTitle: '',
@@ -432,7 +426,7 @@
 					['clean']
 				],
 				isDyslexicFontSet: '',
-				userID: utils._UID
+				userID: utils._UID //Used for settings menu
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -456,108 +450,84 @@
 				FilePond.registerPlugin(FilePondPluginImageTransform);
 				FilePond.registerPlugin(FilePondPluginImagePreview);
 				FilePond.registerPlugin(FilePondPluginImageEdit);
+				FilePond.registerPlugin(FilePondPluginFileValidateType);
+
 				var self = this;
 
-				var nameAndDescriptionEditor = {
+				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
 						var reader = new FileReader();
 						reader.onloadend = function () {
-							self.ocr_nameAndDescriptionEditMode = true;
+							self.ocr_DescriptionEditMode = true;
 							var image = new Image();
 							image.src = reader.result;
-							image.id = 'nameAndDescriptionCropper';
-							document.getElementById('ocrNameAndDescriptionCropWrapper').appendChild(image);
-							self.ocrNameAndDescriptionCropper = new Cropper(document.getElementById('nameAndDescriptionCropper'));
+							image.id = 'descriptionCropper';
+							document.getElementById('ocrDescriptionCropWrapper').appendChild(image);
+							self.ocr_DescriptionCropperObject = new Cropper(document.getElementById('descriptionCropper'));
 						}
 						reader.readAsDataURL(file);
 					},
 
-					//Should be called by the editor when user confirms editing, should receive output object, resulting edit information
-					onconfirm: (output) => {},
+					onconfirm: (output, item) => {},
 
-					//Should be called by the editor when user cancels editing
 					oncancel: () => {},
 
-					//Should be called by the editor when user closes the editor
 					onclose: () => {}
 				}
 
-				var ingredientsEditor = {
-					open: (file, instructions) => {
-						var reader = new FileReader();
-						reader.onloadend = function () {
-							self.ocr_ingredientsEditMode = true;
-							var image = new Image();
-							image.src = reader.result;
-							image.id = 'ingredientsCropper';
-							document.getElementById('ocrIngredientsCropWrapper').appendChild(image);
-							self.ocrIngredientsCropper = new Cropper(document.getElementById('ocrIngredientsCropWrapper'));
-						}
-						reader.readAsDataURL(file);
-					},
-
-					//Should be called by the editor when user confirms editing, should receive output object, resulting edit information
-					onconfirm: (output) => {},
-
-					//Should be called by the editor when user cancels editing
-					oncancel: () => {},
-
-					//Should be called by the editor when user closes the editor
-					onclose: () => {}
-				}
-
-				var stepsEditor = {
-					open: (file, instructions) => {
-						var reader = new FileReader();
-						reader.onloadend = function () {
-							self.ocr_stepsEditMode = true;
-							var image = new Image();
-							image.src = reader.result;
-							image.id = 'stepsCropper';
-							document.getElementById('ocrStepsCropWrapper').appendChild(image);
-							self.ocrStepsCropper = new Cropper(document.getElementById('ocrStepsCropWrapper'));
-						}
-						reader.readAsDataURL(file);
-					},
-
-					//Should be called by the editor when user confirms editing, should receive output object, resulting edit information
-					onconfirm: (output) => {},
-
-					//Should be called by the editor when user cancels editing
-					oncancel: () => {},
-
-					//Should be called by the editor when user closes the editor
-					onclose: () => {}
-				}
-
-				this.recipeOffcanvas = new bootstrap.Offcanvas(document.getElementById('recipeOffcanvas'));
-				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
-
-				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
-
-				this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
-				var self = this;
-				this.manage_filePondCoverPhoto.setOptions({
+				this.ocr_DescriptionFilePond = FilePond.create(document.getElementById('ocrDescriptionFilePond'));
+				this.ocr_DescriptionFilePond.setOptions({
+					allowImageCrop: true,
+					allowImageTransform: true,
+					allowImageEdit: true,
+					styleImageEditButtonEditItemPosition: 'bottom center',
+					imageEditAllowEdit: true,
+					imageEditEditor: self.ocr_DescriptionPondEditor,
 					server: {
 						process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
-							console.log('Processing and uploading...');
-							var photoID = uuidv4();
 							var fileEndingRegex = /(?:\.([^.]+))?$/;
 							var fileType = fileEndingRegex.exec(file.name)[1];
-							var coverPhotoID = photoID + '.' + fileType;
+							var fileName = uuidv4() + '.' + fileType;
+							var metadata = {
+								contentType: file.type,
+							};
 
-							var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + coverPhotoID);
-							uploadTask.put(file).then(function () {
-								uploadTask.getDownloadURL().then((url) => {
-									self.manage_coverPhotoURL = url;
-									load();
-								}).catch(function (e) {
-									console.log('Error getting download URL: ' + e);
-									error('Error getting download URL: ' + e);
-								});
-							}).catch(function (e) {
+							var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, metadata);
+
+							uploadTask.on('state_changed', (snapshot) => {
+								progress(snapshot.bytesTransferred / snapshot.totalBytes);
+							}, (error) => {
 								console.log('Error uploading file: ' + e);
 								error('Error uploading file: ' + e);
+							}, () => {
+								//Give user some sort of indications that something is going on behind the scenes
+								self.quillInstance.setText('Loading...');
+								
+								//Perform upload to Firebase storage
+								axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/ocrTextDetection', {
+									fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName
+								}).then(res => {
+									//Asynchronously delete temp OCR file
+									firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
+										utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
+									});
+
+									try {
+										self.ocr_DescriptionCropperObject.destroy();
+									} catch(e) {
+										//Instance may not exist yet
+									}
+
+									//Perform some processing
+									var results = res.data.recognizedText[0].description.split('\n');
+									var description = '';
+									for (var i = 0; i < results.length; i++) {
+										//Normalize uppercase sentences
+										utils.isAllUppercase(results[i]) ? description += utils.capitalizeFirstLetter(results[i].toLowerCase()) + '\n' : description += results[i] + '\n';
+									}
+									self.quillInstance.setText(description.trim());
+									load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
+								}).catch(err => console.log(err));
 							});
 
 							return {
@@ -569,28 +539,55 @@
 					}
 				});
 
-				this.ocrNameAndDescriptionInput = FilePond.create(document.getElementById('ocrNameAndDescriptionInput'));
-				this.ocrNameAndDescriptionInput.setOptions({
-					allowImageEdit: true,
-					styleImageEditButtonEditItemPosition: 'bottom center',
-					imageEditAllowEdit: true,
-					imageEditEditor: nameAndDescriptionEditor
-				});
+				this.recipeOffcanvas = new bootstrap.Offcanvas(document.getElementById('recipeOffcanvas'));
+				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
 
-				this.ocr_ingredientsInput = FilePond.create(document.getElementById('ocrIngredientsInput'));
-				this.ocr_ingredientsInput.setOptions({
-					allowImageEdit: true,
-					styleImageEditButtonEditItemPosition: 'bottom center',
-					imageEditAllowEdit: true,
-					imageEditEditor: ingredientsEditor
-				});
+				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 
-				this.ocr_stepsInput = FilePond.create(document.getElementById('ocrStepsInput'));
-				this.ocr_stepsInput.setOptions({
-					allowImageEdit: true,
-					styleImageEditButtonEditItemPosition: 'bottom center',
-					imageEditAllowEdit: true,
-					imageEditEditor: stepsEditor
+				this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
+				var self = this;
+				this.manage_filePondCoverPhoto.setOptions({
+					server: {
+						process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+							var fileEndingRegex = /(?:\.([^.]+))?$/;
+							var fileType = fileEndingRegex.exec(file.name)[1];
+							var fileName = uuidv4() + '.' + fileType;
+							var metadata = {
+								contentType: file.type,
+							};
+						
+							var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + fileName).put(file, metadata);
+						
+							uploadTask.on('state_changed', (snapshot) => {
+								progress(snapshot.bytesTransferred / snapshot.totalBytes);
+							}, (error) => {
+								console.error('Error uploading file: ' + e);
+								error('Error uploading file: ' + e);
+							}, () => {
+								uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+									self.manage_coverPhotoURL = downloadURL;
+									load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/coverphotos/' + fileName);
+								}).catch(error => {
+									console.error(error);
+								});
+							});
+						
+							return {
+								abort: () => {
+									abort();
+								},
+							};
+						},
+						revert: (uniqueFileId, load, error) => {
+							firebase.storage().refFromURL(uniqueFileId).delete().then(() => {
+								load();
+							}).catch((error) => {
+								console.error(error);
+								//utils.reportError('Error', error, 'Error with deleting cover photo');
+								error();
+							});
+						}
+					}
 				});
 
 				//Load settings
@@ -848,7 +845,6 @@
 						}, 15);
 					}
 				},
-				/*==== Offcanvas helpers ====*/
 				toggleExplorePaneOffcanvas: function (toggleType) {
 					//Set v-if value
 					if (typeof toggleType === 'string') {
@@ -1252,51 +1248,72 @@
 					}
 					this.manageOffcanvas.show();
 				},
-				handleOCR: function (type) {
+				handleCrop: function (type) {
 					var self = this;
-					
-					this.ocrNameAndDescriptionCropper.getCroppedCanvas().toBlob((blob) => {
-						var fileName = uuidv4();
-						var fileType = '';
-						try {
-							fileType = blob.type.split('/')[1];
-						} catch (e) {
-							console.log(e);
+					var cropData = null;
+					var canvasData = null;
+					switch (type) {
+						case 'description':
+							cropData = this.ocr_DescriptionCropperObject.getData();
+							canvasData = this.ocr_DescriptionCropperObject.getCanvasData();
+							break;
+						default:
+							break;
+					}
+
+					//Ratio of selected crop area
+					var cropAreaRatio = cropData.height / cropData.width;
+
+					//Center point of crop area in percent
+					var percentX = (cropData.x + cropData.width / 2) / canvasData.naturalWidth;
+					var percentY = (cropData.y + cropData.height / 2) / canvasData.naturalHeight;
+
+					//Calculate available space round image center position
+					var cx = percentX > 0.5 ? 1 - percentX : percentX;
+					var cy = percentY > 0.5 ? 1 - percentY : percentY;
+
+					//Calculate image rectangle respecting space round image from crop area
+					let width = canvasData.naturalWidth;
+					let height = width * cropAreaRatio;
+
+					if (height > canvasData.naturalHeight) {
+						height = canvasData.naturalHeight;
+						width = height / cropAreaRatio;
+					}
+					var rectWidth = cx * 2 * width;
+					var rectHeight = cy * 2 * height;
+
+					//Calculate zoom
+					var zoom = Math.max(rectWidth / cropData.width, rectHeight / cropData.height);
+
+					var payload = {
+						data: {
+							crop: {
+								center: {
+									x: percentX,
+									y: percentY
+								},
+								flip: {
+									horizontal: cropData.scaleX < 0,
+									vertical: cropData.scaleY < 0
+								},
+								zoom: zoom,
+								rotation: (Math.PI / 180) * cropData.rotate,
+								aspectRatio: cropAreaRatio
+							}
 						}
-						if (fileType === '') {
-							return;
-						}
-						firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName + '.' + fileType).put(blob).then((snapshot) => {
-							axios
-								.post('http://localhost:5001/project-pastro-c95b1/us-central1/ocrTextDetection', {
-									fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName + '.' + fileType
-								})
-								.then(res => {
-									//Asynchronously delete temp OCR file
-									firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName + '.' + fileType).delete().catch((error) => {
-										utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName + '.' + fileType);
-									});
-									switch (type) {
-										case 'nameAndDescription':
-											self.ocr_nameAndDescriptionEditMode = false;
-											self.ocrNameAndDescriptionCropper.destroy();
-											var results = res.data.recognizedText[0].description.split('\n');
-											console.log(results);
-											if (results.length > 1) {
-												self.manage_recipeName = utils.capitalizeFirstLetter(results[0].toLowerCase());
-												var description = '';
-												for (var i = 1; i < results.length; i++) {
-													description += utils.capitalizeFirstLetter(results[i].toLowerCase());
-												}
-												self.quillInstance.setText(description);
-											} else {
-												self.manage_recipeName = utils.capitalizeFirstLetter(results[0].toLowerCase());
-											}
-									}
-								})
-								.catch(err => console.log(err));
-						});
-					});
+					};
+
+					switch (type) {
+						case 'description':
+							self.ocr_DescriptionPondEditor.onconfirm(payload);
+							self.ocr_DescriptionEditMode = false;
+							self.ocr_DescriptionCropperObject.destroy();
+							document.getElementById('ocrDescriptionCropWrapper').innerHTML = "";
+							break;
+						default:
+							break;
+					}
 				},
 				pasteFromClipboard: function (pasteDestination) {
 					var self = this;
