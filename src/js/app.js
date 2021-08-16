@@ -456,6 +456,10 @@
 
 				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
+						//If the user already clicked the crop button, don't let another instance be called
+						if (self.ocr_DescriptionCropperObject !== null) {
+							return;
+						}
 						var reader = new FileReader();
 						reader.onloadend = function () {
 							self.ocr_DescriptionEditMode = true;
@@ -1309,6 +1313,7 @@
 							self.ocr_DescriptionPondEditor.onconfirm(payload);
 							self.ocr_DescriptionEditMode = false;
 							self.ocr_DescriptionCropperObject.destroy();
+							self.ocr_DescriptionCropperObject = null;
 							document.getElementById('ocrDescriptionCropWrapper').innerHTML = "";
 							break;
 						default:
