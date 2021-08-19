@@ -1,6 +1,7 @@
 :root {
     --ps-bg-color: #FFFBE6;
     --ps-primary-color: #37966f;
+    --ps-primary-rgb: 55, 150, 111;
     --ps-secondary-color: #356859;
     --ps-accent-color: #FD5523;
     --ps-favorite-color: #f9058c;
@@ -8,62 +9,17 @@
 
 body {
     background-color: var(--ps-bg-color);
-}
-
-/* ==== Override Vuetify styles ==== */
-
-body {
     font-family: 'Montserrat', sans-serif;
-}
-
-.v-application {
-    font-family: inherit;
 }
 
 .btn-primary {
     color: #fff;
 }
 
-.theme--light.v-application {
-    background: inherit;
-    color: inherit;
+.form-control:focus {
+    border-color: var(--ps-primary-color);
+    box-shadow: 0 0 0 .25rem rgba(var(--ps-primary-rgb), 0.25);
 }
-
-.v-application {
-    display: inherit;
-}
-
-.v-stepper__header {
-    margin-bottom: 12px;
-}
-
-.theme--light.v-stepper .v-stepper__step--editable:hover {
-    background: none;
-}
-
-.v-stepper__content {
-    padding: 0;
-}
-
-.v-sheet.v-stepper:not(.v-sheet--outlined),
-.v-stepper__header {
-    box-shadow: none;
-}
-
-.v-application ol,
-.v-application ul {
-    padding-left: 0;
-}
-
-.v-application .row {
-    padding: 12px;
-}
-
-.row+.row {
-    margin-top: 0;
-}
-
-/* ==== End Vuetify styles ==== */
 
 /* ==== Change Quill Styles ==== */
 
@@ -87,14 +43,15 @@ body {
     transition-timing-function: ease-in-out, ease-in-out;
     transition-delay: 0s, 0s;
     border-radius: 0.25rem;
+    border: 1px solid #ffffff;
 }
 
 .ql-editor:focus {
     color: #212529;
     background-color: #fff;
-    border-color: #86b7fe;
+    border-color: var(--ps-primary-color);
     outline: 0;
-    box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+    box-shadow: 0 0 0 .25rem rgba(var(--ps-primary-rgb), 0.25);
 }
 
 .ql-container.ql-snow.is-invalid {
@@ -233,6 +190,14 @@ body {
 .offcanvas-full {
     height: 100vh;
     border-top: none;
+    background-clip: inherit;
+    border: none;
+}
+
+.offcanvas-header {
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    justify-content: flex-start;
+    box-shadow: 0 0.05rem 0.15rem rgb(0 0 0 / 5%), inset 0 -1px 0 rgb(0 0 0 / 15%);
 }
 
 .offcanvas-body {
@@ -284,12 +249,12 @@ body {
 }
 
 .recipe-close-button {
-    padding: 1em;
+    padding-left: 0;
 }
 
 .recipe-close-img {
-    width: 1.5em;
-    height: 1.5em;
+    width: 2.25em;
+    height: 2.25em;
     opacity: .5;
 }
 
@@ -354,6 +319,43 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     text-decoration: line-through;
     color: #ccc;
     border: 2px solid #fd552340;
+}
+
+/* Manage Recipe View */
+.accordion-button:not(.collapsed) {
+    color: var(--ps-primary-color)!important;
+    font-size: 1.25rem;
+    font-weight: 600;
+    background-color: inherit;
+    box-shadow: none;
+    opacity: 1!important;
+}
+
+.accordion-button::after, .accordion-button:not(.collapsed)::after {
+    background-image: none;
+    transform: none;
+}
+
+.accordion-button {
+    box-shadow: none;
+    color: #6c757d;
+    opacity: 0.75;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+}
+
+.accordion-item {
+    border: none;
+    -webkit-box-shadow: inset 6px 0px 0px 0px var(--ps-accent-color);
+    -moz-box-shadow: inset 6px 0px 0px 0px var(--ps-accent-color);
+    box-shadow: inset 6px 0px 0px 0px var(--ps-accent-color);
+    margin-bottom: 1.15rem;
+}
+
+.accordion-flush .accordion-item .accordion-button {
+    padding-top: 0rem;
 }
 
 .manage-tag-list-group-item,

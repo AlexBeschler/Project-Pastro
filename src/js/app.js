@@ -296,7 +296,6 @@
 
 		new Vue({
 			el: '#appContent',
-			vuetify: new Vuetify(),
 			data: {
 				//Utils
 				db: null,
@@ -368,7 +367,7 @@
 				isRecipeSubmitDisabled: false,
 
 				//Step 1
-				manage_filePondCoverPhoto: '',
+				manage_filePondCoverPhoto: null,
 				manage_coverPhotoURL: '',
 
 				ocr_DescriptionFilePond: null,
@@ -479,6 +478,7 @@
 					onclose: () => {}
 				}
 
+				//TODO: Wrap in accordion click listener
 				this.ocr_DescriptionFilePond = FilePond.create(document.getElementById('ocrDescriptionFilePond'));
 				this.ocr_DescriptionFilePond.setOptions({
 					allowImageCrop: true,
@@ -543,57 +543,62 @@
 					}
 				});
 
-				this.recipeOffcanvas = new bootstrap.Offcanvas(document.getElementById('recipeOffcanvas'));
+				this.recipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeView);
 				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
 
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 
-				this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
-				var self = this;
-				this.manage_filePondCoverPhoto.setOptions({
-					server: {
-						process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
-							var fileEndingRegex = /(?:\.([^.]+))?$/;
-							var fileType = fileEndingRegex.exec(file.name)[1];
-							var fileName = uuidv4() + '.' + fileType;
-							var metadata = {
-								contentType: file.type,
-							};
+				//FilePond does not render unless browser 'sees' it. Click listener is to dynamically load FilePond instance
+				this.$refs.coverPhotoRef.addEventListener('shown.bs.collapse', function() {
+					if (self.manage_filePondCoverPhoto === null) {
 						
-							var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + fileName).put(file, metadata);
-						
-							uploadTask.on('state_changed', (snapshot) => {
-								progress(snapshot.bytesTransferred / snapshot.totalBytes);
-							}, (error) => {
-								console.error('Error uploading file: ' + e);
-								error('Error uploading file: ' + e);
-							}, () => {
-								uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-									self.manage_coverPhotoURL = downloadURL;
-									load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/coverphotos/' + fileName);
-								}).catch(error => {
-									console.error(error);
-								});
-							});
-						
-							return {
-								abort: () => {
-									abort();
+						self.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
+						self.manage_filePondCoverPhoto.setOptions({
+							server: {
+								process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+									var fileEndingRegex = /(?:\.([^.]+))?$/;
+									var fileType = fileEndingRegex.exec(file.name)[1];
+									var fileName = uuidv4() + '.' + fileType;
+									var metadata = {
+										contentType: file.type,
+									};
+								
+									var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + fileName).put(file, metadata);
+								
+									uploadTask.on('state_changed', (snapshot) => {
+										progress(snapshot.bytesTransferred / snapshot.totalBytes);
+									}, (error) => {
+										console.error('Error uploading file: ' + e);
+										error('Error uploading file: ' + e);
+									}, () => {
+										uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+											self.manage_coverPhotoURL = downloadURL;
+											load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/coverphotos/' + fileName);
+										}).catch(error => {
+											console.error(error);
+										});
+									});
+								
+									return {
+										abort: () => {
+											abort();
+										},
+									};
 								},
-							};
-						},
-						revert: (uniqueFileId, load, error) => {
-							firebase.storage().refFromURL(uniqueFileId).delete().then(() => {
-								load();
-							}).catch((error) => {
-								console.error(error);
-								//utils.reportError('Error', error, 'Error with deleting cover photo');
-								error();
-							});
-						}
+								revert: (uniqueFileId, load, error) => {
+									firebase.storage().refFromURL(uniqueFileId).delete().then(() => {
+										load();
+									}).catch((error) => {
+										console.error(error);
+										//utils.reportError('Error', error, 'Error with deleting cover photo');
+										error();
+									});
+								}
+							}
+						});
 					}
 				});
-
+				
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
 			},
