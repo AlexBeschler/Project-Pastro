@@ -379,16 +379,6 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     border-radius: 4px;
 }
 
-.center-empty-list {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-    min-height: 3rem;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-}
-
 .options-list-item {
     background-color: inherit;
     padding: 1rem;

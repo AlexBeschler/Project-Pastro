@@ -1257,6 +1257,14 @@
 					}
 					this.manageOffcanvas.show();
 				},
+				addTag: function() {
+					this.manage_recipeTagHolder.push({
+						value: this.manage_recipeTagInput.trim(),
+						editMode: false,
+						editModeButtonText: 'Edit'
+					});
+					this.manage_recipeTagInput = '';
+				},
 				handleCrop: function (type) {
 					var self = this;
 					var cropData = null;
@@ -1397,16 +1405,6 @@
 						});
 				},
 				//Manage recipe methods
-				pushToTagArray: function () {
-					if (this.manage_recipeTagInput.trim() !== '' && this.manage_recipeTagInput.trim() !== null) {
-						this.manage_recipeTagHolder.push({
-							value: this.manage_recipeTagInput.trim(),
-							editMode: false,
-							editModeButtonText: 'Edit'
-						});
-						this.manage_recipeTagInput = '';
-					}
-				},
 				editTag: function (index) {
 					if (!this.manage_recipeTagHolder[index].editMode) {
 						this.manage_recipeTagHolder[index].editMode = true;
