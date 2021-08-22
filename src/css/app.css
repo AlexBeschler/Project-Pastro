@@ -188,7 +188,6 @@ body {
 }
 
 .offcanvas-full {
-    height: 100vh;
     border-top: none;
     background-clip: inherit;
     border: none;
@@ -212,7 +211,7 @@ body {
 }
 
 .recipe-delete-offcanvas {
-    height: 100vh;
+    height: 100%;
 }
 
 .recipe-delete-offcanvas-body {
@@ -377,6 +376,22 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 
 .cropper-canvas, .cropper-crop-box, .cropper-drag-box, .cropper-modal, .cropper-wrap-box {
     border-radius: 4px;
+}
+
+.manage-recipe-blocks-pills-nav {
+    justify-content: space-between;
+    font-size: 1rem;
+}
+
+.manage-recipe-blocks-pills-tab {
+    padding: 0.3rem 0.3rem;
+}
+
+.manage-recipe-blocks-pills-tab.active {
+    background-color: inherit!important;
+    color: #0d6efd!important;
+    text-decoration-line: underline;
+    text-underline-offset: 0.2rem;
 }
 
 .options-list-item {

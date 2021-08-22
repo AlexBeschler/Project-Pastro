@@ -3,6 +3,7 @@ var ProjectPastroUtils = function () {
     this._FIRSTNAME = '';
     this._USER = null;
     this._UID = null;
+    this._isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/g.test(navigator.userAgent || navigator.vendor || window.opera);
     this._PRICE = 'price_1Im2dgCwcvKw4V4OHGN954pX';
     this._TAX_RATES = ['txr_1Im2egCwcvKw4V4O7Cf3wN4g'];
     //this._SUCCESS_URL = 'https://project-pastro-c95b1.web.app/app.html';
@@ -16,6 +17,7 @@ var ProjectPastroUtils = function () {
         this.errorCollection = firebase.firestore().collection('errors');
     }
 
+    //DOM utils
     this.showLoading = function () {
         $('#login-container').css('visibility', 'hidden');
         $('#loading').css('visibility', 'visible');
@@ -30,6 +32,8 @@ var ProjectPastroUtils = function () {
         $('#loading').css('visibility', 'hidden');
         $('#appContent').css('visibility', 'visible');
     }
+
+    //Local storage utils
     this.getLocalStorage = function (key) {
         var storage = window.localStorage;
         return storage.getItem(key);
@@ -38,7 +42,7 @@ var ProjectPastroUtils = function () {
         var storage = window.localStorage;
         storage.setItem(key, value);
     }
-    //Utilities
+    //String and number utilities
     this.isNumber = function (toValidate) {
         return parseInt(toValidate) > 0 && parseInt(toValidate) < 9999 && /^\d+$/.test(parseInt(toValidate));
     }
@@ -57,7 +61,7 @@ var ProjectPastroUtils = function () {
     this.isEmpty = function (toValidate) {
         return (toValidate.length === 0 || !toValidate.trim());
     }
-    this.isAllUppercase = function(s) {
+    this.isAllUppercase = function (s) {
         return s === s.toUpperCase();
     }
     //FlexSearch utils
@@ -85,7 +89,7 @@ var ProjectPastroUtils = function () {
         return filterIDs;
     }
     //Error Reporting
-    this.reportError = function(type, message, description) {
+    this.reportError = function (type, message, description) {
         var docID = uuidv4();
         this.errorCollection.doc(docID).set({
             docID: docID,

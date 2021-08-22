@@ -406,7 +406,6 @@
 				manage_nFiber: '',
 				manage_nSugars: '',
 				manage_nProtein: '',
-				nutritionFactsButtonExpandedText: 'Expand Nutrition Facts',
 
 				//Quill
 				quillInstance: null,
@@ -424,8 +423,11 @@
 					}],
 					['clean']
 				],
+				
+				//Used for settings menu
 				isDyslexicFontSet: '',
-				userID: utils._UID //Used for settings menu
+				userID: utils._UID, 
+				browserUtil: ''
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -452,6 +454,17 @@
 				FilePond.registerPlugin(FilePondPluginFileValidateType);
 
 				var self = this;
+
+				//On mobile, chrome/safari address bar is 60px and takes up part of the 100vh
+				//Meaning if the UA is mobile we need to add an additional 60px to the height of offcanvas
+				// to compensate. This is a broad check to for mobile, instead of honing in on mobile
+				// Safari and Chrome; I simply don't care.
+				if (utils._isMobile) {
+					document.getElementById('mobile-padding').style.height = '60px';
+					this.browserUtil = 'Mobile browser';
+				} else {
+					this.browserUtil = 'Desktop browser';
+				}
 
 				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
@@ -1257,6 +1270,7 @@
 					}
 					this.manageOffcanvas.show();
 				},
+				//Manage recipe methods
 				addTag: function() {
 					this.manage_recipeTagHolder.push({
 						value: this.manage_recipeTagInput.trim(),
@@ -1404,7 +1418,6 @@
 							console.error('Failed to read clipboard contents: ', err);
 						});
 				},
-				//Manage recipe methods
 				editTag: function (index) {
 					if (!this.manage_recipeTagHolder[index].editMode) {
 						this.manage_recipeTagHolder[index].editMode = true;
@@ -1424,6 +1437,10 @@
 				autofillActiveTime: function () {
 					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
 				},
+				proceedToIngredient: function() {
+					this.$refs.manage_ing_amount.blur();
+					this.$refs.manage_ing_value.focus();
+				},
 				addIngredient: function () {
 					var ingredientValueBox = $('#manage_ing_value');
 					ingredientValueBox.removeClass('is-invalid');
@@ -1433,6 +1450,7 @@
 					if (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null) {
 						$('#ingredient-invalid-feedback').text('Cannot be blank. Use this for ingredients that don\'t require an amount.');
 						ingredientValueBox.addClass('is-invalid');
+						this.$refs.manage_ing_value.focus();
 						return;
 					}
 					this.manage_recipeBlockIngredients.push({
@@ -1443,6 +1461,8 @@
 					});
 					this.manage_recipeBlockIngredientAmount = '';
 					this.manage_recipeBlockIngredientValue = '';
+					this.$refs.manage_ing_value.blur();
+					this.$refs.manage_ing_amount.focus();
 				},
 				editIngredient: function (index) {
 					//If edit button is being clicked
@@ -1492,9 +1512,6 @@
 				},
 				deleteStep: function (index) {
 					this.manage_recipeBlockSteps.splice(index, 1);
-				},
-				toggleNutritionFacts: function () {
-					this.nutritionFactsButtonExpandedText = this.nutritionFactsButtonExpandedText === 'Expand Nutrition Facts' ? 'Collapse Nutrition Facts' : 'Expand Nutrition Facts';
 				},
 				addBlock: function () {
 					if (this.manage_recipeBlockSteps.length < 1) {
