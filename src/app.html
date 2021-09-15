@@ -48,6 +48,7 @@
 </head>
 
 <body>
+    <div id="touch-input-layer"></div>
     <div id="login-container" style="visibility: hidden;">
         <sign-in-layout v-if="signin"></sign-in-layout>
         <purchase-subscription-layout v-if="paysubscription"></purchase-subscription-layout>
@@ -64,20 +65,20 @@
         </div>
     </div>
     <div id="appContent" class="container-fluid my-4 main-wrap" style="visibility: hidden;">
-        <div id="navigationBar">
+        <div id="navigationBar" style="z-index: 1;">
             <header class="d-flex pt-3 px-3">
                 <ul class="nav nav-pills w-100 justify-content-between align-items-center" role="tablist">
-                    <li class="nav-item top-nav-bar-pill-item">
+                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
                         <button id="pills-explore-tab" class="nav-link active" data-bs-toggle="pill"
                             data-bs-target="#explorePane" type="button" role="tab" aria-controls="explorePane"
-                            aria-selected="true">Explore</button>
+                            aria-selected="true" ref="exploreRef">Explore</button>
                     </li>
-                    <li class="nav-item top-nav-bar-pill-item">
+                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
                         <button id="pills-search-tab" class="nav-link" data-bs-toggle="pill"
                             data-bs-target="#searchPane" type="button" role="tab" aria-controls="searchPane"
                             aria-selected="false">Search</button>
                     </li>
-                    <li class="nav-item top-nav-bar-pill-item">
+                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
                         <button id="pills-options-tab" class="nav-link" data-bs-toggle="pill"
                             data-bs-target="#optionsPane" type="button" role="tab" aria-controls="optionsPane"
                             aria-selected="false">Options</button>
@@ -85,10 +86,11 @@
                 </ul>
             </header>
         </div>
-        <div class="tab-content">
+        <div class="tab-content" style="position: relative;">
             <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
-                aria-labelledby="pills-explore-tab">
-                <div class="px-4 py-4 my-5">
+                aria-labelledby="pills-explore-tab" :class="{ 'explore-collapsed': !recipePaneCollapsed }">
+                <h1 class="display-6 px-4 mt-5 mb-4">Let's start here</h1>
+                <div class="px-4 py-4">
                     <h1 class="display-5 fw-bold explore-text">I feel like making <a
                             @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
                             @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
@@ -96,15 +98,27 @@
                         <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
                     </h1>
                 </div>
-                <bottom-sheet :filtered-cookbook="filteredCookbook" v-on:clicked-add-recipe="clickedAddRecipe"
+                <section class="d-flex justify-content-center">
+                    <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
+                        @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false">Add
+                        Recipe</button>
+                </section>
+            </div>
+            <div id="recipePane" class="row" :class="{ 'recipe-collapsed': recipePaneCollapsed}">
+                <h1 class="display-6 px-4 mt-5 mb-4">Your recipes</h1>
+                <bottom-sheet :filtered-cookbook="filteredCookbook"
                     v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
             </div>
             <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
-                <div class="px-4 py-4 my-5">
-                    <input type="text" class="form-control search-box" placeholder="Search"
-                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search'" v-model="model_search">
+                <h1 class="display-6 px-4 mt-5 mb-4">Or search instantly</h1>
+                <div class="px-4 pt-4 pb-5 my-5">
+                    <input type="text" class="form-control search-box" placeholder="I'm looking for..."
+                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'I\'m looking for...'"
+                        v-model="model_search">
                 </div>
-                <bottom-sheet :filtered-cookbook="filteredCookbook" v-on:clicked-add-recipe="clickedAddRecipe"
+                <h4 v-if="filteredCookbook.length === 1">1 result</h4>
+                <h4 v-else>{{ filteredCookbook.length }} results</h4>
+                <bottom-sheet :filtered-cookbook="filteredCookbook"
                     v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
             </div>
             <div id="optionsPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-options-tab">
@@ -263,6 +277,11 @@
                         style="margin: 0em 0.25em;">❤</span> by <a href="https://alexbeschler.com" target="_blank"
                         rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a></div>
             </div>
+            <button id="recipeRevealButton" class="btn" @click="clickedExpandChevron">
+                <div class="collapse-chevron" :class="{ 'collapsed': recipePaneCollapsed }" ref="exploreChevron">
+                    <div class="pulse-container" v-if="filtApp"></div>
+                </div>
+            </button>
         </div>
         <!-- Explore pane offcanvas -->
         <div class="offcanvas offcanvas-bottom pb-5" tabindex="-1" id="explore-pane-filter-offcanvas"
@@ -495,11 +514,11 @@
             </div>
             <div class="offcanvas-body small">
                 <div class="container">
-                    <div id="manageRecipeAccordion" class="accordion accordion-flush mt-4">
-                        <div class="accordion-item accordion-border">
+                    <div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
+                        <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
-                                <button class="accordion-button pe-1" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#flush-overview">
+                                <button class="accordion-button manage-accordion-button pe-1" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#flush-overview">
                                     <span>1</span><span style="margin-left: 1rem;">Recipe Overview</span>
                                 </button>
                             </h2>
@@ -551,10 +570,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item accordion-border">
+                        <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed pe-1" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#flush-cover-photo">
+                                <button class="accordion-button manage-accordion-button collapsed pe-1" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#flush-cover-photo">
                                     <span>2</span><span style="margin-left: 1rem;">Cover Photo</span>
                                 </button>
                             </h2>
@@ -566,10 +585,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item accordion-border">
+                        <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed pe-1" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#flush-time-servings">
+                                <button class="accordion-button manage-accordion-button collapsed pe-1" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#flush-time-servings">
                                     <span>3</span><span style="margin-left: 1rem;">Time & Servings</span>
                                 </button>
                             </h2>
@@ -629,18 +648,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item accordion-border">
+                        <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
-                                <button class="accordion-button pe-1 collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#flush-blocks">
-                                    <span>4</span><span style="margin-left: 1rem;">Recipe Blocks</span>
+                                <button class="accordion-button manage-accordion-button pe-1 collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#flush-blocks">
+                                    <span>4</span><span style="margin-left: 1rem;">Recipe Sections</span>
                                 </button>
                             </h2>
                             <div id="flush-blocks" class="accordion-collapse manage-recipe-section collapse"
                                 data-bs-parent="#manageRecipeAccordion">
                                 <div class="accordion-body pe-1">
                                     <div class="mb-4">
-                                        <label for="manage_blockHeader">Recipe Block Name</label>
+                                        <label for="manage_blockHeader">Recipe Section Name</label>
                                         <input id="manage_blockHeader" class="form-control" type="text"
                                             v-model="manage_recipeBlockHeader">
                                     </div>
@@ -678,18 +697,20 @@
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade collapse active show" id="pills-manage-ingredients"
-                                                role="tabpanel">
+                                            <div class="tab-pane fade collapse active show"
+                                                id="pills-manage-ingredients" role="tabpanel">
                                                 <div class="my-3">
                                                     <label for="manage_ing_amount">Amount</label>
                                                     <input id="manage_ing_amount" class="form-control" type="text"
                                                         placeholder="i.e. 1 tbps"
-                                                        v-model="manage_recipeBlockIngredientAmount" v-on:keyup.enter="proceedToIngredient" ref="manage_ing_amount">
-                                                    <label for="manage_ing_value">Ingredient</label>
+                                                        v-model="manage_recipeBlockIngredientAmount"
+                                                        v-on:keyup.enter="proceedToIngredient" ref="manage_ing_amount">
+                                                    <label for="manage_ing_value" class="mt-2">Ingredient</label>
                                                     <div class="input-group mb-3">
                                                         <input id="manage_ing_value" class="form-control" type="text"
                                                             placeholder="i.e. butter"
-                                                            v-model="manage_recipeBlockIngredientValue" ref="manage_ing_value" v-on:keyup.enter="addIngredient">
+                                                            v-model="manage_recipeBlockIngredientValue"
+                                                            ref="manage_ing_value" v-on:keyup.enter="addIngredient">
                                                         <button class="btn btn-success"
                                                             @click="pasteFromClipboard('ingredients')">
                                                             <img src="assets/icons/clipboard-plus.svg">
@@ -822,7 +843,8 @@
                                     </div>
                                     <div class="mb-3">
                                         <hr>
-                                        <button class="btn btn-outline-success" @click="addBlock">Add Block</button>
+                                        <button class="btn d-flex mb-3" style="margin: 0 auto;" @click="addBlock"
+                                            v-if="manage_recipeBlockSteps.length">+ Add Section</button>
                                         <div class="list-group" v-if="manage_recipeBlocks.length">
                                             <blocks-draggable-list :lock-axis="'y'" :press-delay.number=200
                                                 v-model="manage_recipeBlocks">
@@ -841,8 +863,9 @@
                             </div>
                         </div>
                     </div>
-                    <button id="submitRecipeButton" type="button" class="btn btn-success mb-5" @click="submitManagedRecipe"
-                        style="width: 100%;" :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
+                    <button id="submitRecipeButton" type="button" class="btn btn-success mb-5"
+                        @click="submitManagedRecipe" style="width: 100%;"
+                        :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
                     <div id="mobile-padding"></div>
                 </div>
             </div>
@@ -857,25 +880,10 @@
 
     <!-- BottomSheet -->
     <template id="bottom-sheet-template">
-        <!-- Recipe Bottom Half -->
-        <div id="bottomSheet" class="backdrop-front w-100">
-            <div class="bottom-sheet-notch-container">
-                <div class="bottom-sheet-notch"></div>
-            </div>
-            <div class="backdrop-subheader">
-                <div class="row py-0 mb-1" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h5 class="mb-0" style="width: auto;">Recipes</h5>
-                    <button id="addRecipeButton" type="button"
-                        class="btn btn-outline-primary btn-sm mx-3 add-recipe-button" style="width: auto;"
-                        @click="$emit('clicked-add-recipe')" data-ps-button-type="add" data-disablescrolling="false">Add
-                        Recipe</button>
-                </div>
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook"
-                    :key="index" :index="index" @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
-            </ul>
-        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index"
+                :index="index" @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
+        </ul>
     </template>
     <!-- Manage tags draggables -->
     <template id="tag-draggable-list-template">
@@ -966,17 +974,43 @@
     <template id="blocks-draggable-item-template">
         <li class="list-group-item manage-blocks-list-group-item">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-3" style="color: var(--ps-accent-color);">{{ block.header }}</h5>
+                <h5 class="mb-0" style="color: var(--ps-accent-color);">{{ block.header }}</h5>
             </div>
-            <h6>Ingredients</h6>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item" v-for="(ingredient, j) in block.ingredients" :key="j">
-                    {{ ingredient.amount }} {{ ingredient.value }}</li>
-            </ul>
-            <h6>Steps</h6>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">{{ step.value }}</li>
-            </ul>
+            <div class="recipe-block-list-header d-flex align-items-start">
+                <button class="btn recipe-block-more-info-button d-flex ps-0 collapsed" type="button"
+                    data-bs-toggle="collapse" :data-bs-target="'#blockIngredients' + index">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#000000"
+                        class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                        <path
+                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                    </svg>
+                    <h6 class="mb-0 ms-4" v-if="block.ingredients.length === 1">1 ingredient</h6>
+                    <h6 class="mb-0 ms-4" v-else>{{ block.ingredients.length }} ingredients</h6>
+                </button>
+            </div>
+            <div class="collapse" :id="'blockIngredients' + index">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" v-for="(ingredient, j) in block.ingredients" :key="j">
+                        {{ ingredient.amount }} {{ ingredient.value }}</li>
+                </ul>
+            </div>
+            <div class="recipe-block-list-header d-flex align-items-start">
+                <button class="btn recipe-block-more-info-button d-flex ps-0 collapsed" type="button"
+                    data-bs-toggle="collapse" :data-bs-target="'#blockSteps' + index">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#000000"
+                        class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                        <path
+                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                    </svg>
+                    <h6 class="mb-0 ms-4" v-if="block.steps.length === 1">1 step</h6>
+                    <h6 class="mb-0 ms-4" v-else>{{ block.ingredients.length }} steps</h6>
+                </button>
+            </div>
+            <div class="collapse" :id="'blockSteps' + index">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">{{ step.value }}</li>
+                </ul>
+            </div>
             <button class="btn btn-outline-warning mb-2 mr-2" @click="$emit('edit-block', index)">Edit</button>
             <button class="btn btn-outline-danger mb-2" @click="$emit('delete-block', index)">Delete</button>
         </li>
@@ -1073,6 +1107,7 @@
     <script src="vendor/quilljs/js/quill.min.js"></script>
     <script src="vendor/cropperjs/js/cropper.min.js"></script>
     <script src="vendor/axios/axios.min.js"></script>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/range-index.js"></script>

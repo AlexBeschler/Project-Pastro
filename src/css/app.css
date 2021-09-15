@@ -3,6 +3,7 @@
     --ps-primary-color: #37966f;
     --ps-primary-rgb: 55, 150, 111;
     --ps-secondary-color: #356859;
+    --ps-light-color: #F1F5DF;
     --ps-accent-color: #FD5523;
     --ps-favorite-color: #f9058c;
 }
@@ -10,6 +11,27 @@
 body {
     background-color: var(--ps-bg-color);
     font-family: 'Montserrat', sans-serif;
+}
+
+.disable-scroll {
+    overflow-y: hidden;
+}
+
+.touch-action-auto {
+    touch-action: auto !important;
+}
+
+.collapse-important {
+    display: none !important;
+}
+
+#touch-input-layer {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
 .btn-primary {
@@ -123,9 +145,29 @@ body {
     background-color: var(--ps-primary-color) !important;
 }
 
+#explorePane,
+#recipePane {
+    position: absolute;
+    transition: transform 0.35s ease-in-out;
+}
+
+.explore-collapsed {
+    transform: translateY(-100vh);
+}
+
+.recipe-collapsed {
+    transform: translateY(100vh);
+}
+
+#explorePane>div,
+#searchPane>div {
+    background-color: var(--ps-light-color);
+}
+
 .explore-text>a {
     color: var(--ps-accent-color) !important;
     cursor: pointer;
+    text-decoration: underline !important;
 }
 
 #explore-pane-filter-offcanvas {
@@ -168,6 +210,95 @@ body {
 
 .search-box:focus {
     border-bottom-color: var(--ps-primary-color);
+}
+
+#recipeRevealButton {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    border: none;
+    bottom: 0;
+    padding: 24px 12px;
+    display: flex;
+    justify-content: center;
+}
+
+#recipeRevealButton:focus {
+    box-shadow: none;
+}
+
+#addRecipeButton {
+    width: 90%;
+    border-radius: 12px;
+}
+
+
+/* if you want your animations to run smoothly, animate only CSS opacity, transforms and filters. */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 12px var(--ps-primary-color), inset 0 0 12px var(--ps-primary-color);
+    }
+
+    13% {
+        box-shadow: 0 0 13px var(--ps-primary-color), inset 0 0 12px var(--ps-primary-color);
+    }
+
+    25% {
+        box-shadow: 0 0 14px var(--ps-primary-color), inset 0 0 13px var(--ps-primary-color);
+    }
+
+    37% {
+        box-shadow: 0 0 15px var(--ps-primary-color), inset 0 0 13px var(--ps-primary-color);
+    }
+
+    50% {
+        box-shadow: 0 0 16px var(--ps-primary-color), inset 0 0 14px var(--ps-primary-color);
+    }
+
+    63% {
+        box-shadow: 0 0 15px var(--ps-primary-color), inset 0 0 13px var(--ps-primary-color);
+    }
+
+    75% {
+        box-shadow: 0 0 14px var(--ps-primary-color), inset 0 0 13px var(--ps-primary-color);
+    }
+
+    87% {
+        box-shadow: 0 0 13px var(--ps-primary-color), inset 0 0 12px var(--ps-primary-color);
+    }
+
+    100% {
+        box-shadow: 0 0 12px var(--ps-primary-color), inset 0 0 12px var(--ps-primary-color);
+    }
+}
+
+.pulse-container {
+    background-color: transparent;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 50px;
+    box-shadow: 0 0 8px var(--ps-primary-color), inset 0 0 8px var(--ps-primary-color);
+    animation: pulse 3s ease-in-out 0s infinite normal none;
+    -webkit-animation: pulse 3s ease-in-out 0s infinite normal none;
+}
+
+.collapse-chevron {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    content: "";
+    background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'%23212529\'%3e%3cpath fill-rule=\'evenodd\' d=\'M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\'/%3e%3c/svg%3e');
+    background-repeat: no-repeat;
+    background-size: 2.25rem;
+    transition: transform .2s ease-in-out;
+}
+
+.collapse-chevron:not(.collapsed) {
+    background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'%23212529\'%3e%3cpath fill-rule=\'evenodd\' d=\'M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\'/%3e%3c/svg%3e');
+    transform: rotate(-180deg);
 }
 
 .backdrop-front {
@@ -321,31 +452,32 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 }
 
 /* Manage Recipe View */
-.accordion-button:not(.collapsed) {
-    color: var(--ps-primary-color)!important;
+.manage-accordion-button:not(.collapsed) {
+    color: var(--ps-primary-color) !important;
     font-size: 1.25rem;
     font-weight: 600;
     background-color: inherit;
     box-shadow: none;
-    opacity: 1!important;
+    opacity: 1 !important;
 }
 
-.accordion-button::after, .accordion-button:not(.collapsed)::after {
+.manage-accordion-button::after,
+.manage-accordion-button:not(.collapsed)::after {
     background-image: none;
     transform: none;
 }
 
-.accordion-button {
+.manage-accordion-button {
     box-shadow: none;
     color: #6c757d;
     opacity: 0.75;
 }
 
-.accordion-button:focus {
+.manage-accordion-button:focus {
     box-shadow: none;
 }
 
-.accordion-item {
+.manage-accordion-item {
     border: none;
     -webkit-box-shadow: inset 6px 0px 0px 0px var(--ps-accent-color);
     -moz-box-shadow: inset 6px 0px 0px 0px var(--ps-accent-color);
@@ -353,7 +485,7 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     margin-bottom: 1.15rem;
 }
 
-.accordion-flush .accordion-item .accordion-button {
+.manage-accordion-flush .manage-accordion-item .manage-accordion-button {
     padding-top: 0rem;
 }
 
@@ -369,12 +501,16 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     width: 66%;
 }
 
-.cropperImg > img {
+.cropperImg>img {
     display: block;
     max-width: 100%;
 }
 
-.cropper-canvas, .cropper-crop-box, .cropper-drag-box, .cropper-modal, .cropper-wrap-box {
+.cropper-canvas,
+.cropper-crop-box,
+.cropper-drag-box,
+.cropper-modal,
+.cropper-wrap-box {
     border-radius: 4px;
 }
 
@@ -388,10 +524,27 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 }
 
 .manage-recipe-blocks-pills-tab.active {
-    background-color: inherit!important;
-    color: #0d6efd!important;
+    background-color: inherit !important;
+    color: #0d6efd !important;
     text-decoration-line: underline;
     text-underline-offset: 0.2rem;
+}
+
+.recipe-block-more-info-button {
+    padding: .25rem;
+}
+
+.recipe-block-more-info-button:focus {
+    box-shadow: none !important;
+}
+
+.recipe-block-more-info-button>svg {
+    align-self: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.recipe-block-more-info-button:not(.collapsed)>svg {
+    transform: rotate(90deg);
 }
 
 .options-list-item {

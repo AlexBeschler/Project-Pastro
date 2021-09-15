@@ -90,6 +90,8 @@ var ProjectPastroUtils = function () {
     }
     //Error Reporting
     this.reportError = function (type, message, description) {
+        if (this.errorCollection === null)
+            this.errorCollection = firebase.firestore().collection('errors');
         var docID = uuidv4();
         this.errorCollection.doc(docID).set({
             docID: docID,

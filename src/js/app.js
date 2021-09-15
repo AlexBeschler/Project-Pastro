@@ -230,11 +230,6 @@
 	}
 
 	function appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex) {
-		//Prevent unintended back button clicking
-		window.onbeforeunload = function () {
-			return "Your work will be lost.";
-		};
-
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -309,6 +304,14 @@
 				displayTime: '',
 				displayIngredients: '',
 				displayNutrition: '',
+
+				explorePaneActive: true,
+				searchPaneActive: false,
+				optionsPaneActive: false,
+
+				recipePaneCollapsed: true,
+
+				filtApp: false,
 
 				//Recipe
 				recipeOffcanvas: null,
@@ -423,11 +426,14 @@
 					}],
 					['clean']
 				],
-				
+
 				//Used for settings menu
 				isDyslexicFontSet: '',
-				userID: utils._UID, 
-				browserUtil: ''
+				userID: utils._UID,
+				browserUtil: '',
+
+				appContentHammerManager: null,
+				touchInputHammerManager: null
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -457,7 +463,7 @@
 
 				//On mobile, chrome/safari address bar is 60px and takes up part of the 100vh
 				//Meaning if the UA is mobile we need to add an additional 60px to the height of offcanvas
-				// to compensate. This is a broad check to for mobile, instead of honing in on mobile
+				// to compensate. This is a broad check for mobile, instead of honing in on mobile
 				// Safari and Chrome; I simply don't care.
 				if (utils._isMobile) {
 					document.getElementById('mobile-padding').style.height = '60px';
@@ -519,7 +525,7 @@
 							}, () => {
 								//Give user some sort of indications that something is going on behind the scenes
 								self.quillInstance.setText('Loading...');
-								
+
 								//Perform upload to Firebase storage
 								axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/ocrTextDetection', {
 									fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName
@@ -531,7 +537,7 @@
 
 									try {
 										self.ocr_DescriptionCropperObject.destroy();
-									} catch(e) {
+									} catch (e) {
 										//Instance may not exist yet
 									}
 
@@ -562,9 +568,9 @@
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 
 				//FilePond does not render unless browser 'sees' it. Click listener is to dynamically load FilePond instance
-				this.$refs.coverPhotoRef.addEventListener('shown.bs.collapse', function() {
+				this.$refs.coverPhotoRef.addEventListener('shown.bs.collapse', function () {
 					if (self.manage_filePondCoverPhoto === null) {
-						
+
 						self.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
 						self.manage_filePondCoverPhoto.setOptions({
 							server: {
@@ -575,9 +581,9 @@
 									var metadata = {
 										contentType: file.type,
 									};
-								
+
 									var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + fileName).put(file, metadata);
-								
+
 									uploadTask.on('state_changed', (snapshot) => {
 										progress(snapshot.bytesTransferred / snapshot.totalBytes);
 									}, (error) => {
@@ -591,7 +597,7 @@
 											console.error(error);
 										});
 									});
-								
+
 									return {
 										abort: () => {
 											abort();
@@ -611,9 +617,59 @@
 						});
 					}
 				});
-				
+
+				//document.getElementById().addEventListener("transitionend", myEndFunction);
+
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
+
+				this.appContentHammerManager = new Hammer.Manager(document.getElementById('appContent'));
+				this.appContentHammerManager.add(new Hammer.Swipe());
+				this.appContentHammerManager.on('swipe', function (e) {
+					//Vertical swipe
+					if (e.offsetDirection === 8 || e.offsetDirection === 16) {
+						self.clickedExpandChevron();
+					}
+				});
+
+				this.touchInputHammerManager = new Hammer.Manager(document.getElementById('touch-input-layer'));
+				this.touchInputHammerManager.add(new Hammer.Swipe());
+				this.touchInputHammerManager.on('swipe', function (e) {
+					if (e.offsetDirection === 8 || e.offsetDirection === 16) {
+						self.clickedExpandChevron();
+					}
+				});
+				document.body.classList.add('disable-scroll'); //Default view
+
+				var tabEl = document.getElementById('pills-explore-tab');
+				tabEl.addEventListener('hidden.bs.tab', function (event) {
+					//Collapse Recipe Pane
+					var r = document.getElementById('recipePane');
+					r.classList.add('collapse');
+					
+					var s = document.getElementById('touch-input-layer');
+					s.classList.add('touch-action-auto');
+					
+					var t = document.getElementById('appContent');
+					t.classList.add('touch-action-auto');
+
+					var u = document.getElementById('recipeRevealButton');
+					u.classList.add('collapse-important');
+				});
+				tabEl.addEventListener('show.bs.tab', function (event) {
+					//Show recipe Pane
+					var r = document.getElementById('recipePane');
+					r.classList.remove('collapse');
+					
+					var s = document.getElementById('touch-input-layer');
+					s.classList.remove('touch-action-auto');
+					
+					var t = document.getElementById('appContent');
+					t.classList.remove('touch-action-auto');
+
+					var u = document.getElementById('recipeRevealButton');
+					u.classList.remove('collapse-important');
+				});
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
@@ -770,14 +826,46 @@
 					//Write to cloud
 					this.db.collection('users').doc(utils._UID).set({
 						dyslexicFontSet: this.isDyslexicFontSet.toString()
-					}).then(() => {
-						console.log('Wrote new font settings to cloud');
 					}).catch((error) => {
 						console.error('Error writing cloud font preference: ', error);
 					});
 				}
 			},
 			methods: {
+				navBarClicked: function () {
+					//TODO: Hide recipe book & collapse button & get rid of touch action none
+					var self = this;
+					if (this.$refs.exploreRef.classList.contains('active')) {
+						this.appContentHammerManager = new Hammer.Manager(document.getElementById('appContent'));
+						this.appContentHammerManager.add(new Hammer.Swipe());
+						this.appContentHammerManager.on('swipe', function (e) {
+							//Vertical swipe
+							if (e.offsetDirection === 8 || e.offsetDirection === 16) {
+								self.clickedExpandChevron();
+							}
+						});
+
+						this.touchInputHammerManager = new Hammer.Manager(document.getElementById('touch-input-layer'));
+						this.touchInputHammerManager.add(new Hammer.Swipe());
+						this.touchInputHammerManager.on('swipe', function (e) {
+							if (e.offsetDirection === 8 || e.offsetDirection === 16) {
+								self.clickedExpandChevron();
+							}
+						});
+						document.body.classList.add('disable-scroll');
+					} else {
+						document.body.classList.remove('disable-scroll');
+						if (this.appContentHammerManager !== null) {
+							this.appContentHammerManager.destroy();
+							this.appContentHammerManager = null;
+						}
+						if (this.touchInputHammerManager !== null) {
+							this.touchInputHammerManager.destroy();
+							this.touchInputHammerManager = null;
+						}
+					}
+				},
+				//Explore pane
 				checkNutritionInfo: function (b, a) {
 					if ((utils.isBlank(this.nCalories)) &&
 						(utils.isBlank(this.nFat)) &&
@@ -1027,8 +1115,10 @@
 
 					if (!filtersApplied) {
 						this.filteredCookbook = this.cookbook;
+						this.filtApp = false;
 						return;
 					};
+					this.filtApp = true;
 					this.filteredCookbook = [];
 					filterIDs.forEach(id => {
 						this.filteredCookbook.push(this.cookbook[id]);
@@ -1097,6 +1187,15 @@
 					let x = (hours * 60) + minutes
 					this.finishByTimeInputInMinutes = x.toString();
 					return t;
+				},
+				clickedExpandChevron: function () {
+					//If the user tapped the button to show recipes
+					if (this.recipePaneCollapsed) {
+						this.recipePaneCollapsed = false;
+
+					} else {
+						this.recipePaneCollapsed = true;
+					}
 				},
 				//Recipe View methods
 				getTimeFromNowUsingMinutes: function (sMinutes) {
@@ -1271,7 +1370,7 @@
 					this.manageOffcanvas.show();
 				},
 				//Manage recipe methods
-				addTag: function() {
+				addTag: function () {
 					this.manage_recipeTagHolder.push({
 						value: this.manage_recipeTagInput.trim(),
 						editMode: false,
@@ -1437,7 +1536,7 @@
 				autofillActiveTime: function () {
 					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
 				},
-				proceedToIngredient: function() {
+				proceedToIngredient: function () {
 					this.$refs.manage_ing_amount.blur();
 					this.$refs.manage_ing_value.focus();
 				},
@@ -1520,7 +1619,7 @@
 						return;
 					}
 					this.manage_recipeBlocks.push({
-						header: this.manage_recipeBlockHeader,
+						header: this.manage_recipeBlockHeader === '' ? 'Recipe' : this.manage_recipeBlockHeader,
 						ingredients: this.manage_recipeBlockIngredients,
 						steps: this.manage_recipeBlockSteps,
 						nCalories: utils.isNumber(this.manage_nCalories) ? parseInt(this.manage_nCalories) : 0,
