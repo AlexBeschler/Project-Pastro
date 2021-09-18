@@ -526,9 +526,9 @@
                                 data-bs-parent="#manageRecipeAccordion">
                                 <div class="accordion-body pe-1">
                                     <div class="mb-3">
-                                        <label for="manage_form_name" class="form-label">Recipe name</label>
-                                        <input type="text" class="form-control" id="manage_form_name"
-                                            v-model="manage_recipeName" required>
+                                        <input type="text" class="form-control manage-recipe-input"
+                                            id="manage_form_name" v-model="manage_recipeName" placeholder="Recipe name"
+                                            required>
                                         <div class="invalid-feedback">
                                             Please enter a name
                                         </div>
@@ -538,11 +538,11 @@
                                         <div id="editor"></div>
                                     </div>
                                     <div class="">
-                                        <label for="manage_form_tags" class="form-label">Tags</label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="manage_form_tags"
-                                                v-model="manage_recipeTagInput" v-on:keyup.enter="addTag" required>
-                                            <button class="btn btn-success" @click="pasteFromClipboard('tags')">
+                                            <input type="text" class="form-control manage-recipe-input me-3"
+                                                id="manage_form_tags" v-model="manage_recipeTagInput"
+                                                v-on:keyup.enter="addTag" placeholder="Tags" required>
+                                            <button class="btn btn-outline-success" @click="pasteFromClipboard('tags')">
                                                 <img src="assets/icons/clipboard-plus.svg">
                                             </button>
                                         </div>
@@ -595,52 +595,49 @@
                             <div id="flush-time-servings" class="accordion-collapse manage-recipe-section collapse"
                                 data-bs-parent="#manageRecipeAccordion">
                                 <div class="accordion-body pe-1">
-                                    <div class="mb-3">
-                                        <label for="manage_form_prep_time" class="form-label">Prep Time (in
-                                            minutes)</label>
-                                        <input type="number" class="form-control" id="manage_form_prep_time"
-                                            v-model="manage_recipePrepTime" required>
+                                    <div class="mb-4">
+                                        <input type="number" class="form-control manage-recipe-input"
+                                            id="manage_form_prep_time" v-model="manage_recipePrepTime"
+                                            placeholder="Prep Time (in minutes)" required>
                                         <div class="invalid-feedback">
                                             Please enter a preparation time
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="manage_form_cook_time" class="form-label">Cook Time (in
-                                            minutes)</label>
-                                        <input type="number" class="form-control" id="manage_form_cook_time"
-                                            v-model="manage_recipeCookTime" required>
+                                    <div class="mb-4">
+                                        <input type="number" class="form-control manage-recipe-input"
+                                            id="manage_form_cook_time" v-model="manage_recipeCookTime"
+                                            placeholder="Cook Time (in minutes)" required>
                                         <div class="invalid-feedback">
                                             Please enter a cook time
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="manage_form_total_time" class="form-label">Total Time (in
-                                            minutes)</label>
-                                        <input type="number" class="form-control" id="manage_form_total_time"
-                                            v-model="manage_recipeTotalTime" required>
+                                    <div class="mb-0">
+                                        <input type="number" class="form-control manage-recipe-input"
+                                            id="manage_form_total_time" v-model="manage_recipeTotalTime"
+                                            placeholder="Total Time (in minutes)" required>
                                         <div class="invalid-feedback">
                                             Please enter a total time
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="time" class="form-label">Active Time (in
-                                            minutes)</label>
-                                        <div id="active-time-group" class="input-group mb-3">
-                                            <input type="number" class="form-control" id="manage_form_active_time"
-                                                v-model="manage_recipeActiveTime" required>
+                                    <div class="mb-4">
+                                        <label for="time" class="form-label"></label>
+                                        <div id="active-time-group" class="input-group">
+                                            <input type="number" class="form-control manage-recipe-input me-3"
+                                                id="manage_form_active_time" v-model="manage_recipeActiveTime"
+                                                placeholder="Active Time (in minutes)" required>
                                             <div class="invalid-feedback">
                                                 Please enter an active time
                                             </div>
-                                            <button class="btn btn-outline-primary" type="button"
+                                            <button class="btn btn-outline-success" type="button"
                                                 @click.prevent="autofillActiveTime" style="padding: 0.375rem;">
                                                 <img src="assets/icons/lightning.svg">
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="manage_form_yield" class="form-label">Yield</label>
-                                        <input type="text" class="form-control" id="manage_form_yield"
-                                            v-model="manage_recipeYield" placeholder="i.e. 2 servings" required>
+                                    <div class="mb-4">
+                                        <input type="text" class="form-control manage-recipe-input"
+                                            id="manage_form_yield" v-model="manage_recipeYield"
+                                            placeholder="Yield, i.e. 2 servings" required>
                                         <div class="invalid-feedback">
                                             Please enter a yield
                                         </div>
@@ -659,9 +656,8 @@
                                 data-bs-parent="#manageRecipeAccordion">
                                 <div class="accordion-body pe-1">
                                     <div class="mb-4">
-                                        <label for="manage_blockHeader">Recipe Section Name</label>
-                                        <input id="manage_blockHeader" class="form-control" type="text"
-                                            v-model="manage_recipeBlockHeader">
+                                        <input id="manage_blockHeader" class="form-control manage-recipe-input"
+                                            type="text" v-model="manage_recipeBlockHeader" placeholder="Section Name">
                                     </div>
                                     <div class="mb-3">
                                         <ul class="nav nav-pills manage-recipe-blocks-pills-nav" role="tablist">
@@ -700,32 +696,27 @@
                                             <div class="tab-pane fade collapse active show"
                                                 id="pills-manage-ingredients" role="tabpanel">
                                                 <div class="my-3">
-                                                    <label for="manage_ing_amount">Amount</label>
-                                                    <input id="manage_ing_amount" class="form-control" type="text"
-                                                        placeholder="i.e. 1 tbps"
-                                                        v-model="manage_recipeBlockIngredientAmount"
-                                                        v-on:keyup.enter="proceedToIngredient" ref="manage_ing_amount">
-                                                    <label for="manage_ing_value" class="mt-2">Ingredient</label>
                                                     <div class="input-group mb-3">
-                                                        <input id="manage_ing_value" class="form-control" type="text"
-                                                            placeholder="i.e. butter"
+                                                        <input id="manage_ing_amount"
+                                                            class="form-control manage-recipe-input me-3"
+                                                            type="text" placeholder="Amount, i.e. 1 tbps butter"
                                                             v-model="manage_recipeBlockIngredientValue"
-                                                            ref="manage_ing_value" v-on:keyup.enter="addIngredient">
-                                                        <button class="btn btn-success"
+                                                            v-on:keyup.enter="addIngredient" ref="manage_ing_amount">
+                                                        <div id="ingredient-invalid-feedback" class="invalid-feedback">
+                                                        </div>
+                                                        <button class="btn btn-outline-success"
                                                             @click="pasteFromClipboard('ingredients')">
                                                             <img src="assets/icons/clipboard-plus.svg">
                                                         </button>
                                                     </div>
-                                                    <div id="ingredient-invalid-feedback" class="invalid-feedback">
-                                                    </div>
+
                                                 </div>
+                                                <hr class="margin-top-2" v-if="manage_recipeBlockIngredients.length">
                                                 <div class="mb-3">
                                                     <div v-if="manage_recipeBlockIngredients.length">
                                                         <ingredients-draggable-list :lock-axis="'y'"
                                                             :press-delay.number=200
                                                             v-model="manage_recipeBlockIngredients">
-                                                            <li class="list-group-item list-group-item-secondary">Added
-                                                                Ingredients</li>
                                                             <ingredients-draggable-item
                                                                 v-for="(ingredient, index) in manage_recipeBlockIngredients"
                                                                 :index="index" :key="index" :ingredient="ingredient"
@@ -743,29 +734,23 @@
                                             </div>
                                             <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel">
                                                 <div class="my-3">
-                                                    <div class="col-lg-10">
-                                                        <label for="manage_step_value">Step
-                                                            {{ manage_recipeBlockSteps.length + 1}}</label>
+                                                    <div class="steps-textarea-holder">
                                                         <textarea id="manage_step_value" class="form-control"
+                                                            v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
                                                             v-model="manage_recipeBlockStepValue"></textarea>
-                                                        <div id="step-invalid-feedback" class="invalid-feedback">
-                                                        </div>
                                                     </div>
-                                                    <div class="col-lg-2 d-flex align-items-end">
-                                                        <button class="btn btn-outline-primary"
-                                                            @click="addStep">Add</button>
-                                                        <button class="btn btn-primary mt-3"
-                                                            @click="pasteFromClipboard('steps')">Paste
-                                                            From
-                                                            Clipboard</button>
-                                                    </div>
+                                                    <div id="step-invalid-feedback" class="invalid-feedback"></div>
+                                                    <button class="btn text-primary button-no-outline"
+                                                        @click="addStep">Add</button>
+                                                    <button class="btn text-primary button-no-outline"
+                                                        @click="pasteFromClipboard('steps')">Paste From
+                                                        Clipboard</button>
                                                 </div>
+                                                <hr class="margin-top-2" v-if="manage_recipeBlockSteps.length">
                                                 <div class="mb-3">
                                                     <div class="list-group" v-if="manage_recipeBlockSteps.length">
                                                         <steps-draggable-list :lock-axis="'y'" :press-delay.number=200
                                                             v-model="manage_recipeBlockSteps">
-                                                            <li class="list-group-item list-group-item-secondary">Added
-                                                                Steps</li>
                                                             <steps-draggable-item
                                                                 v-for="(step, index) in manage_recipeBlockSteps"
                                                                 :index="index" :key="index" :step="step"
@@ -786,6 +771,7 @@
                                                     <h5 class="mb-0" style="width: auto;">Nutritional Facts</h5>
                                                     <span class="text-muted" style="width: auto;">Optional</span>
                                                 </div>
+                                                <hr>
                                                 <div class="mb-3">
                                                     <div class="row">
                                                         <div class="col-lg-3 input-group">
@@ -863,7 +849,7 @@
                             </div>
                         </div>
                     </div>
-                    <button id="submitRecipeButton" type="button" class="btn btn-success mb-5"
+                    <button id="submitRecipeButton" type="button" class="btn btn-success fancy-button mb-5"
                         @click="submitManagedRecipe" style="width: 100%;"
                         :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
                     <div id="mobile-padding"></div>
@@ -913,7 +899,7 @@
 
     <!-- Manage ingredients draggables -->
     <template id="ingredients-draggable-list-template">
-        <ul class="list-group">
+        <ul class="list-group list-group-flush">
             <slot />
         </ul>
     </template>
@@ -1110,6 +1096,7 @@
     <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
+    <script src="js/nlp.js"></script>
     <script src="js/range-index.js"></script>
     <script src="js/app.js"></script>
 </body>

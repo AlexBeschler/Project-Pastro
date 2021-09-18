@@ -367,7 +367,7 @@
 
 				//For use with manage recipes
 				manageOffcanvas: null,
-				isRecipeSubmitDisabled: false,
+				isRecipeSubmitDisabled: true,
 
 				//Step 1
 				manage_filePondCoverPhoto: null,
@@ -1536,32 +1536,23 @@
 				autofillActiveTime: function () {
 					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
 				},
-				proceedToIngredient: function () {
-					this.$refs.manage_ing_amount.blur();
-					this.$refs.manage_ing_value.focus();
-				},
 				addIngredient: function () {
-					var ingredientValueBox = $('#manage_ing_value');
-					ingredientValueBox.removeClass('is-invalid');
-					if ((this.manage_recipeBlockIngredientAmount.trim() === '' || this.manage_recipeBlockIngredientAmount.trim() === null) && (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null)) {
-						return;
-					}
+					this.$refs.manage_ing_amount.classList.remove('is-invalid');
 					if (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null) {
 						$('#ingredient-invalid-feedback').text('Cannot be blank. Use this for ingredients that don\'t require an amount.');
-						ingredientValueBox.addClass('is-invalid');
-						this.$refs.manage_ing_value.focus();
+						this.$refs.manage_ing_amount.classList.add('is-invalid');
 						return;
 					}
+					var nlp = new ProjectPastroNLP();
+					var s = nlp.parseIngredients(this.manage_recipeBlockIngredientValue);
 					this.manage_recipeBlockIngredients.push({
-						amount: this.manage_recipeBlockIngredientAmount.trim(),
-						value: this.manage_recipeBlockIngredientValue.trim(),
+						amount: s.amount,
+						value: s.ingredient,
 						editMode: false,
 						editModeButtonText: 'Edit'
 					});
-					this.manage_recipeBlockIngredientAmount = '';
+
 					this.manage_recipeBlockIngredientValue = '';
-					this.$refs.manage_ing_value.blur();
-					this.$refs.manage_ing_amount.focus();
 				},
 				editIngredient: function (index) {
 					//If edit button is being clicked

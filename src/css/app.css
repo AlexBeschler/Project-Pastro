@@ -25,6 +25,18 @@ body {
     display: none !important;
 }
 
+.fancy-button {
+    border-radius: 12px;
+}
+
+.margin-top-2 {
+    margin-top: 2rem !important;
+}
+
+.button-no-outline:focus {
+    box-shadow: none !important;
+}
+
 #touch-input-layer {
     position: absolute;
     height: 100vh;
@@ -452,6 +464,19 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 }
 
 /* Manage Recipe View */
+.manage-recipe-input {
+    border-bottom: 1px solid var(--ps-primary-color);
+    border-radius: 0px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.manage-recipe-input:focus {
+    border-color: var(--ps-primary-color);
+    box-shadow: 0 0.15rem rgba(var(--ps-primary-rgb), 0.25);
+}
+
 .manage-accordion-button:not(.collapsed) {
     color: var(--ps-primary-color) !important;
     font-size: 1.25rem;
@@ -528,6 +553,27 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
     color: #0d6efd !important;
     text-decoration-line: underline;
     text-underline-offset: 0.2rem;
+}
+
+.manage-recipe-blocks-pills-tab:not(:active) {
+    color: #0d6efd8a;
+}
+
+.steps-textarea-holder {
+    position: relative;
+}
+
+.steps-textarea-holder>textarea {
+    width: 100%;
+    background-color: #ffffff;
+    resize: none;
+    min-height: 6rem;
+    max-height: 6rem;
+    border: none;
+}
+
+.steps-textarea-holder>textarea:focus {
+    box-shadow: none;
 }
 
 .recipe-block-more-info-button {
