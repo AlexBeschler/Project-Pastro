@@ -1,5 +1,7 @@
 (function ($) {
 	var utils = new ProjectPastroUtils();
+	var nlp = new ProjectPastroNLP();
+	nlp.init();
 
 	window.addEventListener("load", function (event) {
 		utils.init();
@@ -378,7 +380,6 @@
 				ocr_DescriptionPondEditor: null,
 				ocr_DescriptionEditMode: false,
 
-
 				//Step 2
 				manage_recipeTitle: '',
 				manage_recipeName: '',
@@ -452,6 +453,14 @@
 				this.nProtein = '';
 			},
 			mounted() {
+				/* Disable back button from closing PWA */
+				//Bug - when user reloads page it completely breaks this code
+				window.history.pushState(null, null, document.URL);
+
+				window.addEventListener('popstate', function () {
+					history.pushState(null, null, document.URL);
+				});
+
 				this.initQuill();
 
 				FilePond.registerPlugin(FilePondPluginImageTransform);
@@ -618,8 +627,6 @@
 					}
 				});
 
-				//document.getElementById().addEventListener("transitionend", myEndFunction);
-
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
 
@@ -646,10 +653,10 @@
 					//Collapse Recipe Pane
 					var r = document.getElementById('recipePane');
 					r.classList.add('collapse');
-					
+
 					var s = document.getElementById('touch-input-layer');
 					s.classList.add('touch-action-auto');
-					
+
 					var t = document.getElementById('appContent');
 					t.classList.add('touch-action-auto');
 
@@ -660,10 +667,10 @@
 					//Show recipe Pane
 					var r = document.getElementById('recipePane');
 					r.classList.remove('collapse');
-					
+
 					var s = document.getElementById('touch-input-layer');
 					s.classList.remove('touch-action-auto');
-					
+
 					var t = document.getElementById('appContent');
 					t.classList.remove('touch-action-auto');
 
@@ -798,6 +805,15 @@
 					// or else it'll act weird when you try to type anything
 					if (newVal !== this.quillContent) {
 						this.quillInstance.pasteHTML(newVal)
+					}
+				},
+				manage_recipeBlockStepValue: function(b, a) {
+					if (!utils.isEmpty(b)) {
+						this.$refs.addStepToBlockButton.classList.remove('button-no-outline');
+						this.$refs.addStepToBlockButton.classList.add('btn-outline-success');
+					} else {
+						this.$refs.addStepToBlockButton.classList.remove('btn-outline-success');
+						this.$refs.addStepToBlockButton.classList.add('button-no-outline');
 					}
 				},
 				model_search: function (b, a) {
@@ -1371,12 +1387,14 @@
 				},
 				//Manage recipe methods
 				addTag: function () {
-					this.manage_recipeTagHolder.push({
-						value: this.manage_recipeTagInput.trim(),
-						editMode: false,
-						editModeButtonText: 'Edit'
-					});
-					this.manage_recipeTagInput = '';
+					if (utils.isString(this.manage_recipeTagInput)) {
+						this.manage_recipeTagHolder.push({
+							value: this.manage_recipeTagInput.trim(),
+							editMode: false,
+							editModeButtonText: 'Edit'
+						});
+						this.manage_recipeTagInput = '';
+					}
 				},
 				handleCrop: function (type) {
 					var self = this;
@@ -1471,26 +1489,13 @@
 								case 'ingredients':
 									lines.forEach(line => {
 										if (!utils.isEmpty(line)) {
-											var words = line.split(' ');
-											if (words.length <= 2 && words.length > 0) {
-												self.manage_recipeBlockIngredients.push({
-													amount: '',
-													value: line.trim(),
-													editMode: false,
-													editModeButtonText: 'Edit'
-												});
-											} else if (words.length > 2) {
-												var t = '';
-												for (var i = 2; i < words.length; i++) {
-													t += words[i] + ' ';
-												}
-												self.manage_recipeBlockIngredients.push({
-													amount: words[0].trim() + ' ' + words[1].trim(),
-													value: t.trim(),
-													editMode: false,
-													editModeButtonText: 'Edit'
-												});
-											}
+											var s = nlp.parseIngredients(line);
+											self.manage_recipeBlockIngredients.push({
+												amount: s.amount,
+												value: s.ingredient,
+												editMode: false,
+												editModeButtonText: 'Edit'
+											});
 										}
 									});
 									break;
@@ -1538,12 +1543,7 @@
 				},
 				addIngredient: function () {
 					this.$refs.manage_ing_amount.classList.remove('is-invalid');
-					if (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null) {
-						$('#ingredient-invalid-feedback').text('Cannot be blank. Use this for ingredients that don\'t require an amount.');
-						this.$refs.manage_ing_amount.classList.add('is-invalid');
-						return;
-					}
-					var nlp = new ProjectPastroNLP();
+					if (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null) return;
 					var s = nlp.parseIngredients(this.manage_recipeBlockIngredientValue);
 					this.manage_recipeBlockIngredients.push({
 						amount: s.amount,

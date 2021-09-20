@@ -107,6 +107,7 @@ var ProjectPastroNLP = function () {
         'pounds',
         'pound',
         'lbs',
+        'lb',
         'lb.',
         'lbs',
         'lbs.',
@@ -198,7 +199,11 @@ var ProjectPastroNLP = function () {
         'liter',
         'liters',
         'l',
-        'l.'
+        'l.',
+        'stone',
+        'stones',
+        'st',
+        'st.'
     ];
     this.unit_compound_dictionary = [
         'fluid ounce',
@@ -209,13 +214,18 @@ var ProjectPastroNLP = function () {
         'fl. oz',
         'fl oz.'
     ];
+    this.unicodeLettersNumbersPunctuationRegex = null;
     
+    this.init = function() {
+        this.unicodeLettersNumbersPunctuationRegex = new XRegExp("[^\\p{N}\\p{L}\\p{P} ⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅚⅜⅝⅞¼½¾]","g");
+    }
     this.parseIngredients = function (str) {
         var ingredientObject = {
             amount: '',
             ingredient: ''
         };
-        var t = str.replace(/\s+/g, ' ').trim(); //Remove any additional whitespace and trim string
+        var t = XRegExp.replace(str, this.unicodeLettersNumbersPunctuationRegex, '');
+        t = t.replace(/\s+/g, ' ').trim().toLowerCase(); //Remove any additional whitespace and trim string and set to lowercase
         var r = t.split(' '); //Split by words
         if (r.length === 0) {} //Blank
         if (r.length === 1) { //Send to ingredients

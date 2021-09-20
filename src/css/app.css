@@ -1,10 +1,12 @@
 :root {
-    --ps-bg-color: #FFFBE6;
-    --ps-primary-color: #37966f;
-    --ps-primary-rgb: 55, 150, 111;
-    --ps-secondary-color: #356859;
-    --ps-light-color: #F1F5DF;
-    --ps-accent-color: #FD5523;
+    --ps-bg-color: #FFFCE8;
+    --ps-primary-color: #4A84A7;
+    --ps-primary-rgb: 74,132,167;
+    --ps-secondary-color: #705748;
+    --ps-light-color: #eff5dd;
+    --ps-accent-color: #ec9f00;
+    --ps-btn-background-color: #4A9653;
+    --ps-btn-outline-color: #43894B;
     --ps-favorite-color: #f9058c;
 }
 
@@ -48,6 +50,21 @@ body {
 
 .btn-primary {
     color: #fff;
+}
+
+.btn-success, .btn-success:hover {
+    color: #ffffff;
+    background-color: var(--ps-btn-background-color);
+    border-color: var(--ps-btn-outline-color);
+}
+
+.btn-outline-success {
+    color: var(--ps-btn-outline-color);
+    border-color: var(--ps-btn-outline-color);
+}
+
+.btn-outline-success:active, .btn-outline-success:hover, .btn-outline-success:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--ps-btn-outline-color), 0.5);
 }
 
 .form-control:focus {
@@ -210,7 +227,7 @@ body {
     padding: 0 0.175rem 0.1em 0.175rem;
     border: none;
     border-bottom: 4px solid var(--ps-secondary-color);
-    background-color: inherit !important;
+    background-color: var(--ps-light-color) !important;
     border-radius: 0;
     color: var(--ps-accent-color) !important;
     box-shadow: none !important;
@@ -221,7 +238,10 @@ body {
 }
 
 .search-box:focus {
-    border-bottom-color: var(--ps-primary-color);
+    border-color: transparent;
+    border-bottom-color: var(--ps-secondary-color);
+    background-color: var(--ps-light-color);
+    box-shadow: none;
 }
 
 #recipeRevealButton {
@@ -347,10 +367,14 @@ body {
 }
 
 .recipe-offcanvas,
-.recipe-delete-offcanvas {
+.recipe-delete-offcanvas{
     width: 100vw;
     background-clip: inherit;
     border: none;
+}
+
+.manage-recipe-offcanvas-full {
+    width: 100%;
 }
 
 .recipe-delete-offcanvas {
@@ -504,9 +528,9 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 
 .manage-accordion-item {
     border: none;
-    -webkit-box-shadow: inset 6px 0px 0px 0px var(--ps-accent-color);
-    -moz-box-shadow: inset 6px 0px 0px 0px var(--ps-accent-color);
-    box-shadow: inset 6px 0px 0px 0px var(--ps-accent-color);
+    -webkit-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
+    -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
+    box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     margin-bottom: 1.15rem;
 }
 
@@ -566,9 +590,7 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 .steps-textarea-holder>textarea {
     width: 100%;
     background-color: #ffffff;
-    resize: none;
-    min-height: 6rem;
-    max-height: 6rem;
+    min-height: 10rem;
     border: none;
 }
 
