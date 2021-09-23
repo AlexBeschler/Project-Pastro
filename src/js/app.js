@@ -298,6 +298,10 @@
 				db: null,
 				cookbook: payload,
 				filteredCookbook: payload,
+				Undo_Length_Short: 1500,
+				Undo_Length_Long: 2750,
+				undoObject: null,
+				undoText: '',
 
 				//Explore pane
 				exploreOffcanvas: null,
@@ -807,7 +811,7 @@
 						this.quillInstance.pasteHTML(newVal)
 					}
 				},
-				manage_recipeBlockStepValue: function(b, a) {
+				manage_recipeBlockStepValue: function (b, a) {
 					if (!utils.isEmpty(b)) {
 						this.$refs.addStepToBlockButton.classList.remove('button-no-outline');
 						this.$refs.addStepToBlockButton.classList.add('btn-outline-success');
@@ -1386,6 +1390,15 @@
 					this.manageOffcanvas.show();
 				},
 				//Manage recipe methods
+				undoDeleteClicked: function () {
+					this.undoObject.f(this);
+				},
+				undoDeleteTimeOut: function() {
+					if (!this.$refs.undoContainer.classList.contains('undo-collapsed')) {
+						this.$refs.undoContainer.classList.add('undo-collapsed');
+						this.undoObject = null;
+					}
+				},
 				addTag: function () {
 					if (utils.isString(this.manage_recipeTagInput)) {
 						this.manage_recipeTagHolder.push({
@@ -1489,7 +1502,7 @@
 								case 'ingredients':
 									lines.forEach(line => {
 										if (!utils.isEmpty(line)) {
-											var s = nlp.parseIngredients(line);
+											var s = nlp.parseIngredient(line);
 											self.manage_recipeBlockIngredients.push({
 												amount: s.amount,
 												value: s.ingredient,
@@ -1536,15 +1549,28 @@
 					}
 				},
 				deleteTag: function (index) {
+					this.undoObject = {
+						o: this.manage_recipeTagHolder[index],
+						i: index,
+						f: function (self) {
+							self.manage_recipeTagHolder.splice(self.undoObject.i, 0, self.undoObject.o);
+							self.$refs.undoContainer.classList.add('undo-collapsed');
+						}
+					};
 					this.manage_recipeTagHolder.splice(index, 1);
+					this.undoText = 'Tag deleted';
+
+					this.$refs.undoContainer.classList.remove('undo-collapsed');
+
+					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
 				},
 				autofillActiveTime: function () {
 					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
 				},
 				addIngredient: function () {
 					this.$refs.manage_ing_amount.classList.remove('is-invalid');
-					if (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null) return;
-					var s = nlp.parseIngredients(this.manage_recipeBlockIngredientValue);
+					if (!utils.isString(this.manage_recipeBlockIngredientValue)) return;
+					var s = nlp.parseIngredient(this.manage_recipeBlockIngredientValue);
 					this.manage_recipeBlockIngredients.push({
 						amount: s.amount,
 						value: s.ingredient,
@@ -1569,7 +1595,20 @@
 					}
 				},
 				deleteIngredient: function (index) {
+					this.undoObject = {
+						o: this.manage_recipeBlockIngredients[index],
+						i: index,
+						f: function (self) {
+							self.manage_recipeBlockIngredients.splice(self.undoObject.i, 0, self.undoObject.o);
+							self.$refs.undoContainer.classList.add('undo-collapsed');
+						}
+					};
 					this.manage_recipeBlockIngredients.splice(index, 1);
+					this.undoText = 'Ingredient deleted';
+
+					this.$refs.undoContainer.classList.remove('undo-collapsed');
+
+					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
 				},
 				addStep: function () {
 					var stepValueBox = $('#manage_step_value');
@@ -1601,7 +1640,20 @@
 					}
 				},
 				deleteStep: function (index) {
+					this.undoObject = {
+						o: this.manage_recipeBlockSteps[index],
+						i: index,
+						f: function (self) {
+							self.manage_recipeBlockSteps.splice(self.undoObject.i, 0, self.undoObject.o);
+							self.$refs.undoContainer.classList.add('undo-collapsed');
+						}
+					};
 					this.manage_recipeBlockSteps.splice(index, 1);
+					this.undoText = 'Step deleted';
+
+					this.$refs.undoContainer.classList.remove('undo-collapsed');
+
+					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
 				},
 				addBlock: function () {
 					if (this.manage_recipeBlockSteps.length < 1) {
@@ -1610,7 +1662,10 @@
 						return;
 					}
 					this.manage_recipeBlocks.push({
-						header: this.manage_recipeBlockHeader === '' ? 'Recipe' : this.manage_recipeBlockHeader,
+						header: {
+							value: 'Recipe',
+							editMode: false
+						},
 						ingredients: this.manage_recipeBlockIngredients,
 						steps: this.manage_recipeBlockSteps,
 						nCalories: utils.isNumber(this.manage_nCalories) ? parseInt(this.manage_nCalories) : 0,
@@ -1634,6 +1689,18 @@
 					this.manage_nSodium = '';
 					this.manage_nSugars = '';
 				},
+				editHeader: function (index) {
+					//If edit button is being clicked
+					if (!this.manage_recipeBlocks[index].header.editMode) {
+						this.manage_recipeBlocks[index].header.editMode = true;
+						//If update button is being clicked
+					} else {
+						if (this.manage_recipeBlocks[index].header.value.trim() === '' || this.manage_recipeBlocks[index].header.value.trim() === null) {
+							return;
+						}
+						this.manage_recipeBlocks[index].header.editMode = false;
+					}
+				},
 				editBlock: function (index) {
 					this.manage_recipeBlockHeader = this.manage_recipeBlocks[index].header;
 					this.manage_recipeBlockIngredients = this.manage_recipeBlocks[index].ingredients;
@@ -1651,7 +1718,20 @@
 					this.deleteBlock(index);
 				},
 				deleteBlock: function (index) {
+					this.undoObject = {
+						o: this.manage_recipeBlocks[index],
+						i: index,
+						f: function (self) {
+							self.manage_recipeBlocks.splice(self.undoObject.i, 0, self.undoObject.o);
+							self.$refs.undoContainer.classList.add('undo-collapsed');
+						}
+					};
 					this.manage_recipeBlocks.splice(index, 1);
+					this.undoText = 'Section deleted';
+
+					this.$refs.undoContainer.classList.remove('undo-collapsed');
+
+					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
 				},
 				submitManagedRecipe: function () {
 					var self = this;

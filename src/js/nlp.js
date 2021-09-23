@@ -214,157 +214,184 @@ var ProjectPastroNLP = function () {
         'fl. oz',
         'fl oz.'
     ];
+    this.ingredientObject = {
+        amount: '',
+        ingredient: ''
+    };
     this.unicodeLettersNumbersPunctuationRegex = null;
-    
-    this.init = function() {
-        this.unicodeLettersNumbersPunctuationRegex = new XRegExp("[^\\p{N}\\p{L}\\p{P} ⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅚⅜⅝⅞¼½¾]","g");
+    this.sanitizeDash = null;
+
+    this.init = function () {
+        this.unicodeLettersNumbersPunctuationRegex = new XRegExp("[^\\p{N}\\p{L}\\p{P} ⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅚⅜⅝⅞¼½¾]", "g");
+        this.sanitizeDash = new XRegExp("[-–—−]", "g");
     }
-    this.parseIngredients = function (str) {
-        var ingredientObject = {
+    this.parseIngredient = function (str) {
+        var r = this.cleanAndTokenize(str);
+        if (r === null) {
+            return {
+                amount: '',
+                ingredient: ''
+            };
+        }
+
+        if (typeof r === 'string') {
+            return {
+                amount: '',
+                ingredient: r
+            };
+        }
+        
+        this.ingredientObject = {
             amount: '',
             ingredient: ''
         };
+        this.identifyEntities(r, 0);
+        return this.ingredientObject;
+    }
+
+    this.cleanAndTokenize = function (str) {
+        //Clean up data
         var t = XRegExp.replace(str, this.unicodeLettersNumbersPunctuationRegex, '');
-        t = t.replace(/\s+/g, ' ').trim().toLowerCase(); //Remove any additional whitespace and trim string and set to lowercase
-        var r = t.split(' '); //Split by words
-        if (r.length === 0) {} //Blank
-        if (r.length === 1) { //Send to ingredients
-            ingredientObject.ingredient = r[0];
+        t = t.replace(/\s+/g, ' ').trim(); //Remove any additional whitespace and trim string and set to lowercase
+        //Make sure there's a space between the dashes
+        if (t.includes('-') || t.includes('–') || t.includes('—') || t.includes('−')) {
+            t = XRegExp.replace(t, this.sanitizeDash, '-');
         }
-        if (r.length >= 2) {
-            var firstWord = r[0];
-            var secondWord = r[1];
-            //Match the first word to the cardinal dictionary OR any string that contains a '/' and is 5 or less characters
-            //A successful match means we've identified the first word to be cardinal
-            if (_.contains(this.cardinal_dictionary, firstWord) || (firstWord.length <= 5 && firstWord.length >= 1 && firstWord.includes('/'))) {
-                ingredientObject.amount = firstWord;
-                if (_.contains(this.unit_dictionary, secondWord)) {
-                    //Match the second word to units dictionary.
-                    //A successful match means we've identified the second word to be a unit of some sort, and we can finish up
-                    let u = ' ' + secondWord;
-                    ingredientObject.amount += u;
-                    //We don't know how long the array is, so this is a safer way of building the string
-                    var q = '';
-                    for (var i = 1; i < r.length; i++) {
-                        if (i === 1) continue; //No need for this
-                        q += r[i];
-                        if (i === r.length - 1) continue; //No need for the trailing whitespace
-                        q += ' ';
-                    }
-                    ingredientObject.ingredient = q;
-                } else {
-                    var thirdWord = r[2];
-                    //Check the compound units dictionary
-                    if (r.length >= 3) {
-                        //A special exception for lines like "2 to 3 tbps fresh parsley" or "2 to 3 eggs"
-                        if (secondWord === 'to') {
-                            var fourthWord = '';
-                            if (r.length >= 4) {
-                                fourthWord = r[3];
-                                if (_.contains(this.cardinal_dictionary, thirdWord) || (thirdWord.length <= 5 && thirdWord.length >= 1 && thirdWord.includes('/'))) {
-                                    let k = ' ' + secondWord + ' ' + thirdWord;
-                                    ingredientObject.amount += k;
-                                    //Now we look for unit
-                                    if (_.contains(this.unit_dictionary, fourthWord)) {
-                                        let v = ' ' + fourthWord;
-                                        ingredientObject.amount += v;
-                                        //We don't know how long the array is, so this is a safer way of building the string
-                                        var s = '';
-                                        for (var i = 3; i < r.length; i++) {
-                                            if (i === 3) continue; //No need for this
-                                            s += r[i];
-                                            if (i === r.length - 1) continue; //No need for the trailing whitespace
-                                            s += ' ';
-                                        }
-                                        ingredientObject.ingredient = s;
-                                    } else {
-                                        //Make exception for compound units dictionary
-                                        var fifthWord = '';
-                                        if (r.length >= 5) {
-                                            fifthWord = r[4];
-                                            var query = fourthWord + ' ' + fifthWord;
-                                            if (_.contains(this.unit_compound_dictionary, query)) {
-                                                //Add first, second, and third word to amount
-                                                let u = ' ' + query;
-                                                ingredientObject.amount += u;
-                                                //We don't know how long the array is, so this is a safer way of building the string
-                                                var q = '';
-                                                for (var i = 4; i < r.length; i++) {
-                                                    if (i === 4) continue; //No need for this
-                                                    q += r[i];
-                                                    if (i === r.length - 1) {
-                                                        continue; //No need for the trailing whitespace
-                                                    }
-                                                    q += ' ';
-                                                }
-                                                ingredientObject.ingredient = q;
-                                            } else {
-                                                var q = '';
-                                                for (var i = 2; i < r.length; i++) {
-                                                    if (i === 2) continue; //No need for this
-                                                    q += r[i];
-                                                    if (i === r.length - 1) {
-                                                        continue; //No need for the trailing whitespace
-                                                    }
-                                                    q += ' ';
-                                                }
-                                                ingredientObject.ingredient = q;
-                                            }
-                                        } else {
-                                            //Not the special exception
-                                            ingredientObject.ingredient = secondWord + ' ' + thirdWord + ' ' + fourthWord;
-                                        }
-                                    }
+        var r = t.split(' '); //Split by words
+
+        //Make simple decisions
+        if (r.length === 0) {
+            return null;
+        } //Blank
+        if (r.length === 1) { //Send to ingredients
+            return t;
+        }
+
+        //Check if the first 3 words contain a dash and if it has properly been separated with spaces
+        let w = false;
+        let l = r.length === 2 ? 2 : 3;
+        var dashRegEx = /(?: - )/g;
+        for (var i = 0; i < l; i++) {
+            if (r[i].includes('-')) {
+                if (!dashRegEx.test(r[i])) {
+                    t = t.slice(0, t.search(/\-/)) + ' - ' + t.slice(t.search(/\-/) + 1);
+                    w = true;
+                    break;
+                }
+            }
+        }
+        if (w) {
+            r = t.split(' '); //Re-split sample with newly added isolated dash
+        }
+        return r;
+    }
+
+    this.identifyEntities = function (arr, offsetIndex) {
+        //Use simple NLP to parse ingredients
+        var firstWord = arr[0 + offsetIndex];
+        var secondWord = arr[1 + offsetIndex];
+        //Match the first word to the cardinal dictionary OR any string that contains a '/' and is 5 or less characters
+        //A successful match means we've identified the first word to be cardinal
+        if (_.contains(this.cardinal_dictionary, firstWord.toLowerCase()) || (firstWord.length <= 5 && firstWord.length >= 1 && firstWord.includes('/')) || (firstWord.length <= 5 && firstWord.length > 1 && firstWord.includes('.'))) {
+            if (offsetIndex > 0) {
+                let b = ' ' + firstWord;
+                this.ingredientObject.amount += b;
+            } else {
+                this.ingredientObject.amount = firstWord;
+            }
+
+            if (_.contains(this.unit_dictionary, secondWord.toLowerCase())) {
+                //Match the second word to units dictionary.
+                //A successful match means we've identified the second word to be a unit of some sort, and we can finish up
+                let u = ' ' + secondWord;
+                this.ingredientObject.amount += u;
+                //We don't know how long the array is, so this is a safer way of building the string
+                this.ingredientObject.ingredient = this.strBuilder(arr, 1 + offsetIndex, arr.length);
+            } else if (_.contains(this.cardinal_dictionary, secondWord.toLowerCase()) || (secondWord.length <= 5 && secondWord.length >= 1 && secondWord.includes('/')) || (secondWord.length <= 5 && secondWord.length > 1 && secondWord.includes('.'))) {
+                if (offsetIndex < 4) { //Prevent exceeding maximum stack call size
+                    this.identifyEntities(arr, offsetIndex + 1);
+                } //otherwise, simply guess the user is intentionally trying to crash the app and do nothing
+            } else {
+                var thirdWord = arr[2 + offsetIndex];
+                //Check the compound units dictionary
+                if (arr.length >= 3) {
+                    //A special exception for lines like "2 to 3 tbps fresh parsley" or "2 to 3 eggs"
+                    if (secondWord === 'to' || secondWord === '-') {
+                        var fourthWord = '';
+                        if (arr.length >= 4) {
+                            fourthWord = arr[3 + offsetIndex];
+                            if (_.contains(this.cardinal_dictionary, thirdWord.toLowerCase()) || (thirdWord.length <= 5 && thirdWord.length >= 1 && thirdWord.includes('/')) || (thirdWord.length <= 5 && thirdWord.length > 1 && thirdWord.includes('.'))) {
+                                let k = ' ' + secondWord + ' ' + thirdWord;
+                                this.ingredientObject.amount += k;
+                                //Now we look for unit
+                                if (_.contains(this.unit_dictionary, fourthWord.toLowerCase())) {
+                                    let v = ' ' + fourthWord;
+                                    this.ingredientObject.amount += v;
+                                    //We don't know how long the array is, so this is a safer way of building the string
+                                    this.ingredientObject.ingredient = this.strBuilder(arr, 3 + offsetIndex, arr.length);
                                 } else {
-                                    //Not sure what's going on, but ok
-                                    ingredientObject.ingredient = secondWord + ' ' + thirdWord;
+                                    //Make exception for compound units dictionary
+                                    var fifthWord = '';
+                                    if (arr.length >= 5) {
+                                        fifthWord = arr[4 + offsetIndex];
+                                        var query = fourthWord + ' ' + fifthWord;
+                                        if (_.contains(this.unit_compound_dictionary, query.toLowerCase())) {
+                                            //Add first, second, and third word to amount
+                                            let u = ' ' + query;
+                                            this.ingredientObject.amount += u;
+                                            //We don't know how long the array is, so this is a safer way of building the string
+                                            this.ingredientObject.ingredient = this.strBuilder(arr, 4 + offsetIndex, arr.length);
+                                        } else {
+                                            this.ingredientObject.ingredient = this.strBuilder(arr, 2 + offsetIndex, arr.length);
+                                        }
+                                    } else {
+                                        //Not the special exception
+                                        this.ingredientObject.ingredient = secondWord + ' ' + thirdWord + ' ' + fourthWord;
+                                    }
                                 }
                             } else {
                                 //Not sure what's going on, but ok
-                                ingredientObject.ingredient = secondWord + ' ' + thirdWord;
+                                this.ingredientObject.ingredient = secondWord + ' ' + thirdWord;
                             }
                         } else {
-                            var query = secondWord + ' ' + thirdWord;
-                            if (_.contains(this.unit_compound_dictionary, query)) {
-                                //Add first, second, and third word to amount
-                                let u = ' ' + query;
-                                ingredientObject.amount += u;
-                                //We don't know how long the array is, so this is a safer way of building the string
-                                var q = '';
-                                for (var i = 2; i < r.length; i++) {
-                                    if (i === 2) continue; //No need for this
-                                    q += r[i];
-                                    if (i === r.length - 1) {
-                                        continue; //No need for the trailing whitespace
-                                    }
-                                    q += ' ';
-                                }
-                                ingredientObject.ingredient = q;
-                            } else {
-                                //This might be an instance of '3 eggs, beaten' or related ingredients
-                                //Just add the remaining array to the ingredients
-                                var q = '';
-                                for (var i = 0; i < r.length; i++) {
-                                    if (i === 0) continue; //No need for this
-                                    q += r[i];
-                                    if (i === r.length - 1) {
-                                        continue; //No need for the trailing whitespace
-                                    }
-                                    q += ' ';
-                                }
-                                ingredientObject.ingredient = q;
-                            }
+                            //Not sure what's going on, but ok
+                            this.ingredientObject.ingredient = secondWord + ' ' + thirdWord;
                         }
                     } else {
-                        //This might be an instance of '3 eggs' or related ingredients
-                        //Just add the remaining string to the ingredients
-                        ingredientObject.ingredient = secondWord;
+                        var query = secondWord + ' ' + thirdWord;
+                        if (_.contains(this.unit_compound_dictionary, query.toLowerCase())) {
+                            //Add first, second, and third word to amount
+                            let u = ' ' + query;
+                            this.ingredientObject.amount += u;
+                            //We don't know how long the array is, so this is a safer way of building the string
+                            this.ingredientObject.ingredient = this.strBuilder(arr, 2 + offsetIndex, arr.length);
+                        } else {
+                            //This might be an instance of '3 eggs, beaten' or related ingredients
+                            //Just add the remaining array to the ingredients
+                            this.ingredientObject.ingredient = this.strBuilder(arr, 0 + offsetIndex, arr.length);
+                        }
                     }
+                } else {
+                    //This might be an instance of '3 eggs' or related ingredients
+                    //Just add the remaining string to the ingredients
+                    this.ingredientObject.ingredient = secondWord;
                 }
-            } else {
-                ingredientObject.ingredient = t; //Move everything to the ingredient
             }
+        } else {
+            this.ingredientObject.ingredient = arr.join(' ').trim(); //Move everything to the ingredient
         }
-        return ingredientObject;
+    }
+
+    this.strBuilder = function(arr, startIndex, endLength) {
+        var s = '';
+        for (var i = startIndex; i < endLength; i++) {
+            if (i === startIndex) continue; //No need for this
+            s += arr[i];
+            if (i === endLength - 1) {
+                continue; //No need for the trailing whitespace
+            }
+            s += ' ';
+        }
+        return s;
     }
 }

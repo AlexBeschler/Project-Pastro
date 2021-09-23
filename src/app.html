@@ -539,8 +539,7 @@
                                             </div>
                                         </div>
                                         <div class="col-2 ps-0 d-flex align-items-end">
-                                            <button class="btn btn-outline-success h-75 w-100"
-                                                @click="pasteFromClipboard('tags')">
+                                            <button class="btn h-75 w-100" @click="pasteFromClipboard('tags')">
                                                 <img src="assets/icons/clipboard-plus.svg">
                                             </button>
                                         </div>
@@ -548,7 +547,7 @@
                                     <div class="mt-3">
                                         <div class="col-lg-12">
                                             <div v-if="manage_recipeTagHolder.length">
-                                                <sortable-list :lock-axis="'y'" :press-delay.number=200
+                                                <sortable-list :lock-axis="'y'" :press-delay.number=75
                                                     v-model="manage_recipeTagHolder">
                                                     <li class="list-group-item list-group-item-secondary">Added Tags
                                                     </li>
@@ -631,7 +630,7 @@
                                             </div>
                                         </div>
                                         <div class="col-2 ps-0 d-flex align-items-end">
-                                            <button class="btn btn-outline-success h-75 w-100" type="button"
+                                            <button class="btn h-75 w-100" type="button"
                                                 @click.prevent="autofillActiveTime" style="padding: 0.375rem;">
                                                 <img src="assets/icons/lightning.svg">
                                             </button>
@@ -704,17 +703,17 @@
                                                             v-on:keyup.enter="addIngredient" ref="manage_ing_amount">
                                                         <div id="ingredient-invalid-feedback" class="invalid-feedback">
                                                         </div>
-                                                        <button class="btn btn-outline-success"
-                                                            @click="pasteFromClipboard('ingredients')">
+                                                        <button class="btn" @click="pasteFromClipboard('ingredients')">
                                                             <img src="assets/icons/clipboard-plus.svg">
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <hr class="margin-top-2" v-if="manage_recipeBlockIngredients.length > 0">
+                                                <hr class="margin-top-2"
+                                                    v-if="manage_recipeBlockIngredients.length > 0">
                                                 <div class="mb-3">
                                                     <div v-if="manage_recipeBlockIngredients.length">
                                                         <ingredients-draggable-list :lock-axis="'y'"
-                                                            :press-delay.number=200
+                                                            :press-delay.number=75
                                                             v-model="manage_recipeBlockIngredients">
                                                             <ingredients-draggable-item
                                                                 v-for="(ingredient, index) in manage_recipeBlockIngredients"
@@ -731,7 +730,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel">
+                                            <div class="tab-pane fade collapse" id="pills-manage-steps" role="tabpanel">
                                                 <div class="my-3">
                                                     <div class="steps-textarea-holder">
                                                         <textarea id="manage_step_value" class="form-control"
@@ -739,16 +738,16 @@
                                                             v-model="manage_recipeBlockStepValue"></textarea>
                                                     </div>
                                                     <div id="step-invalid-feedback" class="invalid-feedback"></div>
-                                                    <button class="btn text-primary button-no-outline" @click="addStep"
-                                                        ref="addStepToBlockButton">Add</button>
-                                                    <button class="btn text-primary button-no-outline"
+                                                    <button class="btn text-primary button-no-outline mt-2"
+                                                        @click="addStep" ref="addStepToBlockButton">Add</button>
+                                                    <button class="btn text-primary button-no-outline mt-2"
                                                         @click="pasteFromClipboard('steps')">Paste From
                                                         Clipboard</button>
                                                 </div>
                                                 <hr class="margin-top-2" v-if="manage_recipeBlockSteps.length">
                                                 <div class="mb-3">
                                                     <div class="list-group" v-if="manage_recipeBlockSteps.length">
-                                                        <steps-draggable-list :lock-axis="'y'" :press-delay.number=200
+                                                        <steps-draggable-list :lock-axis="'y'" :press-delay.number=75
                                                             v-model="manage_recipeBlockSteps">
                                                             <steps-draggable-item
                                                                 v-for="(step, index) in manage_recipeBlockSteps"
@@ -764,7 +763,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel">
+                                            <div class="tab-pane fade collapse" id="pills-manage-nutrition"
+                                                role="tabpanel">
                                                 <div class="mb-1"
                                                     style="display: flex; justify-content: space-between; align-items: center;">
                                                     <h5 class="mb-0" style="width: auto;">Nutritional Facts</h5>
@@ -830,12 +830,13 @@
                                         <button class="btn d-flex mb-3" style="margin: 0 auto;" @click="addBlock"
                                             v-if="manage_recipeBlockSteps.length">+ Add Section</button>
                                         <div class="list-group" v-if="manage_recipeBlocks.length">
-                                            <blocks-draggable-list :lock-axis="'y'" :press-delay.number=200
+                                            <blocks-draggable-list :lock-axis="'y'" :press-delay.number=75
                                                 v-model="manage_recipeBlocks">
                                                 <blocks-draggable-item class="list-group-item"
                                                     v-for="(block, index) in manage_recipeBlocks" :key="index"
                                                     :index="index" :block="block" :header="block.header"
-                                                    :ingredient="block.ingredient" :step="block.step"
+                                                    :edit-mode="block.header.editMode" :ingredient="block.ingredient"
+                                                    :step="block.step" v-on:edit-header="editHeader(index)"
                                                     v-on:edit-block="editBlock(index)"
                                                     v-on:delete-block="deleteBlock(index)"
                                                     @touchstart.native="scrollStop" @touchend.native="scrollMove">
@@ -860,11 +861,15 @@
                 <button class="btn btn-success" v-show="ocr_DescriptionEditMode" @click="handleCrop('description')">Crop</button>
             </div-->
         </div>
+        <div class="container undo-container undo-collapsed py-1" ref="undoContainer">
+            <p class="mb-0 px-2">{{ undoText }}</p>
+            <button class="btn stronger" @click="undoDeleteClicked" ref="undoButton">Undo</button>
+        </div>
     </div>
 
     <!-- BottomSheet -->
     <template id="bottom-sheet-template">
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush cookbook-list-group">
             <li class="list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index"
                 :index="index" @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
         </ul>
@@ -957,8 +962,19 @@
     </template>
     <template id="blocks-draggable-item-template">
         <li class="list-group-item manage-blocks-list-group-item">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-0" style="color: var(--ps-accent-color);">{{ block.header }}</h5>
+            <div class="w-100">
+                <h5 class="lead mb-0 d-flex align-items-center justify-content-between">
+                    <b class="strong" v-if="!block.header.editMode">{{ block.header.value }}</b>
+                    <div v-else>
+                        <input class="form-control" type="text" v-model="block.header.value">
+                    </div>
+                    <span>
+                        <button class="btn ps-2 pe-0 py-0" @click="$emit('edit-header', index)">
+                            <img src="assets/icons/edit.svg">
+                        </button>
+                    </span>
+                </h5>
+                <hr class="my-1">
             </div>
             <div class="recipe-block-list-header d-flex align-items-start">
                 <button class="btn recipe-block-more-info-button d-flex ps-0 collapsed" type="button"
@@ -968,8 +984,8 @@
                         <path
                             d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
                     </svg>
-                    <h6 class="mb-0 ms-4" v-if="block.ingredients.length === 1">1 ingredient</h6>
-                    <h6 class="mb-0 ms-4" v-else>{{ block.ingredients.length }} ingredients</h6>
+                    <h6 class="mb-0 ms-3" v-if="block.ingredients.length === 1">1 ingredient</h6>
+                    <h6 class="mb-0 ms-3" v-else>{{ block.ingredients.length }} ingredients</h6>
                 </button>
             </div>
             <div class="collapse" :id="'blockIngredients' + index">
@@ -986,8 +1002,8 @@
                         <path
                             d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
                     </svg>
-                    <h6 class="mb-0 ms-4" v-if="block.steps.length === 1">1 step</h6>
-                    <h6 class="mb-0 ms-4" v-else>{{ block.steps.length }} steps</h6>
+                    <h6 class="mb-0 ms-3" v-if="block.steps.length === 1">1 step</h6>
+                    <h6 class="mb-0 ms-3" v-else>{{ block.steps.length }} steps</h6>
                 </button>
             </div>
             <div class="collapse" :id="'blockSteps' + index">
@@ -995,8 +1011,10 @@
                     <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">{{ step.value }}</li>
                 </ul>
             </div>
-            <button class="btn btn-outline-warning mb-2 mr-2" @click="$emit('edit-block', index)">Edit</button>
-            <button class="btn btn-outline-danger mb-2" @click="$emit('delete-block', index)">Delete</button>
+            <div class="card-footer d-flex justify-content-end mt-2">
+                <button class="btn py-0" @click="$emit('edit-block', index)">Edit</button>
+                <button class="btn py-0 pe-0" @click="$emit('delete-block', index)">Delete</button>
+            </div>
         </li>
     </template>
 
