@@ -373,7 +373,7 @@
 
 				//For use with manage recipes
 				manageOffcanvas: null,
-				isRecipeSubmitDisabled: true,
+				isRecipeSubmitDisabled: false,
 
 				//Step 1
 				manage_filePondCoverPhoto: null,
@@ -405,6 +405,8 @@
 				manage_recipeBlockHeader: '',
 				manage_recipeBlockIngredientAmount: '',
 				manage_recipeBlockIngredientValue: '',
+				manage_ingAmountHasFocus: false,
+				manage_ingValueHasFocus: false,
 				manage_recipeBlockStepValue: '',
 				manage_nCalories: '',
 				manage_nFat: '',
@@ -1393,7 +1395,7 @@
 				undoDeleteClicked: function () {
 					this.undoObject.f(this);
 				},
-				undoDeleteTimeOut: function() {
+				undoDeleteTimeOut: function () {
 					if (!this.$refs.undoContainer.classList.contains('undo-collapsed')) {
 						this.$refs.undoContainer.classList.add('undo-collapsed');
 						this.undoObject = null;
@@ -1611,11 +1613,9 @@
 					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
 				},
 				addStep: function () {
-					var stepValueBox = $('#manage_step_value');
-					stepValueBox.removeClass('is-invalid');
+					this.$refs.manageStepRef.classList.remove('is-invalid');
 					if ((this.manage_recipeBlockStepValue.trim() === '' || this.manage_recipeBlockStepValue.trim() === null) && this.manage_recipeBlockSteps.length === 0) {
-						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
-						stepValueBox.addClass('is-invalid');
+						this.$refs.manageStepRef.classList.add('is-invalid');
 						return;
 					}
 					this.manage_recipeBlockSteps.push({
@@ -1656,9 +1656,9 @@
 					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
 				},
 				addBlock: function () {
+					this.$refs.manageStepRef.classList.remove('is-invalid');
 					if (this.manage_recipeBlockSteps.length < 1) {
-						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
-						$('#manage_step_value').addClass('is-invalid');
+						this.$refs.manageStepRef.classList.add('is-invalid');
 						return;
 					}
 					this.manage_recipeBlocks.push({
@@ -1738,35 +1738,16 @@
 					var anyInvalid = false;
 					var serializedRecipe = {};
 
-					/* **** Clear all form valid classes **** */
-					$('#manage_form_name').removeClass('is-valid');
-					$('#manage_form_name').removeClass('is-invalid');
+					//Clear all form invalid classes
+					Array.prototype.slice.call(document.querySelectorAll('.is-invalid')).forEach(function (form) {
+						form.classList.remove('is-invalid');
+					});
 
-					$('.ql-container.ql-snow').removeClass('is-valid');
-					$('.ql-container.ql-snow').removeClass('is-invalid');
-
-					$('#manage_form_prep_time').removeClass('is-valid');
-					$('#manage_form_prep_time').removeClass('is-invalid');
-
-					$('#manage_form_cook_time').removeClass('is-valid');
-					$('#manage_form_cook_time').removeClass('is-invalid');
-
-					$('#manage_form_total_time').removeClass('is-valid');
-					$('#manage_form_total_time').removeClass('is-invalid');
-
-					$('#manage_form_active_time').removeClass('is-valid');
-					$('#manage_form_active_time').removeClass('is-invalid');
-
-					$('#manage_form_yield').removeClass('is-valid');
-					$('#manage_form_yield').removeClass('is-invalid');
-
-					/* **** Validate all form valid classes **** */
 					//Check name
 					if (utils.isString(this.manage_recipeName)) {
-						$('#manage_form_name').addClass('is-valid');
 						serializedRecipe.title = this.manage_recipeName.toString().trim();
 					} else {
-						$('#manage_form_name').addClass('is-invalid');
+						this.$refs.recipeNameRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
@@ -1774,7 +1755,7 @@
 					if (utils.isBigString(this.quillContent)) {
 						serializedRecipe.description = this.quillContent;
 					} else {
-						$('#editor').addClass('is-invalid');
+						this.$refs.recipeDescriptionRef.classList.add('is-invalid')
 						anyInvalid = true;
 					}
 
@@ -1785,45 +1766,40 @@
 
 					//Check prep time
 					if (utils.isNumber(this.manage_recipePrepTime)) {
-						$('#manage_form_prep_time').addClass('is-valid');
 						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
 					} else {
-						$('#manage_form_prep_time').addClass('is-invalid');
+						this.$refs.recipePrepRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					//Check cook time
 					if (utils.isNumber(this.manage_recipeCookTime)) {
-						$('#manage_form_cook_time').addClass('is-valid');
 						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
 					} else {
-						$('#manage_form_cook_time').addClass('is-invalid');
+						this.$refs.recipeCookRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					//Check total time
 					if (utils.isNumber(this.manage_recipeTotalTime)) {
-						$('#manage_form_total_time').addClass('is-valid');
 						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
 					} else {
-						$('#manage_form_total_time').addClass('is-invalid');
+						this.$refs.recipeTotalRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					//Check active time
 					if (utils.isNumber(this.manage_recipeActiveTime)) {
-						$('#manage_form_active_time').addClass('is-valid');
 						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
 					} else {
-						$('#manage_form_active_time').addClass('is-invalid');
+						this.$refs.recipeActiveRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					if (utils.isString(this.manage_recipeYield.toString().trim())) {
-						$('#manage_form_yield').addClass('is-valid');
 						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
 					} else {
-						$('#manage_form_yield').addClass('is-invalid');
+						this.$refs.recipeYieldRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
@@ -1863,6 +1839,8 @@
 					} else {
 						anyInvalid = true;
 					}
+
+					return;
 
 					if (anyInvalid) return;
 

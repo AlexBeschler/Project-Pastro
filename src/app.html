@@ -35,7 +35,7 @@
     <link rel="prefetch" href="assets/icons/arrow-left-short.svg">
     <link rel="prefetch" href="assets/icons/arrow-up-right.svg">
     <!--link rel="prefetch" href="assets/icons/basket.svg"-->
-    <link rel="prefetch" href="assets/icons/check.svg">
+    <!--link rel="prefetch" href="assets/icons/check.svg"-->
     <link rel="prefetch" href="assets/icons/clipboard-plus.svg">
     <!--link rel="prefetch" href="assets/icons/clock.svg"-->
     <link rel="prefetch" href="assets/icons/edit.svg">
@@ -518,7 +518,7 @@
                                         <div class="form-floating">
                                             <input type="text" class="form-control manage-recipe-input"
                                                 id="manage_form_name" v-model="manage_recipeName"
-                                                placeholder="Recipe name" required>
+                                                placeholder="Recipe name" required ref="recipeNameRef">
                                             <label for="manage_form_name">Recipe name</label>
                                             <div class="invalid-feedback">
                                                 Please enter a name
@@ -527,7 +527,10 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="editor" class="form-label">Description</label>
-                                        <div id="editor"></div>
+                                        <div id="editor" ref="recipeDescriptionRef"></div>
+                                        <div class="invalid-feedback">
+                                            Please enter a description
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-10">
@@ -547,10 +550,8 @@
                                     <div class="mt-3">
                                         <div class="col-lg-12">
                                             <div v-if="manage_recipeTagHolder.length">
-                                                <sortable-list :lock-axis="'y'" :press-delay.number=75
+                                                <sortable-list :lock-axis="'y'" :press-delay.number=100
                                                     v-model="manage_recipeTagHolder">
-                                                    <li class="list-group-item list-group-item-secondary">Added Tags
-                                                    </li>
                                                     <sortable-item v-for="(tag, index) in manage_recipeTagHolder"
                                                         :index="index" :key="index" :tag="tag" :value="tag.value"
                                                         :edit-mode="tag.editMode"
@@ -593,7 +594,7 @@
                                     <div class="form-floating mb-2">
                                         <input type="number" class="form-control manage-recipe-input"
                                             id="manage_form_prep_time" v-model="manage_recipePrepTime"
-                                            placeholder="Prep Time (in minutes)" required>
+                                            placeholder="Prep Time (in minutes)" ref="recipePrepRef" required>
                                         <div class="invalid-feedback">
                                             Please enter a preparation time
                                         </div>
@@ -602,7 +603,7 @@
                                     <div class="form-floating mb-2">
                                         <input type="number" class="form-control manage-recipe-input"
                                             id="manage_form_cook_time" v-model="manage_recipeCookTime"
-                                            placeholder="Cook Time (in minutes)" required>
+                                            placeholder="Cook Time (in minutes)" ref="recipeCookRef" required>
                                         <div class="invalid-feedback">
                                             Please enter a cook time
                                         </div>
@@ -611,7 +612,7 @@
                                     <div class="form-floating mb-2">
                                         <input type="number" class="form-control manage-recipe-input"
                                             id="manage_form_total_time" v-model="manage_recipeTotalTime"
-                                            placeholder="Total Time (in minutes)" required>
+                                            placeholder="Total Time (in minutes)" ref="recipeTotalRef" required>
                                         <div class="invalid-feedback">
                                             Please enter a total time
                                         </div>
@@ -622,7 +623,7 @@
                                             <div class="form-floating">
                                                 <input type="number" class="form-control manage-recipe-input me-3"
                                                     id="manage_form_active_time" v-model="manage_recipeActiveTime"
-                                                    placeholder="Active Time (in minutes)" required>
+                                                    placeholder="Active Time (in minutes)" ref="recipeActiveRef" required>
                                                 <div class="invalid-feedback">
                                                     Please enter an active time
                                                 </div>
@@ -639,7 +640,7 @@
                                     <div class="form-floating mb-4">
                                         <input type="text" class="form-control manage-recipe-input"
                                             id="manage_form_yield" v-model="manage_recipeYield"
-                                            placeholder="Yield, i.e. 2 servings" required>
+                                            placeholder="Yield, i.e. 2 servings" ref="recipeYieldRef" required>
                                         <div class="invalid-feedback">
                                             Please enter a yield
                                         </div>
@@ -713,7 +714,7 @@
                                                 <div class="mb-3">
                                                     <div v-if="manage_recipeBlockIngredients.length">
                                                         <ingredients-draggable-list :lock-axis="'y'"
-                                                            :press-delay.number=75
+                                                            :press-delay.number=100
                                                             v-model="manage_recipeBlockIngredients">
                                                             <ingredients-draggable-item
                                                                 v-for="(ingredient, index) in manage_recipeBlockIngredients"
@@ -723,8 +724,10 @@
                                                                 :edit-mode-button-text="ingredient.editModeButtonText"
                                                                 v-on:edit-ingredient="editIngredient(index)"
                                                                 v-on:delete-ingredient="deleteIngredient(index)"
+                                                                v-on:update-focus="updateIngredientFocus($event)"
                                                                 @touchstart.native="scrollStop"
-                                                                @touchend.native="scrollMove">
+                                                                @touchend.native="scrollMove"
+                                                                :ref="'ingredient' + index">
                                                             </ingredients-draggable-item>
                                                         </ingredients-draggable-list>
                                                     </div>
@@ -735,9 +738,11 @@
                                                     <div class="steps-textarea-holder">
                                                         <textarea id="manage_step_value" class="form-control"
                                                             v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
-                                                            v-model="manage_recipeBlockStepValue"></textarea>
+                                                            v-model="manage_recipeBlockStepValue" ref="manageStepRef"></textarea>
                                                     </div>
-                                                    <div id="step-invalid-feedback" class="invalid-feedback"></div>
+                                                    <div id="step-invalid-feedback" class="invalid-feedback">
+                                                        Please enter at least one step
+                                                    </div>
                                                     <button class="btn text-primary button-no-outline mt-2"
                                                         @click="addStep" ref="addStepToBlockButton">Add</button>
                                                     <button class="btn text-primary button-no-outline mt-2"
@@ -747,7 +752,7 @@
                                                 <hr class="margin-top-2" v-if="manage_recipeBlockSteps.length">
                                                 <div class="mb-3">
                                                     <div class="list-group" v-if="manage_recipeBlockSteps.length">
-                                                        <steps-draggable-list :lock-axis="'y'" :press-delay.number=75
+                                                        <steps-draggable-list :lock-axis="'y'" :press-delay.number=100
                                                             v-model="manage_recipeBlockSteps">
                                                             <steps-draggable-item
                                                                 v-for="(step, index) in manage_recipeBlockSteps"
@@ -765,62 +770,108 @@
                                             </div>
                                             <div class="tab-pane fade collapse" id="pills-manage-nutrition"
                                                 role="tabpanel">
-                                                <div class="mb-1"
-                                                    style="display: flex; justify-content: space-between; align-items: center;">
-                                                    <h5 class="mb-0" style="width: auto;">Nutritional Facts</h5>
-                                                    <span class="text-muted" style="width: auto;">Optional</span>
+                                                <div class="row mt-3 mb-2">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control manage-recipe-input"
+                                                                v-model="manage_nCalories" placeholder="Calories"
+                                                                required>
+                                                            <label>Calories</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-end">
+                                                        <span>g</span>
+                                                    </div>
                                                 </div>
-                                                <hr>
-                                                <div class="mb-3">
-                                                    <div class="row">
-                                                        <div class="col-lg-3 input-group">
-                                                            <label class="input-group-text">Calories</label>
-                                                            <input type="number" class="form-control"
-                                                                v-model="manage_nCalories">
-                                                            <span class="input-group-text">g</span>
+                                                <div class="row mb-2">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control manage-recipe-input"
+                                                            v-model="manage_nFat" placeholder="Total Fat"
+                                                                required>
+                                                            <label>Total Fat</label>
                                                         </div>
-                                                        <div class="col-lg-3 input-group">
-                                                            <label class="input-group-text">Total Fat</label>
-                                                            <input type="number" class="form-control"
-                                                                v-model="manage_nFat">
-                                                            <span class="input-group-text">g</span>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-end">
+                                                        <span>g</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control manage-recipe-input"
+                                                            v-model="manage_nCholesterol" placeholder="Cholesterol"
+                                                                required>
+                                                            <label>Cholesterol</label>
                                                         </div>
-                                                        <div class="col-lg-3 input-group">
-                                                            <label class="input-group-text">Cholesterol</label>
-                                                            <input type="number" class="form-control"
-                                                                v-model="manage_nCholesterol">
-                                                            <span class="input-group-text">mg</span>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-end">
+                                                        <span>mg</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control manage-recipe-input"
+                                                            v-model="manage_nSodium" placeholder="Sodium"
+                                                                required>
+                                                            <label>Sodium</label>
                                                         </div>
-                                                        <div class="col-lg-3 input-group">
-                                                            <label class="input-group-text">Sodium</label>
-                                                            <input type="number" class="form-control"
-                                                                v-model="manage_nSodium">
-                                                            <span class="input-group-text">mg</span>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-end">
+                                                        <span>mg</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control manage-recipe-input"
+                                                            v-model="manage_nCarbohydrate" placeholder="Carbohydrate"
+                                                                required>
+                                                            <label>Carbohydrate</label>
                                                         </div>
-                                                        <div class="col-lg-3 input-group">
-                                                            <label class="input-group-text">Carbohydrate</label>
-                                                            <input type="number" class="form-control"
-                                                                v-model="manage_nCarbohydrate">
-                                                            <span class="input-group-text">g</span>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-end">
+                                                        <span>g</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control manage-recipe-input"
+                                                            v-model="manage_nFiber" placeholder="Fiber"
+                                                                required>
+                                                            <label>Fiber</label>
                                                         </div>
-                                                        <div class="col-lg-3 input-group">
-                                                            <label class="input-group-text">Fiber</label>
-                                                            <input type="number" class="form-control"
-                                                                v-model="manage_nFiber">
-                                                            <span class="input-group-text">g</span>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-end">
+                                                        <span>g</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control manage-recipe-input"
+                                                            v-model="manage_nSugars" placeholder="Sugars"
+                                                                required>
+                                                            <label>Sugars</label>
                                                         </div>
-                                                        <div class="col-lg-3 input-group">
-                                                            <label class="input-group-text">Sugars</label>
-                                                            <input type="number" class="form-control"
-                                                                v-model="manage_nSugars">
-                                                            <span class="input-group-text">g</span>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-end">
+                                                        <span>g</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control manage-recipe-input"
+                                                            v-model="manage_nProtein" placeholder="Protein"
+                                                                required>
+                                                            <label>Protein</label>
                                                         </div>
-                                                        <div class="col-lg-3 input-group">
-                                                            <label class="input-group-text">Protein</label>
-                                                            <input type="number" class="form-control"
-                                                                v-model="manage_nProtein">
-                                                            <span class="input-group-text">g</span>
-                                                        </div>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-end">
+                                                        <span>g</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -830,7 +881,7 @@
                                         <button class="btn d-flex mb-3" style="margin: 0 auto;" @click="addBlock"
                                             v-if="manage_recipeBlockSteps.length">+ Add Section</button>
                                         <div class="list-group" v-if="manage_recipeBlocks.length">
-                                            <blocks-draggable-list :lock-axis="'y'" :press-delay.number=75
+                                            <blocks-draggable-list :lock-axis="'y'" :press-delay.number=100
                                                 v-model="manage_recipeBlocks">
                                                 <blocks-draggable-item class="list-group-item"
                                                     v-for="(block, index) in manage_recipeBlocks" :key="index"
@@ -882,18 +933,21 @@
     </template>
     <template id="tag-draggable-item-template">
         <li class="list-group-item manage-tag-list-group-item d-flex justify-content-between align-items-center">
-            <div v-if="!tag.editMode">
+            <div class="d-flex align-items-end" v-if="!tag.editMode">
+                <div class="btn ps-0 pe-2 py-0">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
                 {{ tag.value }}
+                <button class="btn ps-2 pe-0 py-0" v-if="!tag.editMode" @click="$emit('edit-tag', index)">
+                    <img src="assets/icons/edit.svg">
+                </button>
             </div>
             <div v-else>
-                <input class="form-control" type="text" v-model="tag.value">
+                <input class="form-control" type="text" v-model="tag.value" v-on:keyup.enter="$emit('edit-tag', index)"
+                    @blur="$emit('edit-tag', index)">
             </div>
             <span>
-                <button class="btn btn-outline-warning" @click="$emit('edit-tag', index)">
-                    <img v-if="!tag.editMode" src="assets/icons/edit.svg">
-                    <img v-else src="assets/icons/check.svg">
-                </button>
-                <button class="btn btn-outline-danger" @click="$emit('delete-tag', index)">
+                <button class="btn pe-0" @click="$emit('delete-tag', index)">
                     <img src="assets/icons/trash.svg">
                 </button>
             </span>
@@ -902,26 +956,34 @@
 
     <!-- Manage ingredients draggables -->
     <template id="ingredients-draggable-list-template">
-        <ul class="list-group list-group-flush">
+        <ul class="list-group">
             <slot />
         </ul>
     </template>
     <template id="ingredients-draggable-item-template">
         <li
             class="list-group-item manage-ingredients-list-group-item d-flex justify-content-between align-items-center">
-            <div v-if="!ingredient.editMode">
+            <div class="d-flex align-items-end" v-if="!ingredient.editMode">
+                <div class="btn ps-0 pe-2 py-0">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
                 {{ ingredient.amount }} {{ ingredient.value }}
-            </div>
-            <div v-else>
-                <input class="form-control" type="text" v-model="ingredient.amount">
-                <input class="form-control" type="text" v-model="ingredient.value">
-            </div>
-            <span>
-                <button class="btn btn-outline-warning" @click="$emit('edit-ingredient', index)">
+                <button class="btn ps-2 pe-0 py-0" @click="$emit('edit-ingredient', index)">
                     <img v-if="!ingredient.editMode" src="assets/icons/edit.svg">
                     <img v-else src="assets/icons/check.svg">
                 </button>
-                <button class="btn btn-outline-danger" @click="$emit('delete-ingredient', index)">
+            </div>
+            <div v-else>
+                <input class="form-control" type="text" v-model="ingredient.amount"
+                    v-on:keyup.enter="$emit('edit-ingredient', index)">
+                <input class="form-control" type="text" v-model="ingredient.value"
+                    v-on:keyup.enter="$emit('edit-ingredient', index)">
+            </div>
+            <span>
+                <button v-if="ingredient.editMode" class="btn pe-0" @click="$emit('edit-ingredient', index)">
+                    <img src="assets/icons/check.svg">
+                </button>
+                <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
                     <img src="assets/icons/trash.svg">
                 </button>
             </span>
@@ -936,18 +998,20 @@
     </template>
     <template id="steps-draggable-item-template">
         <li class="list-group-item manage-steps-list-group-item">
-            <div class="mb-2" v-if="!step.editMode">
+            <div class="my-2" v-if="!step.editMode">
+                <div class="btn ps-0 pe-2 py-0">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
                 {{ step.value }}
             </div>
             <div class="mb-2" v-else>
-                <textarea class="form-control" v-model="step.value"></textarea>
+                <textarea class="form-control" v-model="step.value" @blur="$emit('edit-step', index)"></textarea>
             </div>
             <span>
-                <button class="btn btn-outline-warning" @click="$emit('edit-step', index)">
-                    <img v-if="!step.editMode" src="assets/icons/edit.svg">
-                    <img v-else src="assets/icons/check.svg">
+                <button class="btn ps-0" v-if="!step.editMode" @click="$emit('edit-step', index)">
+                    <img src="assets/icons/edit.svg">
                 </button>
-                <button class="btn btn-outline-danger" @click="$emit('delete-step', index)">
+                <button class="btn" @click="$emit('delete-step', index)">
                     <img src="assets/icons/trash.svg">
                 </button>
             </span>
@@ -966,10 +1030,12 @@
                 <h5 class="lead mb-0 d-flex align-items-center justify-content-between">
                     <b class="strong" v-if="!block.header.editMode">{{ block.header.value }}</b>
                     <div v-else>
-                        <input class="form-control" type="text" v-model="block.header.value">
+                        <input class="form-control" type="text" v-model="block.header.value"
+                            v-on:keyup.enter="$emit('edit-header', index)" @blur="$emit('edit-header', index)">
                     </div>
                     <span>
-                        <button class="btn ps-2 pe-0 py-0" @click="$emit('edit-header', index)">
+                        <button class="btn ps-2 pe-0 py-0" v-if="!block.header.editMode"
+                            @click="$emit('edit-header', index)">
                             <img src="assets/icons/edit.svg">
                         </button>
                     </span>
