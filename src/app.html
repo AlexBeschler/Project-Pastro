@@ -100,7 +100,7 @@
                 </div>
                 <section class="d-flex justify-content-center">
                     <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
-                        @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false">Add
+                        @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false" ref="addRecipeButton">Add
                         Recipe</button>
                 </section>
             </div>
@@ -512,7 +512,7 @@
                                 </button>
                             </h2>
                             <div id="flush-overview" class="accordion-collapse manage-recipe-section collapse show"
-                                data-bs-parent="#manageRecipeAccordion">
+                                data-bs-parent="#manageRecipeAccordion" ref="manageOverviewAccordionButton">
                                 <div class="accordion-body pe-1">
                                     <div class="mb-3">
                                         <div class="form-floating">
@@ -542,7 +542,7 @@
                                             </div>
                                         </div>
                                         <div class="col-2 ps-0 d-flex align-items-end">
-                                            <button class="btn h-75 w-100" @click="pasteFromClipboard('tags')">
+                                            <button class="btn h-100 w-100" @click="pasteFromClipboard('tags')">
                                                 <img src="assets/icons/clipboard-plus.svg">
                                             </button>
                                         </div>
@@ -569,12 +569,12 @@
                         <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button collapsed pe-1" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#flush-cover-photo">
+                                    data-bs-toggle="collapse" data-bs-target="#flush-cover-photo" >
                                     <span>2</span><span style="margin-left: 1rem;">Cover Photo</span>
                                 </button>
                             </h2>
                             <div id="flush-cover-photo" class="accordion-collapse manage-recipe-section collapse"
-                                data-bs-parent="#manageRecipeAccordion" ref="coverPhotoRef">
+                                data-bs-parent="#manageRecipeAccordion" ref="manageCoverPhotoAccordionButton">
                                 <div class="accordion-body pe-1">
                                     <input id="coverPhotoURLInput" type="file" type="file" data-max-file-size="12MB"
                                         accept="image/jpeg, image/png" />
@@ -589,7 +589,7 @@
                                 </button>
                             </h2>
                             <div id="flush-time-servings" class="accordion-collapse manage-recipe-section collapse"
-                                data-bs-parent="#manageRecipeAccordion">
+                                data-bs-parent="#manageRecipeAccordion" ref="manageTimeServingsAccordionButton">
                                 <div class="accordion-body pe-1">
                                     <div class="form-floating mb-2">
                                         <input type="number" class="form-control manage-recipe-input"
@@ -631,7 +631,7 @@
                                             </div>
                                         </div>
                                         <div class="col-2 ps-0 d-flex align-items-end">
-                                            <button class="btn h-75 w-100" type="button"
+                                            <button class="btn h-100 w-100" type="button"
                                                 @click.prevent="autofillActiveTime" style="padding: 0.375rem;">
                                                 <img src="assets/icons/lightning.svg">
                                             </button>
@@ -657,7 +657,7 @@
                                 </button>
                             </h2>
                             <div id="flush-blocks" class="accordion-collapse manage-recipe-section collapse"
-                                data-bs-parent="#manageRecipeAccordion">
+                                data-bs-parent="#manageRecipeAccordion" ref="manageSectionsAccordionButton">
                                 <div class="accordion-body pe-1 pt-1">
                                     <div class="mb-3">
                                         <ul class="nav nav-pills manage-recipe-blocks-pills-nav" role="tablist">
@@ -665,7 +665,7 @@
                                                 <button
                                                     class="nav-link active position-relative manage-recipe-blocks-pills-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-manage-ingredients"
-                                                    type="button" role="tab">Ingredients
+                                                    type="button" role="tab" ref="manageIngredientsTab">Ingredients
                                                     <span
                                                         class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
                                                         v-if="manage_recipeBlockIngredients.length > 0">
@@ -677,7 +677,7 @@
                                                 <button
                                                     class="nav-link position-relative manage-recipe-blocks-pills-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-manage-steps"
-                                                    type="button" role="tab">Steps
+                                                    type="button" role="tab" ref="manageStepsTab">Steps
                                                     <span
                                                         class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
                                                         v-if="manage_recipeBlockSteps.length > 0">
@@ -689,17 +689,17 @@
                                                 <button
                                                     class="nav-link position-relative manage-recipe-blocks-pills-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-manage-nutrition"
-                                                    type="button" role="tab">Nutrition</button>
+                                                    type="button" role="tab" ref="manageNutritionTab">Nutrition</button>
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade collapse active show"
-                                                id="pills-manage-ingredients" role="tabpanel">
+                                            <div class="tab-pane fade active show"
+                                                id="pills-manage-ingredients" role="tabpanel" ref="manageIngredientsSectionButton">
                                                 <div class="my-3">
                                                     <div class="input-group mb-3">
                                                         <input id="manage_ing_amount"
                                                             class="form-control manage-recipe-input me-3" type="text"
-                                                            placeholder="Amount, i.e. 1 tbps butter"
+                                                            placeholder="Ingredient"
                                                             v-model="manage_recipeBlockIngredientValue"
                                                             v-on:keyup.enter="addIngredient" ref="manage_ing_amount">
                                                         <div id="ingredient-invalid-feedback" class="invalid-feedback">
@@ -733,7 +733,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade collapse" id="pills-manage-steps" role="tabpanel">
+                                            <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel" ref="manageStepsSectionButton">
                                                 <div class="my-3">
                                                     <div class="steps-textarea-holder">
                                                         <textarea id="manage_step_value" class="form-control"
@@ -768,8 +768,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade collapse" id="pills-manage-nutrition"
-                                                role="tabpanel">
+                                            <div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel" ref="manageNutritionSectionButton">
                                                 <div class="row mt-3 mb-2">
                                                     <div class="col-10">
                                                         <div class="form-floating">
@@ -779,7 +778,7 @@
                                                             <label>Calories</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2 d-flex align-items-end">
+                                                    <div class="col-2 d-flex align-items-center">
                                                         <span>g</span>
                                                     </div>
                                                 </div>
@@ -792,7 +791,7 @@
                                                             <label>Total Fat</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2 d-flex align-items-end">
+                                                    <div class="col-2 d-flex align-items-center">
                                                         <span>g</span>
                                                     </div>
                                                 </div>
@@ -805,7 +804,7 @@
                                                             <label>Cholesterol</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2 d-flex align-items-end">
+                                                    <div class="col-2 d-flex align-items-center">
                                                         <span>mg</span>
                                                     </div>
                                                 </div>
@@ -818,7 +817,7 @@
                                                             <label>Sodium</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2 d-flex align-items-end">
+                                                    <div class="col-2 d-flex align-items-center">
                                                         <span>mg</span>
                                                     </div>
                                                 </div>
@@ -831,7 +830,7 @@
                                                             <label>Carbohydrate</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2 d-flex align-items-end">
+                                                    <div class="col-2 d-flex align-items-center">
                                                         <span>g</span>
                                                     </div>
                                                 </div>
@@ -844,7 +843,7 @@
                                                             <label>Fiber</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2 d-flex align-items-end">
+                                                    <div class="col-2 d-flex align-items-center">
                                                         <span>g</span>
                                                     </div>
                                                 </div>
@@ -857,7 +856,7 @@
                                                             <label>Sugars</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2 d-flex align-items-end">
+                                                    <div class="col-2 d-flex align-items-center">
                                                         <span>g</span>
                                                     </div>
                                                 </div>
@@ -870,7 +869,7 @@
                                                             <label>Protein</label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2 d-flex align-items-end">
+                                                    <div class="col-2 d-flex align-items-center">
                                                         <span>g</span>
                                                     </div>
                                                 </div>
@@ -901,7 +900,7 @@
                     </div>
                     <button id="submitRecipeButton" type="button" class="btn btn-success fancy-button mb-5"
                         @click="submitManagedRecipe" style="width: 100%;"
-                        :disabled="isRecipeSubmitDisabled">{{ manage_recipeTitle }}</button>
+                        :disabled="isRecipeSubmitDisabled">{{ manage_smartButtonText }}</button>
                     <div id="mobile-padding"></div>
                 </div>
             </div>
@@ -912,9 +911,9 @@
                 <button class="btn btn-success" v-show="ocr_DescriptionEditMode" @click="handleCrop('description')">Crop</button>
             </div-->
         </div>
-        <div class="container undo-container undo-collapsed py-1" ref="undoContainer">
+        <div class="container undo-container undo-collapsed py-1" ref="undoContainer" @click="undoDeleteClicked" style="display: none;">
             <p class="mb-0 px-2">{{ undoText }}</p>
-            <button class="btn stronger" @click="undoDeleteClicked" ref="undoButton">Undo</button>
+            <button class="btn stronger" ref="undoButton">Undo</button>
         </div>
     </div>
 
@@ -1005,7 +1004,7 @@
                 {{ step.value }}
             </div>
             <div class="mb-2" v-else>
-                <textarea class="form-control" v-model="step.value" @blur="$emit('edit-step', index)"></textarea>
+                <textarea class="form-control" v-model="step.value" @blur="$emit('edit-step', index)" v-on:keyup.enter="$emit('edit-step', index)"></textarea>
             </div>
             <span>
                 <button class="btn ps-0" v-if="!step.editMode" @click="$emit('edit-step', index)">
@@ -1147,7 +1146,6 @@
         });
     </script>
     <!-- Core Dependencies -->
-    <script src="vendor/jquery/dist/jquery.min.js"></script>
     <script src="vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/vue/vue.js"></script>
     <!-- Firebase -->
@@ -1176,7 +1174,7 @@
     <script src="vendor/quilljs/js/quill.min.js"></script>
     <script src="vendor/cropperjs/js/cropper.min.js"></script>
     <script src="vendor/axios/axios.min.js"></script>
-    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script src="vendor/hammerjs/hammer.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/nlp.js"></script>

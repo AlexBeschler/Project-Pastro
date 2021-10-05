@@ -507,17 +507,8 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 }
 
 /* Manage Recipe View */
-.manage-recipe-input {
-    border-bottom: 1px solid var(--ps-primary-color);
-    border-radius: 0px;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-}
-
 .manage-recipe-input:focus {
     border-color: var(--ps-primary-color);
-    box-shadow: 0 0.15rem rgba(var(--ps-primary-rgb), 0.25);
 }
 
 .manage-accordion-button:not(.collapsed) {
@@ -588,18 +579,19 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 }
 
 .manage-recipe-blocks-pills-tab {
-    padding: 0.3rem 0.3rem;
+    background-color: inherit !important;
+    color: var(--ps-primary-color) !important;
+    padding: calc(0.3rem + 2px) calc(0.6rem + 2px);
+    border-color: transparent !important;
+    border-radius: 0.45rem !important;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
 }
 
 .manage-recipe-blocks-pills-tab.active {
-    background-color: inherit !important;
-    color: #0d6efd !important;
-    text-decoration-line: underline;
-    text-underline-offset: 0.2rem;
-}
-
-.manage-recipe-blocks-pills-tab:not(:active) {
-    color: #0d6efd8a;
+    border: 2px solid;
+    border-color: var(--ps-btn-outline-color) !important;
+    background-color: var(--ps-bg-color)!important;
+    padding: 0.3rem 0.6rem;
 }
 
 .steps-textarea-holder {
@@ -608,20 +600,12 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 
 .steps-textarea-holder>textarea {
     width: 100%;
-    background-color: #ffffff;
     min-height: 10rem;
-    border: none;
-    border-bottom: 1px solid var(--ps-primary-color);
-    border-radius: 0;
-}
-
-.steps-textarea-holder>textarea:focus {
-    box-shadow: none;
 }
 
 .recipe-block-more-info-button {
     padding: .25rem;
-}
+} 
 
 .recipe-block-more-info-button:focus {
     box-shadow: none !important;
@@ -639,14 +623,16 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 .undo-container {
     z-index: 1100;
     position: absolute;
-    bottom: 0;
+    bottom: 2%;
     left: 0;
     right: 0;
+    width: 92%;
+    border-radius: 8px;
     margin-left: auto;
     margin-right: auto;
     background-color: var(--ps-secondary-color);
     color: #ffffff;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: space-between;
     transition: transform .25s ease;
@@ -657,7 +643,7 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 }
 
 .undo-collapsed {
-    transform: translateY(100%);
+    transform: translateY(150%);
 }
 
 .options-list-item {

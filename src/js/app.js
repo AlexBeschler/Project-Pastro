@@ -1,4 +1,12 @@
-(function ($) {
+/*
+
+(function() {
+    console.log('Hello world');
+})();
+
+*/
+
+(function () {
 	var utils = new ProjectPastroUtils();
 	var nlp = new ProjectPastroNLP();
 	nlp.init();
@@ -42,8 +50,9 @@
 						paySubscription: function () {
 							console.log('User clicked make payment');
 							//Disable button
-							$('#paySubscriptionButton').prop('disabled', true);
-							$('#paySubscriptionButton').text('Loading...');
+							let button = document.getElementById('paySubscriptionButton');
+							button.disabled = true;
+							button.textContent = 'Loading...';
 							firebase.firestore().collection('customers').doc(utils._UID).collection('checkout_sessions').add({
 								price: utils._PRICE,
 								allow_promotion_codes: false,
@@ -104,8 +113,8 @@
 						utils._UID = user.uid;
 						//Fix for when people's Google account name is all caps
 						utils._FIRSTNAME = utils.capitalizeFirstLetter(utils._USER.displayName.substr(0, utils._USER.displayName.indexOf(' ')).toLowerCase());
-						$('#loading-text').text('Hi ' + utils._FIRSTNAME);
-						$('#loading-subtext').text('Loading your cookbook...');
+						document.getElementById('loading-text').textContent = 'Hi ' + utils._FIRSTNAME;
+						document.getElementById('loading-subtext').textContent = 'Loading your cookbook...';
 						//Check if user is paying customer
 						firebase.firestore().collection('customers').doc(user.uid).collection('subscriptions').where('status', '==', 'active').get().then(function (snapshot) {
 							if (snapshot.empty) { //Customer is not actively subscribed
@@ -298,10 +307,10 @@
 				db: null,
 				cookbook: payload,
 				filteredCookbook: payload,
-				Undo_Length_Short: 1500,
-				Undo_Length_Long: 2750,
+				undo_length_long: 4750,
 				undoObject: null,
 				undoText: '',
+				undoTimeOut: null,
 
 				//Explore pane
 				exploreOffcanvas: null,
@@ -374,7 +383,18 @@
 				//For use with manage recipes
 				manageOffcanvas: null,
 				isRecipeSubmitDisabled: false,
-
+				manage_smartButtonText: '',
+				manage_smartButtonProgress: {
+					overview: 1,
+					coverPhoto: 2,
+					timeServings: 3,
+					ingredients: 4,
+					steps: 5,
+					nutrition: 6
+				},
+				manage_activePane: 1,
+				showStickySubmit: false,
+				
 				//Step 1
 				manage_filePondCoverPhoto: null,
 				manage_coverPhotoURL: '',
@@ -487,6 +507,10 @@
 					this.browserUtil = 'Desktop browser';
 				}
 
+				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', function() {
+					self.$refs.undoContainer.style.display = 'none';
+				});
+
 				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
 						//If the user already clicked the crop button, don't let another instance be called
@@ -583,7 +607,7 @@
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 
 				//FilePond does not render unless browser 'sees' it. Click listener is to dynamically load FilePond instance
-				this.$refs.coverPhotoRef.addEventListener('shown.bs.collapse', function () {
+				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', function () {
 					if (self.manage_filePondCoverPhoto === null) {
 
 						self.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
@@ -682,6 +706,31 @@
 
 					var u = document.getElementById('recipeRevealButton');
 					u.classList.remove('collapse-important');
+				});
+
+				//Add smart button listeners for ManageRecipe
+				var smartButtonListeners = [
+					this.$refs.manageOverviewAccordionButton,
+					this.$refs.manageCoverPhotoAccordionButton,
+					this.$refs.manageTimeServingsAccordionButton,
+					this.$refs.manageSectionsAccordionButton,
+				];
+				smartButtonListeners.forEach(element => {
+					element.addEventListener('shown.bs.collapse', function() {
+						self.updateSmartButtonText();
+					});
+				});
+
+				var smartTabListeners = [
+					this.$refs.manageIngredientsTab,
+					this.$refs.manageStepsTab,
+					this.$refs.manageNutritionTab
+				];
+				smartTabListeners.forEach(element => {
+					element.addEventListener('shown.bs.tab', function() {
+						console.log('Updating smart button');
+						self.updateSmartButtonText();
+					});
 				});
 			},
 			beforeDestroy() {
@@ -1294,7 +1343,7 @@
 					this.quillInstance.deleteText(0, 1);
 
 					//Change DOM from Add to Edit
-					$('#addRecipeButton').attr('data-ps-button-type', 'manage');
+					this.$refs.addRecipeButton.dataset.psButtonType = 'manage';
 
 					//Add listener
 					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.recipeViewListener);
@@ -1303,7 +1352,7 @@
 				},
 				checkForCancelRecipe: function () {
 					//Check if the user closed out of an edit screen
-					if ($('#addRecipeButton').attr('data-ps-button-type') == 'manage') {
+					if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
 						this.cleanupManageRecipe();
 					}
 				},
@@ -1379,7 +1428,7 @@
 				},
 				clickedAddRecipe: function () {
 					//Do button animation
-					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
+					if (this.$refs.addRecipeButton.dataset.psButtonType == 'add') {
 						this.manage_recipeTitle = 'Add Recipe';
 					} else {
 						this.manage_recipeTitle = 'Update Recipe';
@@ -1390,15 +1439,77 @@
 						this.manageOffcanvas = new bootstrap.Offcanvas(document.getElementById('manage-recipe-offcanvas'));
 					}
 					this.manageOffcanvas.show();
+					this.$refs.undoContainer.style.display = 'inherit';
+					
+					this.updateSmartButtonText();
+					
 				},
 				//Manage recipe methods
+				updateSmartButtonText: function() {
+					//Check text to set for smart button
+					if (this.$refs.manageOverviewAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Cover Photo »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.overview;
+					}
+					if (this.$refs.manageCoverPhotoAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Time & Servings »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.coverPhoto;
+					}
+					if (this.$refs.manageTimeServingsAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Recipe Ingredients »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.timeServings;
+					}
+					if (this.$refs.manageSectionsAccordionButton.classList.contains('show')) {
+						//Bootstrap 5 has a bug related to nav tabs inside an accordion -
+						// if the user expands other sections of the accordion, the "show" class of the active (hidden)
+						// tab is removed automatically. We need to overcome this by finding the "active" class
+						// and adding the "show" class to the corresponding nav tab content
+						if (this.$refs.manageIngredientsTab.classList.contains('active')) {
+							if (!this.$refs.manageIngredientsSectionButton.classList.contains('show')) {
+								this.$refs.manageIngredientsSectionButton.classList.add('active');
+								this.$refs.manageIngredientsSectionButton.classList.add('show');
+							}
+							if (!this.showStickySubmit) {
+								this.manage_smartButtonText = 'Recipe Steps »';
+							}
+							this.manage_activePane = this.manage_smartButtonProgress.ingredients;
+						}
+						if (this.$refs.manageStepsTab.classList.contains('active')) {
+							if (!this.$refs.manageStepsSectionButton.classList.contains('show')) {
+								this.$refs.manageStepsSectionButton.classList.add('active');
+								this.$refs.manageStepsSectionButton.classList.add('show');
+							}
+							if (!this.showStickySubmit) {
+								this.manage_smartButtonText = 'Recipe Nutrition »';
+							}
+							this.manage_activePane = this.manage_smartButtonProgress.steps;
+						}
+						if (this.$refs.manageNutritionTab.classList.contains('active')) {
+							if (!this.$refs.manageNutritionSectionButton.classList.contains('show')) {
+								this.$refs.manageNutritionSectionButton.classList.add('active');
+								this.$refs.manageNutritionSectionButton.classList.add('show');
+							}
+							this.manage_smartButtonText = 'Submit Recipe';
+							this.manage_activePane = this.manage_smartButtonProgress.nutrition;
+							this.showStickySubmit = true;
+						}
+					}
+				},
 				undoDeleteClicked: function () {
 					this.undoObject.f(this);
+					clearTimeout(this.undoTimeOut);
 				},
 				undoDeleteTimeOut: function () {
 					if (!this.$refs.undoContainer.classList.contains('undo-collapsed')) {
 						this.$refs.undoContainer.classList.add('undo-collapsed');
 						this.undoObject = null;
+						
 					}
 				},
 				addTag: function () {
@@ -1564,7 +1675,7 @@
 
 					this.$refs.undoContainer.classList.remove('undo-collapsed');
 
-					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
+					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
 				},
 				autofillActiveTime: function () {
 					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
@@ -1610,7 +1721,7 @@
 
 					this.$refs.undoContainer.classList.remove('undo-collapsed');
 
-					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
+					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
 				},
 				addStep: function () {
 					this.$refs.manageStepRef.classList.remove('is-invalid');
@@ -1653,7 +1764,7 @@
 
 					this.$refs.undoContainer.classList.remove('undo-collapsed');
 
-					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
+					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
 				},
 				addBlock: function () {
 					this.$refs.manageStepRef.classList.remove('is-invalid');
@@ -1731,10 +1842,44 @@
 
 					this.$refs.undoContainer.classList.remove('undo-collapsed');
 
-					setTimeout(this.undoDeleteTimeOut, this.Undo_Length_Long);
+					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
 				},
 				submitManagedRecipe: function () {
 					var self = this;
+					if (this.manage_smartButtonText !== 'Submit Recipe') {
+						//Activate smart button
+						var el = null;
+						var bs = null;
+
+						switch(this.manage_activePane) {
+							case this.manage_smartButtonProgress.overview:
+								el = this.$refs.manageCoverPhotoAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.coverPhoto:
+								el = this.$refs.manageTimeServingsAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.timeServings:
+								el = this.$refs.manageSectionsAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.ingredients:
+								el = this.$refs.manageStepsTab;
+								bs = new bootstrap.Tab(el);
+								bs.show();
+								break;
+							case this.manage_smartButtonProgress.steps:
+								el = this.$refs.manageNutritionTab;
+								bs = new bootstrap.Tab(el);
+								bs.show();
+								break;
+							default:
+								break;
+						}
+						return;
+					}
+					
 					var anyInvalid = false;
 					var serializedRecipe = {};
 
@@ -1805,9 +1950,13 @@
 
 					//Check if any blocks have been added
 					if (this.manage_recipeBlocks.length < 1) {
-						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
-						$('#manage_step_value').addClass('is-invalid');
-						anyInvalid = true;
+						//The user probably didn't add a section. Check if there's any steps
+						if (this.manage_recipeBlockSteps < 1) {
+							this.$refs.manageStepRef.classList.add('is-invalid');
+							anyInvalid = true;
+						} else {
+							//TODO: Package steps & ingredients to a section
+						} 
 					}
 
 					//Serialize recipe block for push to Firebase
@@ -1849,7 +1998,7 @@
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
 
-					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
+					if (this.$refs.addRecipeButton.dataset.psButtonType == 'add') {
 						this.manage_coverPhotoURL !== '' ? serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL : serializedRecipe.coverPhotoURL = '';
 						//Add runtime-injected ID for index
 						serializedRecipe.id = this.injectedSearchIndexID;
@@ -1857,7 +2006,7 @@
 						this.injectedSearchIndexID++;
 						//Push serialized recipe into sorted position to cookbook
 						this.cookbook.push(serializedRecipe);
-					} else if ($('#addRecipeButton').attr('data-ps-button-type') == 'manage') {
+					} else if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
 						serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL;
 
 						var docIDToUpdate = this.filteredCookbook[this.proto_index].docID;
@@ -1947,7 +2096,7 @@
 				},
 				cleanupManageRecipe: function () {
 					//Reset DOM
-					$('#addRecipeButton').attr('data-ps-button-type', 'add');
+					this.$refs.addRecipeButton.dataset.psButtonType = 'add';
 
 					//Reset manage recipe values
 					this.manage_recipeName = '';
@@ -1967,22 +2116,14 @@
 					this.manage_recipeBlockStepValue = '';
 					this.quillInstance.setText('\n');
 
-					/* **** Clear all form valid classes **** */
-					$('#manage_form_name').removeClass('is-valid');
-					$('.ql-container.ql-snow').removeClass('is-valid');
-					$('#manage_form_prep_time').removeClass('is-valid');
-					$('#manage_form_cook_time').removeClass('is-valid');
-					$('#manage_form_total_time').removeClass('is-valid');
-					$('#manage_form_active_time').removeClass('is-valid');
-					$('#manage_form_yield').removeClass('is-valid');
-
 					//Re-enable submit button
 					this.isRecipeSubmitDisabled = false;
 				},
 
 				//Utility methods
 				stripeBillingPortal: function (event) {
-					$(event.target).prop('disabled', true);
+					event.target.disabled = true;
+					event.target.textContent = 'Preparing your billing portal...';
 					goToPortal();
 				},
 				signOutApp: function () {
@@ -2001,9 +2142,7 @@
 				touchMove: function (event) {
 					try {
 						event.preventDefault();
-					} catch (e) {
-						//
-					}
+					} catch (e) {}
 				},
 			}
 		});
@@ -2021,4 +2160,4 @@
 			window.location.assign(data.url);
 		}
 	}
-})(jQuery);
+})();
