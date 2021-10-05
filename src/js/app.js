@@ -1,5 +1,15 @@
-(function ($) {
+/*
+
+(function() {
+    console.log('Hello world');
+})();
+
+*/
+
+(function () {
 	var utils = new ProjectPastroUtils();
+	var nlp = new ProjectPastroNLP();
+	nlp.init();
 
 	window.addEventListener("load", function (event) {
 		utils.init();
@@ -40,8 +50,9 @@
 						paySubscription: function () {
 							console.log('User clicked make payment');
 							//Disable button
-							$('#paySubscriptionButton').prop('disabled', true);
-							$('#paySubscriptionButton').text('Loading...');
+							let button = document.getElementById('paySubscriptionButton');
+							button.disabled = true;
+							button.textContent = 'Loading...';
 							firebase.firestore().collection('customers').doc(utils._UID).collection('checkout_sessions').add({
 								price: utils._PRICE,
 								allow_promotion_codes: false,
@@ -102,8 +113,8 @@
 						utils._UID = user.uid;
 						//Fix for when people's Google account name is all caps
 						utils._FIRSTNAME = utils.capitalizeFirstLetter(utils._USER.displayName.substr(0, utils._USER.displayName.indexOf(' ')).toLowerCase());
-						$('#loading-text').text('Hi ' + utils._FIRSTNAME);
-						$('#loading-subtext').text('Loading your cookbook...');
+						document.getElementById('loading-text').textContent = 'Hi ' + utils._FIRSTNAME;
+						document.getElementById('loading-subtext').textContent = 'Loading your cookbook...';
 						//Check if user is paying customer
 						firebase.firestore().collection('customers').doc(user.uid).collection('subscriptions').where('status', '==', 'active').get().then(function (snapshot) {
 							if (snapshot.empty) { //Customer is not actively subscribed
@@ -230,11 +241,6 @@
 	}
 
 	function appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex) {
-		//Prevent unintended back button clicking
-		window.onbeforeunload = function () {
-			return "Your work will be lost.";
-		};
-
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -296,12 +302,15 @@
 
 		new Vue({
 			el: '#appContent',
-			vuetify: new Vuetify(),
 			data: {
 				//Utils
 				db: null,
 				cookbook: payload,
 				filteredCookbook: payload,
+				undo_length_long: 4750,
+				undoObject: null,
+				undoText: '',
+				undoTimeOut: null,
 
 				//Explore pane
 				exploreOffcanvas: null,
@@ -310,6 +319,14 @@
 				displayTime: '',
 				displayIngredients: '',
 				displayNutrition: '',
+
+				explorePaneActive: true,
+				searchPaneActive: false,
+				optionsPaneActive: false,
+
+				recipePaneCollapsed: true,
+
+				filtApp: false,
 
 				//Recipe
 				recipeOffcanvas: null,
@@ -366,16 +383,26 @@
 				//For use with manage recipes
 				manageOffcanvas: null,
 				isRecipeSubmitDisabled: false,
-
+				manage_smartButtonText: '',
+				manage_smartButtonProgress: {
+					overview: 1,
+					coverPhoto: 2,
+					timeServings: 3,
+					ingredients: 4,
+					steps: 5,
+					nutrition: 6
+				},
+				manage_activePane: 1,
+				showStickySubmit: false,
+				
 				//Step 1
-				manage_filePondCoverPhoto: '',
+				manage_filePondCoverPhoto: null,
 				manage_coverPhotoURL: '',
 
 				ocr_DescriptionFilePond: null,
 				ocr_DescriptionCropperObject: null,
 				ocr_DescriptionPondEditor: null,
 				ocr_DescriptionEditMode: false,
-
 
 				//Step 2
 				manage_recipeTitle: '',
@@ -398,6 +425,8 @@
 				manage_recipeBlockHeader: '',
 				manage_recipeBlockIngredientAmount: '',
 				manage_recipeBlockIngredientValue: '',
+				manage_ingAmountHasFocus: false,
+				manage_ingValueHasFocus: false,
 				manage_recipeBlockStepValue: '',
 				manage_nCalories: '',
 				manage_nFat: '',
@@ -407,7 +436,6 @@
 				manage_nFiber: '',
 				manage_nSugars: '',
 				manage_nProtein: '',
-				nutritionFactsButtonExpandedText: 'Expand Nutrition Facts',
 
 				//Quill
 				quillInstance: null,
@@ -425,8 +453,14 @@
 					}],
 					['clean']
 				],
+
+				//Used for settings menu
 				isDyslexicFontSet: '',
-				userID: utils._UID //Used for settings menu
+				userID: utils._UID,
+				browserUtil: '',
+
+				appContentHammerManager: null,
+				touchInputHammerManager: null
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -445,6 +479,14 @@
 				this.nProtein = '';
 			},
 			mounted() {
+				/* Disable back button from closing PWA */
+				//Bug - when user reloads page it completely breaks this code
+				window.history.pushState(null, null, document.URL);
+
+				window.addEventListener('popstate', function () {
+					history.pushState(null, null, document.URL);
+				});
+
 				this.initQuill();
 
 				FilePond.registerPlugin(FilePondPluginImageTransform);
@@ -453,6 +495,21 @@
 				FilePond.registerPlugin(FilePondPluginFileValidateType);
 
 				var self = this;
+
+				//On mobile, chrome/safari address bar is 60px and takes up part of the 100vh
+				//Meaning if the UA is mobile we need to add an additional 60px to the height of offcanvas
+				// to compensate. This is a broad check for mobile, instead of honing in on mobile
+				// Safari and Chrome; I simply don't care.
+				if (utils._isMobile) {
+					document.getElementById('mobile-padding').style.height = '60px';
+					this.browserUtil = 'Mobile browser';
+				} else {
+					this.browserUtil = 'Desktop browser';
+				}
+
+				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', function() {
+					self.$refs.undoContainer.style.display = 'none';
+				});
 
 				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
@@ -479,6 +536,7 @@
 					onclose: () => {}
 				}
 
+				//TODO: Wrap in accordion click listener
 				this.ocr_DescriptionFilePond = FilePond.create(document.getElementById('ocrDescriptionFilePond'));
 				this.ocr_DescriptionFilePond.setOptions({
 					allowImageCrop: true,
@@ -506,7 +564,7 @@
 							}, () => {
 								//Give user some sort of indications that something is going on behind the scenes
 								self.quillInstance.setText('Loading...');
-								
+
 								//Perform upload to Firebase storage
 								axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/ocrTextDetection', {
 									fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName
@@ -518,7 +576,7 @@
 
 									try {
 										self.ocr_DescriptionCropperObject.destroy();
-									} catch(e) {
+									} catch (e) {
 										//Instance may not exist yet
 									}
 
@@ -543,59 +601,137 @@
 					}
 				});
 
-				this.recipeOffcanvas = new bootstrap.Offcanvas(document.getElementById('recipeOffcanvas'));
+				this.recipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeView);
 				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
 
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 
-				this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
-				var self = this;
-				this.manage_filePondCoverPhoto.setOptions({
-					server: {
-						process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
-							var fileEndingRegex = /(?:\.([^.]+))?$/;
-							var fileType = fileEndingRegex.exec(file.name)[1];
-							var fileName = uuidv4() + '.' + fileType;
-							var metadata = {
-								contentType: file.type,
-							};
-						
-							var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + fileName).put(file, metadata);
-						
-							uploadTask.on('state_changed', (snapshot) => {
-								progress(snapshot.bytesTransferred / snapshot.totalBytes);
-							}, (error) => {
-								console.error('Error uploading file: ' + e);
-								error('Error uploading file: ' + e);
-							}, () => {
-								uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-									self.manage_coverPhotoURL = downloadURL;
-									load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/coverphotos/' + fileName);
-								}).catch(error => {
-									console.error(error);
-								});
-							});
-						
-							return {
-								abort: () => {
-									abort();
+				//FilePond does not render unless browser 'sees' it. Click listener is to dynamically load FilePond instance
+				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', function () {
+					if (self.manage_filePondCoverPhoto === null) {
+
+						self.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
+						self.manage_filePondCoverPhoto.setOptions({
+							server: {
+								process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+									var fileEndingRegex = /(?:\.([^.]+))?$/;
+									var fileType = fileEndingRegex.exec(file.name)[1];
+									var fileName = uuidv4() + '.' + fileType;
+									var metadata = {
+										contentType: file.type,
+									};
+
+									var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + fileName).put(file, metadata);
+
+									uploadTask.on('state_changed', (snapshot) => {
+										progress(snapshot.bytesTransferred / snapshot.totalBytes);
+									}, (error) => {
+										console.error('Error uploading file: ' + e);
+										error('Error uploading file: ' + e);
+									}, () => {
+										uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+											self.manage_coverPhotoURL = downloadURL;
+											load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/coverphotos/' + fileName);
+										}).catch(error => {
+											console.error(error);
+										});
+									});
+
+									return {
+										abort: () => {
+											abort();
+										},
+									};
 								},
-							};
-						},
-						revert: (uniqueFileId, load, error) => {
-							firebase.storage().refFromURL(uniqueFileId).delete().then(() => {
-								load();
-							}).catch((error) => {
-								console.error(error);
-								//utils.reportError('Error', error, 'Error with deleting cover photo');
-								error();
-							});
-						}
+								revert: (uniqueFileId, load, error) => {
+									firebase.storage().refFromURL(uniqueFileId).delete().then(() => {
+										load();
+									}).catch((error) => {
+										console.error(error);
+										//utils.reportError('Error', error, 'Error with deleting cover photo');
+										error();
+									});
+								}
+							}
+						});
 					}
 				});
 
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
+
+				this.appContentHammerManager = new Hammer.Manager(document.getElementById('appContent'));
+				this.appContentHammerManager.add(new Hammer.Swipe());
+				this.appContentHammerManager.on('swipe', function (e) {
+					//Vertical swipe
+					if (e.offsetDirection === 8 || e.offsetDirection === 16) {
+						self.clickedExpandChevron();
+					}
+				});
+
+				this.touchInputHammerManager = new Hammer.Manager(document.getElementById('touch-input-layer'));
+				this.touchInputHammerManager.add(new Hammer.Swipe());
+				this.touchInputHammerManager.on('swipe', function (e) {
+					if (e.offsetDirection === 8 || e.offsetDirection === 16) {
+						self.clickedExpandChevron();
+					}
+				});
+				document.body.classList.add('disable-scroll'); //Default view
+
+				var tabEl = document.getElementById('pills-explore-tab');
+				tabEl.addEventListener('hidden.bs.tab', function (event) {
+					//Collapse Recipe Pane
+					var r = document.getElementById('recipePane');
+					r.classList.add('collapse');
+
+					var s = document.getElementById('touch-input-layer');
+					s.classList.add('touch-action-auto');
+
+					var t = document.getElementById('appContent');
+					t.classList.add('touch-action-auto');
+
+					var u = document.getElementById('recipeRevealButton');
+					u.classList.add('collapse-important');
+				});
+				tabEl.addEventListener('show.bs.tab', function (event) {
+					//Show recipe Pane
+					var r = document.getElementById('recipePane');
+					r.classList.remove('collapse');
+
+					var s = document.getElementById('touch-input-layer');
+					s.classList.remove('touch-action-auto');
+
+					var t = document.getElementById('appContent');
+					t.classList.remove('touch-action-auto');
+
+					var u = document.getElementById('recipeRevealButton');
+					u.classList.remove('collapse-important');
+				});
+
+				//Add smart button listeners for ManageRecipe
+				var smartButtonListeners = [
+					this.$refs.manageOverviewAccordionButton,
+					this.$refs.manageCoverPhotoAccordionButton,
+					this.$refs.manageTimeServingsAccordionButton,
+					this.$refs.manageSectionsAccordionButton,
+				];
+				smartButtonListeners.forEach(element => {
+					element.addEventListener('shown.bs.collapse', function() {
+						self.updateSmartButtonText();
+					});
+				});
+
+				var smartTabListeners = [
+					this.$refs.manageIngredientsTab,
+					this.$refs.manageStepsTab,
+					this.$refs.manageNutritionTab
+				];
+				smartTabListeners.forEach(element => {
+					element.addEventListener('shown.bs.tab', function() {
+						console.log('Updating smart button');
+						self.updateSmartButtonText();
+					});
+				});
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
@@ -726,6 +862,15 @@
 						this.quillInstance.pasteHTML(newVal)
 					}
 				},
+				manage_recipeBlockStepValue: function (b, a) {
+					if (!utils.isEmpty(b)) {
+						this.$refs.addStepToBlockButton.classList.remove('button-no-outline');
+						this.$refs.addStepToBlockButton.classList.add('btn-outline-success');
+					} else {
+						this.$refs.addStepToBlockButton.classList.remove('btn-outline-success');
+						this.$refs.addStepToBlockButton.classList.add('button-no-outline');
+					}
+				},
 				model_search: function (b, a) {
 					if (this.model_search === '') {
 						this.filteredCookbook = this.cookbook;
@@ -752,14 +897,46 @@
 					//Write to cloud
 					this.db.collection('users').doc(utils._UID).set({
 						dyslexicFontSet: this.isDyslexicFontSet.toString()
-					}).then(() => {
-						console.log('Wrote new font settings to cloud');
 					}).catch((error) => {
 						console.error('Error writing cloud font preference: ', error);
 					});
 				}
 			},
 			methods: {
+				navBarClicked: function () {
+					//TODO: Hide recipe book & collapse button & get rid of touch action none
+					var self = this;
+					if (this.$refs.exploreRef.classList.contains('active')) {
+						this.appContentHammerManager = new Hammer.Manager(document.getElementById('appContent'));
+						this.appContentHammerManager.add(new Hammer.Swipe());
+						this.appContentHammerManager.on('swipe', function (e) {
+							//Vertical swipe
+							if (e.offsetDirection === 8 || e.offsetDirection === 16) {
+								self.clickedExpandChevron();
+							}
+						});
+
+						this.touchInputHammerManager = new Hammer.Manager(document.getElementById('touch-input-layer'));
+						this.touchInputHammerManager.add(new Hammer.Swipe());
+						this.touchInputHammerManager.on('swipe', function (e) {
+							if (e.offsetDirection === 8 || e.offsetDirection === 16) {
+								self.clickedExpandChevron();
+							}
+						});
+						document.body.classList.add('disable-scroll');
+					} else {
+						document.body.classList.remove('disable-scroll');
+						if (this.appContentHammerManager !== null) {
+							this.appContentHammerManager.destroy();
+							this.appContentHammerManager = null;
+						}
+						if (this.touchInputHammerManager !== null) {
+							this.touchInputHammerManager.destroy();
+							this.touchInputHammerManager = null;
+						}
+					}
+				},
+				//Explore pane
 				checkNutritionInfo: function (b, a) {
 					if ((utils.isBlank(this.nCalories)) &&
 						(utils.isBlank(this.nFat)) &&
@@ -1009,8 +1186,10 @@
 
 					if (!filtersApplied) {
 						this.filteredCookbook = this.cookbook;
+						this.filtApp = false;
 						return;
 					};
+					this.filtApp = true;
 					this.filteredCookbook = [];
 					filterIDs.forEach(id => {
 						this.filteredCookbook.push(this.cookbook[id]);
@@ -1079,6 +1258,15 @@
 					let x = (hours * 60) + minutes
 					this.finishByTimeInputInMinutes = x.toString();
 					return t;
+				},
+				clickedExpandChevron: function () {
+					//If the user tapped the button to show recipes
+					if (this.recipePaneCollapsed) {
+						this.recipePaneCollapsed = false;
+
+					} else {
+						this.recipePaneCollapsed = true;
+					}
 				},
 				//Recipe View methods
 				getTimeFromNowUsingMinutes: function (sMinutes) {
@@ -1155,7 +1343,7 @@
 					this.quillInstance.deleteText(0, 1);
 
 					//Change DOM from Add to Edit
-					$('#addRecipeButton').attr('data-ps-button-type', 'manage');
+					this.$refs.addRecipeButton.dataset.psButtonType = 'manage';
 
 					//Add listener
 					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.recipeViewListener);
@@ -1164,7 +1352,7 @@
 				},
 				checkForCancelRecipe: function () {
 					//Check if the user closed out of an edit screen
-					if ($('#addRecipeButton').attr('data-ps-button-type') == 'manage') {
+					if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
 						this.cleanupManageRecipe();
 					}
 				},
@@ -1240,7 +1428,7 @@
 				},
 				clickedAddRecipe: function () {
 					//Do button animation
-					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
+					if (this.$refs.addRecipeButton.dataset.psButtonType == 'add') {
 						this.manage_recipeTitle = 'Add Recipe';
 					} else {
 						this.manage_recipeTitle = 'Update Recipe';
@@ -1251,6 +1439,88 @@
 						this.manageOffcanvas = new bootstrap.Offcanvas(document.getElementById('manage-recipe-offcanvas'));
 					}
 					this.manageOffcanvas.show();
+					this.$refs.undoContainer.style.display = 'inherit';
+					
+					this.updateSmartButtonText();
+					
+				},
+				//Manage recipe methods
+				updateSmartButtonText: function() {
+					//Check text to set for smart button
+					if (this.$refs.manageOverviewAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Cover Photo »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.overview;
+					}
+					if (this.$refs.manageCoverPhotoAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Time & Servings »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.coverPhoto;
+					}
+					if (this.$refs.manageTimeServingsAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Recipe Ingredients »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.timeServings;
+					}
+					if (this.$refs.manageSectionsAccordionButton.classList.contains('show')) {
+						//Bootstrap 5 has a bug related to nav tabs inside an accordion -
+						// if the user expands other sections of the accordion, the "show" class of the active (hidden)
+						// tab is removed automatically. We need to overcome this by finding the "active" class
+						// and adding the "show" class to the corresponding nav tab content
+						if (this.$refs.manageIngredientsTab.classList.contains('active')) {
+							if (!this.$refs.manageIngredientsSectionButton.classList.contains('show')) {
+								this.$refs.manageIngredientsSectionButton.classList.add('active');
+								this.$refs.manageIngredientsSectionButton.classList.add('show');
+							}
+							if (!this.showStickySubmit) {
+								this.manage_smartButtonText = 'Recipe Steps »';
+							}
+							this.manage_activePane = this.manage_smartButtonProgress.ingredients;
+						}
+						if (this.$refs.manageStepsTab.classList.contains('active')) {
+							if (!this.$refs.manageStepsSectionButton.classList.contains('show')) {
+								this.$refs.manageStepsSectionButton.classList.add('active');
+								this.$refs.manageStepsSectionButton.classList.add('show');
+							}
+							if (!this.showStickySubmit) {
+								this.manage_smartButtonText = 'Recipe Nutrition »';
+							}
+							this.manage_activePane = this.manage_smartButtonProgress.steps;
+						}
+						if (this.$refs.manageNutritionTab.classList.contains('active')) {
+							if (!this.$refs.manageNutritionSectionButton.classList.contains('show')) {
+								this.$refs.manageNutritionSectionButton.classList.add('active');
+								this.$refs.manageNutritionSectionButton.classList.add('show');
+							}
+							this.manage_smartButtonText = 'Submit Recipe';
+							this.manage_activePane = this.manage_smartButtonProgress.nutrition;
+							this.showStickySubmit = true;
+						}
+					}
+				},
+				undoDeleteClicked: function () {
+					this.undoObject.f(this);
+					clearTimeout(this.undoTimeOut);
+				},
+				undoDeleteTimeOut: function () {
+					if (!this.$refs.undoContainer.classList.contains('undo-collapsed')) {
+						this.$refs.undoContainer.classList.add('undo-collapsed');
+						this.undoObject = null;
+						
+					}
+				},
+				addTag: function () {
+					if (utils.isString(this.manage_recipeTagInput)) {
+						this.manage_recipeTagHolder.push({
+							value: this.manage_recipeTagInput.trim(),
+							editMode: false,
+							editModeButtonText: 'Edit'
+						});
+						this.manage_recipeTagInput = '';
+					}
 				},
 				handleCrop: function (type) {
 					var self = this;
@@ -1345,26 +1615,13 @@
 								case 'ingredients':
 									lines.forEach(line => {
 										if (!utils.isEmpty(line)) {
-											var words = line.split(' ');
-											if (words.length <= 2 && words.length > 0) {
-												self.manage_recipeBlockIngredients.push({
-													amount: '',
-													value: line.trim(),
-													editMode: false,
-													editModeButtonText: 'Edit'
-												});
-											} else if (words.length > 2) {
-												var t = '';
-												for (var i = 2; i < words.length; i++) {
-													t += words[i] + ' ';
-												}
-												self.manage_recipeBlockIngredients.push({
-													amount: words[0].trim() + ' ' + words[1].trim(),
-													value: t.trim(),
-													editMode: false,
-													editModeButtonText: 'Edit'
-												});
-											}
+											var s = nlp.parseIngredient(line);
+											self.manage_recipeBlockIngredients.push({
+												amount: s.amount,
+												value: s.ingredient,
+												editMode: false,
+												editModeButtonText: 'Edit'
+											});
 										}
 									});
 									break;
@@ -1391,17 +1648,6 @@
 							console.error('Failed to read clipboard contents: ', err);
 						});
 				},
-				//Manage recipe methods
-				pushToTagArray: function () {
-					if (this.manage_recipeTagInput.trim() !== '' && this.manage_recipeTagInput.trim() !== null) {
-						this.manage_recipeTagHolder.push({
-							value: this.manage_recipeTagInput.trim(),
-							editMode: false,
-							editModeButtonText: 'Edit'
-						});
-						this.manage_recipeTagInput = '';
-					}
-				},
 				editTag: function (index) {
 					if (!this.manage_recipeTagHolder[index].editMode) {
 						this.manage_recipeTagHolder[index].editMode = true;
@@ -1416,29 +1662,35 @@
 					}
 				},
 				deleteTag: function (index) {
+					this.undoObject = {
+						o: this.manage_recipeTagHolder[index],
+						i: index,
+						f: function (self) {
+							self.manage_recipeTagHolder.splice(self.undoObject.i, 0, self.undoObject.o);
+							self.$refs.undoContainer.classList.add('undo-collapsed');
+						}
+					};
 					this.manage_recipeTagHolder.splice(index, 1);
+					this.undoText = 'Tag deleted';
+
+					this.$refs.undoContainer.classList.remove('undo-collapsed');
+
+					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
 				},
 				autofillActiveTime: function () {
 					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
 				},
 				addIngredient: function () {
-					var ingredientValueBox = $('#manage_ing_value');
-					ingredientValueBox.removeClass('is-invalid');
-					if ((this.manage_recipeBlockIngredientAmount.trim() === '' || this.manage_recipeBlockIngredientAmount.trim() === null) && (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null)) {
-						return;
-					}
-					if (this.manage_recipeBlockIngredientValue.trim() === '' || this.manage_recipeBlockIngredientValue.trim() === null) {
-						$('#ingredient-invalid-feedback').text('Cannot be blank. Use this for ingredients that don\'t require an amount.');
-						ingredientValueBox.addClass('is-invalid');
-						return;
-					}
+					this.$refs.manage_ing_amount.classList.remove('is-invalid');
+					if (!utils.isString(this.manage_recipeBlockIngredientValue)) return;
+					var s = nlp.parseIngredient(this.manage_recipeBlockIngredientValue);
 					this.manage_recipeBlockIngredients.push({
-						amount: this.manage_recipeBlockIngredientAmount.trim(),
-						value: this.manage_recipeBlockIngredientValue.trim(),
+						amount: s.amount,
+						value: s.ingredient,
 						editMode: false,
 						editModeButtonText: 'Edit'
 					});
-					this.manage_recipeBlockIngredientAmount = '';
+
 					this.manage_recipeBlockIngredientValue = '';
 				},
 				editIngredient: function (index) {
@@ -1456,14 +1708,25 @@
 					}
 				},
 				deleteIngredient: function (index) {
+					this.undoObject = {
+						o: this.manage_recipeBlockIngredients[index],
+						i: index,
+						f: function (self) {
+							self.manage_recipeBlockIngredients.splice(self.undoObject.i, 0, self.undoObject.o);
+							self.$refs.undoContainer.classList.add('undo-collapsed');
+						}
+					};
 					this.manage_recipeBlockIngredients.splice(index, 1);
+					this.undoText = 'Ingredient deleted';
+
+					this.$refs.undoContainer.classList.remove('undo-collapsed');
+
+					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
 				},
 				addStep: function () {
-					var stepValueBox = $('#manage_step_value');
-					stepValueBox.removeClass('is-invalid');
+					this.$refs.manageStepRef.classList.remove('is-invalid');
 					if ((this.manage_recipeBlockStepValue.trim() === '' || this.manage_recipeBlockStepValue.trim() === null) && this.manage_recipeBlockSteps.length === 0) {
-						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
-						stepValueBox.addClass('is-invalid');
+						this.$refs.manageStepRef.classList.add('is-invalid');
 						return;
 					}
 					this.manage_recipeBlockSteps.push({
@@ -1488,19 +1751,32 @@
 					}
 				},
 				deleteStep: function (index) {
+					this.undoObject = {
+						o: this.manage_recipeBlockSteps[index],
+						i: index,
+						f: function (self) {
+							self.manage_recipeBlockSteps.splice(self.undoObject.i, 0, self.undoObject.o);
+							self.$refs.undoContainer.classList.add('undo-collapsed');
+						}
+					};
 					this.manage_recipeBlockSteps.splice(index, 1);
-				},
-				toggleNutritionFacts: function () {
-					this.nutritionFactsButtonExpandedText = this.nutritionFactsButtonExpandedText === 'Expand Nutrition Facts' ? 'Collapse Nutrition Facts' : 'Expand Nutrition Facts';
+					this.undoText = 'Step deleted';
+
+					this.$refs.undoContainer.classList.remove('undo-collapsed');
+
+					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
 				},
 				addBlock: function () {
+					this.$refs.manageStepRef.classList.remove('is-invalid');
 					if (this.manage_recipeBlockSteps.length < 1) {
-						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
-						$('#manage_step_value').addClass('is-invalid');
+						this.$refs.manageStepRef.classList.add('is-invalid');
 						return;
 					}
 					this.manage_recipeBlocks.push({
-						header: this.manage_recipeBlockHeader,
+						header: {
+							value: 'Recipe',
+							editMode: false
+						},
 						ingredients: this.manage_recipeBlockIngredients,
 						steps: this.manage_recipeBlockSteps,
 						nCalories: utils.isNumber(this.manage_nCalories) ? parseInt(this.manage_nCalories) : 0,
@@ -1524,6 +1800,18 @@
 					this.manage_nSodium = '';
 					this.manage_nSugars = '';
 				},
+				editHeader: function (index) {
+					//If edit button is being clicked
+					if (!this.manage_recipeBlocks[index].header.editMode) {
+						this.manage_recipeBlocks[index].header.editMode = true;
+						//If update button is being clicked
+					} else {
+						if (this.manage_recipeBlocks[index].header.value.trim() === '' || this.manage_recipeBlocks[index].header.value.trim() === null) {
+							return;
+						}
+						this.manage_recipeBlocks[index].header.editMode = false;
+					}
+				},
 				editBlock: function (index) {
 					this.manage_recipeBlockHeader = this.manage_recipeBlocks[index].header;
 					this.manage_recipeBlockIngredients = this.manage_recipeBlocks[index].ingredients;
@@ -1541,42 +1829,70 @@
 					this.deleteBlock(index);
 				},
 				deleteBlock: function (index) {
+					this.undoObject = {
+						o: this.manage_recipeBlocks[index],
+						i: index,
+						f: function (self) {
+							self.manage_recipeBlocks.splice(self.undoObject.i, 0, self.undoObject.o);
+							self.$refs.undoContainer.classList.add('undo-collapsed');
+						}
+					};
 					this.manage_recipeBlocks.splice(index, 1);
+					this.undoText = 'Section deleted';
+
+					this.$refs.undoContainer.classList.remove('undo-collapsed');
+
+					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
 				},
 				submitManagedRecipe: function () {
 					var self = this;
+					if (this.manage_smartButtonText !== 'Submit Recipe') {
+						//Activate smart button
+						var el = null;
+						var bs = null;
+
+						switch(this.manage_activePane) {
+							case this.manage_smartButtonProgress.overview:
+								el = this.$refs.manageCoverPhotoAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.coverPhoto:
+								el = this.$refs.manageTimeServingsAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.timeServings:
+								el = this.$refs.manageSectionsAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.ingredients:
+								el = this.$refs.manageStepsTab;
+								bs = new bootstrap.Tab(el);
+								bs.show();
+								break;
+							case this.manage_smartButtonProgress.steps:
+								el = this.$refs.manageNutritionTab;
+								bs = new bootstrap.Tab(el);
+								bs.show();
+								break;
+							default:
+								break;
+						}
+						return;
+					}
+					
 					var anyInvalid = false;
 					var serializedRecipe = {};
 
-					/* **** Clear all form valid classes **** */
-					$('#manage_form_name').removeClass('is-valid');
-					$('#manage_form_name').removeClass('is-invalid');
+					//Clear all form invalid classes
+					Array.prototype.slice.call(document.querySelectorAll('.is-invalid')).forEach(function (form) {
+						form.classList.remove('is-invalid');
+					});
 
-					$('.ql-container.ql-snow').removeClass('is-valid');
-					$('.ql-container.ql-snow').removeClass('is-invalid');
-
-					$('#manage_form_prep_time').removeClass('is-valid');
-					$('#manage_form_prep_time').removeClass('is-invalid');
-
-					$('#manage_form_cook_time').removeClass('is-valid');
-					$('#manage_form_cook_time').removeClass('is-invalid');
-
-					$('#manage_form_total_time').removeClass('is-valid');
-					$('#manage_form_total_time').removeClass('is-invalid');
-
-					$('#manage_form_active_time').removeClass('is-valid');
-					$('#manage_form_active_time').removeClass('is-invalid');
-
-					$('#manage_form_yield').removeClass('is-valid');
-					$('#manage_form_yield').removeClass('is-invalid');
-
-					/* **** Validate all form valid classes **** */
 					//Check name
 					if (utils.isString(this.manage_recipeName)) {
-						$('#manage_form_name').addClass('is-valid');
 						serializedRecipe.title = this.manage_recipeName.toString().trim();
 					} else {
-						$('#manage_form_name').addClass('is-invalid');
+						this.$refs.recipeNameRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
@@ -1584,7 +1900,7 @@
 					if (utils.isBigString(this.quillContent)) {
 						serializedRecipe.description = this.quillContent;
 					} else {
-						$('#editor').addClass('is-invalid');
+						this.$refs.recipeDescriptionRef.classList.add('is-invalid')
 						anyInvalid = true;
 					}
 
@@ -1595,53 +1911,52 @@
 
 					//Check prep time
 					if (utils.isNumber(this.manage_recipePrepTime)) {
-						$('#manage_form_prep_time').addClass('is-valid');
 						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
 					} else {
-						$('#manage_form_prep_time').addClass('is-invalid');
+						this.$refs.recipePrepRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					//Check cook time
 					if (utils.isNumber(this.manage_recipeCookTime)) {
-						$('#manage_form_cook_time').addClass('is-valid');
 						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
 					} else {
-						$('#manage_form_cook_time').addClass('is-invalid');
+						this.$refs.recipeCookRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					//Check total time
 					if (utils.isNumber(this.manage_recipeTotalTime)) {
-						$('#manage_form_total_time').addClass('is-valid');
 						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
 					} else {
-						$('#manage_form_total_time').addClass('is-invalid');
+						this.$refs.recipeTotalRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					//Check active time
 					if (utils.isNumber(this.manage_recipeActiveTime)) {
-						$('#manage_form_active_time').addClass('is-valid');
 						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
 					} else {
-						$('#manage_form_active_time').addClass('is-invalid');
+						this.$refs.recipeActiveRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					if (utils.isString(this.manage_recipeYield.toString().trim())) {
-						$('#manage_form_yield').addClass('is-valid');
 						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
 					} else {
-						$('#manage_form_yield').addClass('is-invalid');
+						this.$refs.recipeYieldRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					//Check if any blocks have been added
 					if (this.manage_recipeBlocks.length < 1) {
-						$('#step-invalid-feedback').text('Blocks must contain at least one step.');
-						$('#manage_step_value').addClass('is-invalid');
-						anyInvalid = true;
+						//The user probably didn't add a section. Check if there's any steps
+						if (this.manage_recipeBlockSteps < 1) {
+							this.$refs.manageStepRef.classList.add('is-invalid');
+							anyInvalid = true;
+						} else {
+							//TODO: Package steps & ingredients to a section
+						} 
 					}
 
 					//Serialize recipe block for push to Firebase
@@ -1674,6 +1989,8 @@
 						anyInvalid = true;
 					}
 
+					return;
+
 					if (anyInvalid) return;
 
 					this.isRecipeSubmitDisabled = true;
@@ -1681,7 +1998,7 @@
 					serializedRecipe.docID = uuidv4();
 					serializedRecipe.addDate = Date.now();
 
-					if ($('#addRecipeButton').attr('data-ps-button-type') == 'add') {
+					if (this.$refs.addRecipeButton.dataset.psButtonType == 'add') {
 						this.manage_coverPhotoURL !== '' ? serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL : serializedRecipe.coverPhotoURL = '';
 						//Add runtime-injected ID for index
 						serializedRecipe.id = this.injectedSearchIndexID;
@@ -1689,7 +2006,7 @@
 						this.injectedSearchIndexID++;
 						//Push serialized recipe into sorted position to cookbook
 						this.cookbook.push(serializedRecipe);
-					} else if ($('#addRecipeButton').attr('data-ps-button-type') == 'manage') {
+					} else if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
 						serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL;
 
 						var docIDToUpdate = this.filteredCookbook[this.proto_index].docID;
@@ -1779,7 +2096,7 @@
 				},
 				cleanupManageRecipe: function () {
 					//Reset DOM
-					$('#addRecipeButton').attr('data-ps-button-type', 'add');
+					this.$refs.addRecipeButton.dataset.psButtonType = 'add';
 
 					//Reset manage recipe values
 					this.manage_recipeName = '';
@@ -1799,22 +2116,14 @@
 					this.manage_recipeBlockStepValue = '';
 					this.quillInstance.setText('\n');
 
-					/* **** Clear all form valid classes **** */
-					$('#manage_form_name').removeClass('is-valid');
-					$('.ql-container.ql-snow').removeClass('is-valid');
-					$('#manage_form_prep_time').removeClass('is-valid');
-					$('#manage_form_cook_time').removeClass('is-valid');
-					$('#manage_form_total_time').removeClass('is-valid');
-					$('#manage_form_active_time').removeClass('is-valid');
-					$('#manage_form_yield').removeClass('is-valid');
-
 					//Re-enable submit button
 					this.isRecipeSubmitDisabled = false;
 				},
 
 				//Utility methods
 				stripeBillingPortal: function (event) {
-					$(event.target).prop('disabled', true);
+					event.target.disabled = true;
+					event.target.textContent = 'Preparing your billing portal...';
 					goToPortal();
 				},
 				signOutApp: function () {
@@ -1833,9 +2142,7 @@
 				touchMove: function (event) {
 					try {
 						event.preventDefault();
-					} catch (e) {
-						//
-					}
+					} catch (e) {}
 				},
 			}
 		});
@@ -1853,4 +2160,4 @@
 			window.location.assign(data.url);
 		}
 	}
-})(jQuery);
+})();
