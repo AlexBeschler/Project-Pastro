@@ -19,18 +19,18 @@ var ProjectPastroUtils = function () {
 
     //DOM utils
     this.showLoading = function () {
-        $('#login-container').css('visibility', 'hidden');
-        $('#loading').css('visibility', 'visible');
-        $('#appContent').css('visibility', 'hidden');
+        document.getElementById('login-container').style.visibility = 'hidden';
+        document.getElementById('loading').style.visibility = 'visible';
+        document.getElementById('appContent').style.visibility = 'hidden';
     }
     this.showLoginContainer = function () {
-        $('#login-container').css('visibility', 'visible');
-        $('#loading').css('visibility', 'hidden');
+        document.getElementById('login-container').style.visibility = 'visible';
+        document.getElementById('loading').style.visibility = 'hidden';
     }
     this.showCookbook = function () {
-        $('#login-container').remove(); //No need for this anymore
-        $('#loading').css('visibility', 'hidden');
-        $('#appContent').css('visibility', 'visible');
+        document.getElementById('login-container').remove(); //No need for this anymore
+        document.getElementById('loading').style.visibility = 'hidden';
+        document.getElementById('appContent').style.visibility = 'visible';
     }
 
     //Local storage utils
