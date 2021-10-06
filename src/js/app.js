@@ -509,7 +509,16 @@
 
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', function() {
 					self.$refs.undoContainer.style.display = 'none';
+				}); 
+
+				var ocrDescriptionButton = new QuillToolbarButton({
+					icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="999999" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/></svg>`
 				});
+				ocrDescriptionButton.onClick = function(quill) {
+					var bsCollapse = new bootstrap.Collapse(self.$refs.ocr_DescriptionFilePond);
+					self.$refs.ocr_DescriptionFilePond.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
+				}
+				ocrDescriptionButton.attach(this.quillInstance);
 
 				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
@@ -536,126 +545,13 @@
 					onclose: () => {}
 				}
 
-				//TODO: Wrap in accordion click listener
-				this.ocr_DescriptionFilePond = FilePond.create(document.getElementById('ocrDescriptionFilePond'));
-				this.ocr_DescriptionFilePond.setOptions({
-					allowImageCrop: true,
-					allowImageTransform: true,
-					allowImageEdit: true,
-					styleImageEditButtonEditItemPosition: 'bottom center',
-					imageEditAllowEdit: true,
-					imageEditEditor: self.ocr_DescriptionPondEditor,
-					server: {
-						process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
-							var fileEndingRegex = /(?:\.([^.]+))?$/;
-							var fileType = fileEndingRegex.exec(file.name)[1];
-							var fileName = uuidv4() + '.' + fileType;
-							var metadata = {
-								contentType: file.type,
-							};
-
-							var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, metadata);
-
-							uploadTask.on('state_changed', (snapshot) => {
-								progress(snapshot.bytesTransferred / snapshot.totalBytes);
-							}, (error) => {
-								console.log('Error uploading file: ' + e);
-								error('Error uploading file: ' + e);
-							}, () => {
-								//Give user some sort of indications that something is going on behind the scenes
-								self.quillInstance.setText('Loading...');
-
-								//Perform upload to Firebase storage
-								axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/ocrTextDetection', {
-									fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName
-								}).then(res => {
-									//Asynchronously delete temp OCR file
-									firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
-										utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
-									});
-
-									try {
-										self.ocr_DescriptionCropperObject.destroy();
-									} catch (e) {
-										//Instance may not exist yet
-									}
-
-									//Perform some processing
-									var results = res.data.recognizedText[0].description.split('\n');
-									var description = '';
-									for (var i = 0; i < results.length; i++) {
-										//Normalize uppercase sentences
-										utils.isAllUppercase(results[i]) ? description += utils.capitalizeFirstLetter(results[i].toLowerCase()) + '\n' : description += results[i] + '\n';
-									}
-									self.quillInstance.setText(description.trim());
-									load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
-								}).catch(err => console.log(err));
-							});
-
-							return {
-								abort: () => {
-									abort();
-								},
-							};
-						}
-					}
-				});
-
 				this.recipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeView);
 				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
 
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 
 				//FilePond does not render unless browser 'sees' it. Click listener is to dynamically load FilePond instance
-				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', function () {
-					if (self.manage_filePondCoverPhoto === null) {
-
-						self.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
-						self.manage_filePondCoverPhoto.setOptions({
-							server: {
-								process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
-									var fileEndingRegex = /(?:\.([^.]+))?$/;
-									var fileType = fileEndingRegex.exec(file.name)[1];
-									var fileName = uuidv4() + '.' + fileType;
-									var metadata = {
-										contentType: file.type,
-									};
-
-									var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + fileName).put(file, metadata);
-
-									uploadTask.on('state_changed', (snapshot) => {
-										progress(snapshot.bytesTransferred / snapshot.totalBytes);
-									}, (error) => {
-										console.error('Error uploading file: ' + e);
-										error('Error uploading file: ' + e);
-									}, () => {
-										uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-											self.manage_coverPhotoURL = downloadURL;
-											load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/coverphotos/' + fileName);
-										}).catch(error => {
-											console.error(error);
-										});
-									});
-
-									return {
-										abort: () => {
-											abort();
-										},
-									};
-								},
-								revert: (uniqueFileId, load, error) => {
-									firebase.storage().refFromURL(uniqueFileId).delete().then(() => {
-										load();
-									}).catch((error) => {
-										console.error(error);
-										//utils.reportError('Error', error, 'Error with deleting cover photo');
-										error();
-									});
-								}
-							}
-						});
-					}
-				});
+				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhotoOCR_DOM);
 
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
@@ -1445,6 +1341,127 @@
 					
 				},
 				//Manage recipe methods
+				createDescriptionOCR_DOM: function() {
+					var self = this;
+					if (this.ocr_DescriptionFilePond !== null) {
+						return;
+					} 
+					this.ocr_DescriptionFilePond = FilePond.create(document.getElementById('ocrDescriptionFilePond'));
+					this.ocr_DescriptionFilePond.setOptions({
+						allowImageCrop: true,
+						allowImageTransform: true,
+						allowImageEdit: true,
+						styleImageEditButtonEditItemPosition: 'bottom center',
+						imageEditAllowEdit: true,
+						imageEditEditor: this.ocr_DescriptionPondEditor,
+						labelIdle: 'Drag & drop your file or <span class="filepond--label-action"> Browse </span>',
+						server: {
+							process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+								var fileEndingRegex = /(?:\.([^.]+))?$/;
+								var fileType = fileEndingRegex.exec(file.name)[1];
+								var fileName = uuidv4() + '.' + fileType;
+								var metadata = {
+									contentType: file.type,
+								};
+
+								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, metadata);
+
+								uploadTask.on('state_changed', (snapshot) => {
+									progress(snapshot.bytesTransferred / snapshot.totalBytes);
+								}, (error) => {
+									console.log('Error uploading file: ' + e);
+									error('Error uploading file: ' + e);
+								}, () => {
+									//Give user some sort of indications that something is going on behind the scenes
+									self.quillInstance.setText('Loading...');
+
+									//Perform upload to Firebase storage
+									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/ocrTextDetection', {
+										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName
+									}).then(res => {
+										//Asynchronously delete temp OCR file
+										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
+											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
+										});
+
+										try {
+											self.ocr_DescriptionCropperObject.destroy();
+										} catch (e) {
+											//Instance may not exist yet
+										}
+
+										//Perform some processing
+										var results = res.data.recognizedText[0].description.split('\n');
+										var description = '';
+										for (var i = 0; i < results.length; i++) {
+											//Normalize uppercase sentences
+											utils.isAllUppercase(results[i]) ? description += utils.capitalizeFirstLetter(results[i].toLowerCase()) + '\n' : description += results[i] + '\n';
+										}
+										self.quillInstance.setText(description.trim());
+										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
+									}).catch(err => console.log(err));
+								});
+
+								return {
+									abort: () => {
+										abort();
+									},
+								};
+							}
+						}
+					});
+				},
+				createCoverPhotoOCR_DOM: function() {
+					var self = this;
+					if (this.manage_filePondCoverPhoto !== null) {
+						return;
+					}
+					this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
+					this.manage_filePondCoverPhoto.setOptions({
+						labelIdle: 'Drag & drop your file or <span class="filepond--label-action"> Browse </span>',
+						server: {
+							process: (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+								var fileEndingRegex = /(?:\.([^.]+))?$/;
+								var fileType = fileEndingRegex.exec(file.name)[1];
+								var fileName = uuidv4() + '.' + fileType;
+								var metadata = {
+									contentType: file.type,
+								};
+
+								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + fileName).put(file, metadata);
+
+								uploadTask.on('state_changed', (snapshot) => {
+									progress(snapshot.bytesTransferred / snapshot.totalBytes);
+								}, (error) => {
+									console.error('Error uploading file: ' + e);
+									error('Error uploading file: ' + e);
+								}, () => {
+									uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+										self.manage_coverPhotoURL = downloadURL;
+										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/coverphotos/' + fileName);
+									}).catch(error => {
+										console.error(error);
+									});
+								});
+
+								return {
+									abort: () => {
+										abort();
+									},
+								};
+							},
+							revert: (uniqueFileId, load, error) => {
+								firebase.storage().refFromURL(uniqueFileId).delete().then(() => {
+									load();
+								}).catch((error) => {
+									console.error(error);
+									//utils.reportError('Error', error, 'Error with deleting cover photo');
+									error();
+								});
+							}
+						}
+					});
+				},
 				updateSmartButtonText: function() {
 					//Check text to set for smart button
 					if (this.$refs.manageOverviewAccordionButton.classList.contains('show')) {

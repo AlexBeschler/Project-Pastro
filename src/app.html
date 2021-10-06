@@ -100,7 +100,8 @@
                 </div>
                 <section class="d-flex justify-content-center">
                     <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
-                        @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false" ref="addRecipeButton">Add
+                        @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false"
+                        ref="addRecipeButton">Add
                         Recipe</button>
                 </section>
             </div>
@@ -531,6 +532,14 @@
                                         <div class="invalid-feedback">
                                             Please enter a description
                                         </div>
+                                        <div class="mt-2 mb-4 collapse" ref="ocr_DescriptionFilePond">
+                                            <input id="ocrDescriptionFilePond" type="file" data-max-file-size="12MB"
+                                                accept="image/jpeg, image/png" />
+                                            <div id="ocrDescriptionCropWrapper" class="cropperImg"
+                                                v-show="ocr_DescriptionEditMode"></div>
+                                            <button class="btn btn-success" v-show="ocr_DescriptionEditMode"
+                                                @click="handleCrop('description')">Crop</button>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-10">
@@ -569,7 +578,7 @@
                         <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button collapsed pe-1" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#flush-cover-photo" >
+                                    data-bs-toggle="collapse" data-bs-target="#flush-cover-photo">
                                     <span>2</span><span style="margin-left: 1rem;">Cover Photo</span>
                                 </button>
                             </h2>
@@ -623,7 +632,8 @@
                                             <div class="form-floating">
                                                 <input type="number" class="form-control manage-recipe-input me-3"
                                                     id="manage_form_active_time" v-model="manage_recipeActiveTime"
-                                                    placeholder="Active Time (in minutes)" ref="recipeActiveRef" required>
+                                                    placeholder="Active Time (in minutes)" ref="recipeActiveRef"
+                                                    required>
                                                 <div class="invalid-feedback">
                                                     Please enter an active time
                                                 </div>
@@ -693,8 +703,8 @@
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade active show"
-                                                id="pills-manage-ingredients" role="tabpanel" ref="manageIngredientsSectionButton">
+                                            <div class="tab-pane fade active show" id="pills-manage-ingredients"
+                                                role="tabpanel" ref="manageIngredientsSectionButton">
                                                 <div class="my-3">
                                                     <div class="input-group mb-3">
                                                         <input id="manage_ing_amount"
@@ -733,12 +743,14 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel" ref="manageStepsSectionButton">
+                                            <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel"
+                                                ref="manageStepsSectionButton">
                                                 <div class="my-3">
                                                     <div class="steps-textarea-holder">
                                                         <textarea id="manage_step_value" class="form-control"
                                                             v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
-                                                            v-model="manage_recipeBlockStepValue" ref="manageStepRef"></textarea>
+                                                            v-model="manage_recipeBlockStepValue"
+                                                            ref="manageStepRef"></textarea>
                                                     </div>
                                                     <div id="step-invalid-feedback" class="invalid-feedback">
                                                         Please enter at least one step
@@ -768,7 +780,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel" ref="manageNutritionSectionButton">
+                                            <div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel"
+                                                ref="manageNutritionSectionButton">
                                                 <div class="row mt-3 mb-2">
                                                     <div class="col-10">
                                                         <div class="form-floating">
@@ -786,8 +799,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nFat" placeholder="Total Fat"
-                                                                required>
+                                                                v-model="manage_nFat" placeholder="Total Fat" required>
                                                             <label>Total Fat</label>
                                                         </div>
                                                     </div>
@@ -799,7 +811,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nCholesterol" placeholder="Cholesterol"
+                                                                v-model="manage_nCholesterol" placeholder="Cholesterol"
                                                                 required>
                                                             <label>Cholesterol</label>
                                                         </div>
@@ -812,8 +824,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nSodium" placeholder="Sodium"
-                                                                required>
+                                                                v-model="manage_nSodium" placeholder="Sodium" required>
                                                             <label>Sodium</label>
                                                         </div>
                                                     </div>
@@ -825,8 +836,8 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nCarbohydrate" placeholder="Carbohydrate"
-                                                                required>
+                                                                v-model="manage_nCarbohydrate"
+                                                                placeholder="Carbohydrate" required>
                                                             <label>Carbohydrate</label>
                                                         </div>
                                                     </div>
@@ -838,8 +849,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nFiber" placeholder="Fiber"
-                                                                required>
+                                                                v-model="manage_nFiber" placeholder="Fiber" required>
                                                             <label>Fiber</label>
                                                         </div>
                                                     </div>
@@ -851,8 +861,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nSugars" placeholder="Sugars"
-                                                                required>
+                                                                v-model="manage_nSugars" placeholder="Sugars" required>
                                                             <label>Sugars</label>
                                                         </div>
                                                     </div>
@@ -864,7 +873,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nProtein" placeholder="Protein"
+                                                                v-model="manage_nProtein" placeholder="Protein"
                                                                 required>
                                                             <label>Protein</label>
                                                         </div>
@@ -904,14 +913,9 @@
                     <div id="mobile-padding"></div>
                 </div>
             </div>
-
-            <!--div>
-                <input id="ocrDescriptionFilePond" type="file" data-max-file-size="12MB" accept="image/jpeg, image/png" />
-                <div id="ocrDescriptionCropWrapper" class="cropperImg" v-show="ocr_DescriptionEditMode"></div>
-                <button class="btn btn-success" v-show="ocr_DescriptionEditMode" @click="handleCrop('description')">Crop</button>
-            </div-->
         </div>
-        <div class="container undo-container undo-collapsed py-1" ref="undoContainer" @click="undoDeleteClicked" style="display: none;">
+        <div class="container undo-container undo-collapsed py-1" ref="undoContainer" @click="undoDeleteClicked"
+            style="display: none;">
             <p class="mb-0 px-2">{{ undoText }}</p>
             <button class="btn stronger" ref="undoButton">Undo</button>
         </div>
@@ -1004,7 +1008,8 @@
                 {{ step.value }}
             </div>
             <div class="mb-2" v-else>
-                <textarea class="form-control" v-model="step.value" @blur="$emit('edit-step', index)" v-on:keyup.enter="$emit('edit-step', index)"></textarea>
+                <textarea class="form-control" v-model="step.value" @blur="$emit('edit-step', index)"
+                    v-on:keyup.enter="$emit('edit-step', index)"></textarea>
             </div>
             <span>
                 <button class="btn ps-0" v-if="!step.editMode" @click="$emit('edit-step', index)">
@@ -1172,6 +1177,7 @@
     </script>
     <script src="vendor/flexsearch/flexsearch.bundle.js"></script>
     <script src="vendor/quilljs/js/quill.min.js"></script>
+    <script src="vendor/T-vK/DynamicQuillTools.min.js"></script>
     <script src="vendor/cropperjs/js/cropper.min.js"></script>
     <script src="vendor/axios/axios.min.js"></script>
     <script src="vendor/hammerjs/hammer.js"></script>
