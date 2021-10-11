@@ -1,15 +1,9 @@
-/*
-
-(function() {
-    console.log('Hello world');
-})();
-
-*/
-
 (function () {
 	var utils = new ProjectPastroUtils();
 	var nlp = new ProjectPastroNLP();
+	var ocrProcessor = new ProjectPastroOCR();
 	nlp.init();
+	ocrProcessor.init();
 
 	window.addEventListener("load", function (event) {
 		utils.init();
@@ -624,7 +618,6 @@
 				];
 				smartTabListeners.forEach(element => {
 					element.addEventListener('shown.bs.tab', function() {
-						console.log('Updating smart button');
 						self.updateSmartButtonText();
 					});
 				});
@@ -800,7 +793,6 @@
 			},
 			methods: {
 				navBarClicked: function () {
-					//TODO: Hide recipe book & collapse button & get rid of touch action none
 					var self = this;
 					if (this.$refs.exploreRef.classList.contains('active')) {
 						this.appContentHammerManager = new Hammer.Manager(document.getElementById('appContent'));
@@ -1341,6 +1333,7 @@
 					
 				},
 				//Manage recipe methods
+				//TODO: when the user clicks on the X button for FilePond, destroy CropperJS instance (if it exists)
 				createDescriptionOCR_DOM: function() {
 					var self = this;
 					if (this.ocr_DescriptionFilePond !== null) {
@@ -1387,17 +1380,14 @@
 										try {
 											self.ocr_DescriptionCropperObject.destroy();
 										} catch (e) {
-											//Instance may not exist yet
+											//Instance may not exist yet 
 										}
 
+										//console.log(JSON.stringify(res.data));
 										//Perform some processing
-										var results = res.data.recognizedText[0].description.split('\n');
-										var description = '';
-										for (var i = 0; i < results.length; i++) {
-											//Normalize uppercase sentences
-											utils.isAllUppercase(results[i]) ? description += utils.capitalizeFirstLetter(results[i].toLowerCase()) + '\n' : description += results[i] + '\n';
-										}
-										self.quillInstance.setText(description.trim());
+										var processedOCR = ocrProcessor.processOCR(res);
+										//console.log(processedOCR);
+										self.quillInstance.setText(processedOCR.join('\n'));
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
 									}).catch(err => console.log(err));
 								});
@@ -1564,8 +1554,8 @@
 					var cy = percentY > 0.5 ? 1 - percentY : percentY;
 
 					//Calculate image rectangle respecting space round image from crop area
-					let width = canvasData.naturalWidth;
-					let height = width * cropAreaRatio;
+					var width = canvasData.naturalWidth;
+					var height = width * cropAreaRatio;
 
 					if (height > canvasData.naturalHeight) {
 						height = canvasData.naturalHeight;
@@ -1575,7 +1565,17 @@
 					var rectHeight = cy * 2 * height;
 
 					//Calculate zoom
-					var zoom = Math.max(rectWidth / cropData.width, rectHeight / cropData.height);
+					//If the crop rectangle is TALLER than wider, use Math.min
+					//If the crop rectangle is WIDER than taller, use Math.max
+					var zoom = 0.0;
+					if (rectHeight / cropData.height > rectWidth / cropData.width) {
+						zoom = Math.min(rectWidth / cropData.width, rectHeight / cropData.height);
+					} else {
+						zoom = Math.max(rectWidth / cropData.width, rectHeight / cropData.height);
+					}
+					//TODO: Cropper does not quite nail edges. If a taller crop rectangle shares a border
+					// with the image, it seems to include superfluous detail.
+					//Use https://github.com/pqina/filepond-plugin-image-edit/issues/1 as reference
 
 					var payload = {
 						data: {
@@ -1589,7 +1589,8 @@
 									vertical: cropData.scaleY < 0
 								},
 								zoom: zoom,
-								rotation: (Math.PI / 180) * cropData.rotate,
+								//There were some rotation issues with certain types of photos. Switched to 0 rotation
+								rotation: 0,
 								aspectRatio: cropAreaRatio
 							}
 						}

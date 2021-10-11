@@ -82,11 +82,11 @@ exports.ocrTextDetection = functions.https.onRequest((req, res) => {
 
 async function visionImageAnnotator(req, res) {
 	const features = [{
-	    type: 'TEXT_DETECTION'
+	    type: 'DOCUMENT_TEXT_DETECTION'
 	}];
 	try {
 	    const [result] = await ocrClient.textDetection(req.body.fileLocation);
-	    const detections = result.textAnnotations;
+	    const detections = result.fullTextAnnotation;
 	    return res.status(200).send({
 	        recognizedText: detections
 	    });
@@ -102,12 +102,14 @@ async function visionImageAnnotator(req, res) {
 exports.notifyLoggedError = functions.firestore.document('errors/{docId}').onCreate((snap, context) => {
 	const o = snap.data();
 	console.log(o.type + ' reported for user \'' + o.uid + '\' in document ' + o.docID);
+	return 0; //Dummy value
 });
 
 //Notify of any Functions errors
 exports.notifyFunctionsError = functions.firestore.document('functions_errors/{docId}').onCreate((snap, context) => {
 	const o = snap.data();
 	console.log(o.type + ' reported: ' + o.message);
+	return 0; //Dummy value
 });
 
 //Util functions
@@ -115,6 +117,7 @@ function reportError(type, message) {
 	var docID = uuidv4();
 	db.collection('functions_errors').doc(docID).set({
 		type: type,
-		message: message
+		message: message,
+		timestamp: Date.now()
 	});
 }
