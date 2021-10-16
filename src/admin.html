@@ -5,27 +5,105 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300&display=swap" rel="stylesheet">
     <link href="vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+            color: #203a45;
+            font-family: Jost,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;
+        }
+    </style>
     <title>Admin</title>
 </head>
 
 <body>
     <div id="appContent">
         <header class="navbar sticky-top bg-light flex-md-nowrap shadow-sm">
-            <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Project Pastro Admin</a>
-            <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+            <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                    class="bi bi-shield-shaded me-3" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M8 14.933a.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067v13.866zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z">
+                    </path>
+                </svg>
+                <span>Project Pastro Admin</span>
+            </a>
+            <input type="text" placeholder="Search" aria-label="Search" class="form-control form-control-dark w-100">
             <div class="navbar-nav">
                 <div class="nav-item text-nowrap">
-                    <a class="nav-link px-3" @click="toggleSignIn">Toggle sign in</a>
+                    <a class="btn btn-primary px-3 mx-3">Toggle sign in</a>
                 </div>
             </div>
         </header>
         <div class="container">
+            <div class="row pt-5 pb-2 mb-3">
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col mt-0">
+                                    <h4 class="card-title">Stripe Balance</h4>
+                                </div>
+                            </div>
+                            <h1 class="display-5 mt-1 mb-3">${{ stripeBalance }}</h1>
+                            <div class="mb-0">
+                                <a href="https://dashboard.stripe.com/dashboard" target="_blank">Stripe </a>&#187;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col mt-0">
+                                    <h4 class="card-title">Firebase Usage</h4>
+                                </div>
+                            </div>
+                            <h1 class="display-5 mt-1 mb-3">n/a</h1>
+                            <div class="mb-0">
+                                <a href="https://console.firebase.google.com/u/0/project/project-pastro-c95b1/usage"
+                                    target="_blank">Firebase </a>&#187;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col mt-0">
+                                    <h4 class="card-title">Google Vision Usage</h4>
+                                </div>
+                            </div>
+                            <h1 class="display-5 mt-1 mb-1">n/a requests</h1>
+                            <p class="text-muted mb-3">n/a seconds avg latency</p>
+                            <div class="mb-0">
+                                <a href="https://console.cloud.google.com/apis/api/vision.googleapis.com/metrics?project=project-pastro-c95b1"
+                                    target="_blank">Google Vision
+                                </a>&#187;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col mt-0">
+                                    <h4 class="card-title">Events</h4>
+                                </div>
+                            </div>
+                            <h1 class="display-5 mt-1 mb-3">{{ errors.length }}</h1>
+                            <!--div class="mb-0">
+                                <a href="https://dashboard.stripe.com/dashboard" target="_blank">Stripe </a>&#187;
+                            </div-->
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <main class="col ms-sm-auto px-md-4">
                     <!--div
@@ -54,7 +132,7 @@
                     <div class="list-group">
                         <div class="list-group-item list-group-item-action" v-for="error in errors" :key="error.docID">
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">{{ error.description }}</h5>
+                                <h4 class="mb-1">{{ error.description }}</h4>
                                 <small>{{ getTime(error.timestamp) }}</small>
                             </div>
                             <p class="mb-1">{{ error.message }}</p>
@@ -68,6 +146,7 @@
     <script src="vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/vue/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="vendor/axios/axios.min.js"></script>
     <!-- Firebase -->
     <script src="/__/firebase/8.6.1/firebase-app.js"></script>
     <script src="/__/firebase/8.6.1/firebase-analytics.js"></script>

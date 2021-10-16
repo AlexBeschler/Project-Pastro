@@ -590,7 +590,7 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 .manage-recipe-blocks-pills-tab.active {
     border: 2px solid;
     border-color: var(--ps-btn-outline-color) !important;
-    background-color: var(--ps-bg-color)!important;
+    background-color: var(--ps-bg-color) !important;
     padding: 0.3rem 0.6rem;
 }
 
@@ -605,7 +605,7 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 
 .recipe-block-more-info-button {
     padding: .25rem;
-} 
+}
 
 .recipe-block-more-info-button:focus {
     box-shadow: none !important;

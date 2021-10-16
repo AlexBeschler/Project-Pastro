@@ -39,7 +39,8 @@
         new Vue({
             el: '#appContent',
             data: {
-                errors: []
+                errors: [],
+                stripeBalance: 'Loading...'
             },
             mounted() {
                 var self = this;
@@ -51,6 +52,10 @@
                     .catch((error) => {
                         console.log("Error getting documents: ", error);
                     });
+                axios.get('http://localhost:5001/project-pastro-c95b1/us-central1/getAdminMetrics').then(res => {
+                    self.stripeBalance = (Math.round(res.data.stripeBalance.available[0].amount * 100) / 100).toFixed(2);
+                    
+                }).catch(err => console.log(err));
             },
             methods: {
                 toggleSignIn: function () {

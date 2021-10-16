@@ -20,6 +20,8 @@
     <link href="vendor/filepond/css/filepond-plugin-image-preview.min.css" rel="stylesheet">
     <link href="vendor/filepond/css/filepond-plugin-image-edit.min.css" rel="stylesheet">
 
+    <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-transform.min.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-preview.min.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-edit.min.js"></script>
@@ -542,7 +544,8 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-10">
+                                        <div class="col">
+                                            <!--col-10-->
                                             <div class="form-floating">
                                                 <input type="text" class="form-control manage-recipe-input me-3"
                                                     id="manage_form_tags" v-model="manage_recipeTagInput"
@@ -550,11 +553,11 @@
                                                 <label for="manage_form_tags">Tags</label>
                                             </div>
                                         </div>
-                                        <div class="col-2 ps-0 d-flex align-items-end">
+                                        <!--div class="col-2 ps-0 d-flex align-items-end">
                                             <button class="btn h-100 w-100" @click="pasteFromClipboard('tags')">
                                                 <img src="assets/icons/clipboard-plus.svg">
                                             </button>
-                                        </div>
+                                        </div-->
                                     </div>
                                     <div class="mt-3">
                                         <div class="col-lg-12">
@@ -627,7 +630,7 @@
                                         </div>
                                         <label for="manage_form_total_time">Total Time (in minutes)</label>
                                     </div>
-                                    <div class="row mb-4">
+                                    <div class="row mb-2">
                                         <div class="col-10">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control manage-recipe-input me-3"
@@ -706,7 +709,7 @@
                                             <div class="tab-pane fade active show" id="pills-manage-ingredients"
                                                 role="tabpanel" ref="manageIngredientsSectionButton">
                                                 <div class="my-3">
-                                                    <div class="input-group mb-3">
+                                                    <div class="input-group">
                                                         <input id="manage_ing_amount"
                                                             class="form-control manage-recipe-input me-3" type="text"
                                                             placeholder="Ingredient"
@@ -714,9 +717,19 @@
                                                             v-on:keyup.enter="addIngredient" ref="manage_ing_amount">
                                                         <div id="ingredient-invalid-feedback" class="invalid-feedback">
                                                         </div>
-                                                        <button class="btn" @click="pasteFromClipboard('ingredients')">
-                                                            <img src="assets/icons/clipboard-plus.svg">
+                                                        <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#ocrIngredientsFilePondWrapper">
+                                                            <img src="assets/icons/camera-fill.svg">
                                                         </button>
+                                                    </div>
+                                                    <label for="manage_ing_amount" class="form-label mt-1 mb-3">Paste
+                                                        multiple ingredients</label>
+                                                    <div id="ocrIngredientsFilePondWrapper" class="mt-2 mb-4 collapse" ref="ocr_IngredientsFilePond">
+                                                        <input id="ocrIngredientsFilePond" type="file"
+                                                            data-max-file-size="12MB" accept="image/jpeg, image/png" />
+                                                        <div id="ocrIngredientsCropWrapper" class="cropperImg"
+                                                            v-show="ocr_IngredientsEditMode"></div>
+                                                        <button class="btn btn-success" v-show="ocr_IngredientsEditMode"
+                                                            @click="handleCrop('ingredients')">Crop</button>
                                                     </div>
                                                 </div>
                                                 <hr class="margin-top-2"
@@ -746,20 +759,39 @@
                                             <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel"
                                                 ref="manageStepsSectionButton">
                                                 <div class="my-3">
-                                                    <div class="steps-textarea-holder">
-                                                        <textarea id="manage_step_value" class="form-control"
-                                                            v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
-                                                            v-model="manage_recipeBlockStepValue"
-                                                            ref="manageStepRef"></textarea>
+                                                    <div class="row">
+                                                        <div class="steps-textarea-holder">
+                                                            <textarea id="manage_step_value" class="form-control"
+                                                                v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
+                                                                v-model="manage_recipeBlockStepValue"
+                                                                ref="manageStepRef"></textarea>
+                                                        </div>
+                                                        <div id="step-invalid-feedback" class="invalid-feedback">
+                                                            Please enter at least one step
+                                                        </div>
+                                                        <label for="manage_step_value"
+                                                            class="form-label mt-1 mb-2 px-3">Paste multiple
+                                                            steps</label>
                                                     </div>
-                                                    <div id="step-invalid-feedback" class="invalid-feedback">
-                                                        Please enter at least one step
+                                                    <div class="row">
+                                                        <div class="col px-1">
+                                                            <button class="btn text-primary button-no-outline"
+                                                                @click="addStep" ref="addStepToBlockButton">Add</button>
+                                                            <button class="btn text-primary button-no-outline" type="button" data-bs-toggle="collapse" data-bs-target="#ocrStepsFilePondWrapper">
+                                                                <img src="assets/icons/camera-fill.svg">
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <button class="btn text-primary button-no-outline mt-2"
-                                                        @click="addStep" ref="addStepToBlockButton">Add</button>
-                                                    <button class="btn text-primary button-no-outline mt-2"
-                                                        @click="pasteFromClipboard('steps')">Paste From
-                                                        Clipboard</button>
+                                                    <div class="row">
+                                                        <div id="ocrStepsFilePondWrapper" class="mt-2 mb-4 collapse" ref="ocr_StepsFilePond">
+                                                            <input id="ocrStepsFilePond" type="file"
+                                                                data-max-file-size="12MB" accept="image/jpeg, image/png" />
+                                                            <div id="ocrStepsCropWrapper" class="cropperImg"
+                                                                v-show="ocr_StepsEditMode"></div>
+                                                            <button class="btn btn-success" v-show="ocr_StepsEditMode"
+                                                                @click="handleCrop('steps')">Crop</button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <hr class="margin-top-2" v-if="manage_recipeBlockSteps.length">
                                                 <div class="mb-3">
@@ -915,7 +947,7 @@
             </div>
         </div>
         <div class="container undo-container undo-collapsed py-1" ref="undoContainer" @click="undoDeleteClicked"
-            style="display: none;">
+            style="display: none!important;">
             <p class="mb-0 px-2">{{ undoText }}</p>
             <button class="btn stronger" ref="undoButton">Undo</button>
         </div>
@@ -1184,7 +1216,6 @@
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/nlp.js"></script>
-    <script src="js/ocr_processor.js"></script>
     <script src="js/range-index.js"></script>
     <script src="js/app.js"></script>
 </body>
