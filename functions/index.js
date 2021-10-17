@@ -21,6 +21,10 @@ const sanitizeDash = new XRegExp("[-–—−]", "g");
 
 const _ = require('underscore');
 
+const axios = require('axios');
+
+const parse = require('node-html-parser');
+
 admin.initializeApp();
 
 //const config = functions.config();
@@ -390,10 +394,34 @@ async function visionImageAnnotator(req, res) {
 		var docID = uuidv4();
 		reportError(docID, 'Error', error.toString());
 		return res.status(400).send({
-	        message: docID.toString()
-	    });
+			message: docID.toString()
+		});
 	}
 }
+
+/* 
+ * Website parser
+ */
+
+exports.autoParseURL = functions.https.onRequest((req, res) => {
+	cors(req, res, () => {
+		console.log('Fetching ' + req.body.url);
+		axios.get(req.body.url, {
+			headers: {
+				Referer: req.body.url,
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		}).then(function (response) {
+			//HTML Parse
+			var html = parse(response);
+			var body = html.querySelector('body');
+			return res.status(200).send({
+				results: body.toString()
+			});
+		});
+	});
+	return 0;
+});
 
 exports.getAdminMetrics = functions.https.onRequest((req, res) => {
 	cors(req, res, () => {
