@@ -20,6 +20,8 @@
     <link href="vendor/filepond/css/filepond-plugin-image-preview.min.css" rel="stylesheet">
     <link href="vendor/filepond/css/filepond-plugin-image-edit.min.css" rel="stylesheet">
 
+    <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-transform.min.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-preview.min.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-edit.min.js"></script>
@@ -89,20 +91,23 @@
         <div class="tab-content" style="position: relative;">
             <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
                 aria-labelledby="pills-explore-tab" :class="{ 'explore-collapsed': !recipePaneCollapsed }">
-                <h1 class="display-6 px-4 mt-5 mb-4">Let's start here</h1>
-                <div class="px-4 py-4">
-                    <h1 class="display-5 fw-bold explore-text">I feel like making <a
-                            @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
-                            @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
-                            @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a>, and
-                        <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
-                    </h1>
+                <h1 id="headerText" class="display-6 px-4 mt-5 mb-4" ref="headerText">{{ greeting }}</h1>
+                <div class="px-0" ref="explorePaneContent_interactive">
+                    <div class="px-4 py-4">
+                        <h1 class="display-5 fw-bold explore-text">I feel like making <a
+                                @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
+                                @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
+                                @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a>, and
+                            <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
+                        </h1>
+                    </div>
+                    <section class="d-flex justify-content-center">
+                        <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
+                            @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false"
+                            ref="addRecipeButton">Add
+                            Recipe</button>
+                    </section>
                 </div>
-                <section class="d-flex justify-content-center">
-                    <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
-                        @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false" ref="addRecipeButton">Add
-                        Recipe</button>
-                </section>
             </div>
             <div id="recipePane" class="row" :class="{ 'recipe-collapsed': recipePaneCollapsed}">
                 <h1 class="display-6 px-4 mt-5 mb-4">Your recipes</h1>
@@ -267,9 +272,7 @@
                         rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a></div>
             </div>
             <button id="recipeRevealButton" class="btn" @click="clickedExpandChevron">
-                <div class="collapse-chevron" :class="{ 'collapsed': recipePaneCollapsed }" ref="exploreChevron">
-                    <div class="pulse-container" v-if="filtApp"></div>
-                </div>
+                <div class="collapse-chevron" :class="{ 'collapsed': recipePaneCollapsed }" ref="exploreChevron"></div>
             </button>
         </div>
         <!-- Explore pane offcanvas -->
@@ -531,9 +534,18 @@
                                         <div class="invalid-feedback">
                                             Please enter a description
                                         </div>
+                                        <div class="mt-2 mb-4 collapse" ref="ocr_DescriptionFilePond">
+                                            <input id="ocrDescriptionFilePond" type="file" data-max-file-size="12MB"
+                                                accept="image/jpeg, image/png" />
+                                            <div id="ocrDescriptionCropWrapper" class="cropperImg"
+                                                v-show="ocr_DescriptionEditMode"></div>
+                                            <button class="btn btn-success" v-show="ocr_DescriptionEditMode"
+                                                @click="handleCrop('description')">Crop</button>
+                                        </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-10">
+                                        <div class="col">
+                                            <!--col-10-->
                                             <div class="form-floating">
                                                 <input type="text" class="form-control manage-recipe-input me-3"
                                                     id="manage_form_tags" v-model="manage_recipeTagInput"
@@ -541,11 +553,11 @@
                                                 <label for="manage_form_tags">Tags</label>
                                             </div>
                                         </div>
-                                        <div class="col-2 ps-0 d-flex align-items-end">
+                                        <!--div class="col-2 ps-0 d-flex align-items-end">
                                             <button class="btn h-100 w-100" @click="pasteFromClipboard('tags')">
                                                 <img src="assets/icons/clipboard-plus.svg">
                                             </button>
-                                        </div>
+                                        </div-->
                                     </div>
                                     <div class="mt-3">
                                         <div class="col-lg-12">
@@ -569,7 +581,7 @@
                         <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button collapsed pe-1" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#flush-cover-photo" >
+                                    data-bs-toggle="collapse" data-bs-target="#flush-cover-photo">
                                     <span>2</span><span style="margin-left: 1rem;">Cover Photo</span>
                                 </button>
                             </h2>
@@ -618,12 +630,13 @@
                                         </div>
                                         <label for="manage_form_total_time">Total Time (in minutes)</label>
                                     </div>
-                                    <div class="row mb-4">
+                                    <div class="row mb-2">
                                         <div class="col-10">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control manage-recipe-input me-3"
                                                     id="manage_form_active_time" v-model="manage_recipeActiveTime"
-                                                    placeholder="Active Time (in minutes)" ref="recipeActiveRef" required>
+                                                    placeholder="Active Time (in minutes)" ref="recipeActiveRef"
+                                                    required>
                                                 <div class="invalid-feedback">
                                                     Please enter an active time
                                                 </div>
@@ -693,10 +706,10 @@
                                             </li>
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade active show"
-                                                id="pills-manage-ingredients" role="tabpanel" ref="manageIngredientsSectionButton">
+                                            <div class="tab-pane fade active show" id="pills-manage-ingredients"
+                                                role="tabpanel" ref="manageIngredientsSectionButton">
                                                 <div class="my-3">
-                                                    <div class="input-group mb-3">
+                                                    <div class="input-group">
                                                         <input id="manage_ing_amount"
                                                             class="form-control manage-recipe-input me-3" type="text"
                                                             placeholder="Ingredient"
@@ -704,9 +717,19 @@
                                                             v-on:keyup.enter="addIngredient" ref="manage_ing_amount">
                                                         <div id="ingredient-invalid-feedback" class="invalid-feedback">
                                                         </div>
-                                                        <button class="btn" @click="pasteFromClipboard('ingredients')">
-                                                            <img src="assets/icons/clipboard-plus.svg">
+                                                        <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#ocrIngredientsFilePondWrapper">
+                                                            <img src="assets/icons/camera-fill.svg">
                                                         </button>
+                                                    </div>
+                                                    <label for="manage_ing_amount" class="form-label mt-1 mb-3">Paste
+                                                        multiple ingredients</label>
+                                                    <div id="ocrIngredientsFilePondWrapper" class="mt-2 mb-4 collapse" ref="ocr_IngredientsFilePond">
+                                                        <input id="ocrIngredientsFilePond" type="file"
+                                                            data-max-file-size="12MB" accept="image/jpeg, image/png" />
+                                                        <div id="ocrIngredientsCropWrapper" class="cropperImg"
+                                                            v-show="ocr_IngredientsEditMode"></div>
+                                                        <button class="btn btn-success" v-show="ocr_IngredientsEditMode"
+                                                            @click="handleCrop('ingredients')">Crop</button>
                                                     </div>
                                                 </div>
                                                 <hr class="margin-top-2"
@@ -733,21 +756,42 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel" ref="manageStepsSectionButton">
+                                            <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel"
+                                                ref="manageStepsSectionButton">
                                                 <div class="my-3">
-                                                    <div class="steps-textarea-holder">
-                                                        <textarea id="manage_step_value" class="form-control"
-                                                            v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
-                                                            v-model="manage_recipeBlockStepValue" ref="manageStepRef"></textarea>
+                                                    <div class="row">
+                                                        <div class="steps-textarea-holder">
+                                                            <textarea id="manage_step_value" class="form-control"
+                                                                v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
+                                                                v-model="manage_recipeBlockStepValue"
+                                                                ref="manageStepRef"></textarea>
+                                                        </div>
+                                                        <div id="step-invalid-feedback" class="invalid-feedback">
+                                                            Please enter at least one step
+                                                        </div>
+                                                        <label for="manage_step_value"
+                                                            class="form-label mt-1 mb-2 px-3">Paste multiple
+                                                            steps</label>
                                                     </div>
-                                                    <div id="step-invalid-feedback" class="invalid-feedback">
-                                                        Please enter at least one step
+                                                    <div class="row">
+                                                        <div class="col px-1">
+                                                            <button class="btn text-primary button-no-outline"
+                                                                @click="addStep" ref="addStepToBlockButton">Add</button>
+                                                            <button class="btn text-primary button-no-outline" type="button" data-bs-toggle="collapse" data-bs-target="#ocrStepsFilePondWrapper">
+                                                                <img src="assets/icons/camera-fill.svg">
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <button class="btn text-primary button-no-outline mt-2"
-                                                        @click="addStep" ref="addStepToBlockButton">Add</button>
-                                                    <button class="btn text-primary button-no-outline mt-2"
-                                                        @click="pasteFromClipboard('steps')">Paste From
-                                                        Clipboard</button>
+                                                    <div class="row">
+                                                        <div id="ocrStepsFilePondWrapper" class="mt-2 mb-4 collapse" ref="ocr_StepsFilePond">
+                                                            <input id="ocrStepsFilePond" type="file"
+                                                                data-max-file-size="12MB" accept="image/jpeg, image/png" />
+                                                            <div id="ocrStepsCropWrapper" class="cropperImg"
+                                                                v-show="ocr_StepsEditMode"></div>
+                                                            <button class="btn btn-success" v-show="ocr_StepsEditMode"
+                                                                @click="handleCrop('steps')">Crop</button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <hr class="margin-top-2" v-if="manage_recipeBlockSteps.length">
                                                 <div class="mb-3">
@@ -768,7 +812,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel" ref="manageNutritionSectionButton">
+                                            <div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel"
+                                                ref="manageNutritionSectionButton">
                                                 <div class="row mt-3 mb-2">
                                                     <div class="col-10">
                                                         <div class="form-floating">
@@ -786,8 +831,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nFat" placeholder="Total Fat"
-                                                                required>
+                                                                v-model="manage_nFat" placeholder="Total Fat" required>
                                                             <label>Total Fat</label>
                                                         </div>
                                                     </div>
@@ -799,7 +843,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nCholesterol" placeholder="Cholesterol"
+                                                                v-model="manage_nCholesterol" placeholder="Cholesterol"
                                                                 required>
                                                             <label>Cholesterol</label>
                                                         </div>
@@ -812,8 +856,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nSodium" placeholder="Sodium"
-                                                                required>
+                                                                v-model="manage_nSodium" placeholder="Sodium" required>
                                                             <label>Sodium</label>
                                                         </div>
                                                     </div>
@@ -825,8 +868,8 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nCarbohydrate" placeholder="Carbohydrate"
-                                                                required>
+                                                                v-model="manage_nCarbohydrate"
+                                                                placeholder="Carbohydrate" required>
                                                             <label>Carbohydrate</label>
                                                         </div>
                                                     </div>
@@ -838,8 +881,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nFiber" placeholder="Fiber"
-                                                                required>
+                                                                v-model="manage_nFiber" placeholder="Fiber" required>
                                                             <label>Fiber</label>
                                                         </div>
                                                     </div>
@@ -851,8 +893,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nSugars" placeholder="Sugars"
-                                                                required>
+                                                                v-model="manage_nSugars" placeholder="Sugars" required>
                                                             <label>Sugars</label>
                                                         </div>
                                                     </div>
@@ -864,7 +905,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                            v-model="manage_nProtein" placeholder="Protein"
+                                                                v-model="manage_nProtein" placeholder="Protein"
                                                                 required>
                                                             <label>Protein</label>
                                                         </div>
@@ -904,14 +945,9 @@
                     <div id="mobile-padding"></div>
                 </div>
             </div>
-
-            <!--div>
-                <input id="ocrDescriptionFilePond" type="file" data-max-file-size="12MB" accept="image/jpeg, image/png" />
-                <div id="ocrDescriptionCropWrapper" class="cropperImg" v-show="ocr_DescriptionEditMode"></div>
-                <button class="btn btn-success" v-show="ocr_DescriptionEditMode" @click="handleCrop('description')">Crop</button>
-            </div-->
         </div>
-        <div class="container undo-container undo-collapsed py-1" ref="undoContainer" @click="undoDeleteClicked" style="display: none;">
+        <div class="container undo-container undo-collapsed py-1" ref="undoContainer" @click="undoDeleteClicked"
+            style="display: none!important;">
             <p class="mb-0 px-2">{{ undoText }}</p>
             <button class="btn stronger" ref="undoButton">Undo</button>
         </div>
@@ -1004,7 +1040,8 @@
                 {{ step.value }}
             </div>
             <div class="mb-2" v-else>
-                <textarea class="form-control" v-model="step.value" @blur="$emit('edit-step', index)" v-on:keyup.enter="$emit('edit-step', index)"></textarea>
+                <textarea class="form-control" v-model="step.value" @blur="$emit('edit-step', index)"
+                    v-on:keyup.enter="$emit('edit-step', index)"></textarea>
             </div>
             <span>
                 <button class="btn ps-0" v-if="!step.editMode" @click="$emit('edit-step', index)">
@@ -1172,8 +1209,10 @@
     </script>
     <script src="vendor/flexsearch/flexsearch.bundle.js"></script>
     <script src="vendor/quilljs/js/quill.min.js"></script>
+    <script src="vendor/T-vK/DynamicQuillTools.min.js"></script>
     <script src="vendor/cropperjs/js/cropper.min.js"></script>
     <script src="vendor/axios/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="vendor/hammerjs/hammer.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>

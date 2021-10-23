@@ -89,6 +89,12 @@ var ProjectPastroUtils = function () {
         return filterIDs;
     }
     //Error Reporting
+    /*
+        Usage:
+        type: usually just the string 'error'. Allows room for 'warning'
+        message: the error message
+        description: allows developer context i.e. when the app is uploading offline, write 'user is offline'
+    */
     this.reportError = function (type, message, description) {
         if (this.errorCollection === null)
             this.errorCollection = firebase.firestore().collection('errors');
@@ -98,7 +104,10 @@ var ProjectPastroUtils = function () {
             uid: this._UID,
             type: type,
             message: message,
-            description: description
+            description: description,
+            timestamp: Date.now()
+        }).then(() => {
+            return 0; //Dummy value
         });
     }
 }
