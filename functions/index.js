@@ -21,11 +21,17 @@ const sanitizeDash = new XRegExp("[-–—−]", "g");
 
 const _ = require('underscore');
 
-const axios = require('axios');
+const jsdom = require('jsdom');
+const {
+	JSDOM
+} = jsdom;
 
-const parse = require('node-html-parser');
 
 admin.initializeApp();
+
+if (process.env.NODE_ENV === 'development') {
+	firebase.functions().useFunctionsEmulator('http://localhost:5001');
+}
 
 //const config = functions.config();
 const db = admin.firestore();
@@ -404,24 +410,117 @@ async function visionImageAnnotator(req, res) {
  */
 
 exports.autoParseURL = functions.https.onRequest((req, res) => {
+	
+	
+	
+	//TODO: Check for an empty request
+	
+	
+	
 	cors(req, res, () => {
-		console.log('Fetching ' + req.body.url);
-		axios.get(req.body.url, {
+		var options = {
 			headers: {
 				Referer: req.body.url,
 				'X-Requested-With': 'XMLHttpRequest'
 			}
-		}).then(function (response) {
-			//HTML Parse
-			var html = parse(response);
-			var body = html.querySelector('body');
-			return res.status(200).send({
-				results: body.toString()
+		};
+		JSDOM.fromURL(req.body.url, options).then(dom => {
+			parseHTML(dom).then((recipe) => {
+				return res.status(200).send({
+					response: recipe
+				});
+			}).catch((error) => {
+				//
+			});
+		})
+		/*
+		.catch(function (error) {
+			return res.status(201).send({
+				error: error.toString()
 			});
 		});
+		*/
 	});
-	return 0;
 });
+
+const parseHTML = function (dom) {
+	return new Promise(function (resolve, reject) {
+		var recipe = {};
+		var html = dom.serialize();
+
+		var parsedDOM = new JSDOM(html);
+
+		//Get recipe name
+		var name = parsedDOM.window.document.querySelector('head > title').innerHTML;
+		//recipe.name = name;
+		var token = '';
+		if (name.includes('|')) {
+			token = '|';
+		} else if (name.includes('—')) {
+			token = '—';
+		} else if (name.includes('–')) {
+			token = '–';
+		} else if (name.includes('-')) {
+			token = '-';
+		}
+		recipe.name = token !== '' ? name.split(token)[0].trim() : name.trim();
+
+		//Get ingredients
+		var body = parsedDOM.window.document.body;
+		var sections = body.querySelectorAll('section');
+		var articles = body.querySelectorAll('article');
+
+		//if (domHas(sections, ingredientsWebScraperTerms)) {
+			//recipe.ingredients = true;
+		//} else {
+			if (domHas(articles, ingredientsWebScraperTerms)) {
+				recipe.ingredients = true;
+			} else {
+				recipe.ingredients = false;
+			}
+		//}
+
+		recipe.dom = html;
+
+		//Do steps here
+
+		resolve(recipe);
+	});
+}
+
+function domHas(DOM, textToSearch) {
+	if (typeof DOM == 'undefined') return false;
+	
+	DOM.forEach(node => {
+		if (allDescendants(node, textToSearch)) {
+			return true;
+		}
+	});
+}
+
+function allDescendants(node, textToSearch) {
+	for (var i = 0; i < node.childNodes.length; i++) {
+		var child = node.childNodes[i];
+		//Check innerHTML for the given text
+		if (child.innerHTML != undefined && child.innerHTML !== 'undefined' && child.innerHTML !== null) {
+			var res = false;
+			textToSearch.forEach(t => {
+				if (child.innerHTML.trim().toLowerCase().includes(t.trim().toLowerCase())) {
+					res = true;
+				}
+			});
+			if (res) {
+				//TODO: Call DOM parse for extracting ingredients
+				return true;
+			} else {
+				allDescendants(child, textToSearch);
+			}
+		} else {
+			allDescendants(child, textToSearch);
+		}
+	}
+	return false;
+}
 
 exports.getAdminMetrics = functions.https.onRequest((req, res) => {
 	cors(req, res, () => {
@@ -689,4 +788,14 @@ const unit_compound_dictionary = [
 	'fl. oz.',
 	'fl. oz',
 	'fl oz.'
+];
+
+const ingredientsWebScraperTerms = [
+	'ingredient'
+];
+
+const stepsWebScraperTerms = [
+	'step',
+	'instruction',
+	'direction'
 ];

@@ -169,6 +169,11 @@ body {
     color: var(--ps-secondary-color);
 }
 
+#headerText {
+    font-size: calc(1.475rem + 1.5vw);
+    font-weight: 500;
+}
+
 .top-nav-bar-pill-item>button {
     border-radius: 1.5rem !important;
     background-color: transparent !important;
@@ -199,8 +204,8 @@ body {
     transform: translateY(100vh);
 }
 
-#explorePane>div,
-#searchPane>div {
+#explorePane>div>div,
+#searchPane>div>div {
     background-color: var(--ps-light-color);
 }
 
@@ -258,10 +263,10 @@ body {
 #recipeRevealButton {
     width: 100%;
     position: fixed;
+    bottom: 0;
     left: 0;
     border: none;
-    bottom: 0;
-    padding: 24px 12px;
+    padding: 36px;
     display: flex;
     justify-content: center;
 }

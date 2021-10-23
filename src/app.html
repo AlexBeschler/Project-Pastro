@@ -91,21 +91,23 @@
         <div class="tab-content" style="position: relative;">
             <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
                 aria-labelledby="pills-explore-tab" :class="{ 'explore-collapsed': !recipePaneCollapsed }">
-                <h1 class="display-6 px-4 mt-5 mb-4">Let's start here</h1>
-                <div class="px-4 py-4">
-                    <h1 class="display-5 fw-bold explore-text">I feel like making <a
-                            @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
-                            @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
-                            @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a>, and
-                        <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
-                    </h1>
+                <h1 id="headerText" class="display-6 px-4 mt-5 mb-4" ref="headerText">{{ greeting }}</h1>
+                <div class="px-0" ref="explorePaneContent_interactive">
+                    <div class="px-4 py-4">
+                        <h1 class="display-5 fw-bold explore-text">I feel like making <a
+                                @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
+                                @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
+                                @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a>, and
+                            <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
+                        </h1>
+                    </div>
+                    <section class="d-flex justify-content-center">
+                        <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
+                            @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false"
+                            ref="addRecipeButton">Add
+                            Recipe</button>
+                    </section>
                 </div>
-                <section class="d-flex justify-content-center">
-                    <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
-                        @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false"
-                        ref="addRecipeButton">Add
-                        Recipe</button>
-                </section>
             </div>
             <div id="recipePane" class="row" :class="{ 'recipe-collapsed': recipePaneCollapsed}">
                 <h1 class="display-6 px-4 mt-5 mb-4">Your recipes</h1>
@@ -270,9 +272,7 @@
                         rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a></div>
             </div>
             <button id="recipeRevealButton" class="btn" @click="clickedExpandChevron">
-                <div class="collapse-chevron" :class="{ 'collapsed': recipePaneCollapsed }" ref="exploreChevron">
-                    <div class="pulse-container" v-if="filtApp"></div>
-                </div>
+                <div class="collapse-chevron" :class="{ 'collapsed': recipePaneCollapsed }" ref="exploreChevron"></div>
             </button>
         </div>
         <!-- Explore pane offcanvas -->
@@ -1212,6 +1212,7 @@
     <script src="vendor/T-vK/DynamicQuillTools.min.js"></script>
     <script src="vendor/cropperjs/js/cropper.min.js"></script>
     <script src="vendor/axios/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="vendor/hammerjs/hammer.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>

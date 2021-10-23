@@ -10,7 +10,11 @@
                     axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/autoParseURL', {
                         url: this.inputBox
                     }).then(function (response) {
-                        console.log(response);
+                        if (response.status === 201) {
+                            console.log(response.data.error);
+                        } else {
+                            console.log(response.data.response);
+                        }
                     }).catch(function (error) {
                         console.log(error);
                     });

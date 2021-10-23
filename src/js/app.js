@@ -305,6 +305,7 @@
 				undoTimeOut: null,
 
 				//Explore pane
+				greeting: '',
 				exploreOffcanvas: null,
 				explorePaneOffcanvasType: '',
 				displayTags: '',
@@ -318,7 +319,7 @@
 
 				recipePaneCollapsed: true,
 
-				filtApp: false,
+				filtersAppliedAnimation: null,
 
 				//Recipe
 				recipeOffcanvas: null,
@@ -677,6 +678,82 @@
 					element.addEventListener('shown.bs.tab', function () {
 						self.updateSmartButtonText();
 					});
+				});
+
+				this.greeting = 'Good ';
+				var mHour = new Date().getHours();
+				switch(mHour) {
+					case 0:
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						this.greeting += 'evening';
+						break;
+					case 5:
+					case 6:
+					case 7:
+					case 8:
+					case 9:
+					case 10:
+					case 11:
+						this.greeting += 'morning';
+						break;
+					case 12:
+					case 13:
+					case 14:
+					case 15:
+					case 16:
+						this.greeting += 'afternoon';
+						break;
+					case 17:
+					case 18:
+					case 19:
+					case 20:
+					case 21:
+					case 22:
+					case 23:
+						this.greeting += 'evening';
+						break;
+				}
+				this.greeting += ' ';
+				this.greeting += utils._FIRSTNAME;
+
+				var tl = anime.timeline({});
+				var header = self.$refs.headerText;
+
+				tl.add({
+					targets: header,
+					translateY: ['-50%', '0%'],
+					opacity: [0, 1],
+					delay: 250,
+					duration: 200,
+
+					easing: 'easeInOutQuad'
+				}).add({
+					targets: header,
+					translateY: ['0%', '50%'],
+					opacity: [1, 0],
+					duration: 200,
+					easing: 'easeInOutQuad',
+					complete: function(anim) {
+						self.greeting = 'Let\'s get started';
+					}
+				}, '+=775').add({
+					targets: header,
+					translateY: ['-50%', '0%'],
+					opacity: [0, 1],
+					duration: 200,
+					easing: 'easeInOutQuad'
+				}, '+=30');
+
+				anime({
+					targets: this.$refs.explorePaneContent_interactive,
+					translateY: ['5%', '0%'],
+					opacity: [0, 1],
+					duration: 250,
+					delay: 250,
+					easing: 'easeOutQuad'
 				});
 			},
 			beforeDestroy() {
@@ -1147,10 +1224,41 @@
 
 					if (!filtersApplied) {
 						this.filteredCookbook = this.cookbook;
-						this.filtApp = false;
+						//Remove animeJS
+						if (this.filtersAppliedAnimation !== null) {
+							this.filtersAppliedAnimation.remove(this.$refs.exploreChevron);
+							this.filtersAppliedAnimation = null;
+						}
 						return;
 					};
-					this.filtApp = true;
+					if (this.filtersAppliedAnimation === null) {
+						//Filters are applied
+						/*
+						this.filtersAppliedAnimation = 
+						anime({
+							targets: this.$refs.exploreChevron,
+							translateY: 270,
+							direction: 'alternate',
+							loop: true,
+							easing: 'easeInOutSine'
+						});
+						
+						anime.timeline({
+							loop: true
+						}).add({
+							targets: this.$refs.exploreChevron,
+							translateY: [0, 60],
+							duration: 200,
+							easing: 'easeOutBounce'
+						}).add({
+							targets: this.$refs.exploreChevron,
+							translateY: [60, 0],
+							duration: 200,
+							easing: 'easeOutQuad'
+						});
+						*/
+					}
+					
 					this.filteredCookbook = [];
 					filterIDs.forEach(id => {
 						this.filteredCookbook.push(this.cookbook[id]);
