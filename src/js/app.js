@@ -1550,7 +1550,7 @@
 									self.quillInstance.setText('Loading...');
 
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/ocrTextDetection', {
+									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: true
 									}).then(res => {
@@ -1614,7 +1614,7 @@
 									error('Error uploading file: ' + e);
 								}, () => {
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/ocrTextDetection', {
+									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: false
 									}).then(res => {
@@ -1691,7 +1691,7 @@
 									error('Error uploading file: ' + e);
 								}, () => {
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/ocrTextDetection', {
+									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: true
 									}).then(res => {
