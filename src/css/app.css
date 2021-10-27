@@ -7,6 +7,7 @@
     --ps-accent-color: #ec9f00;
     --ps-btn-background-color: #4A9653;
     --ps-btn-outline-color: #43894B;
+    --ps-light-grey-color: #ededed;
     --ps-favorite-color: #f9058c;
 }
 
@@ -169,6 +170,11 @@ body {
     color: var(--ps-secondary-color);
 }
 
+.gear-icon {
+    height: calc(1.575rem + 1.5vw);
+    width: calc(1.575rem + 1.5vw);
+}
+
 #headerText {
     font-size: calc(1.475rem + 1.5vw);
     font-weight: 500;
@@ -239,25 +245,40 @@ body {
     cursor: pointer;
 }
 
-.search-box {
+.search-box-button {
+    display: flex;
+    justify-content: center !important;
+    align-items: center !important;
     padding: 0 0.175rem 0.1em 0.175rem;
     border: none;
-    border-bottom: 4px solid var(--ps-secondary-color);
-    background-color: var(--ps-light-color) !important;
-    border-radius: 0;
-    color: var(--ps-accent-color) !important;
+    background-color: var(--ps-light-grey-color) !important;
+    border-radius: 24px;
     box-shadow: none !important;
-    font-size: 7vw;
-    line-height: 1;
-    font-weight: 600;
-    transition: border .15s ease-in-out;
+    font-size: calc(1.3rem + .4vw);
+    width: 100%;
 }
 
-.search-box:focus {
-    border-color: transparent;
-    border-bottom-color: var(--ps-secondary-color);
-    background-color: var(--ps-light-color);
-    box-shadow: none;
+.main-menu-accordion {}
+
+.main-menu-accordion-button {
+    color: var(--ps-secondary-color);
+    background-color: inherit;
+    font-size: calc(1.175rem + 0.5vw);
+    box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+
+}
+
+.main-menu-accordion-panel {}
+
+.main-menu-accordion-panel * h3 {
+    margin-bottom: 0;
+}
+
+.main-menu-accordion-panel * div.row {
+    margin-bottom: 0.5rem;
 }
 
 #recipeRevealButton {

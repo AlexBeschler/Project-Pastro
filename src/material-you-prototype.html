@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cookbook | Project Pastro</title>
+
+    <!-- Custom font for fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link href="vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Core app -->
+    <link rel="stylesheet" href="css/app.css">
+</head>
+
+<body>
+    <div id="appContent" class="container-fluid my-4 main-wrap">
+        <div class="d-flex justify-content-end pt-3 px-3">
+            <img class="gear-icon" src="assets/icons/gear.svg">
+        </div>
+        <h1 id="headerText" class="display-6 px-3 my-2" ref="headerText">Good evening #name#</h1>
+        <div class="px-1 my-4">
+            <button role="button" class="btn py-2 search-box-button">
+                <img class="pe-3" src="assets/icons/search.svg">
+                Search recipes
+            </button>
+        </div>
+        <div class="px-1 my-2">
+            <div class="accordion main-menu-accordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                        <button class="accordion-button main-menu-accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseOne">
+                            <img class="pe-3" src="assets/icons/grid-1x2.svg">
+                            Browse
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse main-menu-accordion-panel collapse"
+                        aria-labelledby="panelsStayOpen-headingOne">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-1">
+                                    <img src="assets/icons/tags.svg">
+                                </div>
+                                <div class="col-11">
+                                    <h3>Tags</h3>
+                                    <small>None applied</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-1">
+                                    <img src="assets/icons/stopwatch.svg">
+                                </div>
+                                <div class="col-11">
+                                    <h3>Time</h3>
+                                    <small>None applied</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-1">
+                                    <img src="assets/icons/egg.svg">
+                                </div>
+                                <div class="col-11">
+                                    <h3>Ingredients</h3>
+                                    <small>None applied</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-1">
+                                    <img src="assets/icons/info-circle.svg">
+                                </div>
+                                <div class="col-11">
+                                    <h3>Nutrition</h3>
+                                    <small>None applied</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                        <button class="accordion-button main-menu-accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseTwo">
+                            <img class="pe-3" src="assets/icons/calendar-range.svg">
+                            Meal Plan
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse"
+                        aria-labelledby="panelsStayOpen-headingTwo">
+                        <div class="accordion-body">
+                            <strong>This is the second item's accordion body.</strong> It is hidden by default, until
+                            the collapse plugin adds the appropriate classes that we use to style each element. These
+                            classes control the overall appearance, as well as the showing and hiding via CSS
+                            transitions. You can modify any of this with custom CSS or overriding our default variables.
+                            It's also worth noting that just about any HTML can go within the
+                            <code>.accordion-body</code>, though the transition does limit overflow.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--div id="navigationBar" style="z-index: 1;">
+            <header class="d-flex pt-3 px-3">
+                <ul class="nav nav-pills w-100 justify-content-between align-items-center" role="tablist">
+                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
+                        <button id="pills-explore-tab" class="nav-link active" data-bs-toggle="pill"
+                            data-bs-target="#explorePane" type="button" role="tab" aria-controls="explorePane"
+                            aria-selected="true" ref="exploreRef">Explore</button>
+                    </li>
+                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
+                        <button id="pills-search-tab" class="nav-link" data-bs-toggle="pill"
+                            data-bs-target="#searchPane" type="button" role="tab" aria-controls="searchPane"
+                            aria-selected="false">Search</button>
+                    </li>
+                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
+                        <button id="pills-options-tab" class="nav-link" data-bs-toggle="pill"
+                            data-bs-target="#optionsPane" type="button" role="tab" aria-controls="optionsPane"
+                            aria-selected="false">Options</button>
+                    </li>
+                </ul>
+            </header>
+        </div>
+        <div class="tab-content" style="position: relative;">
+            <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
+                aria-labelledby="pills-explore-tab" :class="{ 'explore-collapsed': !recipePaneCollapsed }">
+                
+                <div class="px-0" ref="explorePaneContent_interactive">
+                    <div class="px-4 py-4">
+                        
+                    </div>
+                    <section class="d-flex justify-content-center">
+                        <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
+                            @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false"
+                            ref="addRecipeButton">Add
+                            Recipe</button>
+                    </section>
+                </div>
+            </div>
+            <div id="recipePane" class="row" :class="{ 'recipe-collapsed': recipePaneCollapsed}">
+                <h1 class="display-6 px-4 mt-5 mb-4">Your recipes</h1>
+                <bottom-sheet :filtered-cookbook="filteredCookbook"
+                    v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
+            </div>
+            <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
+                <h1 class="display-6 px-4 mt-5 mb-4">Or search instantly</h1>
+                
+                <h4 v-if="filteredCookbook.length === 1">1 result</h4>
+                <h4 v-else>{{ filteredCookbook.length }} results</h4>
+                <bottom-sheet :filtered-cookbook="filteredCookbook"
+                    v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
+            </div>
+            <div id="optionsPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-options-tab">
+                <h6 class="m-0 mt-4 py-2 px-4 text-muted">General</h6>
+                <ul class="list-group px-2">
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">12 Hr Time Format</div>
+                            Use an AM/PM format instead of 00:00
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <input class="form-check-input" type="checkbox">
+                        </span>
+                    </li>
+                </ul>
+                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Explore Pane</h6>
+                <ul class="list-group px-2">
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Customize</div>
+                            Choose which filters are most useful to you
+                            <hr>
+                            <div class="form-check">
+                                <label class="form-check-label" for="tagsCheck">
+                                    Tags
+                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="tagsCheck">
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label" for="timeCheck">
+                                    Time
+                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="timeCheck">
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label" for="ingredientsCheck">
+                                    Ingredients
+                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="ingredientsCheck">
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label" for="nutritionCheck">
+                                    Nutrition
+                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="nutritionCheck">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Accessibility</h6>
+                <ul class="list-group px-2">
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Dark Mode</div>
+                            Change the colors to a noir setting
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <input class="form-check-input" type="checkbox">
+                        </span>
+                    </li>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Font Size</div>
+                            Increase the size of the font
+                            <input type="range" class="form-range" min="0" max="2" step="0.5">
+                        </div>
+                    </li>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">Use Dyslexic Font</div>
+                            Use a font that makes it easier to read for those with dyslexia. Powered by OpenDyslexic.
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <input class="form-check-input" type="checkbox" v-model="isDyslexicFontSet">
+                        </span>
+                    </li>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">High Contrast Mode</div>
+                            Use colors that contrast 4.5:1
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <input class="form-check-input" type="checkbox">
+                        </span>
+                    </li>
+                </ul>
+                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Billing & Account</h6>
+                <ul class="list-group px-2">
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2" style="width: 100%;">
+                            <div class="fw-bold">Stripe Billing Portal</div>
+                            Update your payment options and manage your subscription
+                            <button class="btn btn-outline-primary" @click="stripeBillingPortal"
+                                style="width: 100%;">Billing Portal</button>
+                        </div>
+                    </li>
+                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                        <div class="ms-2" style="width: 100%;">
+                            <div class="fw-bold">Sign Out</div>
+                            Sign out on this device
+                            <button class="btn btn-outline-danger" @click="signOutApp" style="width: 100%;">Sign
+                                Out</button>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="list-group m-0 mt-4 px-2">
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            Firebase user ID: {{ userID }}
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            Browser Detection: {{ browserUtil }}
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            FAQ / Contact Me
+                        </div>
+                        <span class="form-check form-switch align-self-center">
+                            <img src="assets/icons/arrow-up-right.svg">
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
+                            href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
+                            Terms of Service
+                        </a>
+                        <span class="form-check form-switch align-self-center">
+                            <img src="assets/icons/arrow-up-right.svg">
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
+                            href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
+                            Privacy Policy
+                        </a>
+                        <span class="form-check form-switch align-self-center">
+                            <img src="assets/icons/arrow-up-right.svg">
+                        </span>
+                    </li>
+                </ul>
+                <div class="my-4 mb-5 d-flex justify-content-center">Made with <span class="heart-emoji"
+                        style="margin: 0em 0.25em;">❤</span> by <a href="https://alexbeschler.com" target="_blank"
+                        rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a></div>
+            </div>
+            <button id="recipeRevealButton" class="btn" @click="clickedExpandChevron">
+                <div class="collapse-chevron" :class="{ 'collapsed': recipePaneCollapsed }" ref="exploreChevron"></div>
+            </button>
+        </div-->
+    </div>
+
+    <!-- Core Dependencies -->
+    <script src="vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/vue/vue.js"></script>
+
+    <!-- Custom -->
+    <script src="js/project-pastro-utils.js"></script>
+    <script src="js/material-you-prototype.js"></script>
+</body>
+
+</html>
