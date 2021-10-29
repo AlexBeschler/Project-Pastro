@@ -4,7 +4,7 @@
     --ps-primary-rgb: 74, 132, 167;
     --ps-secondary-color: #705748;
     --ps-light-color: #eff5dd;
-    --ps-accent-color: #ec9f00;
+    --ps-accent-color: #FFDD99;
     --ps-btn-background-color: #4A9653;
     --ps-btn-outline-color: #43894B;
     --ps-light-grey-color: #ededed;
@@ -22,6 +22,15 @@ body {
 
 .touch-action-auto {
     touch-action: auto !important;
+}
+
+.touch-action-none {
+    touch-action: none !important;
+}
+
+.my-2rem {
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
 }
 
 .collapse-important {
@@ -46,6 +55,25 @@ body {
 
 .stronger {
     font-weight: 600;
+}
+
+.chip {
+    border-radius: 24px;
+    background-color: var(--ps-accent-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .375rem .85rem;
+}
+
+.chip > img {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+.chip > h5 {
+    margin-bottom: 0;
 }
 
 #touch-input-layer {
@@ -258,27 +286,28 @@ body {
     width: 100%;
 }
 
-.main-menu-accordion {}
+.exploreMenuButton {
+    width: 100%;
+    text-align: start;
+}
 
-.main-menu-accordion-button {
-    color: var(--ps-secondary-color);
-    background-color: inherit;
-    font-size: calc(1.175rem + 0.5vw);
+.exploreMenuButton:focus {
+    outline: 0;
     box-shadow: none !important;
 }
 
-.accordion-button:not(.collapsed) {
-
-}
-
-.main-menu-accordion-panel {}
-
-.main-menu-accordion-panel * h3 {
+.filter-recipes-container * h5 {
     margin-bottom: 0;
 }
 
-.main-menu-accordion-panel * div.row {
+.filter-recipes-container>div.row {
     margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.filter-recipes-container {
+    display: none;
+    opacity: 0;
 }
 
 #recipeRevealButton {
