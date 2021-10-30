@@ -89,13 +89,21 @@
                 });
             },
             methods: {
+                /* Button Helpers */
                 clickedBrowse: function () {
                     this.navigateForward(this.$refs.exploreMenuContainer, this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
                 },
                 clickedMealPlan: function () {
-                    console.log('Hello World');
+                    console.log('Clicked meal plan');
+                },
+                clickedBackFromBrowseRecipes: function () {
+                    this.navigateBackward(this.$refs.filterRecipesContainer, this.$refs.exploreMenuContainer);
+                },
+                clickedSearchBar: function() {
+                    console.log('Clicked search');
                 },
 
+                /* Animation utilities */
                 getAbsoluteHeight: function (el) {
                     el = (typeof el === 'string') ? document.querySelector(el) : el;
 
@@ -105,6 +113,7 @@
                     return Math.ceil(el.offsetHeight + margin);
                 },
 
+                /* Animation methods */
                 navigateForward: function (from, to, backButtonImg, backButtonText) {
                     var self = this;
 
@@ -130,6 +139,7 @@
                             duration: 200,
                             easing: 'easeInOutQuad',
                             begin: function (anim) {
+                                to.classList.remove('d-none');
                                 to.classList.add('d-block');
                             }
                         }, '+=5')
@@ -139,7 +149,7 @@
                             opacity: [0, 1],
                             duration: 200,
                             easing: 'easeInOutQuad',
-                            delay: 100
+                            delay: 50
                         })
                         .add({
                             targets: backButtonImg,
@@ -147,7 +157,7 @@
                             duration: 200,
                             easing: 'easeInOutQuad',
                             delay: 200
-                        }, '-=200');
+                        }, '-=250');
 
                     if (this.isHeaderTextHidden) {
                         return;
@@ -162,7 +172,6 @@
                             duration: 250,
                             easing: 'easeInOutQuad',
                             complete: function (anim) {
-                                //self.$refs.headerText.classList.add('d-none');
                                 self.isHeaderTextHidden = true;
                             }
                         })
@@ -172,6 +181,32 @@
                             duration: 250,
                             easing: 'easeInOutQuad'
                         }, '-=250');
+                },
+
+                navigateBackward: function (from, to) {
+                    var timeline = anime.timeline({});
+                    timeline
+                        .add({
+                            targets: from,
+                            translateX: ['0%', '50%'],
+                            opacity: [1, 0],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            complete: function (anim) {
+                                from.classList.add('d-none');
+                            }
+                        })
+                        .add({
+                            targets: to,
+                            translateX: ['-50%', '0%'],
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            begin: function (anim) {
+                                to.classList.remove('d-none');
+                                to.classList.add('d-block');
+                            }
+                        }, '+=5');
                 }
             }
         });

@@ -24,7 +24,7 @@
         <h1 class="display-6 px-3 mt-5 mb-2" ref="headerText">{{ headerText }}</h1>
         <div class="explorePaneContent" ref="explorePaneContent">
             <div class="px-1 my-4">
-                <button role="button" class="btn py-2 search-box-button" v-bind:class="{ 'my-2rem': isHeaderTextHidden }">
+                <button role="button" class="btn py-2 search-box-button" v-bind:class="{ 'my-2rem': isHeaderTextHidden }" @click="clickedSearchBar">
                     <img class="pe-3" src="assets/icons/search.svg">
                     Search recipes
                 </button>
@@ -56,7 +56,7 @@
 
             <!-- Filter recipe content -->
             <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
-                <button class="btn chip mb-4" >
+                <button class="btn chip mb-4" @click="clickedBackFromBrowseRecipes">
                     <img src="assets/icons/arrow-left-short.svg" ref="fromFilterToHomeBackButtonImg">
                     <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
                 </button>
