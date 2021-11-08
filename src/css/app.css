@@ -20,14 +20,6 @@ body {
     overflow-y: hidden;
 }
 
-.touch-action-auto {
-    touch-action: auto !important;
-}
-
-.touch-action-none {
-    touch-action: none !important;
-}
-
 .my-2rem {
     margin-top: 2rem !important;
     margin-bottom: 2rem !important;
@@ -66,13 +58,13 @@ body {
     padding: .375rem .85rem;
 }
 
-.chip > img {
+.chip>img {
     width: 1.5rem;
     height: 1.5rem;
     margin-right: 0.5rem;
 }
 
-.chip > h5 {
+.chip>h5 {
     margin-bottom: 0;
 }
 
@@ -273,6 +265,10 @@ body {
     cursor: pointer;
 }
 
+.searchImgContainer {
+    position: relative;
+}
+
 .search-box-button {
     display: flex;
     justify-content: center !important;
@@ -284,6 +280,21 @@ body {
     box-shadow: none !important;
     font-size: calc(1.3rem + .4vw);
     width: 100%;
+}
+
+.search-box-input {
+    display: flex;
+    justify-content: center !important;
+    align-items: center !important;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    background-color: var(--ps-light-grey-color) !important;
+    border-radius: 24px;
+    box-shadow: none !important;
+    font-size: calc(1.3rem + .4vw);
+    width: 85%;
 }
 
 .exploreMenuButton {
@@ -303,6 +314,8 @@ body {
 .filter-recipes-container>div.row {
     margin-bottom: 0.5rem;
     align-items: center;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .filter-recipes-container {
@@ -430,14 +443,9 @@ body {
     border: none;
 }
 
-.offcanvas-header {
-    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
-    justify-content: flex-start;
-    box-shadow: 0 0.05rem 0.15rem rgb(0 0 0 / 5%), inset 0 -1px 0 rgb(0 0 0 / 15%);
-}
-
-.offcanvas-body {
-    padding: 0;
+.offcanvas-rounded-top {
+    border-top-right-radius: 12px;
+    border-top-left-radius: 12px;
 }
 
 .recipe-offcanvas,
@@ -724,9 +732,5 @@ input[type=checkbox]:checked+label.strikeable>span.step-number-badge {
 
     .signup-form {
         min-width: 500px;
-    }
-
-    .offcanvas-body {
-        padding: 1rem 1rem;
     }
 }

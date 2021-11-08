@@ -19,19 +19,27 @@
 <body>
     <div id="appContent" class="container-fluid my-4 main-wrap">
         <div class="d-flex justify-content-end pt-3 px-3">
-            <img class="gear-icon" src="assets/icons/gear.svg">
+            <button class="btn p-1" @click="clickedSettings" style="z-index: 1;">
+                <img class="gear-icon" src="assets/icons/gear.svg">
+            </button>
         </div>
         <h1 class="display-6 px-3 mt-5 mb-2" ref="headerText">{{ headerText }}</h1>
         <div class="explorePaneContent" ref="explorePaneContent">
             <div class="px-1 my-4">
-                <button role="button" class="btn py-2 search-box-button" v-bind:class="{ 'my-2rem': isHeaderTextHidden }" @click="clickedSearchBar">
-                    <img class="pe-3" src="assets/icons/search.svg">
-                    Search recipes
+                <button role="button" class="btn py-2 search-box-button" v-bind:class="{ 'my-2rem': isHeaderTextHidden }" @click="clickedSearchBar" ref="searchBoxButton">
+                    <div class="searchImgContainer">
+                        <img id="innerSearchButtonImg1" class="pe-3" src="assets/icons/search.svg">
+                        <div id="innerSearchButtonImg2" class="m-0 p-0" style="position: absolute;opacity: 0;top: 0;left: 0;" @click="clickedCloseSearch">
+                            <img class="pe-3" src="assets/icons/x-lg.svg">
+                        </div>
+                    </div>
+                    <span id="innerSearchButtonText">Search recipes</span>
                 </button>
+                <input class="form-control search-box-input d-none" v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput">
             </div>
 
             <div class="exploreMenu px-1 my-2" ref="exploreMenuContainer">
-                <button class="exploreMenuButton btn mb-2" @click="clickedBrowse">
+                <button class="exploreMenuButton btn mb-2" @click="clickedBrowse" :disabled="searchBarExpanded">
                     <div class="row">
                         <div class="col-2">
                             <img src="assets/icons/grid-1x2.svg">
@@ -42,7 +50,7 @@
                     </div>
                 </button>
 
-                <button class="exploreMenuButton btn" @click="clickedMealPlan">
+                <button class="exploreMenuButton btn" @click="clickedMealPlan" :disabled="searchBarExpanded">
                     <div class="row">
                         <div class="col-2">
                             <img src="assets/icons/calendar-range.svg">
@@ -56,47 +64,49 @@
 
             <!-- Filter recipe content -->
             <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
-                <button class="btn chip mb-4" @click="clickedBackFromBrowseRecipes">
+                <button class="btn chip mb-4" @click="clickedBackFromBrowseRecipes" :disabled="searchBarExpanded">
                     <img src="assets/icons/arrow-left-short.svg" ref="fromFilterToHomeBackButtonImg">
                     <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
                 </button>
-                <div class="row">
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags">
                     <div class="col-1">
                         <img src="assets/icons/tags.svg">
                     </div>
-                    <div class="col-11">
+                    <div class="col-11 text-start">
                         <h5>Tags</h5>
                         <small>None applied</small>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTime">
                     <div class="col-1">
                         <img src="assets/icons/stopwatch.svg">
                     </div>
-                    <div class="col-11">
+                    <div class="col-11 text-start">
                         <h5>Time</h5>
                         <small>None applied</small>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterIngredients">
                     <div class="col-1">
                         <img src="assets/icons/egg.svg">
                     </div>
-                    <div class="col-11">
+                    <div class="col-11 text-start">
                         <h5>Ingredients</h5>
                         <small>None applied</small>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterNutrition">
                     <div class="col-1">
                         <img src="assets/icons/info-circle.svg">
                     </div>
-                    <div class="col-11">
+                    <div class="col-11 text-start">
                         <h5>Nutrition</h5>
                         <small>None applied</small>
                     </div>
                 </div>
             </div>
+
+
 
 
             <!--div class="accordion main-menu-accordion">
@@ -139,6 +149,46 @@
                 </div-->
         </div>
         <hr>
+        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTags">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Explore by Tags</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body small">
+                <input class="form-control" type="text" placeholder="Search Tags">
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTime">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Explore by Time</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body small">
+                <p>To implement</p>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterIngredients">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Explore by Ingredients</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body small">
+                <input class="form-control" type="text" placeholder="Search Ingredients">
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterNutrition">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Explore by Nutrition</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body small">
+                <p>To implement</p>
+            </div>
+        </div>
     </div>
 
 

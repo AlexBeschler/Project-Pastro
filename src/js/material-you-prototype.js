@@ -6,9 +6,18 @@
             el: '#appContent',
             data: {
                 headerText: '',
-                isHeaderTextHidden: false
+                isHeaderTextHidden: false,
+                searchButtonHeight: 1,
+                searchBarExpanded: false,
+                //current view that will fade out if existence when search is clicked
+                currentViewToMinimize: null
             },
             mounted() {
+                //Set height of search text box
+                this.searchButtonHeight = this.getAbsoluteHeight(this.$refs.searchBoxButton);
+
+                this.currentViewToMinimize = this.$refs.exploreMenuContainer;
+
                 var greeting = 'Good ';
                 var mHour = new Date().getHours();
                 switch (mHour) {
@@ -90,6 +99,9 @@
             },
             methods: {
                 /* Button Helpers */
+                clickedSettings: function() {
+                    console.log('Clicked settings');
+                },
                 clickedBrowse: function () {
                     this.navigateForward(this.$refs.exploreMenuContainer, this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
                 },
@@ -100,7 +112,74 @@
                     this.navigateBackward(this.$refs.filterRecipesContainer, this.$refs.exploreMenuContainer);
                 },
                 clickedSearchBar: function() {
-                    console.log('Clicked search');
+                    if (this.searchBarExpanded) {
+                        return;
+                    }
+                    var self = this;
+                    var timeline = anime.timeline({});
+                    timeline
+                        .add({
+                            targets: this.$refs.searchBoxButton,
+                            duration: 100,
+                            easing: 'easeInOutQuad',
+                            complete: function (anim) {
+                                //self.$refs.searchBoxButton.classList.add('d-none');
+                            }
+                        })
+                        .add({
+                            targets: document.getElementById('innerSearchButtonText'),
+                            translateY: ['0%', '-50%'],
+                            opacity: [1, 0],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            begin: function (anim) {
+                                //self.$refs.searchBoxInput.classList.remove('d-none');
+                                //self.$refs.searchBoxInput.classList.add('d-flex');
+                            }
+                        }, '-=100')
+                        .add({
+                            targets: document.getElementById('innerSearchButtonImg1'),
+                            translateX: ['0%', '-175%'],
+                            opacity: [1, 0],
+                            duration: 200,
+                            easing: 'easeInOutQuad'
+                        }, '-=100')
+                        .add({
+                            targets: document.getElementById('innerSearchButtonImg2'),
+                            translateX: ['0%', '-175%'],
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad'
+                        }, '-=200')
+                        .add({
+                            targets: this.currentViewToMinimize,
+                            opacity: [1, 0],
+                            translateY: ['0%', '-25%'],
+                            duration: 100,
+                            easing: 'easeInOutQuad',
+                            complete: function(anim) {
+                                self.currentViewToMinimize.disabled = true;
+                            }
+                        }, '-=300')
+                        .add({
+                            targets: this.$refs.searchBoxInput,
+                            opacity: [0, 1],
+                            duration: 100,
+                            easing: 'easeInOutQuad',
+                            begin: function (anim) {
+                                self.$refs.searchBoxInput.classList.remove('d-none');
+                                self.$refs.searchBoxInput.classList.add('d-flex');
+                            },
+                            complete: function(anim) {
+                                self.$refs.searchBoxInput.focus();
+                            }
+                        }, '-=5');
+
+                    this.hideHeader();
+                    this.searchBarExpanded = true;
+                },
+                clickedCloseSearch: function() {
+                    console.log('Clicked close search');
                 },
 
                 /* Animation utilities */
@@ -113,13 +192,37 @@
                     return Math.ceil(el.offsetHeight + margin);
                 },
 
-                /* Animation methods */
-                navigateForward: function (from, to, backButtonImg, backButtonText) {
-                    var self = this;
+                hideHeader: function() {
+                    if (this.isHeaderTextHidden) {
+                        return;
+                    }
 
+                    var self = this;
                     var headerTextHeight = this.getAbsoluteHeight(this.$refs.headerText);
                     var h = '-' + headerTextHeight + 'px';
+                    
+                    var headerTextTimeline = anime.timeline({});
+                    headerTextTimeline
+                        .add({
+                            targets: this.$refs.headerText,
+                            translateY: ['0px', h],
+                            opacity: [1, 0],
+                            duration: 250,
+                            easing: 'easeInOutQuad',
+                            complete: function (anim) {
+                                self.isHeaderTextHidden = true;
+                            }
+                        })
+                        .add({
+                            targets: this.$refs.explorePaneContent,
+                            translateY: ['0px', h],
+                            duration: 250,
+                            easing: 'easeInOutQuad'
+                        }, '-=250');
+                },
 
+                /* Animation methods */
+                navigateForward: function (from, to, backButtonImg, backButtonText) {
                     var timeline = anime.timeline({});
                     timeline
                         .add({
@@ -159,28 +262,9 @@
                             delay: 200
                         }, '-=250');
 
-                    if (this.isHeaderTextHidden) {
-                        return;
-                    }
+                    this.hideHeader();
 
-                    var headerTextTimeline = anime.timeline({});
-                    headerTextTimeline
-                        .add({
-                            targets: this.$refs.headerText,
-                            translateY: ['0px', h],
-                            opacity: [1, 0],
-                            duration: 250,
-                            easing: 'easeInOutQuad',
-                            complete: function (anim) {
-                                self.isHeaderTextHidden = true;
-                            }
-                        })
-                        .add({
-                            targets: this.$refs.explorePaneContent,
-                            translateY: ['0px', h],
-                            duration: 250,
-                            easing: 'easeInOutQuad'
-                        }, '-=250');
+                    this.currentViewToMinimize = to;
                 },
 
                 navigateBackward: function (from, to) {
