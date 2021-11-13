@@ -156,7 +156,232 @@
 	});
 
 	function getCookbook() {
+		var payload = [];
+		var listOfTags = [];
+		var listOfIngredients = [];
+		var firebaseTestUnit = [
+			{
+				"docID": "563ca5fb-1997-484e-b343-cec6c9d21251",
+				"title": "Chocolate Cake",
+				"description": "<p>Hello World</p>",
+				"tags": [
+					"Dessert"
+				],
+				"prepTime": 1,
+				"cookTime": 3,
+				"totalTime": 5,
+				"activeTime": 5,
+				"yield": "2 servings",
+				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"specialEquipment": [],
+				"notes": [
+					"Make sure to mix well"
+				],
+				"sections": [
+					{
+						"title": "Cake",
+						"ingredients": [
+							{
+								"amount": "1 tbps",
+								"value": "butter"
+							},
+							{
+								"amount": "1 tsp",
+								"value": "salt"
+							}
+						],
+						"steps": [
+							"Preheat the oven to 350°F.",
+							"Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar."
+						],
+						"nFat": 1,
+						"nCholesterol": 1,
+						"nSodium": 1,
+						"nTotalCarbs": 1,
+						"nFiber": 1,
+						"nSugar": 1,
+						"nProtein": 1 
+					},
+					{
+						"title": "Cake",
+						"ingredients": [
+							{
+								"amount": "1 tub",
+								"value": "frosting"
+							},
+							{
+								"amount": "3 tsp",
+								"value": "sugar"
+							}
+						],
+						"steps": [
+							"Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
+							"Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil."
+						],
+						"nFat": 1,
+						"nCholesterol": 1,
+						"nSodium": 1,
+						"nTotalCarbs": 1,
+						"nFiber": 1,
+						"nSugar": 1,
+						"nProtein": 1 
+					}
+				]
+			},
+			{
+				"docID": "d43cd4d1-45f7-4a97-a572-3e119c67afa6",
+				"title": "Rice",
+				"description": "<p>Hello World</p>",
+				"tags": [
+					"Dinner",
+					"Quick"
+				],
+				"prepTime": 1,
+				"cookTime": 3,
+				"totalTime": 5,
+				"activeTime": 5,
+				"yield": "2 servings",
+				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"specialEquipment": [
+					"Rice cooker"
+				],
+				"notes": [
+					"Rice cooker makes the best results"
+				],
+				"sections": [
+					{
+						"title": "Steps",
+						"ingredients": [
+							{
+								"amount": "4 cups",
+								"value": "water"
+							},
+							{
+								"amount": "2 cups rice",
+								"value": "salt"
+							}
+						],
+						"steps": [
+							"Put rice in",
+							"Cook"
+						],
+						"nFat": 1,
+						"nCholesterol": 1,
+						"nSodium": 1,
+						"nTotalCarbs": 1,
+						"nFiber": 1,
+						"nSugar": 1,
+						"nProtein": 1 
+					}
+				]
+			},
+			{
+				"docID": "8f182252-9135-4c21-917e-4945bddd9a0e",
+				"title": "Hello World Recipe",
+				"description": "<p>Hello World</p>",
+				"tags": [
+					"Dinner",
+					"Quick"
+				],
+				"prepTime": 1,
+				"cookTime": 3,
+				"totalTime": 5,
+				"activeTime": 5,
+				"yield": "2 servings",
+				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"specialEquipment": [
+					"Rice cooker"
+				],
+				"notes": [
+					"Make sure to mix well"
+				],
+				"sections": [
+					{
+						"title": "Hello World",
+						"ingredients": [
+							{
+								"amount": "1 tbps",
+								"value": "butter"
+							},
+							{
+								"amount": "1 tsp",
+								"value": "salt"
+							}
+						],
+						"steps": [
+							"Preheat the oven to 350°F.",
+							"Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar."
+						],
+						"nFat": 1,
+						"nCholesterol": 1,
+						"nSodium": 1,
+						"nTotalCarbs": 1,
+						"nFiber": 1,
+						"nSugar": 1,
+						"nProtein": 1 
+					},
+					{
+						"title": "Another hello world",
+						"ingredients": [
+							{
+								"amount": "1 tub",
+								"value": "frosting"
+							},
+							{
+								"amount": "3 tsp",
+								"value": "sugar"
+							}
+						],
+						"steps": [
+							"Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
+							"Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil."
+						],
+						"nFat": 1,
+						"nCholesterol": 1,
+						"nSodium": 1,
+						"nTotalCarbs": 1,
+						"nFiber": 1,
+						"nSugar": 1,
+						"nProtein": 1 
+					}
+				]
+			}
+		];
+
+		//Init cookbook meta
+		var metaIndex = new FlexSearch.Document({
+			document: {
+				id: "id",
+				index: [
+					"docID", 
+					"title", 
+					"tags", 
+					"sections[]:ingredients[]:value",
+					"sections[]:title"
+				]
+			},
+			tokenize: 'full'
+		});
+		var flexIndex = 0;
+
+		firebaseTestUnit.forEach(recipe => {
+			//Inject id for FlexSearch during runtime
+			recipe.id = flexIndex;
+			flexIndex++;
+
+			//Adds recipe and indexes it
+			payload.push(recipe);
+			metaIndex.add(recipe);
+
+			recipe.tags.forEach(tag => {
+				listOfTags.push(tag);
+			});
+			listOfTags = _.uniq(listOfTags);
+		});
+
+		appFunctionality(payload, null, null, null, null, null, null, null, null, null, listOfIngredients, listOfTags, metaIndex, null);
 		//utils._NANOBAR.go(75);
+		/*
 		var payload = [];
 		var sortedTimeIndex = new ProjectPastroRangeIndex();
 		var sortedCalories = new ProjectPastroRangeIndex();
@@ -230,6 +455,7 @@
 			//utils._NANOBAR.go(100);
 			appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
 		});
+		*/
 	}
 
 	function appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex) {
@@ -237,12 +463,6 @@
 		Vue.use('vue-slicksort');
 
 		utils.showCookbook();
-
-		//Bottom Sheet
-		Vue.component('bottom-sheet', {
-			template: '#bottom-sheet-template',
-			props: ['filteredCookbook']
-		});
 
 		//Manage tag component
 		Vue.component('sortable-list', {
@@ -295,8 +515,30 @@
 		new Vue({
 			el: '#appContent',
 			data: {
-				//Utils
+				/* Utils */
 				db: null,
+				
+				/* Home screen data */
+				headerText: '',
+                isHeaderTextHidden: false,
+                searchButtonHeight: 1,
+                searchBarExpanded: false,
+                ///Current view that will fade out if existence when search is clicked
+                currentViewToMinimize: null,
+				///Used for 'Explore' pane
+				flexSearch: indexedRecipes,
+				//Tag helpers
+				tagModel: '',
+				tagList: listOfTags,
+				checkedTagsArray: null,
+				//Ingredient helpers
+				ingredientList: null,
+
+
+
+
+
+
 				cookbook: payload,
 				filteredCookbook: payload,
 				undo_length_long: 4750,
@@ -305,7 +547,6 @@
 				undoTimeOut: null,
 
 				//Explore pane
-				greeting: '',
 				exploreOffcanvas: null,
 				explorePaneOffcanvasType: '',
 				displayTags: '',
@@ -334,7 +575,7 @@
 				finishByTimeInput: '',
 				finishByTimeInputInMinutes: '',
 
-				checkedTagsArray: null,
+				
 				checkedIngredientsArray: null,
 
 				nCalories: null,
@@ -370,7 +611,7 @@
 
 				//For use in search queries
 				model_search: '',
-				flexSearch: indexedRecipes,
+				
 				injectedSearchIndexID: flexIndex,
 
 				//For use with manage recipes
@@ -458,10 +699,7 @@
 				//Used for settings menu
 				isDyslexicFontSet: '',
 				userID: utils._UID,
-				browserUtil: '',
-
-				appContentHammerManager: null,
-				touchInputHammerManager: null
+				browserUtil: ''
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -480,6 +718,7 @@
 				this.nProtein = '';
 			},
 			mounted() {
+				var self = this;
 				/* Disable back button from closing PWA */
 				//Bug - when user reloads page it completely breaks this code
 				window.history.pushState(null, null, document.URL);
@@ -488,22 +727,103 @@
 					history.pushState(null, null, document.URL);
 				});
 
-				this.initQuill();
+				//this.initQuill();
 
-				FilePond.registerPlugin(FilePondPluginImageTransform, FilePondPluginImageCrop, FilePondPluginImagePreview, FilePondPluginImageResize, FilePondPluginImageTransform, FilePondPluginImageEdit, FilePondPluginFileValidateType);
-
-				var self = this;
+				//FilePond.registerPlugin(FilePondPluginImageTransform, FilePondPluginImageCrop, FilePondPluginImagePreview, FilePondPluginImageResize, FilePondPluginImageTransform, FilePondPluginImageEdit, FilePondPluginFileValidateType);				
 
 				//On mobile, chrome/safari address bar is 60px and takes up part of the 100vh
 				//Meaning if the UA is mobile we need to add an additional 60px to the height of offcanvas
 				// to compensate. This is a broad check for mobile, instead of honing in on mobile
 				// Safari and Chrome; I simply don't care.
 				if (utils._isMobile) {
-					document.getElementById('mobile-padding').style.height = '60px';
+					//document.getElementById('mobile-padding').style.height = '60px';
 					this.browserUtil = 'Mobile browser';
 				} else {
 					this.browserUtil = 'Desktop browser';
 				}
+
+				//Set height of search text box
+                this.searchButtonHeight = this.getAbsoluteHeight(this.$refs.searchBoxButton);
+
+                this.currentViewToMinimize = this.$refs.exploreMenuContainer;
+
+                var greeting = 'Good ';
+                var mHour = new Date().getHours();
+                switch (mHour) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                        greeting += 'evening';
+                        break;
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                        greeting += 'morning';
+                        break;
+                    case 12:
+                    case 13:
+                    case 14:
+                    case 15:
+                    case 16:
+                        greeting += 'afternoon';
+                        break;
+                    case 17:
+                    case 18:
+                    case 19:
+                    case 20:
+                    case 21:
+                    case 22:
+                    case 23:
+                        greeting += 'evening';
+                        break;
+                }
+                greeting += ' ';
+                greeting += utils._FIRSTNAME;
+                this.headerText = greeting;
+
+				var tl = anime.timeline({});
+
+				tl.add({
+                    targets: this.$refs.headerText,
+                    translateY: ['-25%', '0%'],
+                    opacity: [0, 1],
+                    delay: 250,
+                    duration: 200,
+
+                    easing: 'easeInOutQuad'
+                }).add({
+                    targets: this.$refs.headerText,
+                    translateY: ['0%', '50%'],
+                    opacity: [1, 0],
+                    duration: 200,
+                    easing: 'easeInOutQuad',
+                    complete: function (anim) {
+                        self.headerText = 'Let\'s get started';
+                    }
+                }, '+=775').add({
+                    targets: this.$refs.headerText,
+                    translateY: ['-50%', '0%'],
+                    opacity: [0, 1],
+                    duration: 200,
+                    easing: 'easeInOutQuad'
+                }, '+=30');
+
+                anime({
+                    targets: this.$refs.explorePaneContent,
+                    translateY: ['5%', '0%'],
+                    opacity: [0, 1],
+                    duration: 250,
+                    delay: 250,
+                    easing: 'easeOutQuad'
+                });
+
+				/*
 
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', function () {
 					self.$refs.undoContainer.style.display = 'none!important';
@@ -603,59 +923,12 @@
 
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 
-				
+				*/
 
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
 
-				this.appContentHammerManager = new Hammer.Manager(document.getElementById('appContent'));
-				this.appContentHammerManager.add(new Hammer.Swipe());
-				this.appContentHammerManager.on('swipe', function (e) {
-					//Vertical swipe
-					if (e.offsetDirection === 8 || e.offsetDirection === 16) {
-						self.clickedExpandChevron();
-					}
-				});
-
-				this.touchInputHammerManager = new Hammer.Manager(document.getElementById('touch-input-layer'));
-				this.touchInputHammerManager.add(new Hammer.Swipe());
-				this.touchInputHammerManager.on('swipe', function (e) {
-					if (e.offsetDirection === 8 || e.offsetDirection === 16) {
-						self.clickedExpandChevron();
-					}
-				});
-				document.body.classList.add('disable-scroll'); //Default view
-
-				var tabEl = document.getElementById('pills-explore-tab');
-				tabEl.addEventListener('hidden.bs.tab', function (event) {
-					//Collapse Recipe Pane
-					var r = document.getElementById('recipePane');
-					r.classList.add('collapse');
-
-					var s = document.getElementById('touch-input-layer');
-					s.classList.add('touch-action-auto');
-
-					var t = document.getElementById('appContent');
-					t.classList.add('touch-action-auto');
-
-					var u = document.getElementById('recipeRevealButton');
-					u.classList.add('collapse-important');
-				});
-				tabEl.addEventListener('show.bs.tab', function (event) {
-					//Show recipe Pane
-					var r = document.getElementById('recipePane');
-					r.classList.remove('collapse');
-
-					var s = document.getElementById('touch-input-layer');
-					s.classList.remove('touch-action-auto');
-
-					var t = document.getElementById('appContent');
-					t.classList.remove('touch-action-auto');
-
-					var u = document.getElementById('recipeRevealButton');
-					u.classList.remove('collapse-important');
-				});
-
+				/*
 				//Add smart button listeners for ManageRecipe
 				var smartButtonListeners = [
 					this.$refs.manageOverviewAccordionButton,
@@ -679,104 +952,13 @@
 						self.updateSmartButtonText();
 					});
 				});
-
-				this.greeting = 'Good ';
-				var mHour = new Date().getHours();
-				switch(mHour) {
-					case 0:
-					case 1:
-					case 2:
-					case 3:
-					case 4:
-						this.greeting += 'evening';
-						break;
-					case 5:
-					case 6:
-					case 7:
-					case 8:
-					case 9:
-					case 10:
-					case 11:
-						this.greeting += 'morning';
-						break;
-					case 12:
-					case 13:
-					case 14:
-					case 15:
-					case 16:
-						this.greeting += 'afternoon';
-						break;
-					case 17:
-					case 18:
-					case 19:
-					case 20:
-					case 21:
-					case 22:
-					case 23:
-						this.greeting += 'evening';
-						break;
-				}
-				this.greeting += ' ';
-				this.greeting += utils._FIRSTNAME;
-
-				var tl = anime.timeline({});
-				var header = self.$refs.headerText;
-
-				tl.add({
-					targets: header,
-					translateY: ['-50%', '0%'],
-					opacity: [0, 1],
-					delay: 250,
-					duration: 200,
-
-					easing: 'easeInOutQuad'
-				}).add({
-					targets: header,
-					translateY: ['0%', '50%'],
-					opacity: [1, 0],
-					duration: 200,
-					easing: 'easeInOutQuad',
-					complete: function(anim) {
-						self.greeting = 'Let\'s get started';
-					}
-				}, '+=775').add({
-					targets: header,
-					translateY: ['-50%', '0%'],
-					opacity: [0, 1],
-					duration: 200,
-					easing: 'easeInOutQuad'
-				}, '+=30');
-
-				anime({
-					targets: this.$refs.explorePaneContent_interactive,
-					translateY: ['5%', '0%'],
-					opacity: [0, 1],
-					duration: 250,
-					delay: 250,
-					easing: 'easeOutQuad'
-				});
+				*/
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
 			},
 			watch: {
 				checkedTagsArray: function (b, a) {
-					if (this.checkedTagsArray.length < 1) {
-						this.displayTags = 'any';
-					} else if (this.checkedTagsArray.length === 2) {
-						var t = '';
-						t += this.checkedTagsArray[0];
-						t += ' and ';
-						t += this.checkedTagsArray[1];
-						this.displayTags = t;
-					} else {
-						var t = '';
-						this.checkedTagsArray.forEach(element => {
-							t += element;
-							t += ', ';
-						});
-						this.displayTags = t.slice(0, -2);
-					}
 					this.updateFilters();
 				},
 				totalRecipeTimeInput: function (b, a) {
@@ -942,38 +1124,206 @@
 				}
 			},
 			methods: {
-				navBarClicked: function () {
-					var self = this;
-					if (this.$refs.exploreRef.classList.contains('active')) {
-						this.appContentHammerManager = new Hammer.Manager(document.getElementById('appContent'));
-						this.appContentHammerManager.add(new Hammer.Swipe());
-						this.appContentHammerManager.on('swipe', function (e) {
-							//Vertical swipe
-							if (e.offsetDirection === 8 || e.offsetDirection === 16) {
-								self.clickedExpandChevron();
-							}
-						});
+				/* Button Helpers */
+                clickedSettings: function() {
+                    console.log('Clicked settings');
+                },
+                clickedBrowse: function () {
+                    this.navigateForward(this.$refs.exploreMenuContainer, this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
+                },
+                clickedMealPlan: function () {
+                    console.log('Clicked meal plan');
+                },
+                clickedBackFromBrowseRecipes: function () {
+                    this.navigateBackward(this.$refs.filterRecipesContainer, this.$refs.exploreMenuContainer);
+                },
+                clickedSearchBar: function() {
+                    if (this.searchBarExpanded) {
+                        return;
+                    }
+                    var self = this;
+                    var timeline = anime.timeline({});
+                    timeline
+                        .add({
+                            targets: this.$refs.searchBoxButton,
+                            duration: 100,
+                            easing: 'easeInOutQuad',
+                            complete: function (anim) {
+                                //self.$refs.searchBoxButton.classList.add('d-none');
+                            }
+                        })
+                        .add({
+                            targets: document.getElementById('innerSearchButtonText'),
+                            translateY: ['0%', '-50%'],
+                            opacity: [1, 0],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            begin: function (anim) {
+                                //self.$refs.searchBoxInput.classList.remove('d-none');
+                                //self.$refs.searchBoxInput.classList.add('d-flex');
+                            }
+                        }, '-=100')
+                        .add({
+                            targets: document.getElementById('innerSearchButtonImg1'),
+                            translateX: ['0%', '-175%'],
+                            opacity: [1, 0],
+                            duration: 200,
+                            easing: 'easeInOutQuad'
+                        }, '-=100')
+                        .add({
+                            targets: document.getElementById('innerSearchButtonImg2'),
+                            translateX: ['0%', '-175%'],
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad'
+                        }, '-=200')
+                        .add({
+                            targets: this.currentViewToMinimize,
+                            opacity: [1, 0],
+                            translateY: ['0%', '-25%'],
+                            duration: 100,
+                            easing: 'easeInOutQuad',
+                            complete: function(anim) {
+                                self.currentViewToMinimize.disabled = true;
+                            }
+                        }, '-=300')
+                        .add({
+                            targets: this.$refs.searchBoxInput,
+                            opacity: [0, 1],
+                            duration: 100,
+                            easing: 'easeInOutQuad',
+                            begin: function (anim) {
+                                self.$refs.searchBoxInput.classList.remove('d-none');
+                                self.$refs.searchBoxInput.classList.add('d-flex');
+                            },
+                            complete: function(anim) {
+                                self.$refs.searchBoxInput.focus();
+                            }
+                        }, '-=5');
 
-						this.touchInputHammerManager = new Hammer.Manager(document.getElementById('touch-input-layer'));
-						this.touchInputHammerManager.add(new Hammer.Swipe());
-						this.touchInputHammerManager.on('swipe', function (e) {
-							if (e.offsetDirection === 8 || e.offsetDirection === 16) {
-								self.clickedExpandChevron();
-							}
-						});
-						document.body.classList.add('disable-scroll');
-					} else {
-						document.body.classList.remove('disable-scroll');
-						if (this.appContentHammerManager !== null) {
-							this.appContentHammerManager.destroy();
-							this.appContentHammerManager = null;
-						}
-						if (this.touchInputHammerManager !== null) {
-							this.touchInputHammerManager.destroy();
-							this.touchInputHammerManager = null;
-						}
-					}
-				},
+                    this.hideHeader();
+                    this.searchBarExpanded = true;
+                },
+                clickedCloseSearch: function() {
+                    console.log('Clicked close search');
+                },
+
+				/* Animation utilities */
+                getAbsoluteHeight: function (el) {
+                    el = (typeof el === 'string') ? document.querySelector(el) : el;
+
+                    var styles = window.getComputedStyle(el);
+                    var margin = parseFloat(styles['marginTop']) + parseFloat(styles['marginBottom']);
+
+                    return Math.ceil(el.offsetHeight + margin);
+                },
+
+                /* Animation methods */
+				hideHeader: function() {
+                    if (this.isHeaderTextHidden) {
+                        return;
+                    }
+
+                    var self = this;
+                    var headerTextHeight = this.getAbsoluteHeight(this.$refs.headerText);
+                    var h = '-' + headerTextHeight + 'px';
+                    
+                    var headerTextTimeline = anime.timeline({});
+                    headerTextTimeline
+                        .add({
+                            targets: this.$refs.headerText,
+                            translateY: ['0px', h],
+                            opacity: [1, 0],
+                            duration: 250,
+                            easing: 'easeInOutQuad',
+                            complete: function (anim) {
+                                self.isHeaderTextHidden = true;
+                            }
+                        })
+                        .add({
+                            targets: this.$refs.explorePaneContent,
+                            translateY: ['0px', h],
+                            duration: 250,
+                            easing: 'easeInOutQuad'
+                        }, '-=250');
+                },
+                navigateForward: function (from, to, backButtonImg, backButtonText) {
+                    var timeline = anime.timeline({});
+                    timeline
+                        .add({
+                            targets: from,
+                            translateX: ['0%', '-50%'],
+                            opacity: [1, 0],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            complete: function (anim) {
+                                from.classList.add('d-none');
+                            }
+                        })
+                        .add({
+                            targets: to,
+                            translateX: ['50%', '0%'],
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            begin: function (anim) {
+                                to.classList.remove('d-none');
+                                to.classList.add('d-block');
+                            }
+                        }, '+=5')
+                        .add({
+                            targets: backButtonText,
+                            translateX: ['-0.5rem', '0rem'],
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            delay: 50
+                        })
+                        .add({
+                            targets: backButtonImg,
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            delay: 200
+                        }, '-=250');
+
+                    this.hideHeader();
+
+                    this.currentViewToMinimize = to;
+                },
+
+                navigateBackward: function (from, to) {
+                    var timeline = anime.timeline({});
+                    timeline
+                        .add({
+                            targets: from,
+                            translateX: ['0%', '50%'],
+                            opacity: [1, 0],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            complete: function (anim) {
+                                from.classList.add('d-none');
+                            }
+                        })
+                        .add({
+                            targets: to,
+                            translateX: ['-50%', '0%'],
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                            begin: function (anim) {
+                                to.classList.remove('d-none');
+                                to.classList.add('d-block');
+                            }
+                        }, '+=5');
+                },
+
+
+
+
+
+
+
 				//Explore pane
 				checkNutritionInfo: function (b, a) {
 					if ((utils.isBlank(this.nCalories)) &&
@@ -1223,41 +1573,10 @@
 					}
 
 					if (!filtersApplied) {
-						this.filteredCookbook = this.cookbook;
 						//Remove animeJS
-						if (this.filtersAppliedAnimation !== null) {
-							this.filtersAppliedAnimation.remove(this.$refs.exploreChevron);
-							this.filtersAppliedAnimation = null;
-						}
+						this.filteredCookbook = [];
 						return;
 					};
-					if (this.filtersAppliedAnimation === null) {
-						//Filters are applied
-						/*
-						this.filtersAppliedAnimation = 
-						anime({
-							targets: this.$refs.exploreChevron,
-							translateY: 270,
-							direction: 'alternate',
-							loop: true,
-							easing: 'easeInOutSine'
-						});
-						
-						anime.timeline({
-							loop: true
-						}).add({
-							targets: this.$refs.exploreChevron,
-							translateY: [0, 60],
-							duration: 200,
-							easing: 'easeOutBounce'
-						}).add({
-							targets: this.$refs.exploreChevron,
-							translateY: [60, 0],
-							duration: 200,
-							easing: 'easeOutQuad'
-						});
-						*/
-					}
 					
 					this.filteredCookbook = [];
 					filterIDs.forEach(id => {
