@@ -157,6 +157,7 @@
                         <small>None applied</small>
                     </div>
                 </div>
+                <hr>
             </div>
 
 
@@ -201,7 +202,6 @@
                     </div>
                 </div-->
         </div>
-        <hr>
         <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTags">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Tags</h5>
@@ -238,6 +238,13 @@
             </div>
             <div class="offcanvas-body small">
                 <input class="form-control" type="text" placeholder="Search Ingredients">
+                <div v-for="(ingredient, $index) in ingredientList" :key="$index">
+                    <input class="form-check-input" type="checkbox" value="" v-model="checkedIngredientsArray"
+                        :value="ingredient">
+                    <label class="form-check-label">
+                        {{ ingredient }}
+                    </label>
+                </div>
             </div>
         </div>
         <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterNutrition">

@@ -373,10 +373,14 @@
 			payload.push(recipe);
 			metaIndex.add(recipe);
 
-			recipe.tags.forEach(tag => {
-				listOfTags.push(tag);
+			listOfTags = _.union(listOfTags, recipe.tags);
+
+			recipe.sections.forEach(section => {
+				//Ingredients
+				section.ingredients.forEach(ingredient => {
+					listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
+				});
 			});
-			listOfTags = _.uniq(listOfTags);
 		});
 
 		appFunctionality(payload, null, null, null, null, null, null, null, null, null, listOfIngredients, listOfTags, metaIndex, null);
@@ -532,7 +536,9 @@
 				tagList: listOfTags,
 				checkedTagsArray: null,
 				//Ingredient helpers
-				ingredientList: null,
+				ingredientModel: '',
+				ingredientList: listOfIngredients,
+				checkedIngredientsArray: null,
 
 
 
@@ -540,7 +546,7 @@
 
 
 				cookbook: payload,
-				filteredCookbook: payload,
+				filteredCookbook: [],
 				undo_length_long: 4750,
 				undoObject: null,
 				undoText: '',
@@ -574,9 +580,6 @@
 				totalRecipeTimeInput: '',
 				finishByTimeInput: '',
 				finishByTimeInputInMinutes: '',
-
-				
-				checkedIngredientsArray: null,
 
 				nCalories: null,
 				nFat: null,
@@ -1018,22 +1021,6 @@
 					this.updateFilters();
 				},
 				checkedIngredientsArray: function (b, a) {
-					if (this.checkedIngredientsArray.length < 1) {
-						this.displayIngredients = 'any ingredients';
-					} else if (this.checkedIngredientsArray.length === 2) {
-						var t = '';
-						t += this.checkedIngredientsArray[0];
-						t += ' and ';
-						t += this.checkedIngredientsArray[1];
-						this.displayIngredients = t;
-					} else {
-						var t = '';
-						this.checkedIngredientsArray.forEach(element => {
-							t += element;
-							t += ', ';
-						});
-						this.displayIngredients = t.slice(0, -2);
-					}
 					this.updateFilters();
 				},
 				nCalories: function (b, a) {
@@ -1551,13 +1538,13 @@
 							var o = [];
 							//Get indices of specified ingredients
 							var queryResults = this.flexSearch.search(checkedIngredient.toLowerCase(), {
-								index: 'blocks[]:ingredients[]:value'
+								index: 'sections[]:ingredients[]:value'
 							});
 							if (queryResults.length === 0) {
 								return;
 							}
 							queryResults.forEach(queryResult => {
-								if (queryResult.field === 'blocks[]:ingredients[]:value') {
+								if (queryResult.field === 'sections[]:ingredients[]:value') {
 									queryResult.result.forEach(result => {
 										o.push(result);
 									});
@@ -1573,7 +1560,6 @@
 					}
 
 					if (!filtersApplied) {
-						//Remove animeJS
 						this.filteredCookbook = [];
 						return;
 					};
