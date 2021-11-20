@@ -127,7 +127,12 @@
                     </div>
                     <div class="col-11 text-start">
                         <h5>Tags</h5>
-                        <small>None applied</small>
+                        <div v-if="checkedTagsArray.length">
+                            <small>{{ checkedTagsArray.length }} applied</small>
+                        </div>
+                        <div v-else>
+                            <small>None applied</small>
+                        </div>
                     </div>
                 </div>
                 <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTime">
@@ -145,7 +150,12 @@
                     </div>
                     <div class="col-11 text-start">
                         <h5>Ingredients</h5>
-                        <small>None applied</small>
+                        <div v-if="checkedIngredientsArray.length">
+                            <small>{{ checkedIngredientsArray.length }} applied</small>
+                        </div>
+                        <div v-else>
+                            <small>None applied</small>
+                        </div>
                     </div>
                 </div>
                 <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterNutrition">
@@ -158,49 +168,21 @@
                     </div>
                 </div>
                 <hr>
+                <ul class="list-group list-group-flush cookbook-list-group">
+                    <li class="row d-flex list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index"
+                        :index="index" @click="clickedRecipeFromExplorePane">
+                        <div class="col-3">
+                            <img src="https://via.placeholder.com/48">
+                        </div>
+                        <div class="col-9 recipe-thumbnail-description">
+                            <span>{{ recipe.title }}</span>
+                            <span>{{ recipe.totalTime }} min • ETA {10:48 pm}</span>
+                        </div>
+                    </li>
+                </ul>
             </div>
 
 
-
-
-            <!--div class="accordion main-menu-accordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
-                            <button class="accordion-button main-menu-accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="false"
-                                aria-controls="panelsStayOpen-collapseOne" data-bs-toggle="collapse">
-                                
-                            </button>
-                        </h2>
-                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse main-menu-accordion-panel collapse"
-                            aria-labelledby="panelsStayOpen-headingOne">
-                            <div class="accordion-body">
-                                
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
-                            <button class="accordion-button main-menu-accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false"
-                                aria-controls="panelsStayOpen-collapseTwo" data-bs-toggle="collapse">
-                                
-                                
-                            </button>
-                        </h2>
-                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse"
-                            aria-labelledby="panelsStayOpen-headingTwo">
-                            <div class="accordion-body">
-                                <strong>This is the second item's accordion body.</strong> It is hidden by default, until
-                                the collapse plugin adds the appropriate classes that we use to style each element. These
-                                classes control the overall appearance, as well as the showing and hiding via CSS
-                                transitions. You can modify any of this with custom CSS or overriding our default variables.
-                                It's also worth noting that just about any HTML can go within the
-                                <code>.accordion-body</code>, though the transition does limit overflow.
-                            </div>
-                        </div>
-                    </div>
-                </div-->
         </div>
         <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTags">
             <div class="offcanvas-header">
@@ -211,8 +193,7 @@
             <div class="offcanvas-body small">
                 <input class="form-control" type="text" placeholder="Search Tags" v-model="tagModel">
                 <div v-for="(tag, $index) in tagList" :key="$index">
-                    <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray"
-                        :value="tag">
+                    <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray" :value="tag">
                     <label class="form-check-label">
                         {{ tag }}
                     </label>
@@ -226,7 +207,17 @@
                     aria-label="Close"></button>
             </div>
             <div class="offcanvas-body small">
-                <p>To implement</p>
+                <h4>Total recipe time</h4>
+                <div class="mb-3">
+                    <input type="number" class="form-control" id="totalTimeInput" v-model="totalRecipeTimeInput"
+                        placeholder="i.e. 25">
+                </div>
+                <h4>Or pick a time to be finished by</h4>
+                <div class="form-floating mb-3">
+                    <input type="time" class="form-control" id="totalTimeInput" placeholder="10"
+                        v-model="finishByTimeInput">
+                    <label for="totalTimeInput">Finish by</label>
+                </div>
             </div>
         </div>
         <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1"

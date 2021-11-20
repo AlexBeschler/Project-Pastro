@@ -323,6 +323,12 @@ body {
     opacity: 0;
 }
 
+.recipe-thumbnail-description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 #recipeRevealButton {
     width: 100%;
     position: fixed;

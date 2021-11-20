@@ -162,6 +162,9 @@
 		var firebaseTestUnit = [
 			{
 				"docID": "563ca5fb-1997-484e-b343-cec6c9d21251",
+				"dateAdded": "1637381364589",
+				"dateModified": "1637381387807",
+				"favorite": false,
 				"title": "Chocolate Cake",
 				"description": "<p>Hello World</p>",
 				"tags": [
@@ -169,7 +172,7 @@
 				],
 				"prepTime": 1,
 				"cookTime": 3,
-				"totalTime": 5,
+				"totalTime": 10,
 				"activeTime": 5,
 				"yield": "2 servings",
 				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
@@ -230,6 +233,9 @@
 			},
 			{
 				"docID": "d43cd4d1-45f7-4a97-a572-3e119c67afa6",
+				"dateAdded": "1637381406764",
+				"dateModified": "1637381414039",
+				"favorite": false,
 				"title": "Rice",
 				"description": "<p>Hello World</p>",
 				"tags": [
@@ -277,6 +283,9 @@
 			},
 			{
 				"docID": "8f182252-9135-4c21-917e-4945bddd9a0e",
+				"dateAdded": "1637381426228",
+				"dateModified": "1637381430447",
+				"favorite": false,
 				"title": "Hello World Recipe",
 				"description": "<p>Hello World</p>",
 				"tags": [
@@ -285,7 +294,7 @@
 				],
 				"prepTime": 1,
 				"cookTime": 3,
-				"totalTime": 5,
+				"totalTime": 1,
 				"activeTime": 5,
 				"yield": "2 servings",
 				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
@@ -348,7 +357,7 @@
 			}
 		];
 
-		//Init cookbook meta
+		//Init cookbook meta index
 		var metaIndex = new FlexSearch.Document({
 			document: {
 				id: "id",
@@ -362,16 +371,38 @@
 			},
 			tokenize: 'full'
 		});
+		//Init cookbook number meta index
+		//Data structure:
+		//  {
+		//    docID: xx
+		//    value: yy
+		//  }
+		var numberMetaIndex = {
+			totalTime: [],
+			calories: [],
+			carbohydrate: [],
+			cholesterol: [],
+			fat: [],
+			fiber: [],
+			protein: [],
+			sodium: [],
+			sugars: []
+		};
 		var flexIndex = 0;
 
 		firebaseTestUnit.forEach(recipe => {
 			//Inject id for FlexSearch during runtime
 			recipe.id = flexIndex;
-			flexIndex++;
-
+			
 			//Adds recipe and indexes it
 			payload.push(recipe);
 			metaIndex.add(recipe);
+
+			//Index numeric metadata
+			numberMetaIndex.totalTime.push({
+				id: flexIndex,
+				value: recipe.totalTime
+			});
 
 			listOfTags = _.union(listOfTags, recipe.tags);
 
@@ -381,9 +412,11 @@
 					listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
 				});
 			});
+
+			flexIndex++;
 		});
 
-		appFunctionality(payload, null, null, null, null, null, null, null, null, null, listOfIngredients, listOfTags, metaIndex, null);
+		appFunctionality(payload, listOfIngredients, listOfTags, metaIndex, numberMetaIndex);
 		//utils._NANOBAR.go(75);
 		/*
 		var payload = [];
@@ -462,7 +495,7 @@
 		*/
 	}
 
-	function appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex) {
+	function appFunctionality(payload, listOfIngredients, listOfTags, indexedRecipes, numberMetaIndex) {
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -531,14 +564,19 @@
                 currentViewToMinimize: null,
 				///Used for 'Explore' pane
 				flexSearch: indexedRecipes,
+				numericIndex: numberMetaIndex,
 				//Tag helpers
 				tagModel: '',
 				tagList: listOfTags,
-				checkedTagsArray: null,
+				checkedTagsArray: [],
 				//Ingredient helpers
 				ingredientModel: '',
 				ingredientList: listOfIngredients,
-				checkedIngredientsArray: null,
+				checkedIngredientsArray: [],
+				//Time helpers
+				totalRecipeTimeInput: '',
+				finishByTimeInput: '',
+				finishByTimeInputInMinutes: '',
 
 
 
@@ -576,11 +614,6 @@
 				tagsArray: listOfTags,
 				ingredientsArray: listOfIngredients,
 
-				//Filters
-				totalRecipeTimeInput: '',
-				finishByTimeInput: '',
-				finishByTimeInputInMinutes: '',
-
 				nCalories: null,
 				nFat: null,
 				nCholesterol: null,
@@ -591,15 +624,14 @@
 				nProtein: null,
 
 				//Indices
-				index_times: sortedTimeIndex,
-				index_calories: sortedCalories,
-				index_carbohydrate: sortedCarbohydrate,
-				index_cholesterol: sortedCholesterol,
-				index_fat: sortedFat,
-				index_fiber: sortedFiber,
-				index_protein: sortedProtein,
-				index_sodium: sortedSodium,
-				index_sugars: sortedSugars,
+				index_calories: null,
+				index_carbohydrate: null,
+				index_cholesterol: null,
+				index_fat: null,
+				index_fiber: null,
+				index_protein: null,
+				index_sodium: null,
+				index_sugars: null,
 
 				proto_index: 0,
 				proto_title: '',
@@ -615,7 +647,7 @@
 				//For use in search queries
 				model_search: '',
 				
-				injectedSearchIndexID: flexIndex,
+				injectedSearchIndexID: null,
 
 				//For use with manage recipes
 				manageOffcanvas: null,
@@ -965,58 +997,27 @@
 					this.updateFilters();
 				},
 				totalRecipeTimeInput: function (b, a) {
-					//TODO: Check if both boxes have been filled
-					if ((this.finishByTimeInput === null || this.finishByTimeInput === '') && (this.totalRecipeTimeInput == null || this.totalRecipeTimeInput == '')) {
-						this.displayTime = 'takes any time';
-						//if total recipe time is inputted
-					} else if (this.totalRecipeTimeInput != null || this.totalRecipeTimeInput != '') {
-						//Convert input number to hour & minute
-						var input = parseInt(this.totalRecipeTimeInput);
-						var hours = Math.floor(input / 60);
-						var minutes = input % 60;
-						var t = 'takes ';
-						if (hours !== 0) {
-							t += hours;
-							if (hours === 1) {
-								t += ' hour ';
-							} else {
-								t += ' hours ';
-							}
-						}
-						if (hours !== 0 && minutes !== 0) {
-							t += ' and ';
-						}
-						if (minutes !== 0) {
-							t += minutes;
-							if (minutes === 1) {
-								t += ' minute';
-							} else {
-								t += ' minutes'
-							}
-						}
-						t += ' or less';
-						this.displayTime = t;
+					if (this.finishByTimeInput != null || this.finishByTimeInput != '') {
+						this.finishByTimeInput = '';
 					}
 					this.updateFilters();
 				},
 				finishByTimeInput: function (b, a) {
-					//TODO: Check if both boxes have been filled
-					if ((this.finishByTimeInput === null || this.finishByTimeInput === '') && (this.totalRecipeTimeInput == null || this.totalRecipeTimeInput == '')) {
-						this.displayTime = 'takes any time';
-						//if total recipe time is inputted
-					} else if (this.totalRecipeTimeInput != null || this.totalRecipeTimeInput != '') {
-						try {
-							var input = this.finishByTimeInput;
-							var inputHours = parseInt(input.split(':')[0]);
-							var inputMinutes = parseInt(input.split(':')[1]);
-							var now = new Date(Date.now());
-							var nowHours = parseInt(now.getHours());
-							var nowMinutes = parseInt(now.getMinutes());
+					if (this.totalRecipeTimeInput != null || this.totalRecipeTimeInput != '') {
+						this.totalRecipeTimeInput = '';
+					}
 
-							this.displayTime = this.getFilterTimeDuration(nowHours, nowMinutes, inputHours, inputMinutes);
-						} catch (e) {
-							console.error(e);
-						}
+					try {
+						var input = this.finishByTimeInput;
+						var inputHours = parseInt(input.split(':')[0]);
+						var inputMinutes = parseInt(input.split(':')[1]);
+						var now = new Date(Date.now());
+						var nowHours = parseInt(now.getHours());
+						var nowMinutes = parseInt(now.getMinutes());
+
+						this.getFilterTimeDuration(nowHours, nowMinutes, inputHours, inputMinutes);
+					} catch (e) {
+						console.error(e);
 					}
 					this.updateFilters();
 				},
@@ -1194,6 +1195,9 @@
                 clickedCloseSearch: function() {
                     console.log('Clicked close search');
                 },
+				clickedRecipeFromExplorePane: function() {
+					console.log('Clicked recipe');
+				},
 
 				/* Animation utilities */
                 getAbsoluteHeight: function (el) {
@@ -1278,7 +1282,6 @@
 
                     this.currentViewToMinimize = to;
                 },
-
                 navigateBackward: function (from, to) {
                     var timeline = anime.timeline({});
                     timeline
@@ -1437,18 +1440,19 @@
 					// results added, later intersected by more narrow results
 					if (this.finishByTimeInput !== '') {
 						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_times.search(parseInt(this.finishByTimeInputInMinutes)));
-						if (result != null) {
+						var result = utils.queryNumericIndex(this.numericIndex.totalTime, parseInt(this.finishByTimeInputInMinutes));
+						if (result.length > 1) {
 							filterIDs = _.union(filterIDs, result);
 						}
 					}
 					if (this.totalRecipeTimeInput !== '') {
 						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_times.search(parseInt(this.totalRecipeTimeInput)));
-						if (result != null) {
+						var result = utils.queryNumericIndex(this.numericIndex.totalTime, parseInt(this.totalRecipeTimeInput));
+						if (result.length > 1) {
 							filterIDs = _.union(filterIDs, result);
 						}
 					}
+					/*
 					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
 						filtersApplied = true;
 						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_calories.search(parseInt(this.nCalories)));
@@ -1505,6 +1509,7 @@
 							filterIDs = _.union(filterIDs, result);
 						}
 					}
+					*/
 
 					//Exact matching parameters
 					if (this.checkedTagsArray.length > 0) {
@@ -1745,7 +1750,7 @@
 					var docIDToDelete = this.filteredCookbook[this.proto_index].docID;
 
 					//Remove all references to this recipe from indices
-					this.index_times.remove(docIDToDelete, this.filteredCookbook[this.proto_index].totalTime);
+					//this.index_times.remove(docIDToDelete, this.filteredCookbook[this.proto_index].totalTime);
 
 					this.flexSearch.remove(this.filteredCookbook[this.proto_index]);
 
@@ -2686,7 +2691,7 @@
 						serializedRecipe.id = this.filteredCookbook[this.proto_index].id;
 
 						//Remove all references to this recipe from indices
-						this.index_times.remove(docIDToUpdate, this.filteredCookbook[this.proto_index].totalTime);
+						//this.index_times.remove(docIDToUpdate, this.filteredCookbook[this.proto_index].totalTime);
 
 						//Remove document from FlexSearch
 						this.flexSearch.remove(this.filteredCookbook[this.proto_index]);

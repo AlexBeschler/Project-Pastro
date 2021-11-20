@@ -65,6 +65,38 @@ var ProjectPastroUtils = function () {
         return s === s.toUpperCase();
     }
     //FlexSearch utils
+    this.queryNumericIndex = function (index, query) {
+        var filterIDs = [];
+        for (var i = 0; i < index.length; i++) {
+            if (index[i].value <= query) {
+                filterIDs.push(index[i].id);
+            }
+        }
+        return _.uniq(filterIDs);
+        /*
+        queryResults.forEach(x => {
+            var o = [];
+            //Get indices of specified ingredients
+            var qResults = index.search(x, {
+                index: 'docID'
+            });
+            if (qResults.length === 0) {
+                return;
+            }
+            qResults.forEach(q => {
+                if (q.field === 'docID') {
+                    q.result.forEach(result => {
+                        o.push(result);
+                    });
+                }
+            });
+            //Push to filterIDs
+            filterIDs = _.union(filterIDs, o);
+        });
+        return filterIDs;
+        */
+    }
+    //FlexSearch utils
     this.queryAndParseFlexSearchResults = function (index, queryResults) {
         var filterIDs = [];
         queryResults.forEach(x => {
