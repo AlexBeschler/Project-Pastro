@@ -16,6 +16,13 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.15em;
+    margin-right: 0.15rem;
+}
+
 .disable-scroll {
     overflow-y: hidden;
 }

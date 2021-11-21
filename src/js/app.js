@@ -176,6 +176,7 @@
 				"activeTime": 5,
 				"yield": "2 servings",
 				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"thumbnail": "https://via.placeholder.com/64x64.png",
 				"specialEquipment": [],
 				"notes": [
 					"Make sure to mix well"
@@ -183,6 +184,7 @@
 				"sections": [
 					{
 						"title": "Cake",
+						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tbps",
@@ -207,6 +209,7 @@
 					},
 					{
 						"title": "Cake",
+						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tub",
@@ -248,6 +251,7 @@
 				"activeTime": 5,
 				"yield": "2 servings",
 				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"thumbnail": "https://via.placeholder.com/64x64.png",
 				"specialEquipment": [
 					"Rice cooker"
 				],
@@ -257,6 +261,7 @@
 				"sections": [
 					{
 						"title": "Steps",
+						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "4 cups",
@@ -298,6 +303,7 @@
 				"activeTime": 5,
 				"yield": "2 servings",
 				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"thumbnail": "https://via.placeholder.com/64x64.png",
 				"specialEquipment": [
 					"Rice cooker"
 				],
@@ -307,6 +313,7 @@
 				"sections": [
 					{
 						"title": "Hello World",
+						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tbps",
@@ -331,6 +338,7 @@
 					},
 					{
 						"title": "Another hello world",
+						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tub",
@@ -568,10 +576,12 @@
 				//Tag helpers
 				tagModel: '',
 				tagList: listOfTags,
+				filteredTagList: listOfTags,
 				checkedTagsArray: [],
 				//Ingredient helpers
 				ingredientModel: '',
 				ingredientList: listOfIngredients,
+				filteredIngredientList: listOfIngredients,
 				checkedIngredientsArray: [],
 				//Time helpers
 				totalRecipeTimeInput: '',
@@ -996,6 +1006,14 @@
 				checkedTagsArray: function (b, a) {
 					this.updateFilters();
 				},
+				tagModel: function (b, a) {
+					if (b === '') {
+						this.filteredTagList = []; //Clear the list
+						this.filteredTagList = this.tagList; //Clone
+						return;
+					}
+					this.updateFilteredTags(b);
+				},
 				totalRecipeTimeInput: function (b, a) {
 					if (this.finishByTimeInput != null || this.finishByTimeInput != '') {
 						this.finishByTimeInput = '';
@@ -1023,6 +1041,14 @@
 				},
 				checkedIngredientsArray: function (b, a) {
 					this.updateFilters();
+				},
+				ingredientModel: function(b, a) {
+					if (b === '') {
+						this.filteredIngredientList = []; //Clear the list
+						this.filteredIngredientList = this.ingredientList; //Clone
+						return;
+					}
+					this.updateFilteredIngredients(b);
 				},
 				nCalories: function (b, a) {
 					this.checkNutritionInfo(b, a);
@@ -1112,13 +1138,23 @@
 				}
 			},
 			methods: {
-				/* Button Helpers */
+				/**** Button Helpers ****/
                 clickedSettings: function() {
                     console.log('Clicked settings');
                 },
                 clickedBrowse: function () {
                     this.navigateForward(this.$refs.exploreMenuContainer, this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
                 },
+				clickedClearTagFilters: function() {
+					this.checkedTagsArray = [];
+				},
+				clickedClearTimeFilters: function() {
+					this.totalRecipeTimeInput = '';
+					this.finishByTimeInput = '';
+				},
+				clickedClearIngredientFilters: function() {
+					this.checkedIngredientsArray = [];
+				},
                 clickedMealPlan: function () {
                     console.log('Clicked meal plan');
                 },
@@ -1199,7 +1235,7 @@
 					console.log('Clicked recipe');
 				},
 
-				/* Animation utilities */
+				/**** Animation utilities ****/
                 getAbsoluteHeight: function (el) {
                     el = (typeof el === 'string') ? document.querySelector(el) : el;
 
@@ -1209,7 +1245,7 @@
                     return Math.ceil(el.offsetHeight + margin);
                 },
 
-                /* Animation methods */
+                /**** Animation methods ****/
 				hideHeader: function() {
                     if (this.isHeaderTextHidden) {
                         return;
@@ -1308,127 +1344,61 @@
                         }, '+=5');
                 },
 
+				/**** Methods ****/
+				getFilterTimeDuration: function (currentHours, currentMinutes, inputHours, inputMinutes) {
+					var currentTotalMinutes = (currentHours * 60) + currentMinutes;
+					var inputTotalMinutes = (inputHours * 60) + inputMinutes;
 
+					var currentRemainderMinutes = 1440 - currentTotalMinutes;
+					var etaTotalMinutes = currentRemainderMinutes + inputTotalMinutes;
 
+					var hours = Math.floor(etaTotalMinutes / 60) % 24;
+					var minutes = etaTotalMinutes % 60;
 
-
-
-
-				//Explore pane
-				checkNutritionInfo: function (b, a) {
-					if ((utils.isBlank(this.nCalories)) &&
-						(utils.isBlank(this.nFat)) &&
-						(utils.isBlank(this.nCholesterol)) &&
-						(utils.isBlank(this.nSodium)) &&
-						(utils.isBlank(this.nCarbohydrate)) &&
-						(utils.isBlank(this.nFiber)) &&
-						(utils.isBlank(this.nSugars)) &&
-						(utils.isBlank(this.nProtein))) {
-						this.displayNutrition = 'has any nutritional value';
-					} else {
-						var t = '';
-						//Update display text
-						if (!utils.isBlank(this.nCalories)) {
-							t += this.nCalories + ' calories;';
+					var t = 'takes ';
+					if (hours !== 0) {
+						t += hours.toString() + ' hour';
+						if (hours > 1) {
+							t += 's';
 						}
-						if (!utils.isBlank(this.nFat)) {
-							t += this.nFat + 'g fat;';
+						if (minutes !== 0) {
+							t += ' and ';
 						}
-						if (!utils.isBlank(this.nCholesterol)) {
-							t += this.nCholesterol + 'mg cholesterol;';
-						}
-						if (!utils.isBlank(this.nSodium)) {
-							t += this.nSodium + 'mg sodium;';
-						}
-						if (!utils.isBlank(this.nCarbohydrate)) {
-							t += this.nCarbohydrate + 'g carbs;';
-						}
-						if (!utils.isBlank(this.nFiber)) {
-							t += this.nFiber + 'g fibers;';
-						}
-						if (!utils.isBlank(this.nSugars)) {
-							t += this.nSugars + 'g sugars;';
-						}
-						if (!utils.isBlank(this.nProtein)) {
-							t += this.nProtein + 'g proteins;';
-						}
-						var u = '';
-						t.split(';').forEach(element => {
-							element !== '' ? u += element + ', ' : '';
-						});
-						u = u.replace(/,\s*$/, '');
-						this.displayNutrition = 'has ' + u + ' or less';
 					}
-					this.updateFilters();
+					if (minutes !== 0) {
+						t += minutes.toString() + ' minute';
+						if (minutes > 1) {
+							t += 's';
+						}
+					}
+					t += ' or less';
+					if (t === 'takes or less') {
+						return 'takes any time';
+					}
+					//Set time
+					let x = (hours * 60) + minutes
+					this.finishByTimeInputInMinutes = x.toString();
+					return t;
 				},
-				initQuill: function () {
-					this.quillInstance = new Quill('#editor', {
-						modules: {
-							toolbar: this.toolbarOptions
-						},
-						theme: 'snow'
-					});
-					this.quillInstance.on('text-change', this.onQuillContentChange);
-					//Apply GKeyboard fix
-					this.quillInstance.on('editor-change', this.applyGoogleKeyboardFix);
-					this.setQuillContent();
-				},
-				onQuillContentChange: function () {
-					this.setQuillContent();
-					this.$emit('input', this.quillContent)
-				},
-				setQuillContent: function () {
-					this.quillContent = this.quillInstance.getText().trim() ? this.quillInstance.root.innerHTML : ''
-				},
-				applyGoogleKeyboardFix: function (eventName, ...args) {
+				//Used for when user is typing a query in the Filter By Tag search box 
+				updateFilteredTags: function(query) {
+					this.filteredTagList = [];
 					var self = this;
-					if (eventName === 'text-change') {
-						var ops = args[0]['ops'];
-						var oldSelection = self.quillInstance.getSelection();
-						//Fix for #3
-						if (oldSelection === null || typeof oldSelection === 'undefined') {
-							return;
+					this.tagList.forEach(tag => {
+						if (tag.toLowerCase().includes(query.toLowerCase())) {
+							self.filteredTagList.push(tag);
 						}
-						var oldPosition = oldSelection.index;
-						var oldSelectionLength = oldSelection.length;
-
-						if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["insert"] != "\n" || oldSelectionLength > 0) {
-							return;
+					});
+				},
+				//Used for when user is typing a query in the Filter By Ingredient search box 
+				updateFilteredIngredients: function(query) {
+					this.filteredIngredientList = [];
+					var self = this;
+					this.ingredientList.forEach(ingredient => {
+						if (ingredient.toLowerCase().includes(query.toLowerCase())) {
+							self.filteredIngredientList.push(ingredient);
 						}
-
-						setTimeout(function () {
-							var newPosition = self.quillInstance.getSelection().index;
-							if (newPosition === oldPosition) {
-								self.quillInstance.setSelection(self.quillInstance.getSelection().index + 1, 0);
-							}
-						}, 15);
-					}
-				},
-				toggleExplorePaneOffcanvas: function (toggleType) {
-					//Set v-if value
-					if (typeof toggleType === 'string') {
-						this.explorePaneOffcanvasType = toggleType;
-					}
-					//Create new offcanvas object if not already created
-					if (this.exploreOffcanvas === null || typeof this.exploreOffcanvas === 'undefined') {
-						this.exploreOffcanvas = new bootstrap.Offcanvas(document.getElementById('explore-pane-filter-offcanvas'));
-					}
-					this.exploreOffcanvas.toggle();
-				},
-				toggleRecipeOffcanvas: function (index) {
-					this.proto_index = index;
-					this.proto_title = this.filteredCookbook[index].title;
-					this.proto_description = this.filteredCookbook[index].description;
-					this.proto_blocks = this.filteredCookbook[index].blocks;
-					this.proto_preptime = this.filteredCookbook[index].prepTime;
-					this.proto_cooktime = this.filteredCookbook[index].cookTime;
-					this.proto_totaltime = this.filteredCookbook[index].totalTime;
-					this.proto_activetime = this.filteredCookbook[index].activeTime;
-					this.proto_yield = this.filteredCookbook[index].yield;
-
-					this.proto_coverPhotoURL = this.filteredCookbook[index].coverPhotoURL;
-
-					this.recipeOffcanvas.show();
+					});
 				},
 				updateFilters: function () {
 					var filterIDs = [];
@@ -1441,14 +1411,14 @@
 					if (this.finishByTimeInput !== '') {
 						filtersApplied = true;
 						var result = utils.queryNumericIndex(this.numericIndex.totalTime, parseInt(this.finishByTimeInputInMinutes));
-						if (result.length > 1) {
+						if (result.length >= 1) {
 							filterIDs = _.union(filterIDs, result);
 						}
 					}
 					if (this.totalRecipeTimeInput !== '') {
 						filtersApplied = true;
 						var result = utils.queryNumericIndex(this.numericIndex.totalTime, parseInt(this.totalRecipeTimeInput));
-						if (result.length > 1) {
+						if (result.length >= 1) {
 							filterIDs = _.union(filterIDs, result);
 						}
 					}
@@ -1574,6 +1544,158 @@
 						this.filteredCookbook.push(this.cookbook[id]);
 					});
 				},
+
+
+				/**** Utilities ****/
+				stripeBillingPortal: function (event) {
+					event.target.disabled = true;
+					event.target.textContent = 'Preparing your billing portal...';
+					goToPortal();
+				},
+				signOutApp: function () {
+					firebase.auth().signOut().then(function () {
+						window.location.replace('index.html');
+					});
+				},
+				scrollStop: function () {
+					document.body.addEventListener('touchmove', this.touchMove(), {
+						passive: false
+					});
+				},
+				scrollMove: function () {
+					document.body.removeEventListener('touchmove', this.touchMove());
+				},
+				touchMove: function (event) {
+					try {
+						event.preventDefault();
+					} catch (e) {}
+				},
+
+
+
+
+
+
+
+
+
+				//Explore pane
+				checkNutritionInfo: function (b, a) {
+					if ((utils.isBlank(this.nCalories)) &&
+						(utils.isBlank(this.nFat)) &&
+						(utils.isBlank(this.nCholesterol)) &&
+						(utils.isBlank(this.nSodium)) &&
+						(utils.isBlank(this.nCarbohydrate)) &&
+						(utils.isBlank(this.nFiber)) &&
+						(utils.isBlank(this.nSugars)) &&
+						(utils.isBlank(this.nProtein))) {
+						this.displayNutrition = 'has any nutritional value';
+					} else {
+						var t = '';
+						//Update display text
+						if (!utils.isBlank(this.nCalories)) {
+							t += this.nCalories + ' calories;';
+						}
+						if (!utils.isBlank(this.nFat)) {
+							t += this.nFat + 'g fat;';
+						}
+						if (!utils.isBlank(this.nCholesterol)) {
+							t += this.nCholesterol + 'mg cholesterol;';
+						}
+						if (!utils.isBlank(this.nSodium)) {
+							t += this.nSodium + 'mg sodium;';
+						}
+						if (!utils.isBlank(this.nCarbohydrate)) {
+							t += this.nCarbohydrate + 'g carbs;';
+						}
+						if (!utils.isBlank(this.nFiber)) {
+							t += this.nFiber + 'g fibers;';
+						}
+						if (!utils.isBlank(this.nSugars)) {
+							t += this.nSugars + 'g sugars;';
+						}
+						if (!utils.isBlank(this.nProtein)) {
+							t += this.nProtein + 'g proteins;';
+						}
+						var u = '';
+						t.split(';').forEach(element => {
+							element !== '' ? u += element + ', ' : '';
+						});
+						u = u.replace(/,\s*$/, '');
+						this.displayNutrition = 'has ' + u + ' or less';
+					}
+					this.updateFilters();
+				},
+				initQuill: function () {
+					this.quillInstance = new Quill('#editor', {
+						modules: {
+							toolbar: this.toolbarOptions
+						},
+						theme: 'snow'
+					});
+					this.quillInstance.on('text-change', this.onQuillContentChange);
+					//Apply GKeyboard fix
+					this.quillInstance.on('editor-change', this.applyGoogleKeyboardFix);
+					this.setQuillContent();
+				},
+				onQuillContentChange: function () {
+					this.setQuillContent();
+					this.$emit('input', this.quillContent)
+				},
+				setQuillContent: function () {
+					this.quillContent = this.quillInstance.getText().trim() ? this.quillInstance.root.innerHTML : ''
+				},
+				applyGoogleKeyboardFix: function (eventName, ...args) {
+					var self = this;
+					if (eventName === 'text-change') {
+						var ops = args[0]['ops'];
+						var oldSelection = self.quillInstance.getSelection();
+						//Fix for #3
+						if (oldSelection === null || typeof oldSelection === 'undefined') {
+							return;
+						}
+						var oldPosition = oldSelection.index;
+						var oldSelectionLength = oldSelection.length;
+
+						if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["insert"] != "\n" || oldSelectionLength > 0) {
+							return;
+						}
+
+						setTimeout(function () {
+							var newPosition = self.quillInstance.getSelection().index;
+							if (newPosition === oldPosition) {
+								self.quillInstance.setSelection(self.quillInstance.getSelection().index + 1, 0);
+							}
+						}, 15);
+					}
+				},
+				toggleExplorePaneOffcanvas: function (toggleType) {
+					//Set v-if value
+					if (typeof toggleType === 'string') {
+						this.explorePaneOffcanvasType = toggleType;
+					}
+					//Create new offcanvas object if not already created
+					if (this.exploreOffcanvas === null || typeof this.exploreOffcanvas === 'undefined') {
+						this.exploreOffcanvas = new bootstrap.Offcanvas(document.getElementById('explore-pane-filter-offcanvas'));
+					}
+					this.exploreOffcanvas.toggle();
+				},
+				toggleRecipeOffcanvas: function (index) {
+					this.proto_index = index;
+					this.proto_title = this.filteredCookbook[index].title;
+					this.proto_description = this.filteredCookbook[index].description;
+					this.proto_blocks = this.filteredCookbook[index].blocks;
+					this.proto_preptime = this.filteredCookbook[index].prepTime;
+					this.proto_cooktime = this.filteredCookbook[index].cookTime;
+					this.proto_totaltime = this.filteredCookbook[index].totalTime;
+					this.proto_activetime = this.filteredCookbook[index].activeTime;
+					this.proto_yield = this.filteredCookbook[index].yield;
+
+					this.proto_coverPhotoURL = this.filteredCookbook[index].coverPhotoURL;
+
+					this.recipeOffcanvas.show();
+				},
+				
 				//Clear filters
 				clearFilters: function () {
 					var self = this;
@@ -1602,41 +1724,6 @@
 						default:
 							//
 					}
-				},
-				getFilterTimeDuration: function (currentHours, currentMinutes, inputHours, inputMinutes) {
-					var currentTotalMinutes = (currentHours * 60) + currentMinutes;
-					var inputTotalMinutes = (inputHours * 60) + inputMinutes;
-
-					var currentRemainderMinutes = 1440 - currentTotalMinutes;
-					var etaTotalMinutes = currentRemainderMinutes + inputTotalMinutes;
-
-					var hours = Math.floor(etaTotalMinutes / 60) % 24;
-					var minutes = etaTotalMinutes % 60;
-
-					var t = 'takes ';
-					if (hours !== 0) {
-						t += hours.toString() + ' hour';
-						if (hours > 1) {
-							t += 's';
-						}
-						if (minutes !== 0) {
-							t += ' and ';
-						}
-					}
-					if (minutes !== 0) {
-						t += minutes.toString() + ' minute';
-						if (minutes > 1) {
-							t += 's';
-						}
-					}
-					t += ' or less';
-					if (t === 'takes or less') {
-						return 'takes any time';
-					}
-					//Set time
-					let x = (hours * 60) + minutes
-					this.finishByTimeInputInMinutes = x.toString();
-					return t;
 				},
 				clickedExpandChevron: function () {
 					//If the user tapped the button to show recipes
@@ -2793,31 +2880,7 @@
 					//Re-enable submit button
 					this.isRecipeSubmitDisabled = false;
 				},
-
-				//Utility methods
-				stripeBillingPortal: function (event) {
-					event.target.disabled = true;
-					event.target.textContent = 'Preparing your billing portal...';
-					goToPortal();
-				},
-				signOutApp: function () {
-					firebase.auth().signOut().then(function () {
-						window.location.replace('index.html');
-					});
-				},
-				scrollStop: function () {
-					document.body.addEventListener('touchmove', this.touchMove(), {
-						passive: false
-					});
-				},
-				scrollMove: function () {
-					document.body.removeEventListener('touchmove', this.touchMove());
-				},
-				touchMove: function (event) {
-					try {
-						event.preventDefault();
-					} catch (e) {}
-				},
+				
 			}
 		});
 
