@@ -166,20 +166,27 @@
 				"dateModified": "1637381387807",
 				"favorite": false,
 				"title": "Chocolate Cake",
-				"description": "<p>Hello World</p>",
+				"description": "<p>What an easy chocolate cake! No mixer required for the batter, simply whisk the dry ingredients in one bowl and the wet ingredients in another bowl. Pour the wet ingredients into the dry ingredients (or vice versa, it doesn’t make any difference), add the hot coffee, then whisk everything together. The cake batter is thin. Divide between 2 9-inch cake pans. You can easily stretch it to 3 or 4 8-inch or 9-inch cakes if needed. Or make a quarter sheet cake using a 9×13 inch cake pan. See my recipe notes for details.</p>",
 				"tags": [
-					"Dessert"
+					"Dessert",
+					"Budget-friendly",
+					"Oven",
+					"Intermediate"
 				],
-				"prepTime": 1,
-				"cookTime": 3,
-				"totalTime": 10,
-				"activeTime": 5,
-				"yield": "2 servings",
-				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"prepTime": 15,
+				"cookTime": 30,
+				"totalTime": 120,
+				"activeTime": 25,
+				"yield": "24 slices",
+				"coverPhotoURL": "https://via.placeholder.com/2048x2048.png",
 				"thumbnail": "https://via.placeholder.com/64x64.png",
-				"specialEquipment": [],
+				"specialEquipment": [
+					"Stand mixer",
+					"Cake pans"
+				],
 				"notes": [
-					"Make sure to mix well"
+					"The cake batter will be very thin after adding the boiling water.",
+					"Let the baked cake layers cool completely. Wrap them well with plastic wrap and then with foil. Put each layer into a freezer bag and freeze up to 2 months. To serve, thaw in the refrigerator overnight with wrapping intact. The next day, the layers are ready to fill and frost."
 				],
 				"sections": [
 					{
@@ -187,17 +194,60 @@
 						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
-								"amount": "1 tbps",
-								"value": "butter"
+								"amount": "2 cups",
+								"value": "all-purpose flour"
 							},
 							{
-								"amount": "1 tsp",
+								"amount": "2 cups",
+								"value": "sugar"
+							},
+							{
+								"amount": "3/4 cup",
+								"value": "unsweetened cocoa powder"
+							},
+							{
+								"amount": "2 teaspoons",
+								"value": "baking powder"
+							},
+							{
+								"amount": "1 1/2 teaspoons",
+								"value": "baking soda"
+							},
+							{
+								"amount": "1 teaspoon",
 								"value": "salt"
+							},
+							{
+								"amount": "1 teaspoon",
+								"value": "espresso powder homemade or store-bought"
+							},
+							{
+								"amount": "1 cup",
+								"value": "buttermilk"
+							},
+							{
+								"amount": "1/2 cup",
+								"value": "canola oil"
+							},
+							{
+								"amount": "2",
+								"value": "large eggs"
+							},
+							{
+								"amount": "2 teaspoons",
+								"value": "vanilla extract"
+							},
+							{
+								"amount": "1 cup",
+								"value": "boiling water"
 							}
 						],
 						"steps": [
-							"Preheat the oven to 350°F.",
-							"Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar."
+							"Preheat oven to 350º F. Prepare two 9-inch cake pans by spraying with baking spray or buttering and lightly flouring.",
+							"Add flour, sugar, cocoa, baking powder, baking soda, salt and espresso powder to a large bowl or the bowl of a stand mixer. Whisk through to combine or, using your paddle attachment, stir through flour mixture until combined well.",
+							"Add milk, vegetable oil, eggs, and vanilla to flour mixture and mix together on medium speed until well combined. Reduce speed and carefully add boiling water to the cake batter until well combined.",
+							"Distribute cake batter evenly between the two prepared cake pans. Bake for 30-35 minutes, until a toothpick or cake tester inserted in the center of the chocolate cake comes out clean.",
+							"Remove from the oven and allow to cool for about 10 minutes, remove from the pan and cool completely."
 						],
 						"nFat": 1,
 						"nCholesterol": 1,
@@ -208,21 +258,40 @@
 						"nProtein": 1 
 					},
 					{
-						"title": "Cake",
+						"title": "Buttercream Frosting",
 						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
-								"amount": "1 tub",
-								"value": "frosting"
+								"amount": "1½ cups",
+								"value": "butter softened"
 							},
 							{
-								"amount": "3 tsp",
-								"value": "sugar"
+								"amount": "1 cup",
+								"value": "unsweetened cocoa"
+							},
+							{
+								"amount": "5 cups",
+								"value": "confectioner’s sugar"
+							},
+							{
+								"amount": "½ cup",
+								"value": "milk"
+							},
+							{
+								"amount": "2 teaspoons",
+								"value": "vanilla extract"
+							},
+							{
+								"amount": "½ teaspoon",
+								"value": "espresso powder"
 							}
 						],
 						"steps": [
-							"Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
-							"Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil."
+							"Add cocoa to a large bowl or bowl of stand mixer. Whisk through to remove any lumps.",
+							"Cream together butter and cocoa powder until well-combined.",
+							"Add sugar and milk to cocoa mixture by adding 1 cup of sugar followed by about a tablespoon of milk. After each addition has been combined, turn mixer onto a high speed for about a minute. Repeat until all sugar and milk have been added.",
+							"Add vanilla extract and espresso powder and combine well.",
+							"If frosting appears too dry, add more milk, a tablespoon at a time until it reaches the right consistency. If it appears to wet and does not hold its form, add more confectioner’s sugar, a tablespoon at a time until it reaches the right consistency."
 						],
 						"nFat": 1,
 						"nCholesterol": 1,
@@ -268,8 +337,8 @@
 								"value": "water"
 							},
 							{
-								"amount": "2 cups rice",
-								"value": "salt"
+								"amount": "2 cups",
+								"value": "rice"
 							}
 						],
 						"steps": [
@@ -565,6 +634,7 @@
 				
 				/* Home screen data */
 				headerText: '',
+				headerTextAnimeObject: null,
                 isHeaderTextHidden: false,
                 searchButtonHeight: 1,
                 searchBarExpanded: false,
@@ -588,6 +658,9 @@
 				finishByTimeInput: '',
 				finishByTimeInputInMinutes: '',
 
+				/* Recipe View data */
+				selectedRecipe: {},
+
 
 
 
@@ -608,13 +681,7 @@
 				displayIngredients: '',
 				displayNutrition: '',
 
-				explorePaneActive: true,
-				searchPaneActive: false,
-				optionsPaneActive: false,
-
 				recipePaneCollapsed: true,
-
-				filtersAppliedAnimation: null,
 
 				//Recipe
 				recipeOffcanvas: null,
@@ -644,20 +711,9 @@
 				index_sugars: null,
 
 				proto_index: 0,
-				proto_title: '',
-				proto_description: '',
-				proto_coverPhotoURL: '',
-				proto_preptime: '',
-				proto_cooktime: '',
-				proto_totaltime: '',
-				proto_activetime: '',
-				proto_yield: '',
-				proto_blocks: [],
 
 				//For use in search queries
 				model_search: '',
-				
-				injectedSearchIndexID: null,
 
 				//For use with manage recipes
 				manageOffcanvas: null,
@@ -832,9 +888,9 @@
                 greeting += utils._FIRSTNAME;
                 this.headerText = greeting;
 
-				var tl = anime.timeline({});
+				this.headerTextAnimeObject = anime.timeline({});
 
-				tl.add({
+				this.headerTextAnimeObject.add({
                     targets: this.$refs.headerText,
                     translateY: ['-25%', '0%'],
                     opacity: [0, 1],
@@ -1204,7 +1260,7 @@
                         .add({
                             targets: this.currentViewToMinimize,
                             opacity: [1, 0],
-                            translateY: ['0%', '-25%'],
+                            translateY: ['0%', '-1rem'],
                             duration: 100,
                             easing: 'easeInOutQuad',
                             complete: function(anim) {
@@ -1231,8 +1287,12 @@
                 clickedCloseSearch: function() {
                     console.log('Clicked close search');
                 },
-				clickedRecipeFromExplorePane: function() {
-					console.log('Clicked recipe');
+				clickedRecipeFromExplorePane: function(index) {
+					//console.log('Clicked recipe titled ' + this.filteredCookbook[index].title);
+					this.selectRecipe(this.filteredCookbook[index]);
+					this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.recipeView, null, null);
+					//Navigated forward call
+					//TODO: HTML for recipe view
 				},
 
 				/**** Animation utilities ****/
@@ -1250,6 +1310,8 @@
                     if (this.isHeaderTextHidden) {
                         return;
                     }
+
+					this.headerTextAnimeObject.pause();
 
                     var self = this;
                     var headerTextHeight = this.getAbsoluteHeight(this.$refs.headerText);
@@ -1276,43 +1338,68 @@
                 },
                 navigateForward: function (from, to, backButtonImg, backButtonText) {
                     var timeline = anime.timeline({});
-                    timeline
-                        .add({
-                            targets: from,
-                            translateX: ['0%', '-50%'],
-                            opacity: [1, 0],
-                            duration: 200,
-                            easing: 'easeInOutQuad',
-                            complete: function (anim) {
-                                from.classList.add('d-none');
-                            }
-                        })
-                        .add({
-                            targets: to,
-                            translateX: ['50%', '0%'],
-                            opacity: [0, 1],
-                            duration: 200,
-                            easing: 'easeInOutQuad',
-                            begin: function (anim) {
-                                to.classList.remove('d-none');
-                                to.classList.add('d-block');
-                            }
-                        }, '+=5')
-                        .add({
-                            targets: backButtonText,
-                            translateX: ['-0.5rem', '0rem'],
-                            opacity: [0, 1],
-                            duration: 200,
-                            easing: 'easeInOutQuad',
-                            delay: 50
-                        })
-                        .add({
-                            targets: backButtonImg,
-                            opacity: [0, 1],
-                            duration: 200,
-                            easing: 'easeInOutQuad',
-                            delay: 200
-                        }, '-=250');
+					if (backButtonImg === null) {
+						timeline
+							.add({
+								targets: from,
+								translateX: ['0%', '-50%'],
+								opacity: [1, 0],
+								duration: 200,
+								easing: 'easeInOutQuad',
+								complete: function (anim) {
+									from.classList.add('d-none');
+								}
+							})
+							.add({
+								targets: to,
+								translateX: ['50%', '0%'],
+								opacity: [0, 1],
+								duration: 200,
+								easing: 'easeInOutQuad',
+								begin: function (anim) {
+									to.classList.remove('d-none');
+									to.classList.add('d-block');
+								}
+							}, '+=5');
+					} else {
+						timeline
+							.add({
+								targets: from,
+								translateX: ['0%', '-50%'],
+								opacity: [1, 0],
+								duration: 200,
+								easing: 'easeInOutQuad',
+								complete: function (anim) {
+									from.classList.add('d-none');
+								}
+							})
+							.add({
+								targets: to,
+								translateX: ['50%', '0%'],
+								opacity: [0, 1],
+								duration: 200,
+								easing: 'easeInOutQuad',
+								begin: function (anim) {
+									to.classList.remove('d-none');
+									to.classList.add('d-block');
+								}
+							}, '+=5')
+							.add({
+								targets: backButtonText,
+								translateX: ['-0.5rem', '0rem'],
+								opacity: [0, 1],
+								duration: 200,
+								easing: 'easeInOutQuad',
+								delay: 50
+							})
+							.add({
+								targets: backButtonImg,
+								opacity: [0, 1],
+								duration: 200,
+								easing: 'easeInOutQuad',
+								delay: 200
+							}, '-=250');
+					}
 
                     this.hideHeader();
 
@@ -1544,9 +1631,37 @@
 						this.filteredCookbook.push(this.cookbook[id]);
 					});
 				},
+				selectRecipe: function(recipe) {
+					//Perform data prep
+					
+					//Inject Vue helper properties to allow user to edit recipe
+					//editable
 
+					this.selectedRecipe = recipe;
+				},
 
 				/**** Utilities ****/
+				//used for displaying the ETA of the recipe
+				getTimeFromNowUsingMinutes: function (sMinutes) {
+					var minutes = parseInt(sMinutes);
+					var now = new Date(Date.now());
+					var nowHours = parseInt(now.getHours());
+					var nowMinutes = parseInt(now.getMinutes());
+					var hours = 0;
+
+					var futureMinutes = nowMinutes + minutes;
+
+					const zeroPad = (num) => String(num).padStart(2, '0');
+
+					if (futureMinutes > 59) {
+						hours += Math.floor(futureMinutes / 60);
+						futureMinutes = futureMinutes % 60;
+						return zeroPad((nowHours + hours) % 24).toString() + ':' + zeroPad(futureMinutes).toString();
+					} else {
+						return zeroPad(nowHours % 24).toString() + ':' + zeroPad(futureMinutes).toString();
+					}
+				},
+				//When user clicks the button to open their personal billing portal
 				stripeBillingPortal: function (event) {
 					event.target.disabled = true;
 					event.target.textContent = 'Preparing your billing portal...';
@@ -1681,19 +1796,6 @@
 					this.exploreOffcanvas.toggle();
 				},
 				toggleRecipeOffcanvas: function (index) {
-					this.proto_index = index;
-					this.proto_title = this.filteredCookbook[index].title;
-					this.proto_description = this.filteredCookbook[index].description;
-					this.proto_blocks = this.filteredCookbook[index].blocks;
-					this.proto_preptime = this.filteredCookbook[index].prepTime;
-					this.proto_cooktime = this.filteredCookbook[index].cookTime;
-					this.proto_totaltime = this.filteredCookbook[index].totalTime;
-					this.proto_activetime = this.filteredCookbook[index].activeTime;
-					this.proto_yield = this.filteredCookbook[index].yield;
-
-					this.proto_coverPhotoURL = this.filteredCookbook[index].coverPhotoURL;
-
-					this.recipeOffcanvas.show();
 				},
 				
 				//Clear filters
@@ -1723,35 +1825,6 @@
 							break;
 						default:
 							//
-					}
-				},
-				clickedExpandChevron: function () {
-					//If the user tapped the button to show recipes
-					if (this.recipePaneCollapsed) {
-						this.recipePaneCollapsed = false;
-
-					} else {
-						this.recipePaneCollapsed = true;
-					}
-				},
-				//Recipe View methods
-				getTimeFromNowUsingMinutes: function (sMinutes) {
-					var minutes = parseInt(sMinutes);
-					var now = new Date(Date.now());
-					var nowHours = parseInt(now.getHours());
-					var nowMinutes = parseInt(now.getMinutes());
-					var hours = 0;
-
-					var futureMinutes = nowMinutes + minutes;
-
-					const zeroPad = (num) => String(num).padStart(2, '0');
-
-					if (futureMinutes > 59) {
-						hours += Math.floor(futureMinutes / 60);
-						futureMinutes = futureMinutes % 60;
-						return zeroPad((nowHours + hours) % 24).toString() + ':' + zeroPad(futureMinutes).toString();
-					} else {
-						return zeroPad(nowHours % 24).toString() + ':' + zeroPad(futureMinutes).toString();
 					}
 				},
 				editRecipe: function () {
@@ -1833,61 +1906,17 @@
 					this.deleteRecipeOffcanvas.show();
 				},
 				deleteRecipeHelper: function () {
-					var self = this;
-					var docIDToDelete = this.filteredCookbook[this.proto_index].docID;
-
+					/*
 					//Remove all references to this recipe from indices
 					//this.index_times.remove(docIDToDelete, this.filteredCookbook[this.proto_index].totalTime);
 
-					this.flexSearch.remove(this.filteredCookbook[this.proto_index]);
-
-					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
-						this.index_calories.remove(docIDToDelete, block.nCalories);
-						this.index_carbohydrate.remove(docIDToDelete, block.nCarbohydrate);
-						this.index_cholesterol.remove(docIDToDelete, block.nCholesterol);
-						this.index_fat.remove(docIDToDelete, block.nFat);
-						this.index_fiber.remove(docIDToDelete, block.nFiber);
-						this.index_protein.remove(docIDToDelete, block.nProtein);
-						this.index_sodium.remove(docIDToDelete, block.nSodium);
-						this.index_sugars.remove(docIDToDelete, block.nSugars);
-					});
 					//Delete old recipe in cookbook
 					this.cookbook.splice(this.proto_index, 1);
 
 					//Rebuild tags and ingredients array by doing the thing I'm avoiding
-					this.tagsArray = [];
-					this.ingredientsArray = [];
-					this.cookbook.forEach(recipe => {
-						self.tagsArray = _.union(self.tagsArray, recipe.tags);
-						recipe.blocks.forEach(block => {
-							//Ingredients
-							block.ingredients.forEach(ingredient => {
-								self.ingredientsArray = _.union(self.ingredientsArray, [utils.capitalizeFirstLetter(ingredient.value)]);
-							});
-						});
-					});
 
 					//Execute cloud variables
-					this.db.collection('users/' + utils._UID + '/recipes').doc(docIDToDelete).delete().then(() => {
-						self.proto_index = 0;
-						self.proto_title = '';
-						self.proto_description = '';
-						self.proto_coverPhotoURL = '';
-						self.proto_preptime = '';
-						self.proto_cooktime = '';
-						self.proto_totaltime = '';
-						self.proto_activetime = '';
-						self.proto_yield = '';
-						self.proto_blocks = [];
-
-						//Update filters
-						self.updateFilters();
-
-						//Dismiss offcanvas
-						self.deleteRecipeOffcanvas.hide();
-					}).catch((error) => {
-						console.error("Error removing document: ", error);
-					});
+					*/
 				},
 				recipeViewListener: function () {
 					this.clickedAddRecipe();

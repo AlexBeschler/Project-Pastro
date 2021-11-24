@@ -2,9 +2,9 @@
     --ps-bg-color: #FFFCE8;
     --ps-primary-color: #4A84A7;
     --ps-primary-rgb: 74, 132, 167;
-    --ps-secondary-color: #705748;
+    --ps-secondary-color: #58443a;
     --ps-light-color: #eff5dd;
-    --ps-accent-color: #FFDD99;
+    --ps-accent-color: #ffc34b;
     --ps-btn-background-color: #4A9653;
     --ps-btn-outline-color: #43894B;
     --ps-light-grey-color: #ededed;
@@ -58,11 +58,12 @@ body {
 
 .chip {
     border-radius: 24px;
-    background-color: var(--ps-accent-color);
+    background-color: #ffc34b;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: .375rem .85rem;
+    margin: 0.25rem;
 }
 
 .chip>img {
@@ -356,73 +357,19 @@ body {
     border-radius: 12px;
 }
 
-
-/* if you want your animations to run smoothly, animate only CSS opacity, transforms and filters. */
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 12px var(--ps-primary-color), inset 0 0 12px var(--ps-primary-color);
-    }
-
-    13% {
-        box-shadow: 0 0 13px var(--ps-primary-color), inset 0 0 12px var(--ps-primary-color);
-    }
-
-    25% {
-        box-shadow: 0 0 14px var(--ps-primary-color), inset 0 0 13px var(--ps-primary-color);
-    }
-
-    37% {
-        box-shadow: 0 0 15px var(--ps-primary-color), inset 0 0 13px var(--ps-primary-color);
-    }
-
-    50% {
-        box-shadow: 0 0 16px var(--ps-primary-color), inset 0 0 14px var(--ps-primary-color);
-    }
-
-    63% {
-        box-shadow: 0 0 15px var(--ps-primary-color), inset 0 0 13px var(--ps-primary-color);
-    }
-
-    75% {
-        box-shadow: 0 0 14px var(--ps-primary-color), inset 0 0 13px var(--ps-primary-color);
-    }
-
-    87% {
-        box-shadow: 0 0 13px var(--ps-primary-color), inset 0 0 12px var(--ps-primary-color);
-    }
-
-    100% {
-        box-shadow: 0 0 12px var(--ps-primary-color), inset 0 0 12px var(--ps-primary-color);
-    }
+.recipeView {
+    display: none;
+    opacity: 0;
 }
 
-.pulse-container {
-    background-color: transparent;
-    width: 1.55rem;
-    height: 1.55rem;
-    border-radius: 50px;
-    box-shadow: 0 0 8px var(--ps-primary-color), inset 0 0 8px var(--ps-primary-color);
-    animation: pulse 3s ease-in-out 0s infinite normal none;
-    -webkit-animation: pulse 3s ease-in-out 0s infinite normal none;
+.recipeView * .list-group-item {
+    background-color: inherit;
 }
 
-.collapse-chevron {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-    width: 2.25rem;
-    height: 2.25rem;
-    content: "";
-    background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'%23212529\'%3e%3cpath fill-rule=\'evenodd\' d=\'M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\'/%3e%3c/svg%3e');
-    background-repeat: no-repeat;
-    background-size: 2.25rem;
-    transition: transform .2s ease-in-out;
-}
-
-.collapse-chevron:not(.collapsed) {
-    background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'%23212529\'%3e%3cpath fill-rule=\'evenodd\' d=\'M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\'/%3e%3c/svg%3e');
-    transform: rotate(-180deg);
+.recipe-cover-photo {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    max-width: inherit;
 }
 
 .cookbook-list-group {
@@ -457,6 +404,7 @@ body {
 }
 
 .offcanvas-rounded-top {
+    max-width: 100vh;
     border-top-right-radius: 12px;
     border-top-left-radius: 12px;
 }
@@ -519,19 +467,18 @@ body {
     opacity: .5;
 }
 
-.recipe-cover-photo {
-    margin-top: calc(1.5rem + 2em);
-}
-
 .uppercase {
     text-transform: uppercase;
 }
 
 .subheading {
-    letter-spacing: 0.1rem;
+    letter-spacing: 0.15rem!important;
     font-size: 0.975em;
-    letter-spacing: 0.1rem;
     padding: 0.25rem 0 !important;
+    margin-bottom: 0!important;
+    margin-top: 0.5rem!important;
+    align-items: center;
+    justify-content: space-between;
 }
 
 span.ingredient-amount-badge {
@@ -546,7 +493,7 @@ span.ingredient-amount-badge {
     border-radius: 0.4rem;
     color: var(--ps-secondary-color);
     background-color: var(--ps-bg-color);
-    border: 2px solid var(--ps-accent-color);
+    border: 2px solid #ffaa00;
 }
 
 span.ingredient-amount-badge,

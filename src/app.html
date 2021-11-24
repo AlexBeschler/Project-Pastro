@@ -67,7 +67,7 @@
         </div>
     </div>
 
-    <div id="appContent" class="container-fluid my-4 main-wrap" style="visibility: hidden;">
+    <div id="appContent" class="container-fluid mt-4 main-wrap" style="visibility: hidden;">
         <div class="d-flex justify-content-end pt-3 px-3">
             <button class="btn p-1" @click="clickedSettings" style="z-index: 1;">
                 <img class="gear-icon" src="assets/icons/gear.svg">
@@ -95,7 +95,7 @@
                 <button class="exploreMenuButton btn mb-2" @click="clickedBrowse" :disabled="searchBarExpanded">
                     <div class="row">
                         <div class="col-2">
-                            <img src="assets/icons/grid-1x2.svg">
+                            <img src="assets/icons/journal-richtext.svg" width="24" height="24">
                         </div>
                         <div class="col-10">
                             <h3>Browse</h3>
@@ -106,7 +106,7 @@
                 <button class="exploreMenuButton btn" @click="clickedMealPlan" :disabled="searchBarExpanded">
                     <div class="row">
                         <div class="col-2">
-                            <img src="assets/icons/calendar-range.svg">
+                            <img src="assets/icons/calendar-range.svg" width="24" height="24">
                         </div>
                         <div class="col-10">
                             <h3>Meal Plan</h3>
@@ -170,20 +170,179 @@
                 <hr>
                 <ul class="list-group list-group-flush cookbook-list-group">
                     <li class="row d-flex list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index"
-                        :index="index" @click="clickedRecipeFromExplorePane">
+                        :index="index" @click="clickedRecipeFromExplorePane(index)">
                         <div class="col-3">
                             <img src="https://via.placeholder.com/48">
                         </div>
                         <div class="col-9 recipe-thumbnail-description">
                             <span>{{ recipe.title }}</span>
-                            <span>{{ recipe.totalTime }} min • ETA {10:48 pm}</span>
+                            <span>{{ recipe.totalTime }} min • Finished by {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
                         </div>
                     </li>
                 </ul>
             </div>
 
-
+            <!-- RecipeView -->
+            <div class="recipeView" ref="recipeView">
+                <img v-bind:src="selectedRecipe.coverPhotoURL" class="img-fluid recipe-cover-photo">
+                <div class="container py-0">
+                    <div class="card d-flex align-items-center recipe-title shadow-sm">
+                        <div class="card-body display-6">{{ selectedRecipe.title }}</div>
+                    </div>
+                </div>
+                <div class="container">
+                    <h5 class="lead d-flex" style="align-items: center;justify-content: space-between;">
+                        Details
+                        <span>
+                            <button class="btn d-flex">
+                                <img src="assets/icons/edit.svg">
+                            </button>
+                        </span>
+                    </h5>
+                    <div v-html="selectedRecipe.description" class="mb-4"></div>
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-between mb-2">
+                            <span>Active Time</span>
+                            <span><b>{{ selectedRecipe.activeTime }} min</b></span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Prep Time</span>
+                            <span><b>{{ selectedRecipe.prepTime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.prepTime) }})</span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Cook Time</span>
+                            <span><b>{{ selectedRecipe.cookTime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.cookTime) }})</span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Total Time</span>
+                            <span><b>{{ selectedRecipe.totalTime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.totalTime) }})</span>
+                        </div>
+                        <div class="col-12 mt-3">
+                            Yields {{ selectedRecipe.yield }}
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container my-2">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex" style="align-items: center;justify-content: space-between;">
+                                Special equipment
+                                <span>
+                                    <button class="btn d-flex"><img src="assets/icons/edit.svg"></button>
+                                </span>
+                            </h6>
+                            <ul class="list-group list-group-flush">
+                                <li v-for="(equip, equipIndex) in selectedRecipe.specialEquipment" class="list-group-item">{{ equip }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex" style="align-items: center;justify-content: space-between;">
+                                Recipe Notes
+                                <span>
+                                    <button class="btn d-flex"><img src="assets/icons/edit.svg"></button>
+                                </span>
+                            </h6>
+                            <ul class="list-group list-group-flush">
+                                <li v-for="(note, noteIndex) in selectedRecipe.notes" class="list-group-item">{{ note }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container">
+                    <h5 class="lead">Ingredients</h5>
+                    <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">
+                            {{ section.title }}
+                            <span>
+                                <button class="btn d-flex">
+                                    <img src="assets/icons/edit.svg">
+                                </button>
+                            </span>
+                        </small>
+                        <ul class="list-group list-group-flush">
+                            <li v-for="(ingredient, ingredientIndex) in section.ingredients" :key="ingredientIndex"
+                                class="list-group-item">
+                                <input class="form-check-input" type="checkbox" value="">
+                                <label class="strikeable">
+                                    <span class="ingredient-amount-badge" v-if="ingredient.amount"
+                                        style="margin-left: .5rem;">{{ ingredient.amount }}</span>
+                                    <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container">
+                    <h5 class="lead">Steps</h5>
+                    <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">
+                            {{ section.title }}
+                            <span>
+                                <button class="btn d-flex">
+                                    <img src="assets/icons/edit.svg">
+                                </button>
+                            </span>
+                        </small>
+                        <ul class="list-group list-group-flush">
+                            <li v-for="(step, stepIndex) in section.steps" :key="stepIndex" class="list-group-item">
+                                <input class="form-check-input" type="checkbox" value="">
+                                <label class="strikeable">
+                                    <span
+                                        class="ingredient-amount-badge mx-2">Step {{ stepIndex + 1 }}</span>{{ step }}
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container mb-0">
+                    <h5 class="lead">Nutrition</h5>
+                    <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ section.header }}</small>
+                        <ul class="list-group list-group-flush mb-4">
+                            <!--li class="list-group-item">Calories: {{ section.nCalories }} g</li-->
+                            <li class="list-group-item">Total Fat: {{ section.nFat }} g</li>
+                            <li class="list-group-item">Cholesterol: {{ section.nCholesterol }} mg</li>
+                            <li class="list-group-item">Sodium: {{ section.nSodium }} mg</li>
+                            <li class="list-group-item">Carbohydrate: {{ section.nTotalCarbs }} g</li>
+                            <li class="list-group-item">Fiber: {{ section.nFiber }} g</li>
+                            <li class="list-group-item">Sugar: {{ section.nSugar }} g</li>
+                            <li class="list-group-item">Protein: {{ section.nProtein }} g</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div v-for="(tag, tagIndex) in selectedRecipe.tags" :key="tagIndex" class="col-auto">
+                            <div class="chip">{{ tag }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container mt-4 py-0 d-flex"
+                    style="justify-content: space-around;">
+                    <button class="btn btn-outline-success">Share</button>
+                    <button class="btn btn-outline-danger">Delete</button>
+                </div>
+            </div>
         </div>
+
+        <!-- Filtering offcanvas -->
         <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTags">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Tags</h5>
@@ -456,66 +615,8 @@
     </div>
 
     <!--
-    <div id="appContent" class="container-fluid my-4 main-wrap" >
-        <div id="navigationBar" style="z-index: 1;">
-            <header class="d-flex pt-3 px-3">
-                <ul class="nav nav-pills w-100 justify-content-between align-items-center" role="tablist">
-                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
-                        <button id="pills-explore-tab" class="nav-link active" data-bs-toggle="pill"
-                            data-bs-target="#explorePane" type="button" role="tab" aria-controls="explorePane"
-                            aria-selected="true" ref="exploreRef">Explore</button>
-                    </li>
-                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
-                        <button id="pills-search-tab" class="nav-link" data-bs-toggle="pill"
-                            data-bs-target="#searchPane" type="button" role="tab" aria-controls="searchPane"
-                            aria-selected="false">Search</button>
-                    </li>
-                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
-                        <button id="pills-options-tab" class="nav-link" data-bs-toggle="pill"
-                            data-bs-target="#optionsPane" type="button" role="tab" aria-controls="optionsPane"
-                            aria-selected="false">Options</button>
-                    </li>
-                </ul>
-            </header>
-        </div>
+    <div id="appContent" class="container-fluid my-4 main-wrap">
         <div class="tab-content" style="position: relative;">
-            <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
-                aria-labelledby="pills-explore-tab" :class="{ 'explore-collapsed': !recipePaneCollapsed }">
-                <h1 id="headerText" class="display-6 px-4 mt-5 mb-4" ref="headerText">{{ greeting }}</h1>
-                <div class="px-0" ref="explorePaneContent_interactive">
-                    <div class="px-4 py-4">
-                        <h1 class="display-5 fw-bold explore-text">I feel like making <a
-                                @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
-                                @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
-                                @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a>, and
-                            <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
-                        </h1>
-                    </div>
-                    <section class="d-flex justify-content-center">
-                        <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
-                            @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false"
-                            ref="addRecipeButton">Add
-                            Recipe</button>
-                    </section>
-                </div>
-            </div>
-            <div id="recipePane" class="row" :class="{ 'recipe-collapsed': recipePaneCollapsed}">
-                <h1 class="display-6 px-4 mt-5 mb-4">Your recipes</h1>
-                <bottom-sheet :filtered-cookbook="filteredCookbook"
-                    v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
-            </div>
-            <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
-                <h1 class="display-6 px-4 mt-5 mb-4">Or search instantly</h1>
-                <div class="px-4 pt-4 pb-5 my-5">
-                    <input type="text" class="form-control search-box" placeholder="I'm looking for..."
-                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'I\'m looking for...'"
-                        v-model="model_search">
-                </div>
-                <h4 v-if="filteredCookbook.length === 1">1 result</h4>
-                <h4 v-else>{{ filteredCookbook.length }} results</h4>
-                <bottom-sheet :filtered-cookbook="filteredCookbook"
-                    v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
-            </div>
             <div id="optionsPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-options-tab">
                 <h6 class="m-0 mt-4 py-2 px-4 text-muted">General</h6>
                 <ul class="list-group px-2">
