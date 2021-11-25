@@ -578,6 +578,20 @@
 
 		utils.showCookbook();
 
+		//** RecipeView component mixins **//
+
+		//Special equipment
+		Vue.component('recipeview-special-equipment-list', {
+			mixins: [ContainerMixin],
+			template: '#special-equipment-draggable-list-template'
+		});
+		Vue.component('recipeview-special-equipment-item', {
+			mixins: [ElementMixin],
+			props: ['equipment'],
+			template: '#special-equipment-draggable-item-template'
+		});
+
+		/*
 		//Manage tag component
 		Vue.component('sortable-list', {
 			mixins: [ContainerMixin],
@@ -625,6 +639,7 @@
 			props: ['block'],
 			template: '#blocks-draggable-item-template'
 		});
+		*/
 
 		new Vue({
 			el: '#appContent',
@@ -660,6 +675,7 @@
 
 				/* Recipe View data */
 				selectedRecipe: {},
+				specialEquipmentEditMode: false,
 
 
 
@@ -1288,11 +1304,8 @@
                     console.log('Clicked close search');
                 },
 				clickedRecipeFromExplorePane: function(index) {
-					//console.log('Clicked recipe titled ' + this.filteredCookbook[index].title);
 					this.selectRecipe(this.filteredCookbook[index]);
 					this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.recipeView, null, null);
-					//Navigated forward call
-					//TODO: HTML for recipe view
 				},
 
 				/**** Animation utilities ****/
@@ -1632,12 +1645,45 @@
 					});
 				},
 				selectRecipe: function(recipe) {
-					//Perform data prep
+					var r = JSON.parse(JSON.stringify(recipe)); //Create a deep copy so we can make edits
 					
-					//Inject Vue helper properties to allow user to edit recipe
-					//editable
+					//Perform data prep
+					r.specialEquipment = [];
+					recipe.specialEquipment.forEach(equipment => {
+						r.specialEquipment.push({
+							value: equipment
+						});
+					});
 
-					this.selectedRecipe = recipe;
+					this.selectedRecipe = r;
+				},
+
+				/**** RecipeView Methods ****/
+				editSpecialEquipmentRecipeView: function() {
+					if (!this.specialEquipmentEditMode) {
+						this.specialEquipmentEditMode = true;
+						return;
+					}
+					
+					this.specialEquipmentEditMode = false;
+					
+					//Clean data
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+					serializedRecipe.specialEquipment = _.pluck(serializedRecipe.specialEquipment, 'value');
+
+					//Overwrite data in cookbook
+					this.cookbook[serializedRecipe.id] = serializedRecipe;
+
+					//Re-index recipe in the indices
+					this.flexSearch.update({
+						data: serializedRecipe
+					});
+
+					//TODO: Update to Firebase cloud services
+
+				},
+				deleteSpecialEquipmentRecipeView: function(index) {
+					console.log('Clicked delete on ' + this.selectedRecipe.specialEquipment[index].value);
 				},
 
 				/**** Utilities ****/

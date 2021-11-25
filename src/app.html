@@ -50,7 +50,6 @@
 </head>
 
 <body>
-    <div id="touch-input-layer"></div>
     <div id="login-container" style="visibility: hidden;">
         <sign-in-layout v-if="signin"></sign-in-layout>
         <purchase-subscription-layout v-if="paysubscription"></purchase-subscription-layout>
@@ -184,14 +183,20 @@
 
             <!-- RecipeView -->
             <div class="recipeView" ref="recipeView">
+                <button class="btn chip mb-3" :disabled="searchBarExpanded">
+                    <img src="assets/icons/arrow-left-short.svg">
+                    <h5>Back</h5>
+                </button>
                 <img v-bind:src="selectedRecipe.coverPhotoURL" class="img-fluid recipe-cover-photo">
+                <!-- Title -->
                 <div class="container py-0">
                     <div class="card d-flex align-items-center recipe-title shadow-sm">
                         <div class="card-body display-6">{{ selectedRecipe.title }}</div>
                     </div>
                 </div>
+                <!-- Details & recipe meta -->
                 <div class="container">
-                    <h5 class="lead d-flex" style="align-items: center;justify-content: space-between;">
+                    <h5 class="lead heading d-flex" style="align-items: center;justify-content: space-between;">
                         Details
                         <span>
                             <button class="btn d-flex">
@@ -200,6 +205,7 @@
                         </span>
                     </h5>
                     <div v-html="selectedRecipe.description" class="mb-4"></div>
+                    <hr>
                     <div class="row">
                         <div class="col-12 d-flex justify-content-between mb-2">
                             <span>Active Time</span>
@@ -221,25 +227,41 @@
                                 ({{ getTimeFromNowUsingMinutes(selectedRecipe.totalTime) }})</span>
                         </div>
                         <div class="col-12 mt-3">
-                            Yields {{ selectedRecipe.yield }}
+                            Yields <b>{{ selectedRecipe.yield }}</b>
                         </div>
                     </div>
                 </div>
+                <!-- Divider -->
                 <div class="container">
                     <hr>
                 </div>
+                <!-- Special equipment/recipe notes -->
                 <div class="container my-2">
                     <div class="card mb-2">
                         <div class="card-body">
                             <h6 class="card-title d-flex" style="align-items: center;justify-content: space-between;">
                                 Special equipment
                                 <span>
-                                    <button class="btn d-flex"><img src="assets/icons/edit.svg"></button>
+                                    <button v-if="!specialEquipmentEditMode" class="btn d-flex" @click="editSpecialEquipmentRecipeView">
+                                        <img src="assets/icons/edit.svg">
+                                    </button>
+                                    <button v-else class="btn d-flex" @click="editSpecialEquipmentRecipeView">
+                                        <img src="assets/icons/check.svg">
+                                    </button>
                                 </span>
                             </h6>
-                            <ul class="list-group list-group-flush">
-                                <li v-for="(equip, equipIndex) in selectedRecipe.specialEquipment" class="list-group-item">{{ equip }}</li>
+                            <ul v-if="!specialEquipmentEditMode" class="list-group list-group-flush">
+                                <li v-for="(equipment, equipIndex) in selectedRecipe.specialEquipment" class="list-group-item">
+                                    {{ equipment.value }}
+                                </li>
                             </ul>
+                            <recipeview-special-equipment-list v-else :lock-axis="'y'" :press-delay.number=100 v-model="selectedRecipe.specialEquipment">
+                                <recipeview-special-equipment-item v-for="(equipment, index) in selectedRecipe.specialEquipment"
+                                    :index="index" :key="index" :equipment="equipment" :value="equipment.value"
+                                    @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                    v-on:delete-equipment="deleteSpecialEquipmentRecipeView(index)" />
+                            </recipeview-special-equipment-list>
+                            
                         </div>
                     </div>
                     <div class="card">
@@ -256,11 +278,13 @@
                         </div>
                     </div>
                 </div>
+                <!-- Divider -->
                 <div class="container">
                     <hr>
                 </div>
+                <!-- Ingredients -->
                 <div class="container">
-                    <h5 class="lead">Ingredients</h5>
+                    <h5 class="lead heading">Ingredients</h5>
                     <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
                         <small class="mb-3 d-flex text-muted uppercase subheading">
                             {{ section.title }}
@@ -271,23 +295,20 @@
                             </span>
                         </small>
                         <ul class="list-group list-group-flush">
-                            <li v-for="(ingredient, ingredientIndex) in section.ingredients" :key="ingredientIndex"
-                                class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="">
-                                <label class="strikeable">
-                                    <span class="ingredient-amount-badge" v-if="ingredient.amount"
-                                        style="margin-left: .5rem;">{{ ingredient.amount }}</span>
-                                    <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
-                                </label>
+                            <li v-for="(ingredient, ingredientIndex) in section.ingredients" :key="ingredientIndex" class="list-group-item" @click="e => e.target.classList.toggle('strike-list-item')">
+                                <span class="ingredient-amount-badge" v-if="ingredient.amount">{{ ingredient.amount }}</span>
+                                <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
                             </li>
                         </ul>
                     </div>
                 </div>
+                <!-- Divider -->
                 <div class="container">
                     <hr>
                 </div>
+                <!-- Steps -->
                 <div class="container">
-                    <h5 class="lead">Steps</h5>
+                    <h5 class="lead heading">Steps</h5>
                     <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
                         <small class="mb-3 d-flex text-muted uppercase subheading">
                             {{ section.title }}
@@ -299,20 +320,19 @@
                         </small>
                         <ul class="list-group list-group-flush">
                             <li v-for="(step, stepIndex) in section.steps" :key="stepIndex" class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="">
-                                <label class="strikeable">
-                                    <span
-                                        class="ingredient-amount-badge mx-2">Step {{ stepIndex + 1 }}</span>{{ step }}
-                                </label>
+                                <span class="lead">Step {{ stepIndex + 1 }}</span>
+                                <p class="my-3">{{ step }}</p>
                             </li>
                         </ul>
                     </div>
                 </div>
+                <!-- Divider -->
                 <div class="container">
                     <hr>
                 </div>
+                <!-- Nutrition -->
                 <div class="container mb-0">
-                    <h5 class="lead">Nutrition</h5>
+                    <h5 class="lead heading">Nutrition</h5>
                     <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
                         <small class="mb-3 d-flex text-muted uppercase subheading">{{ section.header }}</small>
                         <ul class="list-group list-group-flush mb-4">
@@ -327,6 +347,7 @@
                         </ul>
                     </div>
                 </div>
+                <!-- Tags -->
                 <div class="container">
                     <div class="row">
                         <div v-for="(tag, tagIndex) in selectedRecipe.tags" :key="tagIndex" class="col-auto">
@@ -334,6 +355,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Action buttons -->
                 <div class="container mt-4 py-0 d-flex"
                     style="justify-content: space-around;">
                     <button class="btn btn-outline-success">Share</button>
@@ -347,7 +369,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Tags</h5>
                 <button type="button" class="btn" @click="clickedClearTagFilters">
-                    <img src="../assets/icons/trash.svg">
+                    <img src="../assets/icons/trash.svg" width="20" height="20">
                 </button>
             </div>
             <div class="offcanvas-body small">
@@ -364,7 +386,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Time</h5>
                 <button type="button" class="btn" @click="clickedClearTimeFilters">
-                    <img src="../assets/icons/trash.svg">
+                    <img src="../assets/icons/trash.svg" width="20" height="20">
                 </button>
             </div>
             <div class="offcanvas-body small">
@@ -386,7 +408,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Ingredients</h5>
                 <button type="button" class="btn" @click="clickedClearIngredientFilters">
-                    <img src="../assets/icons/trash.svg">
+                    <img src="../assets/icons/trash.svg" width="20" height="20">
                 </button>
             </div>
             <div class="offcanvas-body small">
@@ -403,8 +425,9 @@
         <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterNutrition">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Nutrition</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                    aria-label="Close"></button>
+                <button type="button" class="btn">
+                    <img src="../assets/icons/trash.svg" width="20" height="20">
+                </button>
             </div>
             <div class="offcanvas-body small">
                 <p>To implement</p>
@@ -1436,13 +1459,29 @@
     </div>
     -->
 
-    <!--
-    <template id="bottom-sheet-template">
-        <ul class="list-group list-group-flush cookbook-list-group">
-            <li class="list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index"
-                :index="index" @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
+    <!-- RecipeView Special Equipment draggables -->
+    <template id="special-equipment-draggable-list-template">
+        <ul class="list-group list-group-flush">
+            <slot />
         </ul>
     </template>
+    <template id="special-equipment-draggable-item-template">
+        <li class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <input class="form-control" type="text" v-model="equipment.value">
+                <button class="btn pe-0" @click="$emit('delete-equipment', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </div>
+        </li>
+    </template>
+
+
+
+
     <template id="tag-draggable-list-template">
         <ul class="list-group">
             <slot />
@@ -1598,8 +1637,6 @@
             </div>
         </li>
     </template>
-
-    -->
 
     <template id="sign-in-layout-template">
         <form class="login-form">
