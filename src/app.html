@@ -87,7 +87,13 @@
                     <span id="innerSearchButtonText">Search recipes</span>
                 </button>
                 <input class="form-control search-box-input d-none"
-                    v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput">
+                    v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput" v-model="searchQuery">
+                <div class="container d-none" ref="searchResultsContainer">
+                    <div v-if="searchResults.length">
+                        <p v-for="result in searchResults">{{ result.title }}</p>
+                    </div>
+                    <p v-else>Search results populate here</p>
+                </div>
             </div>
 
             <div class="exploreMenu px-1 my-2" ref="exploreMenuContainer">
@@ -183,7 +189,7 @@
 
             <!-- RecipeView -->
             <div class="recipeView" ref="recipeView">
-                <button class="btn chip mb-3" :disabled="searchBarExpanded">
+                <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="clickedBackFromRecipeView">
                     <img src="assets/icons/arrow-left-short.svg">
                     <h5>Back</h5>
                 </button>
