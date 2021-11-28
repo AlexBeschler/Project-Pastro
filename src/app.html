@@ -223,7 +223,8 @@
                 <!-- Title -->
                 <div class="container py-0">
                     <div class="card d-flex align-items-center recipe-title shadow-sm">
-                        <div class="card-body display-6">{{ selectedRecipe.title }}</div>
+                        <div v-if="!detailsEditMode" class="card-body display-6">{{ selectedRecipe.title }}</div>
+                        <input v-else class="form-control" v-model="selectedRecipe.title">
                     </div>
                 </div>
                 <!-- Details & recipe meta -->
@@ -231,8 +232,11 @@
                     <h5 class="lead heading d-flex" style="align-items: center;justify-content: space-between;">
                         Details
                         <span>
-                            <button class="btn d-flex">
+                            <button v-if="!detailsEditMode" class="btn d-flex" @click="editRecipeDetailsRecipeView">
                                 <img src="assets/icons/edit.svg">
+                            </button>
+                            <button v-else class="btn d-flex" @click="editRecipeDetailsRecipeView">
+                                <img src="assets/icons/check.svg">
                             </button>
                         </span>
                     </h5>
