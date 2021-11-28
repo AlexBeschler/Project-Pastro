@@ -659,7 +659,8 @@
 				flexSearch: indexedRecipes,
 				numericIndex: numberMetaIndex,
 				searchQuery: '',
-				searchResults: [],
+				searchResults_title: [],
+				searchResults_sectionTitle: [],
 				//Tag helpers
 				tagModel: '',
 				tagList: listOfTags,
@@ -1067,6 +1068,9 @@
 				searchQuery: function(b, a) {
 					if (b.length > 1 && b.trim() !== '') {
 						this.updateSearchQuery(b);
+					} else {
+						this.searchResults_title = [];
+						this.searchResults_sectionTitle = [];
 					}
 				},
 				checkedTagsArray: function (b, a) {
@@ -1232,8 +1236,10 @@
                 },
                 clickedSearchBar: function() {
                     if (this.searchBarExpanded) {
+						this.clickedCloseSearch();
                         return;
                     }
+					console.log('Clicked open');
                     var self = this;
                     var timeline = anime.timeline({});
                     timeline
@@ -1301,7 +1307,63 @@
                     this.searchBarExpanded = true;
                 },
                 clickedCloseSearch: function() {
-                    console.log('Clicked close search');
+					console.log('Clicked close');
+					var self = this;
+                    var timeline = anime.timeline({});
+                    timeline
+						.add({
+							targets: this.$refs.searchResultsContainer,
+							opacity: [1, 0],
+							duration: 150,
+							translateY: ['0rem', '-0.5rem'],
+							easing: 'easeInOutQuad',
+							complete: function (anim) {
+								self.$refs.searchResultsContainer.classList.add('d-none');
+							}
+						})
+						.add({
+                            targets: this.currentViewToMinimize,
+                            opacity: [0, 1],
+                            translateY: ['0%', '-1rem'],
+                            duration: 150,
+                            easing: 'easeInOutQuad',
+							begin: function(anim) {
+								self.currentViewToMinimize.classList.remove('d-none');
+								self.currentViewToMinimize.classList.add('d-block');
+							}
+                        }, '-=5')
+						.add({
+							targets: this.$refs.searchBoxInput,
+							opacity: [1, 0],
+							duration: 100,
+							easing: 'easeInOutQuad',
+							complete: function(anim) {
+								self.$refs.searchBoxInput.classList.remove('d-flex');
+								self.$refs.searchBoxInput.classList.add('d-none');
+							}
+						}, '-=150')
+                        .add({
+                            targets: document.getElementById('innerSearchButtonText'),
+                            translateY: ['50%', '0%'],
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad',
+                        }, '-=100')
+						.add({
+                            targets: document.getElementById('innerSearchButtonImg2'),
+                            translateX: ['-175%', '0%'],
+                            opacity: [1, 0],
+                            duration: 200,
+                            easing: 'easeInOutQuad'
+                        }, '-=300')
+						.add({
+                            targets: document.getElementById('innerSearchButtonImg1'),
+                            translateX: ['-175%', '0%'],
+                            opacity: [0, 1],
+                            duration: 200,
+                            easing: 'easeInOutQuad'
+                        }, '-=200');
+					self.searchBarExpanded = false;
                 },
 				clickedRecipeFromExplorePane: function(index) {
 					this.selectRecipe(this.filteredCookbook[index]);
@@ -1451,16 +1513,26 @@
 						return;
 					}
 					var o = [];
+					var p = [];
 					queryResults.forEach(queryResult => {
 						if (queryResult.field === 'title') {
 							queryResult.result.forEach(result => {
 								o.push(result);
 							});
 						}
+						if (queryResult.field === 'sections[]:title') {
+							queryResult.result.forEach(result => {
+								p.push(result);
+							});
+						}
 					});
-					this.searchResults = [];
+					this.searchResults_title = [];
+					this.searchResults_sectionTitle = [];
 					o.forEach(id => {
-						this.searchResults.push(this.cookbook[id]);
+						this.searchResults_title.push(this.cookbook[id]);
+					});
+					p.forEach(id => {
+						this.searchResults_sectionTitle.push(this.cookbook[id]);
 					});
 				},
 				getFilterTimeDuration: function (currentHours, currentMinutes, inputHours, inputMinutes) {

@@ -79,8 +79,7 @@
                     v-bind:class="{ 'my-2rem': isHeaderTextHidden }" @click="clickedSearchBar" ref="searchBoxButton">
                     <div class="searchImgContainer">
                         <img id="innerSearchButtonImg1" class="pe-3" src="assets/icons/search.svg">
-                        <div id="innerSearchButtonImg2" class="m-0 p-0"
-                            style="position: absolute;opacity: 0;top: 0;left: 0;" @click="clickedCloseSearch">
+                        <div id="innerSearchButtonImg2" class="m-0 p-0 search-box-button-close" style="position: absolute;opacity: 0;top: 0;left: 0;">
                             <img class="pe-3" src="assets/icons/x-lg.svg">
                         </div>
                     </div>
@@ -89,8 +88,35 @@
                 <input class="form-control search-box-input d-none"
                     v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput" v-model="searchQuery">
                 <div class="container d-none" ref="searchResultsContainer">
-                    <div v-if="searchResults.length">
-                        <p v-for="result in searchResults">{{ result.title }}</p>
+                    <div class="mb-4" v-if="searchResults_title.length">
+                        <h6>Recipes</h6>
+                        <ul class="list-group list-group-flush cookbook-list-group">
+                            <li class="row d-flex list-group-item recipe-list-group-item" v-for="(recipe, index) in searchResults_title" :key="index"
+                                :index="index">
+                                <div class="col-3">
+                                    <img src="https://via.placeholder.com/48">
+                                </div>
+                                <div class="col-9 recipe-thumbnail-description">
+                                    <span>{{ recipe.title }}</span>
+                                    <span>{{ recipe.totalTime }} min • Finished by {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div v-if="searchResults_sectionTitle.length">
+                        <h6>Sections</h6>
+                        <ul class="list-group list-group-flush cookbook-list-group">
+                            <li class="row d-flex list-group-item recipe-list-group-item" v-for="(recipe, index) in searchResults_sectionTitle" :key="index"
+                                :index="index">
+                                <div class="col-3">
+                                    <img src="https://via.placeholder.com/48">
+                                </div>
+                                <div class="col-9 recipe-thumbnail-description">
+                                    <span>{{ recipe.title }}</span>
+                                    <span>{{ recipe.totalTime }} min • Finished by {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                     <p v-else>Search results populate here</p>
                 </div>
