@@ -92,7 +92,7 @@
                         <h6>Recipes</h6>
                         <ul class="list-group list-group-flush cookbook-list-group">
                             <li class="row d-flex list-group-item recipe-list-group-item" v-for="(recipe, index) in searchResults_title" :key="index"
-                                :index="index">
+                                :index="index" @click="clickedRecipeTitleFromSearch(index)">
                                 <div class="col-3">
                                     <img src="https://via.placeholder.com/48">
                                 </div>
@@ -107,7 +107,7 @@
                         <h6>Sections</h6>
                         <ul class="list-group list-group-flush cookbook-list-group">
                             <li class="row d-flex list-group-item recipe-list-group-item" v-for="(recipe, index) in searchResults_sectionTitle" :key="index"
-                                :index="index">
+                                :index="index" @click="clickedRecipeSectionFromSearch(index)">
                                 <div class="col-3">
                                     <img src="https://via.placeholder.com/48">
                                 </div>
@@ -123,7 +123,7 @@
             </div>
 
             <div class="exploreMenu px-1 my-2" ref="exploreMenuContainer">
-                <button class="exploreMenuButton btn mb-2" @click="clickedBrowse" :disabled="searchBarExpanded">
+                <button class="exploreMenuButton btn my-3" @click="clickedBrowse">
                     <div class="row">
                         <div class="col-2">
                             <img src="assets/icons/journal-richtext.svg" width="24" height="24">
@@ -134,7 +134,7 @@
                     </div>
                 </button>
 
-                <button class="exploreMenuButton btn" @click="clickedMealPlan" :disabled="searchBarExpanded">
+                <button class="exploreMenuButton btn mb-3" @click="clickedMealPlan">
                     <div class="row">
                         <div class="col-2">
                             <img src="assets/icons/calendar-range.svg" width="24" height="24">
@@ -144,11 +144,13 @@
                         </div>
                     </div>
                 </button>
+
+                <button type="button" class="btn btn-success fancy-button w-100">Add recipe</button>
             </div>
 
             <!-- Filter recipe content -->
             <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
-                <button class="btn chip mb-4" @click="clickedBackFromBrowseRecipes" :disabled="searchBarExpanded">
+                <button class="btn chip mb-4" @click="navigateBackward" :disabled="searchBarExpanded">
                     <img src="assets/icons/arrow-left-short.svg" ref="fromFilterToHomeBackButtonImg">
                     <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
                 </button>
@@ -215,7 +217,7 @@
 
             <!-- RecipeView -->
             <div class="recipeView" ref="recipeView">
-                <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="clickedBackFromRecipeView">
+                <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
                     <img src="assets/icons/arrow-left-short.svg">
                     <h5>Back</h5>
                 </button>
@@ -305,12 +307,25 @@
                             <h6 class="card-title d-flex" style="align-items: center;justify-content: space-between;">
                                 Recipe Notes
                                 <span>
-                                    <button class="btn d-flex"><img src="assets/icons/edit.svg"></button>
+                                    <button v-if="!notesEditMode" class="btn d-flex" @click="editRecipeNotesRecipeView">
+                                        <img src="assets/icons/edit.svg">
+                                    </button>
+                                    <button v-else class="btn d-flex" @click="editRecipeNotesRecipeView">
+                                        <img src="assets/icons/check.svg">
+                                    </button>
                                 </span>
                             </h6>
-                            <ul class="list-group list-group-flush">
-                                <li v-for="(note, noteIndex) in selectedRecipe.notes" class="list-group-item">{{ note }}</li>
+                            <ul v-if="!notesEditMode" class="list-group list-group-flush">
+                                <li v-for="(note, index) in selectedRecipe.notes" class="list-group-item">
+                                    {{ note.value }}
+                                </li>
                             </ul>
+                            <recipe-notes-draggable-list v-else :lock-axis="'y'" :press-delay.number=100 v-model="selectedRecipe.notes">
+                                <recipe-notes-draggable-item v-for="(note, index) in selectedRecipe.notes"
+                                    :index="index" :key="index" :note="note" :value="note.value"
+                                    @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                    v-on:delete-note="deleteRecipeNotesRecipeView(index)" />
+                            </recipe-notes-draggable-list>
                         </div>
                     </div>
                 </div>
@@ -325,17 +340,26 @@
                         <small class="mb-3 d-flex text-muted uppercase subheading">
                             {{ section.title }}
                             <span>
-                                <button class="btn d-flex">
+                                <button v-if="!ingredientsEditMode" class="btn d-flex" @click="editRecipeIngredientsRecipeView">
                                     <img src="assets/icons/edit.svg">
+                                </button>
+                                <button v-else class="btn d-flex" @click="editRecipeIngredientsRecipeView">
+                                    <img src="assets/icons/check.svg">
                                 </button>
                             </span>
                         </small>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="(ingredient, ingredientIndex) in section.ingredients" :key="ingredientIndex" class="list-group-item" @click="e => e.target.classList.toggle('strike-list-item')">
+                        <ul v-if="!ingredientsEditMode" class="list-group list-group-flush">
+                            <li v-for="(ingredient, index) in section.ingredients" class="list-group-item" @click="e => e.target.classList.toggle('strike-list-item')">
                                 <span class="ingredient-amount-badge" v-if="ingredient.amount">{{ ingredient.amount }}</span>
                                 <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
                             </li>
                         </ul>
+                        <recipe-ingredients-draggable-list v-else :lock-axis="'y'" :press-delay.number=100 v-model="section.ingredients">
+                            <recipe-ingredients-draggable-item v-for="(ingredient, index) in section.ingredients"
+                                :index="index" :key="index" :ingredient="ingredient" :amount="ingredient.amount" :value="ingredient.value"
+                                @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                v-on:delete-ingredient="deleteRecipeIngredientsRecipeView(index)" />
+                        </recipe-ingredients-draggable-list>
                     </div>
                 </div>
                 <!-- Divider -->
@@ -1514,6 +1538,50 @@
             </div>
         </li>
     </template>
+    <!-- RecipeView recipe notes draggables -->
+    <template id="recipe-notes-draggable-list-template">
+        <ul class="list-group list-group-flush">
+            <slot />
+        </ul>
+    </template>
+    <template id="recipe-notes-draggable-item-template">
+        <li class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <input class="form-control" type="text" v-model="note.value">
+                <button class="btn pe-0" @click="$emit('delete-note', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </div>
+        </li>
+    </template>
+    <!-- RecipeView recipe ingredients draggables -->
+    <template id="recipe-ingredients-draggable-list-template">
+        <ul class="list-group list-group-flush">
+            <slot />
+        </ul>
+    </template>
+    <template id="recipe-ingredients-draggable-item-template">
+        <li class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <input class="form-control" type="text" v-model="ingredient.amount">
+                <input class="form-control" type="text" v-model="ingredient.value">
+                <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </div>
+        </li>
+    </template>
+
+
+
+
+
 
 
 

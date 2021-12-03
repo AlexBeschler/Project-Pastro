@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FAQs | Project Pastro</title>
+
+    <!-- Custom font for fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="vendor/bootstrap5/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container d-flex align-items-center" style="min-height: 22vh;background: #f1f5df;">
+        <h2 style="color: #356859;">Frequently Asked Questions</h2>
+    </div>
+    <div class="container mt-4">
+        <div class="nav nav-pills mb-3" id="v-pills-tab" role="tablist">
+            <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home"
+                type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Accounts</button>
+            <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile"
+                type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Billing</button>
+            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages"
+                type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Other</button>
+        </div>
+        <div class="tab-content mb-5" id="v-pills-tabContent">
+            <div class="tab-pane fade container show active" id="v-pills-home" role="tabpanel"
+                aria-labelledby="v-pills-home-tab">
+                <p>
+                    <div class="fw-bold">How does Pastro know my name?</div>
+                    It gets this information from your Google account. When you choose to sign in with the account,
+                    Google passes only a few pieces of information to Pastro such as your name and the profile picture
+                    associated to your account. In order to deliver a personalized experience we display this info
+                    throughout the app. This information isn't stored on our servers - we get it straight from Google.
+                    If you change your name or profile picture, Pastro will reflect the new information accordingly.
+                </p>
+                <p>
+                    <div class="fw-bold">What personal information does Pastro store?</div>
+                    Your cookbook data and the app settings. That's it! In addition, no third parties read any part of
+                    your
+                    cookbook data. As a reminder:
+                    <ul>
+                        <li>Please read our Privacy Policy for further information regarding how your data is stored
+                        </li>
+                        <li>We use Google Analytics for internal reporting purposes. Your details of app usage might be
+                            collected. For further information, please read the Google Analytics FAQs</li>
+                    </ul>
+                </p>
+                <p>
+                    <div class="fw-bold">Can I use multiple Google accounts with Pastro?</div>
+                    No. All your cookbook data and app settings are store per Google account. Let's say you control two
+                    Google accounts. You choose to sign up and pay with your primary Google account. One day you sign
+                    into
+                    Pastro with your secondary account - Pastro won't recognize you as paying customer! This is because
+                    your
+                    personal Stripe portal, cookbook, and account settings are all associated with a particular Google
+                    account email address. A second Google account is considered a different "identity".
+                </p>
+                <p>
+                    <div class="fw-bold">Can I merge two or more Google accounts into one with Pastro?</div>
+                    At this time, no.
+                </p>
+                <p>
+                    <div class="fw-bold">Do I need to sign into Pastro with a password?</div>
+                    No. When you first sign into Pastro, it will redirect you to a Google account log-in page. Pastro
+                    doesn't read any of this information; rather, behind the scenes Pastro is asking Google for
+                    permission
+                    to use the account, and that permission is granted when you successfully sign into Google. Once
+                    Google
+                    verifies it's you, then Pastro verifies the permission is granted by Google (and not by someone
+                    malicious!) and loads all your personalized data to you. Remember - as long as your Google account
+                    is
+                    safe, so is Pastro; no extra passwords required!
+                </p>
+            </div>
+            <div class="tab-pane container fade" id="v-pills-profile" role="tabpanel"
+                aria-labelledby="v-pills-profile-tab">
+                <p>
+                    <div class="fw-bold">How are payments managed?</div>
+                    By a company called Stripe. When signing up for Pastro for the first time, you have to enter
+                    valid payment information into the Stripe portal. When you do, the page will re-direct you to
+                    the app, ready for you to use it.
+                </p>
+                <p>
+                    <div class="fw-bold">How do I change or cancel my subscription?</div>
+                    Simply click the settings menu and scroll to the very bottom. Click the button that says "Stripe
+                    Portal" and you can manage all payment information from there.
+                </p>
+                <p>
+                    <div class="fw-bold">How do I request a refund?</div>
+                    While we do not issue refunds for past purchases, you may cancel a subscription early. If you
+                    choose to do so, the remainder of the month will be credited to you.
+                </p>
+                <p>
+                    <div class="fw-bold">Something looks wrong about my billing. How can I get in touch with
+                        someone?</div>
+                    We want to help your resolve this issue as soon as possible. Please contact us here.
+                </p>
+                <p>
+                    <div class="fw-bold">Does Pastro handle any payment information?</div>
+                    No. The only payment-related information Pastro stores are receipts, charge history (records
+                    related to the monthly subscription charges), and any relevant sales tax information. This info
+                    can be displayed in your personalized Stripe billing portal. All other forms of payment are
+                    solely managed by Stripe.
+                </p>
+            </div>
+            <div class="tab-pane container fade" id="v-pills-messages" role="tabpanel"
+                aria-labelledby="v-pills-messages-tab">
+                <p>
+                    <div class="fw-bold">Are there iOS and Android apps?</div>
+                    Not at this time. Pastro is a mobile-first, highly optimized website that functions like a
+                    regular app. You can even "install" it, and it will live in your app drawer or Start menu
+                    (depending on what platform you are on). If you click the icon it will open your web browser and
+                    you can use it like normal.
+                </p>
+                <p>
+                    <div class="fw-bold">Do you have plans to develop iOS and Android apps?</div>
+                    It's not currently on our company roadmap. The process is expensive and very time consuming.
+                    Remember - we're a development team of one!
+                </p>
+                <p>
+                    <div class="fw-bold">Is a certain feature going to get added?</div>
+                    Possibly! Please let us know your feedback here.
+                </p>
+                <p>
+                    <div class="fw-bold">Can I report a bug?</div>
+                    Absolutely, and we would encourage it! Please submit that feedback here.
+                </p>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -591,6 +591,26 @@
 			props: ['equipment'],
 			template: '#special-equipment-draggable-item-template'
 		});
+		//Notes
+		Vue.component('recipe-notes-draggable-list', {
+			mixins: [ContainerMixin],
+			template: '#recipe-notes-draggable-list-template'
+		});
+		Vue.component('recipe-notes-draggable-item', {
+			mixins: [ElementMixin],
+			props: ['note'],
+			template: '#recipe-notes-draggable-item-template'
+		});
+		//Ingredients
+		Vue.component('recipe-ingredients-draggable-list', {
+			mixins: [ContainerMixin],
+			template: '#recipe-ingredients-draggable-list-template'
+		});
+		Vue.component('recipe-ingredients-draggable-item', {
+			mixins: [ElementMixin],
+			props: ['ingredient'],
+			template: '#recipe-ingredients-draggable-item-template'
+		});
 
 		/*
 		//Manage tag component
@@ -646,9 +666,18 @@
 			el: '#appContent',
 			data: {
 				/** Utils **/
+				//Firebase db utils
 				db: null,
+				//Main app cookbook array
 				cookbook: payload,
-				filteredCookbook: [],
+
+				/** App screen management **/
+				//Views are added to this stack to help manage user navigation throughout the lifecycle of the app.
+				//   Navigation forward adds to the stack, while moving backwards pops the stack.
+				//   This stack is also used for the 'popstate' function - when the user clicks the back button
+				//   of the browser. When this happens, the app will pop the ViewStack and move backwards,
+				//   providing a seamless UX
+				ViewStack: [],
 				
 				/** Home screen data **/
 				headerText: '',
@@ -656,11 +685,10 @@
                 isHeaderTextHidden: false,
                 searchButtonHeight: 1,
                 searchBarExpanded: false,
-                
-				///Current view that will fade out if existence when search is clicked
-                currentViewToMinimize: null,
 				
 				///Used for 'Explore' pane
+				//Used for FilterView
+				filteredCookbook: [],
 				flexSearch: indexedRecipes,
 				numericIndex: numberMetaIndex,
 				searchQuery: '',
@@ -832,6 +860,7 @@
 				window.history.pushState(null, null, document.URL);
 
 				window.addEventListener('popstate', function () {
+					self.navigateBackward();
 					history.pushState(null, null, document.URL);
 				});
 
@@ -853,7 +882,8 @@
 				//Set height of search text box
                 this.searchButtonHeight = this.getAbsoluteHeight(this.$refs.searchBoxButton);
 
-                this.currentViewToMinimize = this.$refs.exploreMenuContainer;
+				//Add the main menu to the view stack
+				this.ViewStack.push(this.$refs.exploreMenuContainer);
 
                 var greeting = 'Good ';
                 var mHour = new Date().getHours();
@@ -1216,7 +1246,7 @@
                     console.log('Clicked settings');
                 },
                 clickedBrowse: function () {
-                    this.navigateForward(this.$refs.exploreMenuContainer, this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
+                    this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
                 },
 				clickedClearTagFilters: function() {
 					this.checkedTagsArray = [];
@@ -1230,12 +1260,6 @@
 				},
                 clickedMealPlan: function () {
                     console.log('Clicked meal plan');
-                },
-                clickedBackFromBrowseRecipes: function () {
-                    this.navigateBackward(this.$refs.filterRecipesContainer, this.$refs.exploreMenuContainer);
-                },
-				clickedBackFromRecipeView: function () {
-                    this.navigateBackward(this.$refs.recipeView, this.$refs.filterRecipesContainer);
                 },
                 clickedSearchBar: function() {
                     if (this.searchBarExpanded) {
@@ -1272,13 +1296,13 @@
                             easing: 'easeInOutQuad'
                         }, '-=200')
                         .add({
-                            targets: this.currentViewToMinimize,
+                            targets: this.ViewStack[this.ViewStack.length - 1],
                             opacity: [1, 0],
                             translateY: ['0%', '-1rem'],
                             duration: 100,
                             easing: 'easeInOutQuad',
                             complete: function(anim) {
-                                self.currentViewToMinimize.classList.add('d-none');
+                                self.ViewStack[self.ViewStack.length - 1].classList.add('d-none');
                             }
                         }, '-=300')
                         .add({
@@ -1323,14 +1347,14 @@
 							}
 						})
 						.add({
-                            targets: this.currentViewToMinimize,
+                            targets: this.ViewStack[this.ViewStack.length - 1],
                             opacity: [0, 1],
                             translateY: ['0%', '-1rem'],
                             duration: 150,
                             easing: 'easeInOutQuad',
 							begin: function(anim) {
-								self.currentViewToMinimize.classList.remove('d-none');
-								self.currentViewToMinimize.classList.add('d-block');
+								self.ViewStack[self.ViewStack.length - 1].classList.remove('d-none');
+								self.ViewStack[self.ViewStack.length - 1].classList.add('d-block');
 							}
                         }, '-=5')
 						.add({
@@ -1368,7 +1392,17 @@
                 },
 				clickedRecipeFromExplorePane: function(index) {
 					this.selectRecipe(this.filteredCookbook[index]);
-					this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.recipeView, null, null);
+					this.navigateForward(this.$refs.recipeView, null, null);
+				},
+				clickedRecipeTitleFromSearch: function(index) {
+					this.clickedCloseSearch();
+					this.selectRecipe(this.searchResults_title[index]);
+					this.navigateForward(this.$refs.recipeView, null, null);
+				},
+				clickedRecipeSectionFromSearch: function(index) {
+					this.clickedCloseSearch();
+					this.selectRecipe(this.searchResults_sectionTitle[index]);
+					this.navigateForward(this.$refs.recipeView, null, null);
 				},
 
 				/**** Animation utilities ****/
@@ -1412,52 +1446,53 @@
                             easing: 'easeInOutQuad'
                         }, '-=250');
                 },
-                navigateForward: function (from, to, backButtonImg, backButtonText) {
+                navigateForward: function (navigateTo, backButtonImg, backButtonText) {
                     var timeline = anime.timeline({});
+					var currentView = this.ViewStack[this.ViewStack.length - 1];
 					if (backButtonImg === null) {
 						timeline
 							.add({
-								targets: from,
+								targets: currentView,
 								translateX: ['0%', '-50%'],
 								opacity: [1, 0],
 								duration: 200,
 								easing: 'easeInOutQuad',
 								complete: function (anim) {
-									from.classList.add('d-none');
+									currentView.classList.add('d-none');
 								}
 							})
 							.add({
-								targets: to,
+								targets: navigateTo,
 								translateX: ['50%', '0%'],
 								opacity: [0, 1],
 								duration: 200,
 								easing: 'easeInOutQuad',
 								begin: function (anim) {
-									to.classList.remove('d-none');
-									to.classList.add('d-block');
+									navigateTo.classList.remove('d-none');
+									navigateTo.classList.add('d-block');
 								}
 							}, '+=5');
 					} else {
 						timeline
 							.add({
-								targets: from,
+								targets: currentView,
 								translateX: ['0%', '-50%'],
 								opacity: [1, 0],
 								duration: 200,
 								easing: 'easeInOutQuad',
 								complete: function (anim) {
-									from.classList.add('d-none');
+									currentView.classList.add('d-none');
 								}
 							})
 							.add({
-								targets: to,
+								targets: navigateTo,
 								translateX: ['50%', '0%'],
 								opacity: [0, 1],
 								duration: 200,
 								easing: 'easeInOutQuad',
 								begin: function (anim) {
-									to.classList.remove('d-none');
-									to.classList.add('d-block');
+									navigateTo.classList.remove('d-none');
+									navigateTo.classList.add('d-block');
 								}
 							}, '+=5')
 							.add({
@@ -1479,30 +1514,32 @@
 
                     this.hideHeader();
 
-                    this.currentViewToMinimize = to;
+					this.ViewStack.push(navigateTo);
                 },
-                navigateBackward: function (from, to) {
+                navigateBackward: function () {
+					var currentView = this.ViewStack.pop();
+					var previousView = this.ViewStack[this.ViewStack.length - 1];
                     var timeline = anime.timeline({});
                     timeline
                         .add({
-                            targets: from,
+                            targets: currentView,
                             translateX: ['0%', '50%'],
                             opacity: [1, 0],
                             duration: 200,
                             easing: 'easeInOutQuad',
                             complete: function (anim) {
-                                from.classList.add('d-none');
+                                currentView.classList.add('d-none');
                             }
                         })
                         .add({
-                            targets: to,
+                            targets: previousView,
                             translateX: ['-50%', '0%'],
                             opacity: [0, 1],
                             duration: 200,
                             easing: 'easeInOutQuad',
                             begin: function (anim) {
-                                to.classList.remove('d-none');
-                                to.classList.add('d-block');
+                                previousView.classList.remove('d-none');
+                                previousView.classList.add('d-block');
                             }
                         }, '+=5');
                 },
@@ -1745,6 +1782,12 @@
 							value: equipment
 						});
 					});
+					r.notes = [];
+					recipe.notes.forEach(note => {
+						r.notes.push({
+							value: note
+						});
+					});
 
 					this.selectedRecipe = r;
 				},
@@ -1764,6 +1807,8 @@
 					//Overwrite data in cookbook
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
+					//TODO: add filtered cookbook update
+
 					//Re-index recipe in the indices
 					//FIXME: this does not seem to correctly update the recipe title
 					this.flexSearch.update({
@@ -1771,9 +1816,6 @@
 					});
 
 					//TODO: Update to Firebase cloud services
-				},
-				deleteRecipeDetailsRecipeView: function() {
-					//
 				},
 				editSpecialEquipmentRecipeView: function() {
 					if (!this.specialEquipmentEditMode) {
@@ -1802,13 +1844,51 @@
 					console.log('Clicked delete on ' + this.selectedRecipe.specialEquipment[index].value);
 				},
 				editRecipeNotesRecipeView: function() {
-					//
+					if (!this.notesEditMode) {
+						this.notesEditMode = true;
+						return;
+					}
+					
+					this.notesEditMode = false;
+					
+					//Clean data
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+					serializedRecipe.notes = _.pluck(serializedRecipe.notes, 'value');
+
+					//Overwrite data in cookbook
+					this.cookbook[serializedRecipe.id] = serializedRecipe;
+
+					//Re-index recipe in the indices
+					this.flexSearch.update({
+						data: serializedRecipe
+					});
+
+					//TODO: Update to Firebase cloud services
 				},
-				deleteRecipeNotesRecipeView: function() {
+				deleteRecipeNotesRecipeView: function(index) {
 					//
 				},
 				editRecipeIngredientsRecipeView: function() {
-					//
+					if (!this.ingredientsEditMode) {
+						this.ingredientsEditMode = true;
+						return;
+					}
+					
+					this.ingredientsEditMode = false;
+					
+					//Clean data
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+					serializedRecipe.ingredients = this.selectedRecipe.ingredients;
+
+					//Overwrite data in cookbook
+					this.cookbook[serializedRecipe.id] = serializedRecipe;
+
+					//Re-index recipe in the indices
+					this.flexSearch.update({
+						data: serializedRecipe
+					});
+
+					//TODO: Update to Firebase cloud services
 				},
 				deleteRecipeIngredientsRecipeView: function() {
 					//
