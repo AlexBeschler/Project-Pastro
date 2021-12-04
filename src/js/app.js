@@ -1324,26 +1324,10 @@
 			},
 			methods: {
 				/**** Button Helpers ****/
-                clickedSettings: function() {
-                    console.log('Clicked settings');
+				clickedSettings: function() {
+                    this.navigateForward(this.$refs.optionsView, null, null);
                 },
-                clickedBrowse: function () {
-                    this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
-                },
-				clickedClearTagFilters: function() {
-					this.checkedTagsArray = [];
-				},
-				clickedClearTimeFilters: function() {
-					this.totalRecipeTimeInput = '';
-					this.finishByTimeInput = '';
-				},
-				clickedClearIngredientFilters: function() {
-					this.checkedIngredientsArray = [];
-				},
-                clickedMealPlan: function () {
-                    console.log('Clicked meal plan');
-                },
-                clickedSearchBar: function() {
+				clickedSearchBar: function() {
                     if (this.searchBarExpanded) {
 						this.clickedCloseSearch();
                         return;
@@ -1471,7 +1455,23 @@
                             easing: 'easeInOutQuad'
                         }, '-=200');
 					self.searchBarExpanded = false;
+                },             
+                clickedBrowse: function () {
+                    this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
                 },
+				clickedMealPlan: function () {
+                    console.log('Clicked meal plan');
+                },
+				clickedClearTagFilters: function() {
+					this.checkedTagsArray = [];
+				},
+				clickedClearTimeFilters: function() {
+					this.totalRecipeTimeInput = '';
+					this.finishByTimeInput = '';
+				},
+				clickedClearIngredientFilters: function() {
+					this.checkedIngredientsArray = [];
+				},
 				clickedRecipeFromExplorePane: function(index) {
 					this.selectRecipe(this.filteredCookbook[index]);
 					this.navigateForward(this.$refs.recipeView, null, null);

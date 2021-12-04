@@ -336,7 +336,7 @@ body {
     border-radius: 12px;
 }
 
-.recipeView {
+.recipeView, .addRecipeView, .optionsView {
     display: none;
     opacity: 0;
 }
