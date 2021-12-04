@@ -170,8 +170,6 @@
 				"description": "<p>What an easy chocolate cake! No mixer required for the batter, simply whisk the dry ingredients in one bowl and the wet ingredients in another bowl. Pour the wet ingredients into the dry ingredients (or vice versa, it doesn’t make any difference), add the hot coffee, then whisk everything together. The cake batter is thin. Divide between 2 9-inch cake pans. You can easily stretch it to 3 or 4 8-inch or 9-inch cakes if needed. Or make a quarter sheet cake using a 9×13 inch cake pan. See my recipe notes for details.</p>",
 				"tags": [
 					"Dessert",
-					"Budget-friendly",
-					"Oven",
 					"Intermediate"
 				],
 				"prepTime": 15,
@@ -309,42 +307,116 @@
 				"dateAdded": "1637381406764",
 				"dateModified": "1637381414039",
 				"favorite": false,
-				"title": "Rice",
-				"description": "<p>Hello World</p>",
+				"title": "Thai Tea",
+				"description": "<p>While it&apos;s easy to simply buy Thai tea mix and add milk or half-and-half, it&apos;s not nearly as satisfying. This recipe is one of the <em>best from-scratch</em> Thai teas you could ever have!</p>",
 				"tags": [
-					"Dinner",
-					"Quick"
+					"Drink",
+					"Thai",
+					"Cold",
+					"Easy"
 				],
-				"prepTime": 1,
-				"cookTime": 3,
-				"totalTime": 5,
-				"activeTime": 5,
-				"yield": "2 servings",
+				"prepTime": 2,
+				"cookTime": 6,
+				"totalTime": 15,
+				"activeTime": 10,
+				"yield": "3 cups of Thai tea",
 				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 				"thumbnail": "https://via.placeholder.com/64x64.png",
 				"specialEquipment": [
-					"Rice cooker"
+					"Cheesecloth",
+					"2x 4 cup beakers (or 2 containers with an easy-pour spout)",
+					"Old towel that can get stained",
+					"Scissors (if the tea bags have strings)"
 				],
 				"notes": [
-					"Rice cooker makes the best results"
+					"The old towel is placed under the easy-pour beakers when pouring the liquid from the saucepan",
+					"Vanilla bean is expensive but worth it! The final product is dependent on the ingredients being boiled with the water.",
+					"Be warned that tumeric powder will stain any cloth it comes into contact with."
 				],
 				"sections": [
 					{
-						"title": "Steps",
+						"title": "Thai Tea",
 						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
-								"amount": "4 cups",
-								"value": "water"
+								"amount": "5 cups",
+								"value": "water, filtered"
 							},
 							{
-								"amount": "2 cups",
-								"value": "rice"
+								"amount": "10",
+								"value": "black tea bags"
+							},
+							{
+								"amount": "4",
+								"value": "star anise"
+							},
+							{
+								"amount": "1 tsp",
+								"value": "green cardamon seeds"
+							},
+							{
+								"amount": "4",
+								"value": "cinnamon sticks"
+							},
+							{
+								"amount": "4 tsp",
+								"value": "tumeric powder"
+							},
+							{
+								"amount": "2",
+								"value": "vanilla beans"
+							},
+							{
+								"amount": "4 tsp",
+								"value": "vanilla extract (not imitation flavoring)"
+							},
+							{
+								"amount": "3 tbps",
+								"value": "granulated white sugar"
+							},
+							{
+								"amount": "2",
+								"value": "fresh mint leaves (optional)"
 							}
 						],
 						"steps": [
-							"Put rice in",
-							"Cook"
+							"Put filtered water into a medium saucepan (~6 cups capacity or more) and bring to a boil.",
+							"While waiting, snip off the black tea bag strings with a pair of scissors and combine these with the star anise, cardamon seeds, cinnamon sticks, tumeric powder, and vanilla beans into a separate container and set aside.",
+							"When water is boiling bring water to lo simmer and put dry ingredients in all at once. Quickly add the vanilla extract. Stir until ingredients are combined, roughly 8 stirs.",
+							"Let sit for 6 minutes uncovered (the black tea bags could burst if saucepan is covered).",
+							"Afterwards, stir once again, about 8 stirs. Turn stove off.",
+							"Place a sieve over one of the kitchen beakers and the old towel underneath; the cloth is used for catching any spills that will occur. Pour the tea blend into the sieve and let it catch the large ingredients.",
+							"We must now filter the tumeric powder out of the tea - filtering twice will ensure almost all is removed. Fold the cheesecloth in half, then in half again (4 layers of cloth should be sufficient). Cover the top of the other empty beaker with one side of the cloth and pour the tea from the first beaker into the second, cheesecloth-covered beaker.",
+							"Clean the now-empty beaker of residual tumeric powder and cover with the cheesecloth. Repeat the filtering process with the other side of the cheesecloth.",
+							"After filtering twice, the tea should yield 3 cups.",
+							"Whisk the 3 tbps of granulated sugar into the tea (1 tbps per cup of tea)",
+							"Create and whisk in the Thai tea sweetener blend, detailed below.",
+							"Let sit in the refrigerator until chilled. Serve with 3 ice cubes and 2 fresh mint leaves. Enjoy!"
+						],
+						"nFat": 1,
+						"nCholesterol": 1,
+						"nSodium": 1,
+						"nTotalCarbs": 1,
+						"nFiber": 1,
+						"nSugar": 1,
+						"nProtein": 1 
+					},
+					{
+						"title": "Thai Tea Sweetener Blend",
+						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+						"ingredients": [
+							{
+								"amount": "6 tbps",
+								"value": "sweetened condensed milk"
+							},
+							{
+								"amount": "3 tbps",
+								"value": "evaporated milk"
+							}
+						],
+						"steps": [
+							"Pour ingredients into a cup. Using a fork whisk together ingredients until thoroughly blended, resembling a thick, sticky cream.",
+							"If your Thai tea recipe yielded an amount other than 3 cups, combine the condensed milk and evaporated milk using a 2:1 blend per cup of tea, 2 parts condensed milk, 1 part evaporated milk, using tbps as the measurement."
 						],
 						"nFat": 1,
 						"nCholesterol": 1,
@@ -610,6 +682,16 @@
 			mixins: [ElementMixin],
 			props: ['ingredient'],
 			template: '#recipe-ingredients-draggable-item-template'
+		});
+		//Steps
+		Vue.component('recipe-steps-draggable-list', {
+			mixins: [ContainerMixin],
+			template: '#recipe-steps-draggable-list-template'
+		});
+		Vue.component('recipe-steps-draggable-item', {
+			mixins: [ElementMixin],
+			props: ['step'],
+			template: '#recipe-steps-draggable-item-template'
 		});
 
 		/*
@@ -1788,6 +1870,14 @@
 							value: note
 						});
 					});
+					for (var i = 0; i < recipe.sections.length; i++) {
+						r.sections[i].steps = [];
+						recipe.sections[i].steps.forEach(step => {
+							r.sections[i].steps.push({
+								value: step
+							});
+						});
+					}
 
 					this.selectedRecipe = r;
 				},
@@ -1878,7 +1968,7 @@
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
-					serializedRecipe.ingredients = this.selectedRecipe.ingredients;
+					serializedRecipe.sections = this.selectedRecipe.sections;
 
 					//Overwrite data in cookbook
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
@@ -1894,7 +1984,26 @@
 					//
 				},
 				editRecipeStepsRecipeView: function() {
-					//
+					if (!this.stepsEditMode) {
+						this.stepsEditMode = true;
+						return;
+					}
+					
+					this.stepsEditMode = false;
+					
+					//Clean data
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+					serializedRecipe.sections = this.selectedRecipe.sections;
+
+					//Overwrite data in cookbook
+					this.cookbook[serializedRecipe.id] = serializedRecipe;
+
+					//Re-index recipe in the indices
+					this.flexSearch.update({
+						data: serializedRecipe
+					});
+
+					//TODO: Update to Firebase cloud services
 				},
 				deleteRecipeStepsRecipeView: function() {
 					//

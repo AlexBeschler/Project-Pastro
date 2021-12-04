@@ -373,17 +373,26 @@
                         <small class="mb-3 d-flex text-muted uppercase subheading">
                             {{ section.title }}
                             <span>
-                                <button class="btn d-flex">
+                                <button v-if="!stepsEditMode" class="btn d-flex" @click="editRecipeStepsRecipeView">
                                     <img src="assets/icons/edit.svg">
+                                </button>
+                                <button v-else class="btn d-flex" @click="editRecipeStepsRecipeView">
+                                    <img src="assets/icons/check.svg">
                                 </button>
                             </span>
                         </small>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="(step, stepIndex) in section.steps" :key="stepIndex" class="list-group-item">
-                                <span class="lead">Step {{ stepIndex + 1 }}</span>
-                                <p class="my-3">{{ step }}</p>
+                        <ul v-if="!stepsEditMode" class="list-group list-group-flush">
+                            <li v-for="(step, index) in section.steps" class="list-group-item" @click="e => e.target.classList.toggle('strike-list-item')">
+                                <span class="lead">Step {{ index + 1 }}</span>
+                                <p class="my-3">{{ step.value }}</p>
                             </li>
                         </ul>
+                        <recipe-steps-draggable-list v-else :lock-axis="'y'" :press-delay.number=100 v-model="section.steps">
+                            <recipe-steps-draggable-item v-for="(step, index) in section.steps"
+                                :index="index" :key="index" :step="step" :value="step.value"
+                                @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                v-on:delete-ingredient="deleteRecipeStepsRecipeView(index)" />
+                        </recipe-steps-draggable-list>
                     </div>
                 </div>
                 <!-- Divider -->
@@ -1572,6 +1581,25 @@
                 <input class="form-control" type="text" v-model="ingredient.amount">
                 <input class="form-control" type="text" v-model="ingredient.value">
                 <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </div>
+        </li>
+    </template>
+    <!-- RecipeView recipe steps draggables -->
+    <template id="recipe-steps-draggable-list-template">
+        <ul class="list-group list-group-flush">
+            <slot />
+        </ul>
+    </template>
+    <template id="recipe-steps-draggable-item-template">
+        <li class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <input class="form-control" type="text" v-model="step.value">
+                <button class="btn pe-0" @click="$emit('delete-step', index)">
                     <img src="assets/icons/trash.svg">
                 </button>
             </div>
