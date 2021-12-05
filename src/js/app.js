@@ -796,11 +796,11 @@
 
 				/** Recipe View data **/
 				selectedRecipe: {},
-				detailsEditMode: false,
-				specialEquipmentEditMode: false,
-				notesEditMode: false,
-				ingredientsEditMode: false,
-				stepsEditMode: false,
+				detailsDisplayState: 'view',
+				specialEquipmentDisplayState: 'view',
+				notesDisplayState: 'view',
+				ingredientsDisplayState: 'view',
+				stepsDisplayState: 'view',
 
 
 
@@ -1884,12 +1884,12 @@
 
 				/**** RecipeView Methods ****/
 				editRecipeDetailsRecipeView: function() {
-					if (!this.detailsEditMode) {
-						this.detailsEditMode = true;
+					if (this.detailsDisplayState === utils.DISPLAY_STATES.VIEW) {
+						this.detailsDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
 					
-					this.detailsEditMode = false;
+					this.detailsDisplayState = utils.DISPLAY_STATES.LOADING;
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
@@ -1906,14 +1906,16 @@
 					});
 
 					//TODO: Update to Firebase cloud services
+
+					this.detailsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
 				editSpecialEquipmentRecipeView: function() {
-					if (!this.specialEquipmentEditMode) {
-						this.specialEquipmentEditMode = true;
+					if (this.specialEquipmentDisplayState === utils.DISPLAY_STATES.VIEW) {
+						this.specialEquipmentDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
 					
-					this.specialEquipmentEditMode = false;
+					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.LOADING;
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
@@ -1929,17 +1931,18 @@
 
 					//TODO: Update to Firebase cloud services
 
+					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
 				deleteSpecialEquipmentRecipeView: function(index) {
-					console.log('Clicked delete on ' + this.selectedRecipe.specialEquipment[index].value);
+					this.selectedRecipe.specialEquipment.splice(index, 1);
 				},
 				editRecipeNotesRecipeView: function() {
-					if (!this.notesEditMode) {
-						this.notesEditMode = true;
+					if (this.notesDisplayState === utils.DISPLAY_STATES.VIEW) {
+						this.notesDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
 					
-					this.notesEditMode = false;
+					this.notesDisplayState = utils.DISPLAY_STATES.LOADING;
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
@@ -1954,17 +1957,19 @@
 					});
 
 					//TODO: Update to Firebase cloud services
+
+					this.notesDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
 				deleteRecipeNotesRecipeView: function(index) {
-					//
+					this.selectedRecipe.notes.splice(index, 1);
 				},
 				editRecipeIngredientsRecipeView: function() {
-					if (!this.ingredientsEditMode) {
-						this.ingredientsEditMode = true;
+					if (this.ingredientsDisplayState === utils.DISPLAY_STATES.VIEW) {
+						this.ingredientsDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
 					
-					this.ingredientsEditMode = false;
+					this.ingredientsDisplayState = utils.DISPLAY_STATES.LOADING;
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
@@ -1979,21 +1984,28 @@
 					});
 
 					//TODO: Update to Firebase cloud services
+
+					this.ingredientsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteRecipeIngredientsRecipeView: function() {
-					//
+				deleteRecipeIngredientsRecipeView: function(sectionIndex, ingredientIndex) {
+					this.selectedRecipe.sections[sectionIndex].ingredients.splice(ingredientIndex, 1);
 				},
 				editRecipeStepsRecipeView: function() {
-					if (!this.stepsEditMode) {
-						this.stepsEditMode = true;
+					if (this.stepsDisplayState === utils.DISPLAY_STATES.VIEW) {
+						this.stepsDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
 					
-					this.stepsEditMode = false;
+					this.stepsDisplayState = utils.DISPLAY_STATES.LOADING;
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
-					serializedRecipe.sections = this.selectedRecipe.sections;
+					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
+						serializedRecipe.sections[i].steps = [];
+						this.selectedRecipe.sections[i].steps.forEach(step => {
+							serializedRecipe.sections[i].steps.push(step.value);
+						});
+					}
 
 					//Overwrite data in cookbook
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
@@ -2004,9 +2016,11 @@
 					});
 
 					//TODO: Update to Firebase cloud services
+
+					this.stepsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteRecipeStepsRecipeView: function() {
-					//
+				deleteRecipeStepsRecipeView: function(sectionIndex, stepIndex) {
+					this.selectedRecipe.sections[sectionIndex].steps.splice(stepIndex, 1);
 				},
 
 				/**** Utilities ****/

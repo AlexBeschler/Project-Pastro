@@ -12,58 +12,63 @@ var ProjectPastroUtils = function () {
     this._CANCEL_URL = 'http://localhost:5000/';
     this._STRIPE_CODE = 'pk_test_51IinkiCwcvKw4V4OGf5Yv6eCKrA3tSXGgUUvF6tPmdlpRmgoX4yq8NApouvHn5Q0BkVre82I9qKDECymsTct3MNx00ekEDzexj';
     this.DYSLEXIC_FONT_SET = 'isDyslexicFontSet';
+    this.DISPLAY_STATES = {
+        VIEW: "view",
+        EDIT: "edit",
+        LOADING: "loading"
+    };
 
     this.init = function () {
         this.errorCollection = firebase.firestore().collection('errors');
-    }
+    };
 
     //DOM utils
     this.showLoading = function () {
         document.getElementById('login-container').style.visibility = 'hidden';
         document.getElementById('loading').style.visibility = 'visible';
         document.getElementById('appContent').style.visibility = 'hidden';
-    }
+    };
     this.showLoginContainer = function () {
         document.getElementById('login-container').style.visibility = 'visible';
         document.getElementById('loading').style.visibility = 'hidden';
-    }
+    };
     this.showCookbook = function () {
         document.getElementById('login-container').remove(); //No need for this anymore
         document.getElementById('loading').style.visibility = 'hidden';
         document.getElementById('appContent').style.visibility = 'visible';
-    }
+    };
 
     //Local storage utils
     this.getLocalStorage = function (key) {
         var storage = window.localStorage;
         return storage.getItem(key);
-    }
+    };
     this.setLocalStorage = function (key, value) {
         var storage = window.localStorage;
         storage.setItem(key, value);
-    }
+    };
     //String and number utilities
     this.isNumber = function (toValidate) {
         return parseInt(toValidate) > 0 && parseInt(toValidate) < 9999 && /^\d+$/.test(parseInt(toValidate));
-    }
+    };
     this.isString = function (toValidate) {
         return toValidate.trim().length > 0 && toValidate.trim().length < 82;
-    }
+    };
     this.isBigString = function (toValidate) {
         return toValidate.trim().length > 0 & toValidate.trim().length < 9999;
-    }
+    };
     this.capitalizeFirstLetter = function (s) {
         return s.trim().charAt(0).toUpperCase() + s.slice(1);
-    }
+    };
     this.isBlank = function (toValidate) {
         return parseInt(toValidate) === 0 || toValidate === '';
-    }
+    };
     this.isEmpty = function (toValidate) {
         return (toValidate.length === 0 || !toValidate.trim());
-    }
+    };
     this.isAllUppercase = function (s) {
         return s === s.toUpperCase();
-    }
+    };
     //FlexSearch utils
     this.queryNumericIndex = function (index, query) {
         var filterIDs = [];
@@ -95,7 +100,7 @@ var ProjectPastroUtils = function () {
         });
         return filterIDs;
         */
-    }
+    };
     //FlexSearch utils
     this.queryAndParseFlexSearchResults = function (index, queryResults) {
         var filterIDs = [];
@@ -119,7 +124,7 @@ var ProjectPastroUtils = function () {
             filterIDs = _.union(filterIDs, o);
         });
         return filterIDs;
-    }
+    };
     //Error Reporting
     /*
         Usage:
@@ -141,5 +146,5 @@ var ProjectPastroUtils = function () {
         }).then(() => {
             return 0; //Dummy value
         });
-    }
-}
+    };
+};
