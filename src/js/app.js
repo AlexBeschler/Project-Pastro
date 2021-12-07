@@ -1486,6 +1486,14 @@
 					this.selectRecipe(this.searchResults_sectionTitle[index]);
 					this.navigateForward(this.$refs.recipeView, null, null);
 				},
+				clickedStrikeListItem: function(element) {
+					//Find parent element; consider the <li> the parent
+					if (element.target.classList.contains('list-group-item')) { //We've got the parent
+						element.target.classList.toggle('strike-list-item');
+					} else {
+						element.srcElement.parentNode.classList.toggle('strike-list-item');
+					}
+				},
 
 				/**** Animation utilities ****/
                 getAbsoluteHeight: function (el) {

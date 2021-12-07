@@ -12,7 +12,7 @@
 }
 
 body {
-    background-color: var(--ps-bg-color);
+    background-color: var(--ps-bg-color) !important;
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -336,7 +336,9 @@ body {
     border-radius: 12px;
 }
 
-.recipeView, .addRecipeView, .optionsView {
+.recipeView,
+.addRecipeView,
+.optionsView {
     display: none;
     opacity: 0;
 }
@@ -430,12 +432,12 @@ body {
 }
 
 .subheading {
-    letter-spacing: 0.15rem!important;
+    letter-spacing: 0.15rem !important;
     font-size: 1.25rem;
     font-weight: 500;
     padding: 1rem 0 !important;
-    margin-bottom: 0!important;
-    margin-top: 0.5rem!important;
+    margin-bottom: 0 !important;
+    margin-top: 0.5rem !important;
     align-items: center;
     justify-content: space-between;
 }
@@ -456,7 +458,8 @@ span.ingredient-amount-badge {
 }
 
 .strike-list-item>span,
-span.strike-list-item {
+span.strike-list-item,
+.strike-list-item>p {
     text-decoration: line-through;
     color: #ccc;
 }
@@ -479,24 +482,12 @@ span.ingredient-amount-badge.strike-list-item {
     font-weight: 900;
 }
 
-label.strikeable {
-    margin-bottom: 0rem;
-    display: contents;
+.recipeView * .accordion>.accordion-item {
+    background-color: inherit;
 }
 
-input[type=checkbox]:checked+label.strikeable {
-    text-decoration: line-through;
-    color: #ccc;
-}
-
-input[type=checkbox]:checked+label.strikeable>span,
-input[type=checkbox]:checked+label.strikeable>p {
-    text-decoration: line-through;
-    color: #ccc;
-}
-
-input[type=checkbox]:checked+label.strikeable>span.ingredient-amount-badge {
-    border: 2px solid #fd552340;
+.recipeView * .accordion>.accordion-item>.accordion-header>button {
+    background-color: inherit;
 }
 
 /* Manage Recipe View */
