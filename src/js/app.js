@@ -802,6 +802,23 @@
 				ingredientsDisplayState: 'view',
 				stepsDisplayState: 'view',
 
+				/** AddRecipeView data **/
+				manage_smartButtonText: 'Cover Photo »',
+				manage_smartButtonProgress: {
+					overview: 1,
+					coverPhoto: 2,
+					timeServings: 3,
+					ingredients: 4,
+					steps: 5,
+					nutrition: 6
+				},
+				manage_activePane: 1,
+				showStickySubmit: false,
+
+
+
+
+
 
 
 
@@ -848,17 +865,7 @@
 				//For use with manage recipes
 				manageOffcanvas: null,
 				isRecipeSubmitDisabled: false,
-				manage_smartButtonText: '',
-				manage_smartButtonProgress: {
-					overview: 1,
-					coverPhoto: 2,
-					timeServings: 3,
-					ingredients: 4,
-					steps: 5,
-					nutrition: 6
-				},
-				manage_activePane: 1,
-				showStickySubmit: false,
+				
 
 				//Step 1
 				manage_filePondCoverPhoto: null,
@@ -1462,6 +1469,10 @@
 				clickedMealPlan: function () {
                     console.log('Clicked meal plan');
                 },
+				clickedAddRecipe: function() {
+					//this.updateSmartButtonText();
+					this.navigateForward(this.$refs.addRecipeView, null, null);
+				},
 				clickedClearTagFilters: function() {
 					this.checkedTagsArray = [];
 				},
@@ -2312,27 +2323,6 @@
 
 					//Execute cloud variables
 					*/
-				},
-				recipeViewListener: function () {
-					this.clickedAddRecipe();
-				},
-				clickedAddRecipe: function () {
-					//Do button animation
-					if (this.$refs.addRecipeButton.dataset.psButtonType == 'add') {
-						this.manage_recipeTitle = 'Add Recipe';
-					} else {
-						this.manage_recipeTitle = 'Update Recipe';
-						//Remove recipeView listener
-						this.$refs.recipeView.removeEventListener('hidden.bs.offcanvas', this.recipeViewListener);
-					}
-					if (this.manageOffcanvas === null) {
-						this.manageOffcanvas = new bootstrap.Offcanvas(document.getElementById('manage-recipe-offcanvas'));
-					}
-					this.manageOffcanvas.show();
-					this.$refs.undoContainer.style.display = 'inherit!important';
-
-					this.updateSmartButtonText();
-
 				},
 				//Manage recipe methods
 				//TODO: when the user clicks on the X button for FilePond, destroy CropperJS instance (if it exists)

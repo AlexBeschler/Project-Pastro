@@ -36,17 +36,21 @@
     <!-- Prefetch some assets we will use later -->
     <link rel="prefetch" href="assets/icons/arrow-left-short.svg">
     <link rel="prefetch" href="assets/icons/arrow-up-right.svg">
-    <!--link rel="prefetch" href="assets/icons/basket.svg"-->
-    <!--link rel="prefetch" href="assets/icons/check.svg"-->
-    <link rel="prefetch" href="assets/icons/clipboard-plus.svg">
-    <!--link rel="prefetch" href="assets/icons/clock.svg"-->
+    <link rel="prefetch" href="assets/icons/calendar-range.svg">
+    <link rel="prefetch" href="assets/icons/camera-fill.svg">
+    <link rel="prefetch" href="assets/icons/check-lg.svg">
+    <link rel="prefetch" href="assets/icons/chevron-bar-expand.svg">
     <link rel="prefetch" href="assets/icons/edit.svg">
-    <!--link rel="prefetch" href="assets/icons/info.svg"-->
+    <link rel="prefetch" href="assets/icons/egg.svg">
+    <link rel="prefetch" href="assets/icons/gear.svg">
+    <link rel="prefetch" href="assets/icons/info-circle.svg">
+    <link rel="prefetch" href="assets/icons/journal-richtext.svg">
     <link rel="prefetch" href="assets/icons/lightning.svg">
-    <!--link rel="prefetch" href="assets/icons/list-ol.svg"-->
-    <link rel="prefetch" href="assets/icons/recipe-close.svg">
-    <link rel="prefetch" href="assets/icons/share.svg">
+    <link rel="prefetch" href="assets/icons/search.svg">
+    <link rel="prefetch" href="assets/icons/stopwatch.svg">
+    <link rel="prefetch" href="assets/icons/tags.svg">
     <link rel="prefetch" href="assets/icons/trash.svg">
+    <link rel="prefetch" href="assets/icons/x-lg.svg">
 </head>
 
 <body>
@@ -154,7 +158,7 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success fancy-button w-100">Add recipe</button>
+                <button type="button" class="btn btn-success fancy-button w-100" @click="clickedAddRecipe">Add recipe</button>
             </div>
 
             <!-- Filter recipe content -->
@@ -183,7 +187,12 @@
                     </div>
                     <div class="col-11 text-start">
                         <h5>Time</h5>
-                        <small>None applied</small>
+                        <div v-if="totalRecipeTimeInput.length || finishByTimeInput.length">
+                            <small>Filters applied</small>
+                        </div>
+                        <div v-else>
+                            <small>None applied</small>
+                        </div>
                     </div>
                 </div>
                 <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterIngredients">
@@ -249,7 +258,7 @@
                                 <img src="assets/icons/edit.svg">
                             </button>
                             <button v-else-if="detailsDisplayState === 'edit'" class="btn d-flex" @click="editRecipeDetailsRecipeView">
-                                <img src="assets/icons/check.svg">
+                                <img src="assets/icons/check-lg.svg">
                             </button>
                             <div v-else class="spinner-border text-success" role="status">
                                 <span class="visually-hidden">Loading...</span>
@@ -299,7 +308,7 @@
                                         <img src="assets/icons/edit.svg">
                                     </button>
                                     <button v-else-if="specialEquipmentDisplayState === 'edit'" class="btn d-flex" @click="editSpecialEquipmentRecipeView">
-                                        <img src="assets/icons/check.svg">
+                                        <img src="assets/icons/check-lg.svg">
                                     </button>
                                     <div v-else class="spinner-border text-success" role="status">
                                         <span class="visually-hidden">Loading...</span>
@@ -332,7 +341,7 @@
                                         <img src="assets/icons/edit.svg">
                                     </button>
                                     <button v-else-if="notesDisplayState === 'edit'" class="btn d-flex" @click="editRecipeNotesRecipeView">
-                                        <img src="assets/icons/check.svg">
+                                        <img src="assets/icons/check-lg.svg">
                                     </button>
                                     <div v-else class="spinner-border text-success" role="status">
                                         <span class="visually-hidden">Loading...</span>
@@ -370,7 +379,7 @@
                                     <img src="assets/icons/edit.svg">
                                 </button>
                                 <button v-if="ingredientsDisplayState === 'edit'" class="btn d-flex" @click="editRecipeIngredientsRecipeView">
-                                    <img src="assets/icons/check.svg">
+                                    <img src="assets/icons/check-lg.svg">
                                 </button>
                                 <div v-else-if="ingredientsDisplayState === 'loading'" class="spinner-border text-success" role="status">
                                     <span class="visually-hidden">Loading...</span>
@@ -410,7 +419,7 @@
                                     <img src="assets/icons/edit.svg">
                                 </button>
                                 <button v-if="stepsDisplayState === 'edit'" class="btn d-flex" @click="editRecipeStepsRecipeView">
-                                    <img src="assets/icons/check.svg">
+                                    <img src="assets/icons/check-lg.svg">
                                 </button>
                                 <div v-else-if="stepsDisplayState === 'loading'" class="spinner-border text-success" role="status">
                                     <span class="visually-hidden">Loading...</span>
@@ -483,7 +492,7 @@
             <!-- AddRecipeView -->
             <div class="addRecipeView" ref="addRecipeView">
                 <div class="container">
-                    <div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
+                    <!--div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
                         <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button pe-1" type="button"
@@ -533,7 +542,7 @@
                                     <div class="mt-3">
                                         <div class="col-lg-12">
                                             <div v-if="manage_recipeTagHolder.length">
-                                                <!--sortable-list :lock-axis="'y'" :press-delay.number=100
+                                                <sortable-list :lock-axis="'y'" :press-delay.number=100
                                                     v-model="manage_recipeTagHolder">
                                                     <sortable-item v-for="(tag, index) in manage_recipeTagHolder"
                                                         :index="index" :key="index" :tag="tag" :value="tag.value"
@@ -542,7 +551,7 @@
                                                         v-on:edit-tag="editTag(index)"
                                                         v-on:delete-tag="deleteTag(index)"
                                                         @touchstart.native="scrollStop" @touchend.native="scrollMove" />
-                                                </sortable-list-->
+                                                </sortable-list>
                                             </div>
                                         </div>
                                     </div>
@@ -709,7 +718,7 @@
                                                     v-if="manage_recipeBlockIngredients.length > 0">
                                                 <div class="mb-3">
                                                     <div v-if="manage_recipeBlockIngredients.length">
-                                                        <!--ingredients-draggable-list :lock-axis="'y'"
+                                                        <ingredients-draggable-list :lock-axis="'y'"
                                                             :press-delay.number=100
                                                             v-model="manage_recipeBlockIngredients">
                                                             <ingredients-draggable-item
@@ -725,7 +734,7 @@
                                                                 @touchend.native="scrollMove"
                                                                 :ref="'ingredient' + index">
                                                             </ingredients-draggable-item>
-                                                        </ingredients-draggable-list-->
+                                                        </ingredients-draggable-list>
                                                     </div>
                                                 </div>
                                             </div>
@@ -773,7 +782,7 @@
                                                 <hr class="margin-top-2" v-if="manage_recipeBlockSteps.length">
                                                 <div class="mb-3">
                                                     <div class="list-group" v-if="manage_recipeBlockSteps.length">
-                                                        <!--steps-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                                        <steps-draggable-list :lock-axis="'y'" :press-delay.number=100
                                                             v-model="manage_recipeBlockSteps">
                                                             <steps-draggable-item
                                                                 v-for="(step, index) in manage_recipeBlockSteps"
@@ -785,7 +794,7 @@
                                                                 @touchstart.native="scrollStop"
                                                                 @touchend.native="scrollMove">
                                                             </steps-draggable-item>
-                                                        </steps-draggable-list-->
+                                                        </steps-draggable-list>
                                                     </div>
                                                 </div>
                                             </div>
@@ -898,7 +907,7 @@
                                         <button class="btn d-flex mb-3" style="margin: 0 auto;" @click="addBlock"
                                             v-if="manage_recipeBlockSteps.length">+ Add Section</button>
                                         <div class="list-group" v-if="manage_recipeBlocks.length">
-                                            <!--blocks-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                            <blocks-draggable-list :lock-axis="'y'" :press-delay.number=100
                                                 v-model="manage_recipeBlocks">
                                                 <blocks-draggable-item class="list-group-item"
                                                     v-for="(block, index) in manage_recipeBlocks" :key="index"
@@ -909,13 +918,13 @@
                                                     v-on:delete-block="deleteBlock(index)"
                                                     @touchstart.native="scrollStop" @touchend.native="scrollMove">
                                                 </blocks-draggable-item>
-                                            </blocks-draggable-list-->
+                                            </blocks-draggable-list>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div-->
                     <button id="submitRecipeButton" type="button" class="btn btn-success fancy-button mb-5"
                         @click="submitManagedRecipe" style="width: 100%;"
                         :disabled="isRecipeSubmitDisabled">{{ manage_smartButtonText }}</button>
@@ -1095,7 +1104,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Tags</h5>
                 <button type="button" class="btn" @click="clickedClearTagFilters">
-                    <img src="../assets/icons/trash.svg" width="20" height="20">
+                    <img src="assets/icons/trash.svg" width="20" height="20">
                 </button>
             </div>
             <div class="offcanvas-body small">
@@ -1112,7 +1121,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Time</h5>
                 <button type="button" class="btn" @click="clickedClearTimeFilters">
-                    <img src="../assets/icons/trash.svg" width="20" height="20">
+                    <img src="assets/icons/trash.svg" width="20" height="20">
                 </button>
             </div>
             <div class="offcanvas-body small">
@@ -1134,7 +1143,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Ingredients</h5>
                 <button type="button" class="btn" @click="clickedClearIngredientFilters">
-                    <img src="../assets/icons/trash.svg" width="20" height="20">
+                    <img src="assets/icons/trash.svg" width="20" height="20">
                 </button>
             </div>
             <div class="offcanvas-body small">
@@ -1152,7 +1161,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Nutrition</h5>
                 <button type="button" class="btn">
-                    <img src="../assets/icons/trash.svg" width="20" height="20">
+                    <img src="assets/icons/trash.svg" width="20" height="20">
                 </button>
             </div>
             <div class="offcanvas-body small">
@@ -1503,7 +1512,7 @@
                 {{ ingredient.amount }} {{ ingredient.value }}
                 <button class="btn ps-2 pe-0 py-0" @click="$emit('edit-ingredient', index)">
                     <img v-if="!ingredient.editMode" src="assets/icons/edit.svg">
-                    <img v-else src="assets/icons/check.svg">
+                    <img v-else src="assets/icons/check-lg.svg">
                 </button>
             </div>
             <div v-else>
@@ -1514,7 +1523,7 @@
             </div>
             <span>
                 <button v-if="ingredient.editMode" class="btn pe-0" @click="$emit('edit-ingredient', index)">
-                    <img src="assets/icons/check.svg">
+                    <img src="assets/icons/check-lg.svg">
                 </button>
                 <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
                     <img src="assets/icons/trash.svg">
