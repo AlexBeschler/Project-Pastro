@@ -460,13 +460,54 @@
                                 <div v-bind:id="'item' + sectionIndex" class="accordion-collapse collapse" :data-bs-parent="'#accordionNutrition' + sectionIndex">
                                     <div class="accordion-body">
                                         <ul class="list-group list-group-flush mb-4">
-                                            <li class="list-group-item">Total Fat: {{ section.nFat }} g</li>
-                                            <li class="list-group-item">Cholesterol: {{ section.nCholesterol }} mg</li>
-                                            <li class="list-group-item">Sodium: {{ section.nSodium }} mg</li>
-                                            <li class="list-group-item">Carbohydrate: {{ section.nTotalCarbs }} g</li>
-                                            <li class="list-group-item">Fiber: {{ section.nFiber }} g</li>
-                                            <li class="list-group-item">Sugar: {{ section.nSugar }} g</li>
-                                            <li class="list-group-item">Protein: {{ section.nProtein }} g</li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>
+                                                    <b>Calories</b>
+                                                </span>
+                                                <span>{{ section.nCalories }}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between mt-3">
+                                                <span>
+                                                    <b>Total Fat</b>
+                                                </span>
+                                                <span>{{ section.nFat }} g</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>
+                                                    <b>Cholesterol</b>
+                                                </span>
+                                                <span>{{ section.nCholesterol }} mg</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>
+                                                    <b>Sodium</b>
+                                                </span>
+                                                <span>{{ section.nSodium }} mg</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>
+                                                    <b>Carbohydrate</b>
+                                                </span>
+                                                <span>
+                                                    {{ section.nTotalCarbs }} g
+                                                </span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span class="ms-3">Fiber</span>
+                                                <span>
+                                                    {{ section.nFiber }} g
+                                                </span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span class="ms-3">Sugar</span>
+                                                <span>{{ section.nSugar }} g</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>
+                                                    <b>Protein</b>
+                                                </span>
+                                                <span>{{ section.nProtein }} g</span>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -1390,7 +1431,7 @@
         </ul>
     </template>
     <template id="special-equipment-draggable-item-template">
-        <li class="list-group-item">
+        <li v-if="!equipment.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
                     <img src="assets/icons/chevron-bar-expand.svg">
@@ -1399,6 +1440,15 @@
                 <button class="btn pe-0" @click="$emit('delete-equipment', index)">
                     <img src="assets/icons/trash.svg">
                 </button>
+            </div>
+        </li>
+        <li v-else class="list-group-item">
+            <div class="d-flex align-items-center" style="justify-content: space-between;">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <small>Deleted {{ equipment.value }}</small>
+                <button class="btn btn-sm btn-outline-secondary">Undo</button>
             </div>
         </li>
     </template>

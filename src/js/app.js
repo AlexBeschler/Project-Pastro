@@ -292,6 +292,7 @@
 							"Add vanilla extract and espresso powder and combine well.",
 							"If frosting appears too dry, add more milk, a tablespoon at a time until it reaches the right consistency. If it appears to wet and does not hold its form, add more confectioner’s sugar, a tablespoon at a time until it reaches the right consistency."
 						],
+						"nCalories": 12,
 						"nFat": 1,
 						"nCholesterol": 1,
 						"nSodium": 1,
@@ -393,6 +394,7 @@
 							"Create and whisk in the Thai tea sweetener blend, detailed below.",
 							"Let sit in the refrigerator until chilled. Serve with 3 ice cubes and 2 fresh mint leaves. Enjoy!"
 						],
+						"nCalories": 12,
 						"nFat": 1,
 						"nCholesterol": 1,
 						"nSodium": 1,
@@ -418,6 +420,7 @@
 							"Pour ingredients into a cup. Using a fork whisk together ingredients until thoroughly blended, resembling a thick, sticky cream.",
 							"If your Thai tea recipe yielded an amount other than 3 cups, combine the condensed milk and evaporated milk using a 2:1 blend per cup of tea, 2 parts condensed milk, 1 part evaporated milk, using tbps as the measurement."
 						],
+						"nCalories": 12,
 						"nFat": 1,
 						"nCholesterol": 1,
 						"nSodium": 1,
@@ -470,6 +473,7 @@
 							"Preheat the oven to 350°F.",
 							"Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar."
 						],
+						"nCalories": 12,
 						"nFat": 1,
 						"nCholesterol": 1,
 						"nSodium": 1,
@@ -495,6 +499,7 @@
 							"Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
 							"Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil."
 						],
+						"nCalories": 12,
 						"nFat": 1,
 						"nCholesterol": 1,
 						"nSodium": 1,
@@ -1880,7 +1885,8 @@
 					r.specialEquipment = [];
 					recipe.specialEquipment.forEach(equipment => {
 						r.specialEquipment.push({
-							value: equipment
+							value: equipment,
+							isDeleted: false
 						});
 					});
 					r.notes = [];
@@ -1935,6 +1941,13 @@
 					}
 					
 					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.LOADING;
+
+					//Remove any deleted items
+					for (var  i = 0; i < this.selectedRecipe.specialEquipment.length; i++) {
+						if (this.selectedRecipe.specialEquipment[i].isDeleted) {
+							this.selectedRecipe.specialEquipment.splice(i, 1);
+						}
+					}
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
@@ -1953,7 +1966,7 @@
 					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
 				deleteSpecialEquipmentRecipeView: function(index) {
-					this.selectedRecipe.specialEquipment.splice(index, 1);
+					this.selectedRecipe.specialEquipment[index].isDeleted = true;
 				},
 				editRecipeNotesRecipeView: function() {
 					if (this.notesDisplayState === utils.DISPLAY_STATES.VIEW) {
