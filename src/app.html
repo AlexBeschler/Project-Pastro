@@ -1447,7 +1447,7 @@
                 <div class="btn ps-0 pe-2">
                     <img src="assets/icons/chevron-bar-expand.svg">
                 </div>
-                <small>Deleted {{ equipment.value }}</small>
+                <small>Deleted</small>
                 <button class="btn btn-sm btn-outline-secondary">Undo</button>
             </div>
         </li>
@@ -1459,7 +1459,7 @@
         </ul>
     </template>
     <template id="recipe-notes-draggable-item-template">
-        <li class="list-group-item">
+        <li v-if="!note.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
                     <img src="assets/icons/chevron-bar-expand.svg">
@@ -1468,6 +1468,15 @@
                 <button class="btn pe-0" @click="$emit('delete-note', index)">
                     <img src="assets/icons/trash.svg">
                 </button>
+            </div>
+        </li>
+        <li v-else class="list-group-item">
+            <div class="d-flex align-items-center" style="justify-content: space-between;">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <small>Deleted</small>
+                <button class="btn btn-sm btn-outline-secondary">Undo</button>
             </div>
         </li>
     </template>

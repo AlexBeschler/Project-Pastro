@@ -1892,7 +1892,8 @@
 					r.notes = [];
 					recipe.notes.forEach(note => {
 						r.notes.push({
-							value: note
+							value: note,
+							isDeleted: false
 						});
 					});
 					for (var i = 0; i < recipe.sections.length; i++) {
@@ -1943,11 +1944,13 @@
 					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.LOADING;
 
 					//Remove any deleted items
-					for (var  i = 0; i < this.selectedRecipe.specialEquipment.length; i++) {
-						if (this.selectedRecipe.specialEquipment[i].isDeleted) {
-							this.selectedRecipe.specialEquipment.splice(i, 1);
+					var t = [];
+					this.selectedRecipe.specialEquipment.forEach(element => {
+						if (!element.isDeleted) {
+							t.push(element);
 						}
-					}
+					});
+					this.selectedRecipe.specialEquipment = t;
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
@@ -1975,6 +1978,15 @@
 					}
 					
 					this.notesDisplayState = utils.DISPLAY_STATES.LOADING;
+
+					//Remove any deleted items
+					var t = [];
+					this.selectedRecipe.notes.forEach(element => {
+						if (!element.isDeleted) {
+							t.push(element);
+						}
+					});
+					this.selectedRecipe.notes = t;
 					
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
@@ -1993,7 +2005,7 @@
 					this.notesDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
 				deleteRecipeNotesRecipeView: function(index) {
-					this.selectedRecipe.notes.splice(index, 1);
+					this.selectedRecipe.notes[index].isDeleted = true;
 				},
 				editRecipeIngredientsRecipeView: function() {
 					if (this.ingredientsDisplayState === utils.DISPLAY_STATES.VIEW) {
