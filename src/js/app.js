@@ -1623,6 +1623,9 @@
 					this.ViewStack.push(navigateTo);
                 },
                 navigateBackward: function () {
+					if (this.ViewStack.length < 2) {
+						return;
+					}
 					var currentView = this.ViewStack.pop();
 					var previousView = this.ViewStack[this.ViewStack.length - 1];
                     var timeline = anime.timeline({});
