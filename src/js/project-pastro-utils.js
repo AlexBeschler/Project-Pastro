@@ -22,6 +22,45 @@ var ProjectPastroUtils = function () {
         this.errorCollection = firebase.firestore().collection('errors');
     };
 
+    //JS utils
+    this.deepClone = function(obj) {
+        //Used from https://github.com/angus-c/just/tree/master/packages/collection-clone
+        if (typeof obj == 'function') {
+            return obj;
+        }
+        var result = Array.isArray(obj) ? [] : {};
+        for (var key in obj) {
+            // include prototype properties
+            var value = obj[key];
+            var type = {}.toString.call(value).slice(8, -1);
+            if (type == 'Array' || type == 'Object') {
+                result[key] = this.deepClone(value);
+            } else if (type == 'Date') {
+                result[key] = new Date(value.getTime());
+            } else if (type == 'RegExp') {
+                result[key] = RegExp(value.source, this.getRegExpFlags(value));
+            } else {
+                result[key] = value;
+            }
+        }
+        return result;
+    };
+
+    this.getRegExpFlags = function(regExp) {
+        //Used from https://github.com/angus-c/just/tree/master/packages/collection-clone
+        if (typeof regExp.source.flags == 'string') {
+            return regExp.source.flags;
+        } else {
+            var flags = [];
+            regExp.global && flags.push('g');
+            regExp.ignoreCase && flags.push('i');
+            regExp.multiline && flags.push('m');
+            regExp.sticky && flags.push('y');
+            regExp.unicode && flags.push('u');
+            return flags.join('');
+        }
+    };
+
     //DOM utils
     this.showLoading = function () {
         document.getElementById('login-container').style.visibility = 'hidden';

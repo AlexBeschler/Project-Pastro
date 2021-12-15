@@ -1897,10 +1897,19 @@
 						});
 					});
 					for (var i = 0; i < recipe.sections.length; i++) {
+						r.sections[i].ingredients = [];
 						r.sections[i].steps = [];
+						recipe.sections[i].ingredients.forEach(ingredient => {
+							r.sections[i].ingredients.push({
+								amount: ingredient.amount,
+								value: ingredient.value,
+								isDeleted: false
+							});
+						});
 						recipe.sections[i].steps.forEach(step => {
 							r.sections[i].steps.push({
-								value: step
+								value: step,
+								isDeleted: false
 							});
 						});
 					}
@@ -1971,6 +1980,9 @@
 				deleteSpecialEquipmentRecipeView: function(index) {
 					this.selectedRecipe.specialEquipment[index].isDeleted = true;
 				},
+				undoDeleteSpecialEquipmentRecipeView: function(index) {
+					this.selectedRecipe.specialEquipment[index].isDeleted = false;
+				},
 				editRecipeNotesRecipeView: function() {
 					if (this.notesDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.notesDisplayState = utils.DISPLAY_STATES.EDIT;
@@ -2007,6 +2019,9 @@
 				deleteRecipeNotesRecipeView: function(index) {
 					this.selectedRecipe.notes[index].isDeleted = true;
 				},
+				undoDeleteRecipeNotesRecipeView: function(index) {
+					this.selectedRecipe.notes[index].isDeleted = false;
+				},
 				editRecipeIngredientsRecipeView: function() {
 					if (this.ingredientsDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.ingredientsDisplayState = utils.DISPLAY_STATES.EDIT;
@@ -2014,14 +2029,40 @@
 					}
 					
 					this.ingredientsDisplayState = utils.DISPLAY_STATES.LOADING;
-					
-					//Clean data
-					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
-					serializedRecipe.sections = this.selectedRecipe.sections;
 
+					//Remove any deleted items, update interface
+					var sections = [];
+					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
+						var section = utils.deepClone(this.selectedRecipe.sections[i]);
+						section.ingredients = [];
+						for (var j = 0; j < this.selectedRecipe.sections[i].ingredients.length; j++) {
+							if (!this.selectedRecipe.sections[i].ingredients[j].isDeleted) {
+								section.ingredients.push(this.selectedRecipe.sections[i].ingredients[j]);
+							}
+						}
+						sections.push(section);
+					}
+					this.selectedRecipe.sections = sections;
+					
+					//Clean data, serialize
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); 
+					serializedRecipe.sections = utils.deepClone(this.selectedRecipe.sections); //Create deep copy to prevent unwanted changes
+
+					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
+						serializedRecipe.sections[i].ingredients = [];
+						for (var j = 0; j < this.selectedRecipe.sections[i].ingredients.length; j++) {
+							if (!this.selectedRecipe.sections[i].ingredients[j].isDeleted) {
+								serializedRecipe.sections[i].ingredients.push({
+									amount: this.selectedRecipe.sections[i].ingredients[j].amount,
+									value: this.selectedRecipe.sections[i].ingredients[j].value
+								});
+							}
+						}
+					}
+					
 					//Overwrite data in cookbook
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
-
+					
 					//Re-index recipe in the indices
 					this.flexSearch.update({
 						data: serializedRecipe
@@ -2032,7 +2073,10 @@
 					this.ingredientsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
 				deleteRecipeIngredientsRecipeView: function(sectionIndex, ingredientIndex) {
-					this.selectedRecipe.sections[sectionIndex].ingredients.splice(ingredientIndex, 1);
+					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = true;
+				},
+				undoDeleteRecipeIngredientsRecipeView: function(sectionIndex, ingredientIndex) {
+					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
 				},
 				editRecipeStepsRecipeView: function() {
 					if (this.stepsDisplayState === utils.DISPLAY_STATES.VIEW) {
@@ -2041,9 +2085,24 @@
 					}
 					
 					this.stepsDisplayState = utils.DISPLAY_STATES.LOADING;
+
+					//Remove any deleted items, update interface
+					var sections = [];
+					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
+						var section = utils.deepClone(this.selectedRecipe.sections[i]);
+						section.steps = [];
+						for (var j = 0; j < this.selectedRecipe.sections[i].steps.length; j++) {
+							if (!this.selectedRecipe.sections[i].steps[j].isDeleted) {
+								section.steps.push(this.selectedRecipe.sections[i].steps[j]);
+							}
+						}
+						sections.push(section);
+					}
+					this.selectedRecipe.sections = sections;
 					
-					//Clean data
-					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+					//Clean data, serialize
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe));
+					serializedRecipe.sections = utils.deepClone(this.selectedRecipe.sections); //Create deep copy to prevent unwanted changes
 					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
 						serializedRecipe.sections[i].steps = [];
 						this.selectedRecipe.sections[i].steps.forEach(step => {
@@ -2064,7 +2123,10 @@
 					this.stepsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
 				deleteRecipeStepsRecipeView: function(sectionIndex, stepIndex) {
-					this.selectedRecipe.sections[sectionIndex].steps.splice(stepIndex, 1);
+					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = true;
+				},
+				undoDeleteRecipeStepsRecipeView: function(sectionIndex, stepIndex) {
+					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = false;
 				},
 
 				/**** Utilities ****/
