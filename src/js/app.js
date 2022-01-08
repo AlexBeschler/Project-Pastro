@@ -190,7 +190,6 @@
 				"sections": [
 					{
 						"title": "Cake",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "2 cups",
@@ -242,11 +241,26 @@
 							}
 						],
 						"steps": [
-							"Preheat oven to 350º F. Prepare two 9-inch cake pans by spraying with baking spray or buttering and lightly flouring.",
-							"Add flour, sugar, cocoa, baking powder, baking soda, salt and espresso powder to a large bowl or the bowl of a stand mixer. Whisk through to combine or, using your paddle attachment, stir through flour mixture until combined well.",
-							"Add milk, vegetable oil, eggs, and vanilla to flour mixture and mix together on medium speed until well combined. Reduce speed and carefully add boiling water to the cake batter until well combined.",
-							"Distribute cake batter evenly between the two prepared cake pans. Bake for 30-35 minutes, until a toothpick or cake tester inserted in the center of the chocolate cake comes out clean.",
-							"Remove from the oven and allow to cool for about 10 minutes, remove from the pan and cool completely."
+							{
+								"value": "Preheat oven to 350º F. Prepare two 9-inch cake pans by spraying with baking spray or buttering and lightly flouring.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Add flour, sugar, cocoa, baking powder, baking soda, salt and espresso powder to a large bowl or the bowl of a stand mixer. Whisk through to combine or, using your paddle attachment, stir through flour mixture until combined well.",
+								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
+							},
+							{
+								"value": "Add milk, vegetable oil, eggs, and vanilla to flour mixture and mix together on medium speed until well combined. Reduce speed and carefully add boiling water to the cake batter until well combined.",
+								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
+							},
+							{
+								"value": "Distribute cake batter evenly between the two prepared cake pans. Bake for 30-35 minutes, until a toothpick or cake tester inserted in the center of the chocolate cake comes out clean.",
+								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
+							},
+							{
+								"value": "Remove from the oven and allow to cool for about 10 minutes, remove from the pan and cool completely.",
+								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
+							}
 						],
 						"nFat": 1,
 						"nCholesterol": 1,
@@ -286,11 +300,26 @@
 							}
 						],
 						"steps": [
-							"Add cocoa to a large bowl or bowl of stand mixer. Whisk through to remove any lumps.",
-							"Cream together butter and cocoa powder until well-combined.",
-							"Add sugar and milk to cocoa mixture by adding 1 cup of sugar followed by about a tablespoon of milk. After each addition has been combined, turn mixer onto a high speed for about a minute. Repeat until all sugar and milk have been added.",
-							"Add vanilla extract and espresso powder and combine well.",
-							"If frosting appears too dry, add more milk, a tablespoon at a time until it reaches the right consistency. If it appears to wet and does not hold its form, add more confectioner’s sugar, a tablespoon at a time until it reaches the right consistency."
+							{
+								"value": "Add cocoa to a large bowl or bowl of stand mixer. Whisk through to remove any lumps.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Cream together butter and cocoa powder until well-combined.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Add sugar and milk to cocoa mixture by adding 1 cup of sugar followed by about a tablespoon of milk. After each addition has been combined, turn mixer onto a high speed for about a minute. Repeat until all sugar and milk have been added.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Add vanilla extract and espresso powder and combine well.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "If frosting appears too dry, add more milk, a tablespoon at a time until it reaches the right consistency. If it appears to wet and does not hold its form, add more confectioner’s sugar, a tablespoon at a time until it reaches the right consistency.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							}
 						],
 						"nCalories": 12,
 						"nFat": 1,
@@ -321,7 +350,7 @@
 				"totalTime": 15,
 				"activeTime": 10,
 				"yield": "3 cups of Thai tea",
-				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"coverPhotoURL": "https://simpleparallax.b-cdn.net/images/paint_1.jpg",
 				"thumbnail": "https://via.placeholder.com/64x64.png",
 				"specialEquipment": [
 					"Cheesecloth",
@@ -381,18 +410,54 @@
 							}
 						],
 						"steps": [
-							"Put filtered water into a medium saucepan (~6 cups capacity or more) and bring to a boil.",
-							"While waiting, snip off the black tea bag strings with a pair of scissors and combine these with the star anise, cardamon seeds, cinnamon sticks, tumeric powder, and vanilla beans into a separate container and set aside.",
-							"When water is boiling bring water to lo simmer and put dry ingredients in all at once. Quickly add the vanilla extract. Stir until ingredients are combined, roughly 8 stirs.",
-							"Let sit for 6 minutes uncovered (the black tea bags could burst if saucepan is covered).",
-							"Afterwards, stir once again, about 8 stirs. Turn stove off.",
-							"Place a sieve over one of the kitchen beakers and the old towel underneath; the cloth is used for catching any spills that will occur. Pour the tea blend into the sieve and let it catch the large ingredients.",
-							"We must now filter the tumeric powder out of the tea - filtering twice will ensure almost all is removed. Fold the cheesecloth in half, then in half again (4 layers of cloth should be sufficient). Cover the top of the other empty beaker with one side of the cloth and pour the tea from the first beaker into the second, cheesecloth-covered beaker.",
-							"Clean the now-empty beaker of residual tumeric powder and cover with the cheesecloth. Repeat the filtering process with the other side of the cheesecloth.",
-							"After filtering twice, the tea should yield 3 cups.",
-							"Whisk the 3 tbps of granulated sugar into the tea (1 tbps per cup of tea)",
-							"Create and whisk in the Thai tea sweetener blend, detailed below.",
-							"Let sit in the refrigerator until chilled. Serve with 3 ice cubes and 2 fresh mint leaves. Enjoy!"
+							{
+								"value": "Put filtered water into a medium saucepan (~6 cups capacity or more) and bring to a boil.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "While waiting, snip off the black tea bag strings with a pair of scissors and combine these with the star anise, cardamon seeds, cinnamon sticks, tumeric powder, and vanilla beans into a separate container and set aside.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "When water is boiling bring water to lo simmer and put dry ingredients in all at once. Quickly add the vanilla extract. Stir until ingredients are combined, roughly 8 stirs.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Let sit for 6 minutes uncovered (the black tea bags could burst if saucepan is covered).",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Afterwards, stir once again, about 8 stirs. Turn stove off.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Place a sieve over one of the kitchen beakers and the old towel underneath; the cloth is used for catching any spills that will occur. Pour the tea blend into the sieve and let it catch the large ingredients.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "We must now filter the tumeric powder out of the tea - filtering twice will ensure almost all is removed. Fold the cheesecloth in half, then in half again (4 layers of cloth should be sufficient). Cover the top of the other empty beaker with one side of the cloth and pour the tea from the first beaker into the second, cheesecloth-covered beaker.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Clean the now-empty beaker of residual tumeric powder and cover with the cheesecloth. Repeat the filtering process with the other side of the cheesecloth.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "After filtering twice, the tea should yield 3 cups.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Whisk the 3 tbps of granulated sugar into the tea (1 tbps per cup of tea)",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Create and whisk in the Thai tea sweetener blend, detailed below.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Let sit in the refrigerator until chilled. Serve with 3 ice cubes and 2 fresh mint leaves. Enjoy!",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							}
 						],
 						"nCalories": 12,
 						"nFat": 1,
@@ -417,8 +482,14 @@
 							}
 						],
 						"steps": [
-							"Pour ingredients into a cup. Using a fork whisk together ingredients until thoroughly blended, resembling a thick, sticky cream.",
-							"If your Thai tea recipe yielded an amount other than 3 cups, combine the condensed milk and evaporated milk using a 2:1 blend per cup of tea, 2 parts condensed milk, 1 part evaporated milk, using tbps as the measurement."
+							{
+								"value": "Pour ingredients into a cup. Using a fork whisk together ingredients until thoroughly blended, resembling a thick, sticky cream.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "If your Thai tea recipe yielded an amount other than 3 cups, combine the condensed milk and evaporated milk using a 2:1 blend per cup of tea, 2 parts condensed milk, 1 part evaporated milk, using tbps as the measurement.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},	
 						],
 						"nCalories": 12,
 						"nFat": 1,
@@ -470,8 +541,14 @@
 							}
 						],
 						"steps": [
-							"Preheat the oven to 350°F.",
-							"Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar."
+							{
+								"value": "Preheat the oven to 350°F.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							}
 						],
 						"nCalories": 12,
 						"nFat": 1,
@@ -496,8 +573,14 @@
 							}
 						],
 						"steps": [
-							"Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
-							"Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil."
+							{
+								"value": "Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							}
 						],
 						"nCalories": 12,
 						"nFat": 1,
@@ -509,6 +592,121 @@
 						"nProtein": 1 
 					}
 				]
+			},
+			{
+				"docID": "8a2a771f-3777-47b1-9cf6-8630e28c99db",
+				"dateAdded": "1639627414",
+				"dateModified": "1639627614",
+				"favorite": false,
+				"title": "Hello World Recipe",
+				"description": "<p>Hello World</p>",
+				"tags": [
+					"Dinner",
+					"Quick"
+				],
+				"prepTime": 1,
+				"cookTime": 3,
+				"totalTime": 1,
+				"activeTime": 5,
+				"yield": "2 servings",
+				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+				"thumbnail": "https://via.placeholder.com/64x64.png",
+				"specialEquipment": [
+					"Rice cooker"
+				],
+				"notes": [
+					"Make sure to mix well"
+				],
+				"sections": [
+					{
+						"title": "Hello World",
+						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+						"ingredients": [
+							{
+								"amount": "1 tbps",
+								"value": "butter"
+							},
+							{
+								"amount": "1 tsp",
+								"value": "salt"
+							}
+						],
+						"steps": [
+							{
+								"value": "Preheat the oven to 350°F.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							}
+						],
+						"nCalories": 12,
+						"nFat": 1,
+						"nCholesterol": 1,
+						"nSodium": 1,
+						"nTotalCarbs": 1,
+						"nFiber": 1,
+						"nSugar": 1,
+						"nProtein": 1 
+					},
+					{
+						"title": "Another hello world",
+						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+						"ingredients": [
+							{
+								"amount": "1 tub",
+								"value": "frosting"
+							},
+							{
+								"amount": "3 tsp",
+								"value": "sugar"
+							}
+						],
+						"steps": [
+							{
+								"value": "Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							},
+							{
+								"value": "Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil.",
+								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+							}
+						],
+						"nCalories": 12,
+						"nFat": 1,
+						"nCholesterol": 1,
+						"nSodium": 1,
+						"nTotalCarbs": 1,
+						"nFiber": 1,
+						"nSugar": 1,
+						"nProtein": 1 
+					}
+				]
+			}
+		];
+
+		var firebaseTestFilterPresets = [
+			{
+				name: 'Dinner in 10 minutes',
+				tags: '',
+				time: '',
+				ingredients: '',
+				nutrition: ''
+			},
+			{
+				name: 'Sweet Tooth!',
+				tags: '',
+				time: '',
+				ingredients: '',
+				nutrition: ''
+			},
+			{
+				name: 'Healthy Lunch',
+				tags: '',
+				time: '',
+				ingredients: '',
+				nutrition: ''
 			}
 		];
 
@@ -571,7 +769,7 @@
 			flexIndex++;
 		});
 
-		appFunctionality(payload, listOfIngredients, listOfTags, metaIndex, numberMetaIndex);
+		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex);
 		//utils._NANOBAR.go(75);
 		/*
 		var payload = [];
@@ -650,7 +848,7 @@
 		*/
 	}
 
-	function appFunctionality(payload, listOfIngredients, listOfTags, indexedRecipes, numberMetaIndex) {
+	function appFunctionality(payload, filterPresets, listOfIngredients, listOfTags, indexedRecipes, numberMetaIndex) {
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -765,6 +963,8 @@
 				//   of the browser. When this happens, the app will pop the ViewStack and move backwards,
 				//   providing a seamless UX
 				ViewStack: [],
+				ticking: false,
+				parallaxPx: 6,
 				
 				/** Home screen data **/
 				headerText: '',
@@ -781,6 +981,7 @@
 				searchQuery: '',
 				searchResults_title: [],
 				searchResults_sectionTitle: [],
+				filterPresetsList: [],
 				
 				//Tag helpers
 				tagModel: '',
@@ -1021,15 +1222,36 @@
 
 				this.headerTextAnimeObject = anime.timeline({});
 
-				this.headerTextAnimeObject.add({
+				this.headerTextAnimeObject
+				.add({
+					targets: this.$refs.addRecipeButton,
+					translateX: function(el, i, l) {
+						var padding = utils.remToPixels(0.75);
+						var rem = utils.remToPixels(1.575);
+						var vw = utils.vwToPixels(1.5);
+						var animationWidth = -(rem + vw + padding);
+						return ['0', animationWidth];
+					},
+					opacity: {
+						value: 1,
+						duration: 250
+					},
+					rotate: [45, 0],
+					delay: 250,
+					duration: 450,
+					easing: 'easeOutBack'
+				})
+				/*
+				.add({
                     targets: this.$refs.headerText,
                     translateY: ['-25%', '0%'],
                     opacity: [0, 1],
                     delay: 250,
                     duration: 200,
-
                     easing: 'easeInOutQuad'
-                }).add({
+				
+                })*/
+				.add({
                     targets: this.$refs.headerText,
                     translateY: ['0%', '50%'],
                     opacity: [1, 0],
@@ -1038,7 +1260,8 @@
                     complete: function (anim) {
                         self.headerText = 'Let\'s get started';
                     }
-                }, '+=775').add({
+                }, '+=575')
+				.add({
                     targets: this.$refs.headerText,
                     translateY: ['-50%', '0%'],
                     opacity: [0, 1],
@@ -1054,6 +1277,8 @@
                     delay: 250,
                     easing: 'easeOutQuad'
                 });
+
+				this.filterPresetsList = filterPresets;
 
 				/*
 
@@ -1345,6 +1570,14 @@
                         return;
                     }
                     var self = this;
+
+					//For Close Search 'X' icon - measure distance between current position and parent container left side
+					const selectedEl = this.$refs.closeSearchButton;
+					const searchBox = this.$refs.searchBoxButton;
+					const initialSearchBoxLeft = searchBox.getBoundingClientRect().left;
+					let actualSelectedElLeft = selectedEl.getBoundingClientRect().left;
+					let selectedElPosition = (actualSelectedElLeft - initialSearchBoxLeft - utils.remToPixels(1.5));
+
                     var timeline = anime.timeline({});
                     timeline
                         .add({
@@ -1361,14 +1594,14 @@
                         }, '-=100')
                         .add({
                             targets: document.getElementById('innerSearchButtonImg1'),
-                            translateX: ['0%', '-175%'],
+                            translateX: ['0px', '-' + selectedElPosition + 'px'],
                             opacity: [1, 0],
                             duration: 200,
                             easing: 'easeInOutQuad'
                         }, '-=100')
                         .add({
-                            targets: document.getElementById('innerSearchButtonImg2'),
-                            translateX: ['0%', '-175%'],
+                            targets: this.$refs.closeSearchButton,
+                            translateX: ['0px', '-' + selectedElPosition + 'px'],
                             opacity: [0, 1],
                             duration: 200,
                             easing: 'easeInOutQuad'
@@ -1376,7 +1609,7 @@
                         .add({
                             targets: this.ViewStack[this.ViewStack.length - 1],
                             opacity: [1, 0],
-                            translateY: ['0%', '-1rem'],
+                            translateY: ['0rem', '-1rem'],
                             duration: 100,
                             easing: 'easeInOutQuad',
                             complete: function(anim) {
@@ -1911,7 +2144,8 @@
 						});
 						recipe.sections[i].steps.forEach(step => {
 							r.sections[i].steps.push({
-								value: step,
+								value: step.value,
+								coverPhotoURL: step.coverPhotoURL,
 								isDeleted: false
 							});
 						});

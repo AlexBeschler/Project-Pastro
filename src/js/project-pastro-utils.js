@@ -76,6 +76,12 @@ var ProjectPastroUtils = function () {
         document.getElementById('loading').style.visibility = 'hidden';
         document.getElementById('appContent').style.visibility = 'visible';
     };
+    this.remToPixels = function (rem) {
+        return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+    };
+    this.vwToPixels = function (vw) {
+        return vw * (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) / 100);
+    };
 
     //Local storage utils
     this.getLocalStorage = function (key) {

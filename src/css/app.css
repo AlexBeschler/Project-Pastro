@@ -294,6 +294,25 @@ body {
     box-shadow: none !important;
 }
 
+.box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem;
+    word-break: break-word;
+}
+
+.box:before {
+    content: '';
+    float: left;
+    padding-top: 75%;
+}
+
 .filter-recipes-container * h5 {
     margin-bottom: 0;
 }
@@ -348,10 +367,18 @@ body {
     padding: 0.6rem 1rem;
 }
 
-.recipe-cover-photo {
+.parallaxContainer {
+    overflow: hidden;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     max-width: inherit;
+}
+
+.recipe-cover-photo {
+    height: 24rem;
+    object-fit: cover;
+    /* transform: translate3d(0px, -147px, 0px) scale(2); */
+    will-change: transform;
 }
 
 .cookbook-list-group {
@@ -457,6 +484,10 @@ span.ingredient-amount-badge {
     border: 2px solid #ffaa00;
 }
 
+.strikeable-text {
+    transition: color 0.15s ease-out;
+}
+
 .strike-list-item>span,
 span.strike-list-item,
 .strike-list-item>p {
@@ -469,6 +500,10 @@ span.ingredient-amount-badge.strike-list-item {
     border: 2px solid #fd552340;
     text-decoration: line-through;
     color: #ccc;
+}
+
+.strike-list-item>img {
+    opacity: 0.55;
 }
 
 .step-number-badge {
