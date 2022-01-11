@@ -124,6 +124,9 @@ body {
     height: auto !important;
     border-bottom-left-radius: 0.25rem;
     border-bottom-right-radius: 0.25rem;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    background: #ffffff;
 }
 
 .ql-editor {
@@ -132,8 +135,11 @@ body {
     transition-duration: 0.15s, 0.15s;
     transition-timing-function: ease-in-out, ease-in-out;
     transition-delay: 0s, 0s;
-    border-radius: 0.25rem;
-    border: 1px solid #ffffff;
+    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    border: 1px solid #ccc;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
 }
 
 .ql-editor:focus {
@@ -300,7 +306,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #afafaf;
     border-radius: 6px;
     margin-bottom: 0.5rem;
     padding: 0.25rem;
@@ -467,6 +473,21 @@ body {
     margin-top: 0.5rem !important;
     align-items: center;
     justify-content: space-between;
+}
+
+.editRecipeTitleAnimation-enter-active,
+.editRecipeTitleAnimation-leave-active,
+.editRecipeDescriptionAnimation-enter-active,
+.editRecipeDescriptionAnimation-leave-active {
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+}
+
+.editRecipeTitleAnimation-enter,
+.editRecipeTitleAnimation-leave-to,
+.editRecipeDescriptionAnimation-enter,
+.editRecipeDescriptionAnimation-leave-to {
+    opacity: 0;
+    transform: translateY(-0.25rem);
 }
 
 span.ingredient-amount-badge {

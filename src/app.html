@@ -73,7 +73,8 @@
 
     <div id="appContent" class="container-fluid mt-4 main-wrap" style="visibility: hidden;">
         <div class="d-flex justify-content-end pt-3 px-3">
-            <button class="btn py-1 ps-1 pe-2" style="z-index: 1; position: absolute; opacity: 0;" ref="addRecipeButton" @click="clickedAddRecipe">
+            <button class="btn py-1 ps-1 pe-2" style="z-index: 1; position: absolute; opacity: 0;" ref="addRecipeButton"
+                @click="clickedAddRecipe">
                 <img class="gear-icon" src="assets/icons/plus.svg">
             </button>
             <button class="btn p-1" @click="clickedSettings" style="z-index: 1;" ref="settingsButton">
@@ -259,14 +260,20 @@
                     <h5>Back</h5>
                 </button>
                 <div class="parallaxContainer">
-                    <img v-bind:src="selectedRecipe.coverPhotoURL" class="img-fluid recipe-cover-photo" ref="recipeCoverPhotoRef">
+                    <img v-bind:src="selectedRecipe.coverPhotoURL" class="img-fluid recipe-cover-photo"
+                        ref="recipeCoverPhotoRef">
                 </div>
                 <!-- Title -->
                 <div class="container py-0">
                     <div class="card d-flex align-items-center recipe-title shadow-sm">
-                        <div v-if="detailsDisplayState === 'view'" class="card-body display-6">
-                            {{ selectedRecipe.title }}</div>
-                        <input v-else class="form-control" v-model="selectedRecipe.title">
+                        <transition name="editRecipeTitleAnimation" mode="out-in"
+                            v-on:after-enter="editRecipeTitleOnFinishedAnimation">
+                            <div v-if="detailsDisplayState === 'view'" class="card-body display-6">
+                                {{ selectedRecipe.title }}
+                            </div>
+                            <input v-else class="form-control" v-model="selectedRecipe.title"
+                                style="font-size: calc(1.375rem + 1.5vw)" ref="recipeViewTitleInput">
+                        </transition>
                     </div>
                 </div>
                 <!-- Details & recipe meta -->
@@ -287,7 +294,19 @@
                             </div>
                         </span>
                     </h5>
-                    <div v-html="selectedRecipe.description" class="mb-4"></div>
+
+                    <transition name="editRecipeDescriptionAnimation" mode="out-in" v-on:after-enter="editRecipeDescriptionAfterAnimation">
+                        <div v-if="detailsDisplayState === 'view'" key="view">
+                            <div v-html="selectedRecipe.description" class="mb-4"></div>
+                        </div>
+                        <div v-else key="edit">
+                            <div id="recipeViewEditor" ref="recipeViewEditRecipeDescription"></div>
+                        </div>
+                    </transition>
+                    <div class="invalid-feedback">
+                        Please enter a description
+                    </div>
+
                     <hr>
                     <div class="row">
                         <div class="col-12 d-flex justify-content-between mb-2">
@@ -1798,14 +1817,6 @@
             <p class="mt-5 mb-3 text-muted">© 2021</p>
         </form>
     </template>
-    <!-- PWA Dependency -->
-    <script>
-        window.addEventListener("load", () => {
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("registerServiceWorker.js");
-            }
-        });
-    </script>
     <!-- Core Dependencies -->
     <script src="vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/vue/vue.js"></script>
@@ -1839,7 +1850,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
         integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="vendor/hammerjs/hammer.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/nlp.js"></script>

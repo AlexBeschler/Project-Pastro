@@ -5,6 +5,10 @@
 	nlp.init();
 
 	window.addEventListener("load", function (event) {
+		//Progressive web app dependency
+		if ("serviceWorker" in navigator) {
+			navigator.serviceWorker.register("registerServiceWorker.js");
+		}
 		utils.init();
 
 		function toggleSignIn() {
@@ -1021,6 +1025,24 @@
 				manage_activePane: 1,
 				showStickySubmit: false,
 
+				/** 3rd Party & API data **/
+				//Quill
+				quillRecipeViewInstance: null,
+				quillRecipeViewContent: null,
+				toolbarOptions: [
+					['bold', 'italic'],
+					[{
+						'list': 'ordered'
+					}, {
+						'list': 'bullet'
+					}, {
+						'indent': '-1'
+					}, {
+						'indent': '+1'
+					}],
+					['clean']
+				],
+
 
 
 
@@ -1410,6 +1432,8 @@
 					});
 				});
 				*/
+
+				//this.initRecipeViewQuill();
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
@@ -1885,7 +1909,73 @@
                             }
                         }, '+=5');
                 },
+				
+				/*
+				showQuillToolbar: function() {
+					console.log('Showing toolbar');
+					var toolbars = document.querySelectorAll('.ql-toolbar');
+					anime({
+						targets: toolbars,
+						translateY: ['0rem', '-0.25rem'],
+						opacity: ['0', '1'],
+						easing: 'easeInOut',
+						duration: 250,
+						begin: function() {
+							toolbars.forEach(toolbar => {
+								toolbar.style.display = 'block';
+							});
+						}
+					});
+				},
+				hideQuillToolbar: function() {
+					console.log('Showing toolbar');
+					
+				},
+				*/
+				editRecipeTitleOnFinishedAnimation: function() {
+					//If the app isn't editing
+					if (this.detailsDisplayState === 'loading' || this.detailsDisplayState === 'view') return;
 
+					this.$refs.recipeViewTitleInput.focus();
+				},
+				editRecipeDescriptionAfterAnimation: function(el) {
+					if (this.quillRecipeViewInstance === null) {
+						this.initRecipeViewQuill();
+						this.quillRecipeViewInstance.setContents(this.quillRecipeViewInstance.clipboard.convert(this.selectedRecipe.description), 'silent');
+					} else {
+						this.quillRecipeViewInstance = null;
+					}
+				},
+				/*
+				beforeEnterEditRecipeDetails: function(el) {
+					el.style.display = 'block';
+					el.style.opacity = 0;
+					el.style.transform = 'translateY(0rem)';
+				},
+				enterEditRecipeDetails: function(el, done) {
+					Velocity(el, { 
+						opacity: 1, 
+						translateY: '-0.25rem'
+					}, { 
+						duration: 250 
+					}, { 
+						complete: done
+					});
+				},
+				leaveEditRecipeDetails: function(el, done) {
+					Velocity(el, { 
+						opacity: 0, 
+						translateY: '0.25rem'
+					}, { 
+						duration: 250 
+					}, { 
+						complete: function() {
+							el.style.display = 'none';
+							done();
+						}
+					});
+				},
+				*/
 				/**** Methods ****/
 				updateSearchQuery: function(query) {
 					var queryResults = this.flexSearch.search(query.toLowerCase());
@@ -2412,6 +2502,54 @@
 					} catch (e) {}
 				},
 
+				/**** 3rd Party Methods & APIs ****/
+				initRecipeViewQuill: function () {
+					console.log('Init quill...');
+					this.quillRecipeViewInstance = new Quill('#recipeViewEditor', {
+						modules: {
+							toolbar: this.toolbarOptions
+						},
+						theme: 'snow'
+					});
+					this.quillRecipeViewInstance.on('text-change', this.onRecipeViewQuillContentChange);
+					//Apply GKeyboard fix
+					this.quillRecipeViewInstance.on('editor-change', this.applyGoogleKeyboardFixToRecipeView);
+					this.setRecipeViewQuillContent();
+				},
+				onRecipeViewQuillContentChange: function () {
+					this.setRecipeViewQuillContent();
+					this.$emit('input', this.quillRecipeViewContent);
+				},
+				setRecipeViewQuillContent: function () {
+					this.quillRecipeViewContent = this.quillRecipeViewInstance.getText().trim() ? this.quillRecipeViewInstance.root.innerHTML : '';
+				},
+				applyGoogleKeyboardFixToRecipeView: function (eventName, ...args) {
+					if (eventName === 'text-change') {
+						/* jshint ignore:start */
+						var ops = args[0]['ops'];
+						var oldSelection = this.quillRecipeViewInstance.getSelection();
+						//Fix for #3
+						if (oldSelection === null || typeof oldSelection === 'undefined') {
+							return;
+						}
+						var oldPosition = oldSelection.index;
+						var oldSelectionLength = oldSelection.length;
+
+						if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["insert"] != "\n" || oldSelectionLength > 0) {
+							return;
+						}
+
+						var self = this;
+						setTimeout(function () {
+							var newPosition = self.quillRecipeViewInstance.getSelection().index;
+							if (newPosition === oldPosition) {
+								self.quillRecipeViewInstance.setSelection(self.quillRecipeViewInstance.getSelection().index + 1, 0);
+							}
+						}, 15);
+						/* jshint ignore:end */
+					}
+				},
+
 
 
 
@@ -2469,6 +2607,7 @@
 					}
 					this.updateFilters();
 				},
+				/*
 				initQuill: function () {
 					this.quillInstance = new Quill('#editor', {
 						modules: {
@@ -2491,7 +2630,6 @@
 				applyGoogleKeyboardFix: function (eventName, ...args) {
 					var self = this;
 					if (eventName === 'text-change') {
-						/* jshint ignore:start */
 						var ops = args[0]['ops'];
 						var oldSelection = self.quillInstance.getSelection();
 						//Fix for #3
@@ -2511,9 +2649,11 @@
 								self.quillInstance.setSelection(self.quillInstance.getSelection().index + 1, 0);
 							}
 						}, 15);
-						/* jshint ignore:end */
 					}
 				},
+				*/
+
+
 				toggleExplorePaneOffcanvas: function (toggleType) {
 					//Set v-if value
 					if (typeof toggleType === 'string') {
