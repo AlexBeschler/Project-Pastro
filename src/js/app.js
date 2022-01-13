@@ -1818,7 +1818,7 @@
 								targets: currentView,
 								translateX: ['0%', '-50%'],
 								opacity: [1, 0],
-								duration: 200,
+								duration: utils.ViewStackExitAnimationDuration,
 								easing: 'easeInOutQuad',
 								complete: function (anim) {
 									currentView.classList.add('d-none');
@@ -1828,13 +1828,13 @@
 								targets: navigateTo,
 								translateX: ['50%', '0%'],
 								opacity: [0, 1],
-								duration: 200,
+								duration: utils.ViewStackEnterAnimationDuration,
 								easing: 'easeInOutQuad',
 								begin: function (anim) {
 									navigateTo.classList.remove('d-none');
 									navigateTo.classList.add('d-block');
 								}
-							}, '+=5');
+							}, '+=' + utils.ViewStackAnimationDelayDuration);
 					} else {
 						timeline
 							.add({
@@ -1891,7 +1891,7 @@
                             targets: currentView,
                             translateX: ['0%', '50%'],
                             opacity: [1, 0],
-                            duration: 200,
+                            duration: utils.ViewStackExitAnimationDuration,
                             easing: 'easeInOutQuad',
                             complete: function (anim) {
                                 currentView.classList.add('d-none');
@@ -1901,37 +1901,17 @@
                             targets: previousView,
                             translateX: ['-50%', '0%'],
                             opacity: [0, 1],
-                            duration: 200,
+                            duration: utils.ViewStackEnterAnimationDuration,
                             easing: 'easeInOutQuad',
                             begin: function (anim) {
                                 previousView.classList.remove('d-none');
                                 previousView.classList.add('d-block');
                             }
-                        }, '+=5');
+                        }, '+=' + utils.ViewStackAnimationDelayDuration);
+
+					//Remove entrance animation for RecipeView
+					this.$refs.recipeDetails.classList.remove('show-finished-viewstack');
                 },
-				
-				/*
-				showQuillToolbar: function() {
-					console.log('Showing toolbar');
-					var toolbars = document.querySelectorAll('.ql-toolbar');
-					anime({
-						targets: toolbars,
-						translateY: ['0rem', '-0.25rem'],
-						opacity: ['0', '1'],
-						easing: 'easeInOut',
-						duration: 250,
-						begin: function() {
-							toolbars.forEach(toolbar => {
-								toolbar.style.display = 'block';
-							});
-						}
-					});
-				},
-				hideQuillToolbar: function() {
-					console.log('Showing toolbar');
-					
-				},
-				*/
 				editRecipeTitleOnFinishedAnimation: function() {
 					//If the app isn't editing
 					if (this.detailsDisplayState === 'loading' || this.detailsDisplayState === 'view') return;
@@ -1946,36 +1926,6 @@
 						this.quillRecipeViewInstance = null;
 					}
 				},
-				/*
-				beforeEnterEditRecipeDetails: function(el) {
-					el.style.display = 'block';
-					el.style.opacity = 0;
-					el.style.transform = 'translateY(0rem)';
-				},
-				enterEditRecipeDetails: function(el, done) {
-					Velocity(el, { 
-						opacity: 1, 
-						translateY: '-0.25rem'
-					}, { 
-						duration: 250 
-					}, { 
-						complete: done
-					});
-				},
-				leaveEditRecipeDetails: function(el, done) {
-					Velocity(el, { 
-						opacity: 0, 
-						translateY: '0.25rem'
-					}, { 
-						duration: 250 
-					}, { 
-						complete: function() {
-							el.style.display = 'none';
-							done();
-						}
-					});
-				},
-				*/
 				/**** Methods ****/
 				updateSearchQuery: function(query) {
 					var queryResults = this.flexSearch.search(query.toLowerCase());
@@ -2242,6 +2192,12 @@
 					}
 
 					this.selectedRecipe = r;
+
+					var self = this;
+					var timeout = utils.ViewStackEnterAnimationDuration + utils.ViewStackExitAnimationDuration + utils.ViewStackAnimationDelayDuration;
+					setTimeout(function() {
+						self.$refs.recipeDetails.classList.add('show-finished-viewstack');
+					}, timeout);
 				},
 
 				/**** RecipeView Methods ****/
@@ -2504,7 +2460,6 @@
 
 				/**** 3rd Party Methods & APIs ****/
 				initRecipeViewQuill: function () {
-					console.log('Init quill...');
 					this.quillRecipeViewInstance = new Quill('#recipeViewEditor', {
 						modules: {
 							toolbar: this.toolbarOptions

@@ -48,6 +48,7 @@
     <link rel="prefetch" href="assets/icons/lightning.svg">
     <link rel="prefetch" href="assets/icons/plus.svg">
     <link rel="prefetch" href="assets/icons/search.svg">
+    <link rel="prefetch" href="assets/icons/share-fill.svg">
     <link rel="prefetch" href="assets/icons/stopwatch.svg">
     <link rel="prefetch" href="assets/icons/tags.svg">
     <link rel="prefetch" href="assets/icons/trash.svg">
@@ -276,321 +277,384 @@
                         </transition>
                     </div>
                 </div>
-                <!-- Details & recipe meta -->
-                <div class="container">
-                    <h5 class="lead heading d-flex" style="align-items: center;justify-content: space-between;">
-                        Details
-                        <span>
-                            <button v-if="detailsDisplayState === 'view'" class="btn d-flex"
-                                @click="editRecipeDetailsRecipeView">
-                                <img src="assets/icons/edit.svg">
-                            </button>
-                            <button v-else-if="detailsDisplayState === 'edit'" class="btn d-flex"
-                                @click="editRecipeDetailsRecipeView">
-                                <img src="assets/icons/check-lg.svg">
-                            </button>
-                            <div v-else class="spinner-border text-success" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </span>
-                    </h5>
-
-                    <transition name="editRecipeDescriptionAnimation" mode="out-in" v-on:after-enter="editRecipeDescriptionAfterAnimation">
-                        <div v-if="detailsDisplayState === 'view'" key="view">
-                            <div v-html="selectedRecipe.description" class="mb-4"></div>
-                        </div>
-                        <div v-else key="edit">
-                            <div id="recipeViewEditor" ref="recipeViewEditRecipeDescription"></div>
-                        </div>
-                    </transition>
-                    <div class="invalid-feedback">
-                        Please enter a description
-                    </div>
-
-                    <hr>
-                    <div class="row">
-                        <div class="col-12 d-flex justify-content-between mb-2">
-                            <span>Active Time</span>
+                <div class="show-on-finished-viewstack" ref="recipeDetails">
+                    <!-- Details & recipe meta -->
+                    <div class="container">
+                        <h5 class="lead heading d-flex" style="align-items: center;justify-content: space-between;">
+                            Details
                             <span>
-                                <b>{{ selectedRecipe.activeTime }} min</b>
-                            </span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Prep Time</span>
-                            <span><b>{{ selectedRecipe.prepTime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.prepTime) }})</span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Cook Time</span>
-                            <span><b>{{ selectedRecipe.cookTime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.cookTime) }})</span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Total Time</span>
-                            <span><b>{{ selectedRecipe.totalTime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.totalTime) }})</span>
-                        </div>
-                        <div class="col-12 mt-3">
-                            Yields <b>{{ selectedRecipe.yield }}</b>
-                        </div>
-                    </div>
-                </div>
-                <!-- Divider -->
-                <div class="container">
-                    <hr>
-                </div>
-                <!-- Special equipment/recipe notes -->
-                <div class="container my-2">
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <h6 class="card-title d-flex" style="align-items: center;justify-content: space-between;">
-                                Special equipment
-                                <span>
-                                    <button v-if="specialEquipmentDisplayState === 'view'" class="btn d-flex"
-                                        @click="editSpecialEquipmentRecipeView">
-                                        <img src="assets/icons/edit.svg">
-                                    </button>
-                                    <button v-else-if="specialEquipmentDisplayState === 'edit'" class="btn d-flex"
-                                        @click="editSpecialEquipmentRecipeView">
-                                        <img src="assets/icons/check-lg.svg">
-                                    </button>
-                                    <div v-else class="spinner-border text-success" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </span>
-                            </h6>
-                            <ul v-if="specialEquipmentDisplayState === 'view'" class="list-group list-group-flush">
-                                <li v-for="(equipment, equipIndex) in selectedRecipe.specialEquipment"
-                                    class="list-group-item">
-                                    {{ equipment.value }}
-                                </li>
-                            </ul>
-                            <recipeview-special-equipment-list v-else :lock-axis="'y'" :press-delay.number=100
-                                v-model="selectedRecipe.specialEquipment">
-                                <recipeview-special-equipment-item
-                                    v-for="(equipment, index) in selectedRecipe.specialEquipment" :index="index"
-                                    :key="index" :equipment="equipment" :value="equipment.value"
-                                    @touchstart.native="scrollStop" @touchend.native="scrollMove"
-                                    v-on:delete-equipment="deleteSpecialEquipmentRecipeView(index)"
-                                    v-on:undo-delete-equipment="undoDeleteSpecialEquipmentRecipeView(index)" />
-                            </recipeview-special-equipment-list>
-
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title d-flex" style="align-items: center;justify-content: space-between;">
-                                Recipe Notes
-                                <span>
-                                    <button v-if="notesDisplayState === 'view'" class="btn d-flex"
-                                        @click="editRecipeNotesRecipeView">
-                                        <img src="assets/icons/edit.svg">
-                                    </button>
-                                    <button v-else-if="notesDisplayState === 'edit'" class="btn d-flex"
-                                        @click="editRecipeNotesRecipeView">
-                                        <img src="assets/icons/check-lg.svg">
-                                    </button>
-                                    <div v-else class="spinner-border text-success" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </span>
-                            </h6>
-                            <ul v-if="notesDisplayState === 'view'" class="list-group list-group-flush">
-                                <li v-for="(note, index) in selectedRecipe.notes" class="list-group-item">
-                                    {{ note.value }}
-                                </li>
-                            </ul>
-                            <recipe-notes-draggable-list v-else :lock-axis="'y'" :press-delay.number=100
-                                v-model="selectedRecipe.notes">
-                                <recipe-notes-draggable-item v-for="(note, index) in selectedRecipe.notes"
-                                    :index="index" :key="index" :note="note" :value="note.value"
-                                    @touchstart.native="scrollStop" @touchend.native="scrollMove"
-                                    v-on:delete-note="deleteRecipeNotesRecipeView(index)"
-                                    v-on:undo-delete-note="undoDeleteRecipeNotesRecipeView(index)" />
-                            </recipe-notes-draggable-list>
-                        </div>
-                    </div>
-                </div>
-                <!-- Divider -->
-                <div class="container">
-                    <hr>
-                </div>
-                <!-- Ingredients -->
-                <div class="container">
-                    <h5 class="lead heading">Ingredients</h5>
-                    <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
-                        <small class="mb-3 d-flex text-muted uppercase subheading">
-                            {{ section.title }}
-                            <span>
-                                <button v-if="ingredientsDisplayState === 'view'" class="btn d-flex"
-                                    @click="editRecipeIngredientsRecipeView">
+                                <button v-if="detailsDisplayState === 'view'" class="btn d-flex"
+                                    @click="editRecipeDetailsRecipeView">
                                     <img src="assets/icons/edit.svg">
                                 </button>
-                                <button v-if="ingredientsDisplayState === 'edit'" class="btn d-flex"
-                                    @click="editRecipeIngredientsRecipeView">
+                                <button v-else-if="detailsDisplayState === 'edit'" class="btn d-flex"
+                                    @click="editRecipeDetailsRecipeView">
                                     <img src="assets/icons/check-lg.svg">
                                 </button>
-                                <div v-else-if="ingredientsDisplayState === 'loading'"
-                                    class="spinner-border text-success" role="status">
+                                <div v-else class="spinner-border text-success" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
                             </span>
-                        </small>
-                        <ul v-if="ingredientsDisplayState === 'view'" class="list-group list-group-flush">
-                            <li v-for="(ingredient, index) in section.ingredients" class="list-group-item"
-                                @click="e => clickedStrikeListItem(e)">
-                                <span class="ingredient-amount-badge"
-                                    v-if="ingredient.amount">{{ ingredient.amount }}</span>
-                                <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
-                            </li>
-                        </ul>
-                        <recipe-ingredients-draggable-list v-else :lock-axis="'y'" :press-delay.number=100
-                            v-model="section.ingredients">
-                            <recipe-ingredients-draggable-item v-for="(ingredient, index) in section.ingredients"
-                                :index="index" :key="index" :ingredient="ingredient" :amount="ingredient.amount"
-                                :sectionindex="sectionIndex" :value="ingredient.value" @touchstart.native="scrollStop"
-                                @touchend.native="scrollMove"
-                                v-on:delete-ingredient="deleteRecipeIngredientsRecipeView(sectionIndex, index)"
-                                v-on:undo-delete-ingredient="undoDeleteRecipeIngredientsRecipeView(sectionIndex, index)" />
-                        </recipe-ingredients-draggable-list>
-                    </div>
-                </div>
-                <!-- Divider -->
-                <div class="container">
-                    <hr>
-                </div>
-                <!-- Steps -->
-                <div class="container">
-                    <h5 class="lead heading">Steps</h5>
-                    <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
-                        <small class="mb-3 d-flex text-muted uppercase subheading">
-                            {{ section.title }}
-                            <span>
-                                <button v-if="stepsDisplayState === 'view'" class="btn d-flex"
-                                    @click="editRecipeStepsRecipeView">
-                                    <img src="assets/icons/edit.svg">
-                                </button>
-                                <button v-if="stepsDisplayState === 'edit'" class="btn d-flex"
-                                    @click="editRecipeStepsRecipeView">
-                                    <img src="assets/icons/check-lg.svg">
-                                </button>
-                                <div v-else-if="stepsDisplayState === 'loading'" class="spinner-border text-success"
-                                    role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                        </h5>
+
+                        <transition name="editRecipeDescriptionAnimation" mode="out-in"
+                            v-on:after-enter="editRecipeDescriptionAfterAnimation">
+                            <div v-if="detailsDisplayState === 'view'" key="view">
+                                <div v-html="selectedRecipe.description" class="mb-4"></div>
+                            </div>
+                            <div v-else key="edit">
+                                <div id="recipeViewEditor" ref="recipeViewEditRecipeDescription"></div>
+                            </div>
+                        </transition>
+                        <div class="invalid-feedback">
+                            Please enter a description
+                        </div>
+
+                        <hr>
+                        <div>
+                            <transition name="editRecipeDescriptionAnimation" mode="out-in">
+                                <div v-if="detailsDisplayState === 'view'" class="row" key="view">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Active Time</span>
+                                            <span>
+                                                <b>{{ selectedRecipe.activeTime }} min</b>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Prep Time</span>
+                                            <span>
+                                                <b>{{ selectedRecipe.prepTime }} min</b>
+                                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.prepTime) }})
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Cook Time</span>
+                                            <span>
+                                                <b>{{ selectedRecipe.cookTime }} min</b>
+                                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.cookTime) }})
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Total Time</span>
+                                            <span>
+                                                <b>{{ selectedRecipe.totalTime }} min</b>
+                                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.totalTime) }})
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <b>Yields {{ selectedRecipe.yield }}</b>
+                                    </div>
                                 </div>
-                            </span>
-                        </small>
-                        <ul v-if="stepsDisplayState === 'view'" class="list-group list-group-flush">
-                            <li v-for="(step, index) in section.steps" class="list-group-item"
-                                @click="e => clickedStrikeListItem(e)">
-                                <span class="lead strikeable-text">Step {{ index + 1 }}</span>
-                                <p class="my-3 strikeable-text">{{ step.value }}</p>
-                                <img v-bind:src="step.coverPhotoURL" class="img-fluid">
-                            </li>
-                        </ul>
-                        <recipe-steps-draggable-list v-else :lock-axis="'y'" :press-delay.number=100
-                            v-model="section.steps">
-                            <recipe-steps-draggable-item v-for="(step, index) in section.steps" :index="index"
-                                :key="index" :step="step" :value="step.value" :sectionindex="sectionIndex"
-                                @touchstart.native="scrollStop" @touchend.native="scrollMove"
-                                v-on:delete-step="deleteRecipeStepsRecipeView(sectionIndex, index)"
-                                v-on:undo-delete-step="undoDeleteRecipeStepsRecipeView(sectionIndex, index)" />
-                        </recipe-steps-draggable-list>
+                                <div v-else class="row" key="edit">
+                                    <div class="col-6">
+                                        <span>Active Time</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.activeTime">
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Prep Time</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.prepTime">
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Cook Time</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.cookTime">
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Total Time</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.totalTime">
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Yield</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.yield">
+                                    </div>
+                                </div>
+                            </transition>
+                        </div>
                     </div>
-                </div>
-                <!-- Divider -->
-                <div class="container">
-                    <hr>
-                </div>
-                <!-- Nutrition -->
-                <div class="container mb-4">
-                    <h5 class="lead heading">Nutrition</h5>
-                    <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
-                        <div class="accordion accordion-flush" :id="'accordionNutrition' + sectionIndex">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        :data-bs-target="'#item' + sectionIndex">
-                                        <small
-                                            class="mb-3 d-flex text-muted uppercase subheading">{{ section.title }}</small>
+                    <!-- Tags -->
+                    <div class="container">
+                        <div class="row mt-4">
+                            <div v-for="(tag, tagIndex) in selectedRecipe.tags" :key="tagIndex" class="col-auto">
+                                <div class="chip">{{ tag }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="container">
+                        <hr>
+                    </div>
+                    <!-- Special equipment/recipe notes -->
+                    <div class="container my-2">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6 class="card-title d-flex"
+                                    style="align-items: center;justify-content: space-between;">
+                                    Special equipment
+                                    <span>
+                                        <button v-if="specialEquipmentDisplayState === 'view'" class="btn d-flex"
+                                            @click="editSpecialEquipmentRecipeView">
+                                            <img src="assets/icons/edit.svg">
+                                        </button>
+                                        <button v-else-if="specialEquipmentDisplayState === 'edit'" class="btn d-flex"
+                                            @click="editSpecialEquipmentRecipeView">
+                                            <img src="assets/icons/check-lg.svg">
+                                        </button>
+                                        <div v-else class="spinner-border text-success" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                </h6>
+                                <ul v-if="specialEquipmentDisplayState === 'view'" class="list-group list-group-flush">
+                                    <li v-for="(equipment, equipIndex) in selectedRecipe.specialEquipment"
+                                        class="list-group-item">
+                                        {{ equipment.value }}
+                                    </li>
+                                </ul>
+                                <recipeview-special-equipment-list v-else :lock-axis="'y'" :press-delay.number=100
+                                    v-model="selectedRecipe.specialEquipment">
+                                    <recipeview-special-equipment-item
+                                        v-for="(equipment, index) in selectedRecipe.specialEquipment" :index="index"
+                                        :key="index" :equipment="equipment" :value="equipment.value"
+                                        @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                        v-on:delete-equipment="deleteSpecialEquipmentRecipeView(index)"
+                                        v-on:undo-delete-equipment="undoDeleteSpecialEquipmentRecipeView(index)" />
+                                </recipeview-special-equipment-list>
+
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title d-flex"
+                                    style="align-items: center;justify-content: space-between;">
+                                    Recipe Notes
+                                    <span>
+                                        <button v-if="notesDisplayState === 'view'" class="btn d-flex"
+                                            @click="editRecipeNotesRecipeView">
+                                            <img src="assets/icons/edit.svg">
+                                        </button>
+                                        <button v-else-if="notesDisplayState === 'edit'" class="btn d-flex"
+                                            @click="editRecipeNotesRecipeView">
+                                            <img src="assets/icons/check-lg.svg">
+                                        </button>
+                                        <div v-else class="spinner-border text-success" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                </h6>
+                                <ul v-if="notesDisplayState === 'view'" class="list-group list-group-flush">
+                                    <li v-for="(note, index) in selectedRecipe.notes" class="list-group-item">
+                                        {{ note.value }}
+                                    </li>
+                                </ul>
+                                <recipe-notes-draggable-list v-else :lock-axis="'y'" :press-delay.number=100
+                                    v-model="selectedRecipe.notes">
+                                    <recipe-notes-draggable-item v-for="(note, index) in selectedRecipe.notes"
+                                        :index="index" :key="index" :note="note" :value="note.value"
+                                        @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                        v-on:delete-note="deleteRecipeNotesRecipeView(index)"
+                                        v-on:undo-delete-note="undoDeleteRecipeNotesRecipeView(index)" />
+                                </recipe-notes-draggable-list>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="container">
+                        <hr>
+                    </div>
+                    <!-- Ingredients -->
+                    <div class="container">
+                        <h5 class="lead heading">Ingredients</h5>
+                        <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                            <small class="mb-3 d-flex text-muted uppercase subheading">
+                                {{ section.title }}
+                                <span>
+                                    <button v-if="ingredientsDisplayState === 'view'" class="btn d-flex"
+                                        @click="editRecipeIngredientsRecipeView">
+                                        <img src="assets/icons/edit.svg">
                                     </button>
-                                </h2>
-                                <div v-bind:id="'item' + sectionIndex" class="accordion-collapse collapse"
-                                    :data-bs-parent="'#accordionNutrition' + sectionIndex">
-                                    <div class="accordion-body">
-                                        <ul class="list-group list-group-flush mb-4">
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span>
-                                                    <b>Calories</b>
-                                                </span>
-                                                <span>{{ section.nCalories }}</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between mt-3">
-                                                <span>
-                                                    <b>Total Fat</b>
-                                                </span>
-                                                <span>{{ section.nFat }} g</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span>
-                                                    <b>Cholesterol</b>
-                                                </span>
-                                                <span>{{ section.nCholesterol }} mg</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span>
-                                                    <b>Sodium</b>
-                                                </span>
-                                                <span>{{ section.nSodium }} mg</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span>
-                                                    <b>Carbohydrate</b>
-                                                </span>
-                                                <span>
-                                                    {{ section.nTotalCarbs }} g
-                                                </span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span class="ms-3">Fiber</span>
-                                                <span>
-                                                    {{ section.nFiber }} g
-                                                </span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span class="ms-3">Sugar</span>
-                                                <span>{{ section.nSugar }} g</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span>
-                                                    <b>Protein</b>
-                                                </span>
-                                                <span>{{ section.nProtein }} g</span>
-                                            </li>
-                                        </ul>
+                                    <button v-if="ingredientsDisplayState === 'edit'" class="btn d-flex"
+                                        @click="editRecipeIngredientsRecipeView">
+                                        <img src="assets/icons/check-lg.svg">
+                                    </button>
+                                    <div v-else-if="ingredientsDisplayState === 'loading'"
+                                        class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </span>
+                            </small>
+                            <ul v-if="ingredientsDisplayState === 'view'" class="list-group list-group-flush">
+                                <li v-for="(ingredient, index) in section.ingredients" class="list-group-item"
+                                    @click="e => clickedStrikeListItem(e)">
+                                    <span class="ingredient-amount-badge"
+                                        v-if="ingredient.amount">{{ ingredient.amount }}</span>
+                                    <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
+                                </li>
+                            </ul>
+                            <recipe-ingredients-draggable-list v-else :lock-axis="'y'" :press-delay.number=100
+                                v-model="section.ingredients">
+                                <recipe-ingredients-draggable-item v-for="(ingredient, index) in section.ingredients"
+                                    :index="index" :key="index" :ingredient="ingredient" :amount="ingredient.amount"
+                                    :sectionindex="sectionIndex" :value="ingredient.value"
+                                    @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                    v-on:delete-ingredient="deleteRecipeIngredientsRecipeView(sectionIndex, index)"
+                                    v-on:undo-delete-ingredient="undoDeleteRecipeIngredientsRecipeView(sectionIndex, index)" />
+                            </recipe-ingredients-draggable-list>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="container">
+                        <hr>
+                    </div>
+                    <!-- Steps -->
+                    <div class="container">
+                        <h5 class="lead heading">Steps</h5>
+                        <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                            <small class="mb-3 d-flex text-muted uppercase subheading">
+                                {{ section.title }}
+                                <span>
+                                    <button v-if="stepsDisplayState === 'view'" class="btn d-flex"
+                                        @click="editRecipeStepsRecipeView">
+                                        <img src="assets/icons/edit.svg">
+                                    </button>
+                                    <button v-if="stepsDisplayState === 'edit'" class="btn d-flex"
+                                        @click="editRecipeStepsRecipeView">
+                                        <img src="assets/icons/check-lg.svg">
+                                    </button>
+                                    <div v-else-if="stepsDisplayState === 'loading'" class="spinner-border text-success"
+                                        role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </span>
+                            </small>
+                            <ul v-if="stepsDisplayState === 'view'" class="list-group list-group-flush">
+                                <li v-for="(step, index) in section.steps" class="list-group-item"
+                                    @click="e => clickedStrikeListItem(e)">
+                                    <span class="lead strikeable-text">Step {{ index + 1 }}</span>
+                                    <p class="my-3 strikeable-text">{{ step.value }}</p>
+                                    <img v-bind:src="step.coverPhotoURL" class="img-fluid">
+                                </li>
+                            </ul>
+                            <recipe-steps-draggable-list v-else :lock-axis="'y'" :press-delay.number=100
+                                v-model="section.steps">
+                                <recipe-steps-draggable-item v-for="(step, index) in section.steps" :index="index"
+                                    :key="index" :step="step" :value="step.value" :sectionindex="sectionIndex"
+                                    @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                    v-on:delete-step="deleteRecipeStepsRecipeView(sectionIndex, index)"
+                                    v-on:undo-delete-step="undoDeleteRecipeStepsRecipeView(sectionIndex, index)" />
+                            </recipe-steps-draggable-list>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="container">
+                        <hr>
+                    </div>
+                    <!-- Nutrition -->
+                    <div class="container mb-4">
+                        <h5 class="lead heading">Nutrition</h5>
+                        <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                            <div class="accordion accordion-flush" :id="'accordionNutrition' + sectionIndex">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" :data-bs-target="'#item' + sectionIndex">
+                                            <small
+                                                class="mb-3 d-flex text-muted uppercase subheading">{{ section.title }}</small>
+                                        </button>
+                                    </h2>
+                                    <div v-bind:id="'item' + sectionIndex" class="accordion-collapse collapse"
+                                        :data-bs-parent="'#accordionNutrition' + sectionIndex">
+                                        <div class="accordion-body">
+                                            <ul class="list-group list-group-flush mb-4">
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Calories</b>
+                                                    </span>
+                                                    <span>{{ section.nCalories }}</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between mt-3">
+                                                    <span>
+                                                        <b>Total Fat</b>
+                                                    </span>
+                                                    <span>{{ section.nFat }} g</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Cholesterol</b>
+                                                    </span>
+                                                    <span>{{ section.nCholesterol }} mg</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Sodium</b>
+                                                    </span>
+                                                    <span>{{ section.nSodium }} mg</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Carbohydrate</b>
+                                                    </span>
+                                                    <span>
+                                                        {{ section.nTotalCarbs }} g
+                                                    </span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span class="ms-3">Fiber</span>
+                                                    <span>
+                                                        {{ section.nFiber }} g
+                                                    </span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span class="ms-3">Sugar</span>
+                                                    <span>{{ section.nSugar }} g</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Protein</b>
+                                                    </span>
+                                                    <span>{{ section.nProtein }} g</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Tags -->
-                <div class="container">
-                    <div class="row">
-                        <div v-for="(tag, tagIndex) in selectedRecipe.tags" :key="tagIndex" class="col-auto">
-                            <div class="chip">{{ tag }}</div>
-                        </div>
+                    <!-- Action buttons -->
+                    <div class="container mt-4 py-0 d-flex" style="justify-content: space-around;">
+                        <button class="btn btn-outline-success">
+                            <img src="assets/icons/share-fill.svg">
+                        </button>
+                        <button class="btn btn-outline-danger">
+                            <img src="assets/icons/trash.svg">
+                        </button>
                     </div>
-                </div>
-                <!-- Action buttons -->
-                <div class="container mt-4 py-0 d-flex" style="justify-content: space-around;">
-                    <button class="btn btn-outline-success">Share</button>
-                    <button class="btn btn-outline-danger">Delete</button>
                 </div>
             </div>
 
             <!-- AddRecipeView -->
             <div class="addRecipeView" ref="addRecipeView">
+                <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
+                    <img src="assets/icons/arrow-left-short.svg">
+                    <h5>Back</h5>
+                </button>
                 <div class="container">
                     <!--div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
                         <div class="accordion-item manage-accordion-item accordion-border">

@@ -368,9 +368,27 @@ body {
     opacity: 0;
 }
 
+.show-on-finished-viewstack {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+}
+
+.show-finished-viewstack {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .recipeView * .list-group-item {
     background-color: inherit;
     padding: 0.6rem 1rem;
+}
+
+.recipeView * hr {
+    opacity: 0.75;
+    border: 1px solid var(--ps-secondary-color);
+    border-radius: 2px;
+    margin: 2.5rem 0;
 }
 
 .parallaxContainer {

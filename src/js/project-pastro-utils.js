@@ -17,6 +17,9 @@ var ProjectPastroUtils = function () {
         EDIT: "edit",
         LOADING: "loading"
     };
+    this.ViewStackEnterAnimationDuration = 200;
+    this.ViewStackExitAnimationDuration = 200;
+    this.ViewStackAnimationDelayDuration = 5;
 
     this.init = function () {
         this.errorCollection = firebase.firestore().collection('errors');
