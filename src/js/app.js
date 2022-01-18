@@ -1011,6 +1011,10 @@
 				notesDisplayState: 'view',
 				ingredientsDisplayState: 'view',
 				stepsDisplayState: 'view',
+				specialEquipmentAddModel: '',
+				notesAddModel: '',
+				ingredientsAddModel: '',
+				stepsAddModel: '',
 
 				/** AddRecipeView data **/
 				manage_smartButtonText: 'Cover Photo »',
@@ -2266,6 +2270,13 @@
 				undoDeleteSpecialEquipmentRecipeView: function(index) {
 					this.selectedRecipe.specialEquipment[index].isDeleted = false;
 				},
+				addSpecialEquipmentRecipeView: function() {
+					this.selectedRecipe.specialEquipment.push({
+						value: this.specialEquipmentAddModel,
+						isDeleted: false
+					});
+					this.specialEquipmentAddModel = '';
+				},
 				editRecipeNotesRecipeView: function() {
 					if (this.notesDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.notesDisplayState = utils.DISPLAY_STATES.EDIT;
@@ -2304,6 +2315,13 @@
 				},
 				undoDeleteRecipeNotesRecipeView: function(index) {
 					this.selectedRecipe.notes[index].isDeleted = false;
+				},
+				addRecipeNotesRecipeView: function() {
+					this.selectedRecipe.notes.push({
+						value: this.notesAddModel,
+						isDeleted: false
+					});
+					this.notesAddModel = '';
 				},
 				editRecipeIngredientsRecipeView: function() {
 					if (this.ingredientsDisplayState === utils.DISPLAY_STATES.VIEW) {
@@ -2361,6 +2379,15 @@
 				undoDeleteRecipeIngredientsRecipeView: function(sectionIndex, ingredientIndex) {
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
 				},
+				addRecipeIngredientsRecipeView: function(sectionIndex) {
+					var ingredientObject = nlp.parseIngredient(this.ingredientsAddModel);
+					this.selectedRecipe.sections[sectionIndex].ingredients.push({
+						amount: ingredientObject.amount,
+						isDeleted: false,
+						value: ingredientObject.ingredient
+					});
+					this.ingredientsAddModel = '';
+				},
 				editRecipeStepsRecipeView: function() {
 					if (this.stepsDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.stepsDisplayState = utils.DISPLAY_STATES.EDIT;
@@ -2410,6 +2437,14 @@
 				},
 				undoDeleteRecipeStepsRecipeView: function(sectionIndex, stepIndex) {
 					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = false;
+				},
+				addRecipeStepsRecipeView: function(sectionIndex) {
+					this.selectedRecipe.sections[sectionIndex].steps.push({
+						coverPhotoURL: 'https://via.placeholder.com/1024x1024.png',
+						isDeleted: false,
+						value: this.stepsAddModel
+					});
+					this.stepsAddModel = '';
 				},
 
 				/**** Utilities ****/
