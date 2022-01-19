@@ -2446,6 +2446,9 @@
 					});
 					this.stepsAddModel = '';
 				},
+				deleteRecipe: function() {
+					console.log('Deleting recipe');
+				},
 
 				/**** Utilities ****/
 				//used for displaying the ETA of the recipe
