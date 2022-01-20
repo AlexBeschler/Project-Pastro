@@ -1554,25 +1554,6 @@
 						this.manage_recipeBlockStepValue = '';
 					}
 				},
-				model_search: function (b, a) {
-					if (this.model_search === '') {
-						this.filteredCookbook = this.cookbook;
-						return;
-					}
-					this.filteredCookbook = [];
-					var queryResults = this.flexSearch.search(this.model_search);
-					if (queryResults.length === 0) {
-						return;
-					}
-					//For future - change query[0] to something dynamic
-					queryResults.forEach(queryResult => {
-						if (queryResult.field === 'title') {
-							queryResult.result.forEach(result => {
-								this.filteredCookbook.push(this.cookbook[result]);
-							});
-						}
-					});
-				},
 				/*
 				isDyslexicFontSet: function (b, a) {
 					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
@@ -1728,6 +1709,7 @@
                             easing: 'easeInOutQuad'
                         }, '-=200');
 					self.searchBarExpanded = false;
+					this.searchQuery = '';
                 },             
                 clickedBrowse: function () {
                     this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
@@ -2447,7 +2429,15 @@
 					this.stepsAddModel = '';
 				},
 				deleteRecipe: function() {
-					console.log('Deleting recipe');
+					var id = this.selectedRecipe.id;
+					
+					//Update flex index
+					this.flexSearch.remove(id);
+					//Set this recipe to a blank object to effectively remove it from the cookbook
+					//The reason we don't splice is because the FlexSearch index is dependent on this recipe's position
+					this.cookbook[id] = {};
+
+					this.navigateBackward();
 				},
 
 				/**** Utilities ****/
@@ -2758,11 +2748,13 @@
 						this.cleanupManageRecipe();
 					}
 				},
+				/*
 				deleteRecipe: function () {
 					//Add listener
 					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.deleteRecipeViewListener);
 					this.recipeOffcanvas.hide();
 				},
+				*/
 				deleteRecipeViewListener: function () {
 					//Remove recipeView listener
 					this.$refs.recipeView.removeEventListener('hidden.bs.offcanvas', this.deleteRecipeViewListener);
