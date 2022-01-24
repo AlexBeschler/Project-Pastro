@@ -7,7 +7,7 @@
             },
             methods: {
                 getLink: function () {
-                    axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/autoParseURL', {
+                    axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/embercleave', {
                         url: this.inputBox
                     }).then(function (response) {
                         if (response.status === 201) {

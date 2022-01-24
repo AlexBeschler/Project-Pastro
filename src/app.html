@@ -36,21 +36,26 @@
     <!-- Prefetch some assets we will use later -->
     <link rel="prefetch" href="assets/icons/arrow-left-short.svg">
     <link rel="prefetch" href="assets/icons/arrow-up-right.svg">
-    <!--link rel="prefetch" href="assets/icons/basket.svg"-->
-    <!--link rel="prefetch" href="assets/icons/check.svg"-->
-    <link rel="prefetch" href="assets/icons/clipboard-plus.svg">
-    <!--link rel="prefetch" href="assets/icons/clock.svg"-->
+    <link rel="prefetch" href="assets/icons/calendar-range.svg">
+    <link rel="prefetch" href="assets/icons/camera-fill.svg">
+    <link rel="prefetch" href="assets/icons/check-lg.svg">
+    <link rel="prefetch" href="assets/icons/chevron-bar-expand.svg">
     <link rel="prefetch" href="assets/icons/edit.svg">
-    <!--link rel="prefetch" href="assets/icons/info.svg"-->
+    <link rel="prefetch" href="assets/icons/egg.svg">
+    <link rel="prefetch" href="assets/icons/gear.svg">
+    <link rel="prefetch" href="assets/icons/info-circle.svg">
+    <link rel="prefetch" href="assets/icons/journal-richtext.svg">
     <link rel="prefetch" href="assets/icons/lightning.svg">
-    <!--link rel="prefetch" href="assets/icons/list-ol.svg"-->
-    <link rel="prefetch" href="assets/icons/recipe-close.svg">
-    <link rel="prefetch" href="assets/icons/share.svg">
+    <link rel="prefetch" href="assets/icons/plus.svg">
+    <link rel="prefetch" href="assets/icons/search.svg">
+    <link rel="prefetch" href="assets/icons/share-fill.svg">
+    <link rel="prefetch" href="assets/icons/stopwatch.svg">
+    <link rel="prefetch" href="assets/icons/tags.svg">
     <link rel="prefetch" href="assets/icons/trash.svg">
+    <link rel="prefetch" href="assets/icons/x-lg.svg">
 </head>
 
 <body>
-    <div id="touch-input-layer"></div>
     <div id="login-container" style="visibility: hidden;">
         <sign-in-layout v-if="signin"></sign-in-layout>
         <purchase-subscription-layout v-if="paysubscription"></purchase-subscription-layout>
@@ -66,447 +71,621 @@
             </div>
         </div>
     </div>
-    <div id="appContent" class="container-fluid my-4 main-wrap" style="visibility: hidden;">
-        <div id="navigationBar" style="z-index: 1;">
-            <header class="d-flex pt-3 px-3">
-                <ul class="nav nav-pills w-100 justify-content-between align-items-center" role="tablist">
-                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
-                        <button id="pills-explore-tab" class="nav-link active" data-bs-toggle="pill"
-                            data-bs-target="#explorePane" type="button" role="tab" aria-controls="explorePane"
-                            aria-selected="true" ref="exploreRef">Explore</button>
-                    </li>
-                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
-                        <button id="pills-search-tab" class="nav-link" data-bs-toggle="pill"
-                            data-bs-target="#searchPane" type="button" role="tab" aria-controls="searchPane"
-                            aria-selected="false">Search</button>
-                    </li>
-                    <li class="nav-item top-nav-bar-pill-item" @click="navBarClicked">
-                        <button id="pills-options-tab" class="nav-link" data-bs-toggle="pill"
-                            data-bs-target="#optionsPane" type="button" role="tab" aria-controls="optionsPane"
-                            aria-selected="false">Options</button>
-                    </li>
-                </ul>
-            </header>
-        </div>
-        <div class="tab-content" style="position: relative;">
-            <div id="explorePane" class="row tab-pane fade show active" role="tabpanel"
-                aria-labelledby="pills-explore-tab" :class="{ 'explore-collapsed': !recipePaneCollapsed }">
-                <h1 id="headerText" class="display-6 px-4 mt-5 mb-4" ref="headerText">{{ greeting }}</h1>
-                <div class="px-0" ref="explorePaneContent_interactive">
-                    <div class="px-4 py-4">
-                        <h1 class="display-5 fw-bold explore-text">I feel like making <a
-                                @click.prevent="toggleExplorePaneOffcanvas('tag')">{{ displayTags }}</a> food that <a
-                                @click.prevent="toggleExplorePaneOffcanvas('time')">{{ displayTime }}</a>, contains <a
-                                @click.prevent="toggleExplorePaneOffcanvas('ingredient')">{{ displayIngredients }}</a>, and
-                            <a @click.prevent="toggleExplorePaneOffcanvas('nutrition')">{{ displayNutrition }}</a>
-                        </h1>
-                    </div>
-                    <section class="d-flex justify-content-center">
-                        <button id="addRecipeButton" class="btn btn-outline-success mt-4 px-4 py-2"
-                            @click="clickedAddRecipe" data-ps-button-type="add" data-disablescrolling="false"
-                            ref="addRecipeButton">Add
-                            Recipe</button>
-                    </section>
-                </div>
-            </div>
-            <div id="recipePane" class="row" :class="{ 'recipe-collapsed': recipePaneCollapsed}">
-                <h1 class="display-6 px-4 mt-5 mb-4">Your recipes</h1>
-                <bottom-sheet :filtered-cookbook="filteredCookbook"
-                    v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
-            </div>
-            <div id="searchPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-search-tab">
-                <h1 class="display-6 px-4 mt-5 mb-4">Or search instantly</h1>
-                <div class="px-4 pt-4 pb-5 my-5">
-                    <input type="text" class="form-control search-box" placeholder="I'm looking for..."
-                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'I\'m looking for...'"
-                        v-model="model_search">
-                </div>
-                <h4 v-if="filteredCookbook.length === 1">1 result</h4>
-                <h4 v-else>{{ filteredCookbook.length }} results</h4>
-                <bottom-sheet :filtered-cookbook="filteredCookbook"
-                    v-on:toggle-recipe-offcanvas="toggleRecipeOffcanvas($event)"></bottom-sheet>
-            </div>
-            <div id="optionsPane" class="row tab-pane fade" role="tabpanel" aria-labelledby="pills-options-tab">
-                <h6 class="m-0 mt-4 py-2 px-4 text-muted">General</h6>
-                <ul class="list-group px-2">
-                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold">12 Hr Time Format</div>
-                            Use an AM/PM format instead of 00:00
-                        </div>
-                        <span class="form-check form-switch align-self-center">
-                            <input class="form-check-input" type="checkbox">
-                        </span>
-                    </li>
-                </ul>
-                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Explore Pane</h6>
-                <ul class="list-group px-2">
-                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold">Customize</div>
-                            Choose which filters are most useful to you
-                            <hr>
-                            <div class="form-check">
-                                <label class="form-check-label" for="tagsCheck">
-                                    Tags
-                                </label>
-                                <input class="form-check-input" type="checkbox" value="" id="tagsCheck">
-                            </div>
-                            <div class="form-check">
-                                <label class="form-check-label" for="timeCheck">
-                                    Time
-                                </label>
-                                <input class="form-check-input" type="checkbox" value="" id="timeCheck">
-                            </div>
-                            <div class="form-check">
-                                <label class="form-check-label" for="ingredientsCheck">
-                                    Ingredients
-                                </label>
-                                <input class="form-check-input" type="checkbox" value="" id="ingredientsCheck">
-                            </div>
-                            <div class="form-check">
-                                <label class="form-check-label" for="nutritionCheck">
-                                    Nutrition
-                                </label>
-                                <input class="form-check-input" type="checkbox" value="" id="nutritionCheck">
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Accessibility</h6>
-                <ul class="list-group px-2">
-                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold">Dark Mode</div>
-                            Change the colors to a noir setting
-                        </div>
-                        <span class="form-check form-switch align-self-center">
-                            <input class="form-check-input" type="checkbox">
-                        </span>
-                    </li>
-                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold">Font Size</div>
-                            Increase the size of the font
-                            <input type="range" class="form-range" min="0" max="2" step="0.5">
-                        </div>
-                    </li>
-                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold">Use Dyslexic Font</div>
-                            Use a font that makes it easier to read for those with dyslexia. Powered by OpenDyslexic.
-                        </div>
-                        <span class="form-check form-switch align-self-center">
-                            <input class="form-check-input" type="checkbox" v-model="isDyslexicFontSet">
-                        </span>
-                    </li>
-                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold">High Contrast Mode</div>
-                            Use colors that contrast 4.5:1
-                        </div>
-                        <span class="form-check form-switch align-self-center">
-                            <input class="form-check-input" type="checkbox">
-                        </span>
-                    </li>
-                </ul>
-                <h6 class="m-0 mt-4 py-2 px-4 text-muted">Billing & Account</h6>
-                <ul class="list-group px-2">
-                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
-                        <div class="ms-2" style="width: 100%;">
-                            <div class="fw-bold">Stripe Billing Portal</div>
-                            Update your payment options and manage your subscription
-                            <button class="btn btn-outline-primary" @click="stripeBillingPortal"
-                                style="width: 100%;">Billing Portal</button>
-                        </div>
-                    </li>
-                    <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
-                        <div class="ms-2" style="width: 100%;">
-                            <div class="fw-bold">Sign Out</div>
-                            Sign out on this device
-                            <button class="btn btn-outline-danger" @click="signOutApp" style="width: 100%;">Sign
-                                Out</button>
-                        </div>
-                    </li>
-                </ul>
-                <ul class="list-group m-0 mt-4 px-2">
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            Firebase user ID: {{ userID }}
-                        </div>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            Browser Detection: {{ browserUtil }}
-                        </div>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            FAQ / Contact Me
-                        </div>
-                        <span class="form-check form-switch align-self-center">
-                            <img src="assets/icons/arrow-up-right.svg">
-                        </span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
-                            href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
-                            Terms of Service
-                        </a>
-                        <span class="form-check form-switch align-self-center">
-                            <img src="assets/icons/arrow-up-right.svg">
-                        </span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
-                            href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
-                            Privacy Policy
-                        </a>
-                        <span class="form-check form-switch align-self-center">
-                            <img src="assets/icons/arrow-up-right.svg">
-                        </span>
-                    </li>
-                </ul>
-                <div class="my-4 mb-5 d-flex justify-content-center">Made with <span class="heart-emoji"
-                        style="margin: 0em 0.25em;">❤</span> by <a href="https://alexbeschler.com" target="_blank"
-                        rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a></div>
-            </div>
-            <button id="recipeRevealButton" class="btn" @click="clickedExpandChevron">
-                <div class="collapse-chevron" :class="{ 'collapsed': recipePaneCollapsed }" ref="exploreChevron"></div>
+
+    <div id="appContent" class="container-fluid mt-4 main-wrap" style="visibility: hidden;">
+        <div class="d-flex justify-content-end pt-3 px-3">
+            <button class="btn py-1 ps-1 pe-2" style="z-index: 1; position: absolute; opacity: 0;" ref="addRecipeButton"
+                @click="clickedAddRecipe">
+                <img class="gear-icon" src="assets/icons/plus.svg">
+            </button>
+            <button class="btn p-1" @click="clickedSettings" style="z-index: 1;" ref="settingsButton">
+                <img class="gear-icon" src="assets/icons/gear.svg">
             </button>
         </div>
-        <!-- Explore pane offcanvas -->
-        <div class="offcanvas offcanvas-bottom pb-5" tabindex="-1" id="explore-pane-filter-offcanvas"
-            aria-labelledby="exploreOffcanvasLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="exploreOffcanvasLabel">Filter</h5>
-                <button type="button" class="btn btn-outline-secondary btn-sm"
-                    @click.prevent="clearFilters">Clear</button>
-            </div>
-            <div class="offcanvas-body px-3">
-                <div v-if="explorePaneOffcanvasType === 'tag'">
-                    <div v-for="(tag, $index) in tagsArray" :key="$index">
-                        <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray"
-                            :value="tag">
-                        <label class="form-check-label">
-                            {{ tag }}
-                        </label>
+        <h1 class="display-6 px-3 mt-5 mb-2" ref="headerText">{{ headerText }}</h1>
+        <div class="explorePaneContent" ref="explorePaneContent">
+
+            <!-- Explore Pane -->
+            <div class="px-1 my-4">
+                <button role="button" class="btn py-2 search-box-button"
+                    v-bind:class="{ 'my-2rem': isHeaderTextHidden }" @click="clickedSearchBar" ref="searchBoxButton">
+                    <div class="searchImgContainer">
+                        <img id="innerSearchButtonImg1" class="pe-3" src="assets/icons/search.svg">
+                        <div id="innerSearchButtonImg2" class="m-0 p-0 search-box-button-close"
+                            style="position: absolute;opacity: 0;top: 0;left: 0;" ref="closeSearchButton">
+                            <img class="pe-3" src="assets/icons/x-lg.svg">
+                        </div>
                     </div>
-                </div>
-                <div v-else-if="explorePaneOffcanvasType === 'time'">
-                    <h4>Total recipe time</h4>
-                    <div class="mb-3">
-                        <input type="number" class="form-control" id="totalTimeInput" v-model="totalRecipeTimeInput"
-                            placeholder="i.e. 25">
+                    <span id="innerSearchButtonText">Search recipes</span>
+                </button>
+                <input class="form-control search-box-input d-none"
+                    v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput"
+                    v-model="searchQuery">
+                <div class="container d-none" ref="searchResultsContainer">
+                    <div class="mb-4" v-if="searchResults_title.length">
+                        <h6>Recipes</h6>
+                        <ul class="list-group list-group-flush cookbook-list-group">
+                            <li class="row d-flex list-group-item recipe-list-group-item"
+                                v-for="(recipe, index) in searchResults_title" :key="index" :index="index"
+                                @click="clickedRecipeTitleFromSearch(index)">
+                                <div class="col-3">
+                                    <img src="https://via.placeholder.com/48">
+                                </div>
+                                <div class="col-9 recipe-thumbnail-description">
+                                    <span>{{ recipe.title }}</span>
+                                    <span>{{ recipe.totalTime }} min • Finished by
+                                        {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    <h4>Or pick a time to be finished by</h4>
-                    <div class="form-floating mb-3">
-                        <input type="time" class="form-control" id="totalTimeInput" placeholder="10"
-                            v-model="finishByTimeInput">
-                        <label for="totalTimeInput">Finish by</label>
+                    <div v-if="searchResults_sectionTitle.length">
+                        <h6>Sections</h6>
+                        <ul class="list-group list-group-flush cookbook-list-group">
+                            <li class="row d-flex list-group-item recipe-list-group-item"
+                                v-for="(recipe, index) in searchResults_sectionTitle" :key="index" :index="index"
+                                @click="clickedRecipeSectionFromSearch(index)">
+                                <div class="col-3">
+                                    <img src="https://via.placeholder.com/48">
+                                </div>
+                                <div class="col-9 recipe-thumbnail-description">
+                                    <span>{{ recipe.title }}</span>
+                                    <span>{{ recipe.totalTime }} min • Finished by
+                                        {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                </div>
-                <div v-else-if="explorePaneOffcanvasType === 'ingredient'">
-                    <div v-for="(ingredient, $index) in ingredientsArray" :key="$index">
-                        <input class="form-check-input" type="checkbox" value="" v-model="checkedIngredientsArray"
-                            :value="ingredient">
-                        <label class="form-check-label">
-                            {{ ingredient }}
-                        </label>
-                    </div>
-                </div>
-                <div v-else-if="explorePaneOffcanvasType === 'nutrition'">
-                    <div class="input-group my-3">
-                        <label class="input-group-text">Calories</label>
-                        <input type="number" class="form-control" v-model="nCalories">
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Total Fat</label>
-                        <input type="number" class="form-control" v-model="nFat">
-                        <span class="input-group-text">g</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Cholesterol</label>
-                        <input type="number" class="form-control" v-model="nCholesterol">
-                        <span class="input-group-text">mg</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Sodium</label>
-                        <input type="number" class="form-control" v-model="nSodium">
-                        <span class="input-group-text">mg</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Carbohydrate</label>
-                        <input type="number" class="form-control" v-model="nCarbohydrate">
-                        <span class="input-group-text">g</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Fiber</label>
-                        <input type="number" class="form-control" v-model="nFiber">
-                        <span class="input-group-text">g</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Sugars</label>
-                        <input type="number" class="form-control" v-model="nSugars">
-                        <span class="input-group-text">g</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Protein</label>
-                        <input type="number" class="form-control" v-model="nProtein">
-                        <span class="input-group-text">g</span>
-                    </div>
+                    <p v-else>Search results populate here</p>
                 </div>
             </div>
-        </div>
-        <!-- Full recipe view -->
-        <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="recipeOffcanvas" ref="recipeView">
-            <div class="offcanvas-body">
-                <div class="recipeview-nav">
-                    <div class="px-3 lead">{{ proto_title }}</div>
-                    <button type="button" class="btn recipe-close-button text-reset" data-bs-dismiss="offcanvas"
-                        aria-label="Close">
-                        <img class="recipe-close-img" src="assets/icons/recipe-close.svg">
+
+            <!-- Explore Menu Container -->
+            <div class="exploreMenu px-1 my-2" ref="exploreMenuContainer">
+                <button class="exploreMenuButton btn my-3" @click="clickedBrowse">
+                    <div class="row">
+                        <div class="col-2">
+                            <img src="assets/icons/journal-richtext.svg" width="24" height="24">
+                        </div>
+                        <div class="col-10">
+                            <h3>Explore</h3>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="exploreMenuButton btn mb-3" @click="clickedMealPlan">
+                    <div class="row">
+                        <div class="col-2">
+                            <img src="assets/icons/calendar-range.svg" width="24" height="24">
+                        </div>
+                        <div class="col-10">
+                            <h3>Meal Plan</h3>
+                        </div>
+                    </div>
+                </button>
+
+                <!--button type="button" class="btn btn-success fancy-button w-100" >Add
+                    recipe</button-->
+
+                <div class="container mt-2">
+                    <div class="row">
+                        <div class="col-6 col-sm-3" v-for="filterPreset in filterPresetsList">
+                            <div class="box">
+                                <div class="box-content">
+                                    {{ filterPreset.name }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter recipe content -->
+            <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
+                <button class="btn chip mb-4" @click="navigateBackward" :disabled="searchBarExpanded">
+                    <img src="assets/icons/arrow-left-short.svg" ref="fromFilterToHomeBackButtonImg">
+                    <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
+                </button>
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags">
+                    <div class="col-1">
+                        <img src="assets/icons/tags.svg">
+                    </div>
+                    <div class="col-11 text-start">
+                        <h5>Tags</h5>
+                        <div v-if="checkedTagsArray.length">
+                            <small>{{ checkedTagsArray.length }} applied</small>
+                        </div>
+                        <div v-else>
+                            <small>None applied</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTime">
+                    <div class="col-1">
+                        <img src="assets/icons/stopwatch.svg">
+                    </div>
+                    <div class="col-11 text-start">
+                        <h5>Time</h5>
+                        <div v-if="totalRecipeTimeInput.length || finishByTimeInput.length">
+                            <small>Filters applied</small>
+                        </div>
+                        <div v-else>
+                            <small>None applied</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterIngredients">
+                    <div class="col-1">
+                        <img src="assets/icons/egg.svg">
+                    </div>
+                    <div class="col-11 text-start">
+                        <h5>Ingredients</h5>
+                        <div v-if="checkedIngredientsArray.length">
+                            <small>{{ checkedIngredientsArray.length }} applied</small>
+                        </div>
+                        <div v-else>
+                            <small>None applied</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterNutrition">
+                    <div class="col-1">
+                        <img src="assets/icons/info-circle.svg">
+                    </div>
+                    <div class="col-11 text-start">
+                        <h5>Nutrition</h5>
+                        <small>None applied</small>
+                    </div>
+                </div>
+                <hr>
+                <ul class="list-group list-group-flush cookbook-list-group">
+                    <li class="row d-flex list-group-item recipe-list-group-item"
+                        v-for="(recipe, index) in filteredCookbook" :key="index" :index="index"
+                        @click="clickedRecipeFromExplorePane(index)">
+                        <div class="col-3">
+                            <img src="https://via.placeholder.com/48">
+                        </div>
+                        <div class="col-9 recipe-thumbnail-description">
+                            <span>{{ recipe.title }}</span>
+                            <span>{{ recipe.totalTime }} min • Finished by
+                                {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- RecipeView -->
+            <div class="recipeView" ref="recipeView">
+                <div class="d-flex w-100 mt-3" style="justify-content: space-between; position: absolute;">
+                    <button class="btn chip border-dark shadow" :disabled="searchBarExpanded" @click="navigateBackward">
+                        <img src="assets/icons/arrow-left-short.svg">
+                        <h5>Back</h5>
+                    </button>
+                    <button class="btn btn-outline-success" style="z-index: 1;">
+                        <img src="assets/icons/share-fill.svg">
                     </button>
                 </div>
-                <img v-if="proto_coverPhotoURL" v-bind:src="proto_coverPhotoURL" class="img-fluid recipe-cover-photo">
-                <img v-else src="img/lily-banse--stock-photo.jpg" class="img-fluid recipe-cover-photo">
+                <div class="parallaxContainer">
+                    <img v-bind:src="selectedRecipe.coverPhotoURL" class="img-fluid recipe-cover-photo"
+                        ref="recipeCoverPhotoRef">
+                </div>
+                <!-- Title -->
                 <div class="container py-0">
                     <div class="card d-flex align-items-center recipe-title shadow-sm">
-                        <div class="card-body display-6">{{ proto_title }}</div>
-                    </div>
-                    <div class="container mt-0 py-0 d-flex"
-                        style="justify-content: space-around;transform: translateY(-50%)">
-                        <button class="btn btn-outline-warning" @click="editRecipe">
-                            <img src="assets/icons/edit.svg">
-                        </button>
-                        <button class="btn btn-outline-success">
-                            <img src="assets/icons/share.svg">
-                        </button>
-                        <button class="btn btn-outline-danger" @click="deleteRecipe">
-                            <img src="assets/icons/trash.svg">
-                        </button>
+                        <transition name="editRecipeTitleAnimation" mode="out-in"
+                            v-on:after-enter="editRecipeTitleOnFinishedAnimation">
+                            <div v-if="detailsDisplayState === 'view'" class="card-body display-6">
+                                {{ selectedRecipe.title }}
+                            </div>
+                            <input v-else class="form-control" v-model="selectedRecipe.title"
+                                style="font-size: calc(1.375rem + 1.5vw)" ref="recipeViewTitleInput">
+                        </transition>
                     </div>
                 </div>
-                <div class="container">
-                    <div v-html="proto_description" class="mb-4"></div>
-                    <div class="row">
-                        <div class="col-12 d-flex justify-content-between mb-2">
-                            <span>Active Time</span>
-                            <span><b>{{ proto_activetime }} min</b></span>
+                <div class="show-on-finished-viewstack" ref="recipeDetails">
+                    <!-- Details & recipe meta -->
+                    <div class="container">
+                        <h5 class="lead heading d-flex" style="align-items: center;justify-content: space-between;">
+                            Details
+                            <span>
+                                <button v-if="detailsDisplayState === 'view'" class="btn d-flex"
+                                    @click="editRecipeDetailsRecipeView">
+                                    <img src="assets/icons/edit.svg">
+                                </button>
+                                <button v-else-if="detailsDisplayState === 'edit'" class="btn d-flex"
+                                    @click="editRecipeDetailsRecipeView">
+                                    <img src="assets/icons/check-lg.svg">
+                                </button>
+                                <div v-else class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </span>
+                        </h5>
+
+                        <transition name="editRecipeDescriptionAnimation" mode="out-in"
+                            v-on:after-enter="editRecipeDescriptionAfterAnimation">
+                            <div v-if="detailsDisplayState === 'view'" key="view">
+                                <div v-html="selectedRecipe.description" class="mb-4"></div>
+                            </div>
+                            <div v-else key="edit">
+                                <div id="recipeViewEditor" ref="recipeViewEditRecipeDescription"></div>
+                            </div>
+                        </transition>
+                        <div class="invalid-feedback">
+                            Please enter a description
                         </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Prep Time</span>
-                            <span><b>{{ proto_preptime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Cook Time</span>
-                            <span><b>{{ proto_cooktime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Total Time</span>
-                            <span><b>{{ proto_totaltime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
-                        </div>
-                        <div class="col-12">
-                            Yields {{ proto_yield }}
+
+                        <hr>
+                        <div>
+                            <transition name="editRecipeDescriptionAnimation" mode="out-in">
+                                <div v-if="detailsDisplayState === 'view'" class="row" key="view">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Active Time</span>
+                                            <span>
+                                                <b>{{ selectedRecipe.activeTime }} min</b>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Prep Time</span>
+                                            <span>
+                                                <b>{{ selectedRecipe.prepTime }} min</b>
+                                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.prepTime) }})
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Cook Time</span>
+                                            <span>
+                                                <b>{{ selectedRecipe.cookTime }} min</b>
+                                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.cookTime) }})
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Total Time</span>
+                                            <span>
+                                                <b>{{ selectedRecipe.totalTime }} min</b>
+                                                ({{ getTimeFromNowUsingMinutes(selectedRecipe.totalTime) }})
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <b>Yields {{ selectedRecipe.yield }}</b>
+                                    </div>
+                                </div>
+                                <div v-else class="row" key="edit">
+                                    <div class="col-6">
+                                        <span>Active Time</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.activeTime">
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Prep Time</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.prepTime">
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Cook Time</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.cookTime">
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Total Time</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.totalTime">
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Yield</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <input class="form-control" v-model="selectedRecipe.yield">
+                                    </div>
+                                </div>
+                            </transition>
                         </div>
                     </div>
-                </div>
-                <div class="container">
-                    <hr>
-                </div>
-                <div class="container">
-                    <h5 class="lead">Ingredients</h5>
-                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
-                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="(ingredient, ingredientIndex) in block.ingredients" :key="ingredientIndex"
-                                class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="">
-                                <label class="strikeable">
-                                    <span class="ingredient-amount-badge" v-if="ingredient.amount"
-                                        style="margin-left: .5rem;">{{ ingredient.amount }}</span>
+                    <!-- Tags -->
+                    <div class="container">
+                        <div class="row mt-4">
+                            <div v-for="(tag, tagIndex) in selectedRecipe.tags" :key="tagIndex" class="col-auto">
+                                <div class="chip">{{ tag }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="container">
+                        <hr>
+                    </div>
+                    <!-- Special equipment/recipe notes -->
+                    <div class="container my-2">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6 class="card-title d-flex"
+                                    style="align-items: center;justify-content: space-between;">
+                                    Special equipment
+                                    <span>
+                                        <button v-if="specialEquipmentDisplayState === 'view'" class="btn d-flex"
+                                            @click="editSpecialEquipmentRecipeView">
+                                            <img src="assets/icons/edit.svg">
+                                        </button>
+                                        <button v-else-if="specialEquipmentDisplayState === 'edit'" class="btn d-flex"
+                                            @click="editSpecialEquipmentRecipeView">
+                                            <img src="assets/icons/check-lg.svg">
+                                        </button>
+                                        <div v-else class="spinner-border text-success" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                </h6>
+                                <ul v-if="specialEquipmentDisplayState === 'view'" class="list-group list-group-flush">
+                                    <li v-for="(equipment, equipIndex) in selectedRecipe.specialEquipment"
+                                        class="list-group-item">
+                                        {{ equipment.value }}
+                                    </li>
+                                </ul>
+                                <div v-else>
+                                    <recipeview-special-equipment-list :lock-axis="'y'" :press-delay.number=100
+                                        v-model="selectedRecipe.specialEquipment">
+                                        <recipeview-special-equipment-item
+                                            v-for="(equipment, index) in selectedRecipe.specialEquipment" :index="index"
+                                            :key="index" :equipment="equipment" :value="equipment.value"
+                                            @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                            v-on:delete-equipment="deleteSpecialEquipmentRecipeView(index)"
+                                            v-on:undo-delete-equipment="undoDeleteSpecialEquipmentRecipeView(index)" />
+                                    </recipeview-special-equipment-list>
+                                    <div class="d-flex align-items-end">
+                                        <input class="form-control mt-2" type="text" placeholder="Add special equipment"
+                                            v-model="specialEquipmentAddModel"
+                                            v-on:keyup.enter="addSpecialEquipmentRecipeView">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title d-flex"
+                                    style="align-items: center;justify-content: space-between;">
+                                    Recipe Notes
+                                    <span>
+                                        <button v-if="notesDisplayState === 'view'" class="btn d-flex"
+                                            @click="editRecipeNotesRecipeView">
+                                            <img src="assets/icons/edit.svg">
+                                        </button>
+                                        <button v-else-if="notesDisplayState === 'edit'" class="btn d-flex"
+                                            @click="editRecipeNotesRecipeView">
+                                            <img src="assets/icons/check-lg.svg">
+                                        </button>
+                                        <div v-else class="spinner-border text-success" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                </h6>
+                                <ul v-if="notesDisplayState === 'view'" class="list-group list-group-flush">
+                                    <li v-for="(note, index) in selectedRecipe.notes" class="list-group-item">
+                                        {{ note.value }}
+                                    </li>
+                                </ul>
+                                <div v-else>
+                                    <recipe-notes-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                        v-model="selectedRecipe.notes">
+                                        <recipe-notes-draggable-item v-for="(note, index) in selectedRecipe.notes"
+                                            :index="index" :key="index" :note="note" :value="note.value"
+                                            @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                            v-on:delete-note="deleteRecipeNotesRecipeView(index)"
+                                            v-on:undo-delete-note="undoDeleteRecipeNotesRecipeView(index)" />
+                                    </recipe-notes-draggable-list>
+                                    <div class="d-flex align-items-end">
+                                        <input class="form-control mt-2" type="text" placeholder="Add recipe notes"
+                                            v-model="notesAddModel" v-on:keyup.enter="addRecipeNotesRecipeView">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="container">
+                        <hr>
+                    </div>
+                    <!-- Ingredients -->
+                    <div class="container">
+                        <h5 class="lead heading">Ingredients</h5>
+                        <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                            <small class="mb-3 d-flex text-muted uppercase subheading">
+                                {{ section.title }}
+                                <span>
+                                    <button v-if="ingredientsDisplayState === 'view'" class="btn d-flex"
+                                        @click="editRecipeIngredientsRecipeView">
+                                        <img src="assets/icons/edit.svg">
+                                    </button>
+                                    <button v-if="ingredientsDisplayState === 'edit'" class="btn d-flex"
+                                        @click="editRecipeIngredientsRecipeView">
+                                        <img src="assets/icons/check-lg.svg">
+                                    </button>
+                                    <div v-else-if="ingredientsDisplayState === 'loading'"
+                                        class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </span>
+                            </small>
+                            <ul v-if="ingredientsDisplayState === 'view'" class="list-group list-group-flush">
+                                <li v-for="(ingredient, index) in section.ingredients" class="list-group-item"
+                                    @click="e => clickedStrikeListItem(e)">
+                                    <span class="ingredient-amount-badge"
+                                        v-if="ingredient.amount">{{ ingredient.amount }}</span>
                                     <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
-                                </label>
-                            </li>
-                        </ul>
+                                </li>
+                            </ul>
+                            <div v-else>
+                                <recipe-ingredients-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                    v-model="section.ingredients">
+                                    <recipe-ingredients-draggable-item
+                                        v-for="(ingredient, index) in section.ingredients" :index="index" :key="index"
+                                        :ingredient="ingredient" :amount="ingredient.amount"
+                                        :sectionindex="sectionIndex" :value="ingredient.value"
+                                        @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                        v-on:delete-ingredient="deleteRecipeIngredientsRecipeView(sectionIndex, index)"
+                                        v-on:undo-delete-ingredient="undoDeleteRecipeIngredientsRecipeView(sectionIndex, index)" />
+                                </recipe-ingredients-draggable-list>
+                                <div class="d-flex align-items-end">
+                                    <input class="form-control mt-2" type="text" placeholder="Add ingredient"
+                                        v-model="ingredientsAddModel"
+                                        v-on:keyup.enter="addRecipeIngredientsRecipeView(sectionIndex)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="container">
+                        <hr>
+                    </div>
+                    <!-- Steps -->
+                    <div class="container">
+                        <h5 class="lead heading">Steps</h5>
+                        <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                            <small class="mb-3 d-flex text-muted uppercase subheading">
+                                {{ section.title }}
+                                <span>
+                                    <button v-if="stepsDisplayState === 'view'" class="btn d-flex"
+                                        @click="editRecipeStepsRecipeView">
+                                        <img src="assets/icons/edit.svg">
+                                    </button>
+                                    <button v-if="stepsDisplayState === 'edit'" class="btn d-flex"
+                                        @click="editRecipeStepsRecipeView">
+                                        <img src="assets/icons/check-lg.svg">
+                                    </button>
+                                    <div v-else-if="stepsDisplayState === 'loading'" class="spinner-border text-success"
+                                        role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </span>
+                            </small>
+                            <ul v-if="stepsDisplayState === 'view'" class="list-group list-group-flush">
+                                <li v-for="(step, index) in section.steps" class="list-group-item"
+                                    @click="e => clickedStrikeListItem(e)">
+                                    <span class="lead strikeable-text">Step {{ index + 1 }}</span>
+                                    <p class="my-3 strikeable-text">{{ step.value }}</p>
+                                    <img v-bind:src="step.coverPhotoURL" class="img-fluid">
+                                </li>
+                            </ul>
+                            <div v-else>
+                                <recipe-steps-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                    v-model="section.steps">
+                                    <recipe-steps-draggable-item v-for="(step, index) in section.steps" :index="index"
+                                        :key="index" :step="step" :value="step.value" :sectionindex="sectionIndex"
+                                        @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                        v-on:delete-step="deleteRecipeStepsRecipeView(sectionIndex, index)"
+                                        v-on:undo-delete-step="undoDeleteRecipeStepsRecipeView(sectionIndex, index)" />
+                                </recipe-steps-draggable-list>
+                                <textarea class="form-control mt-2" type="text" placeholder="Add step"
+                                    v-model="stepsAddModel"></textarea>
+                                <button class="btn btn-outline-primary mt-2"
+                                    @click="addRecipeStepsRecipeView(sectionIndex)">Add step</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="container">
+                        <hr>
+                    </div>
+                    <!-- Nutrition -->
+                    <div class="container mb-4">
+                        <h5 class="lead heading">Nutrition</h5>
+                        <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
+                            <div class="accordion accordion-flush" :id="'accordionNutrition' + sectionIndex">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" :data-bs-target="'#item' + sectionIndex">
+                                            <small
+                                                class="mb-3 d-flex text-muted uppercase subheading">{{ section.title }}</small>
+                                        </button>
+                                    </h2>
+                                    <div v-bind:id="'item' + sectionIndex" class="accordion-collapse collapse"
+                                        :data-bs-parent="'#accordionNutrition' + sectionIndex">
+                                        <div class="accordion-body">
+                                            <ul class="list-group list-group-flush mb-4">
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Calories</b>
+                                                    </span>
+                                                    <span>{{ section.nCalories }}</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between mt-3">
+                                                    <span>
+                                                        <b>Total Fat</b>
+                                                    </span>
+                                                    <span>{{ section.nFat }} g</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Cholesterol</b>
+                                                    </span>
+                                                    <span>{{ section.nCholesterol }} mg</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Sodium</b>
+                                                    </span>
+                                                    <span>{{ section.nSodium }} mg</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Carbohydrate</b>
+                                                    </span>
+                                                    <span>
+                                                        {{ section.nTotalCarbs }} g
+                                                    </span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span class="ms-3">Fiber</span>
+                                                    <span>
+                                                        {{ section.nFiber }} g
+                                                    </span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span class="ms-3">Sugar</span>
+                                                    <span>{{ section.nSugar }} g</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>
+                                                        <b>Protein</b>
+                                                    </span>
+                                                    <span>{{ section.nProtein }} g</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Action buttons -->
+                    <div class="container mt-4 py-0 d-flex" style="justify-content: space-around;">
+                        <button class="btn btn-large w-100 btn-outline-danger" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal">
+                            Delete {{ selectedRecipe.title }}
+                        </button>
                     </div>
                 </div>
-                <div class="container">
-                    <hr>
-                </div>
-                <div class="container">
-                    <h5 class="lead">Steps</h5>
-                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
-                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="(step, stepIndex) in block.steps" :key="stepIndex" class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="">
-                                <label class="strikeable">
-                                    <span
-                                        class="ingredient-amount-badge mx-2">{{ stepIndex + 1 }}</span>{{ step.value }}
-                                </label>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="container">
-                    <hr>
-                </div>
-                <div class="container">
-                    <h5 class="lead">Nutrition</h5>
-                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
-                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
-                        <ul class="list-group list-group-flush mb-4">
-                            <li class="list-group-item">Calories: {{ block.nCalories }} g</li>
-                            <li class="list-group-item">Total Fat: {{ block.nFat }} g</li>
-                            <li class="list-group-item">Cholesterol: {{ block.nCholesterol }} mg</li>
-                            <li class="list-group-item">Sodium: {{ block.nSodium }} mg</li>
-                            <li class="list-group-item">Carbohydrate: {{ block.nCarbohydrate }} g</li>
-                            <li class="list-group-item">Fiber: {{ block.nFiber }} g</li>
-                            <li class="list-group-item">Sugar: {{ block.nSugars }} g</li>
-                            <li class="list-group-item">Protein: {{ block.nProtein }} g</li>
-                        </ul>
-                    </div>
-                </div>
             </div>
-        </div>
-        <!-- Delete recipe confirmation offcanvas -->
-        <div class="offcanvas offcanvas-bottom recipe-delete-offcanvas" tabindex="-1" id="recipeDeleteOffcanvas"
-            ref="recipeDeleteOffcanvas">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">Delete confirmation</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                    aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body recipe-delete-offcanvas-body">
-                <p>Are you sure you want to delete <i>{{ proto_title }}</i>?
-                    <br><br>
-                    This process is <b>irreversible</b> and the
-                    recipe <b>cannot</b> be recovered.</p>
-            </div>
-            <div class="delete-confirmation-footer">
-                <button type="button" class="btn btn-danger" @click="deleteRecipeHelper">Delete</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-            </div>
-        </div>
-        <!-- Manage recipe offcanvas -->
-        <div class="offcanvas offcanvas-end offcanvas-full manage-recipe-offcanvas-full" tabindex="-1"
-            id="manage-recipe-offcanvas" aria-labelledby="offcanvasBottomLabel" ref="manageRecipeView">
-            <div class="offcanvas-header">
-                <div class="container d-flex align-items-center">
-                    <button type="button" class="btn recipe-close-button text-reset" data-bs-dismiss="offcanvas"
-                        aria-label="Close">
-                        <img class="recipe-close-img" src="assets/icons/arrow-left-short.svg">
-                    </button>
-                    <h5 class="offcanvas-title" id="offcanvasBottomLabel">{{ manage_recipeTitle }}</h5>
-                </div>
-            </div>
-            <div class="offcanvas-body small">
+
+            <!-- AddRecipeView -->
+            <div class="addRecipeView" ref="addRecipeView">
+                <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
+                    <img src="assets/icons/arrow-left-short.svg">
+                    <h5>Back</h5>
+                </button>
                 <div class="container">
-                    <div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
+                    <!--div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
                         <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button pe-1" type="button"
@@ -545,7 +724,6 @@
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                            <!--col-10-->
                                             <div class="form-floating">
                                                 <input type="text" class="form-control manage-recipe-input me-3"
                                                     id="manage_form_tags" v-model="manage_recipeTagInput"
@@ -553,11 +731,6 @@
                                                 <label for="manage_form_tags">Tags</label>
                                             </div>
                                         </div>
-                                        <!--div class="col-2 ps-0 d-flex align-items-end">
-                                            <button class="btn h-100 w-100" @click="pasteFromClipboard('tags')">
-                                                <img src="assets/icons/clipboard-plus.svg">
-                                            </button>
-                                        </div-->
                                     </div>
                                     <div class="mt-3">
                                         <div class="col-lg-12">
@@ -717,13 +890,15 @@
                                                             v-on:keyup.enter="addIngredient" ref="manage_ing_amount">
                                                         <div id="ingredient-invalid-feedback" class="invalid-feedback">
                                                         </div>
-                                                        <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#ocrIngredientsFilePondWrapper">
+                                                        <button class="btn" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#ocrIngredientsFilePondWrapper">
                                                             <img src="assets/icons/camera-fill.svg">
                                                         </button>
                                                     </div>
                                                     <label for="manage_ing_amount" class="form-label mt-1 mb-3">Paste
                                                         multiple ingredients</label>
-                                                    <div id="ocrIngredientsFilePondWrapper" class="mt-2 mb-4 collapse" ref="ocr_IngredientsFilePond">
+                                                    <div id="ocrIngredientsFilePondWrapper" class="mt-2 mb-4 collapse"
+                                                        ref="ocr_IngredientsFilePond">
                                                         <input id="ocrIngredientsFilePond" type="file"
                                                             data-max-file-size="12MB" accept="image/jpeg, image/png" />
                                                         <div id="ocrIngredientsCropWrapper" class="cropperImg"
@@ -777,15 +952,19 @@
                                                         <div class="col px-1">
                                                             <button class="btn text-primary button-no-outline"
                                                                 @click="addStep" ref="addStepToBlockButton">Add</button>
-                                                            <button class="btn text-primary button-no-outline" type="button" data-bs-toggle="collapse" data-bs-target="#ocrStepsFilePondWrapper">
+                                                            <button class="btn text-primary button-no-outline"
+                                                                type="button" data-bs-toggle="collapse"
+                                                                data-bs-target="#ocrStepsFilePondWrapper">
                                                                 <img src="assets/icons/camera-fill.svg">
                                                             </button>
                                                         </div>
                                                     </div>
                                                     <div class="row">
-                                                        <div id="ocrStepsFilePondWrapper" class="mt-2 mb-4 collapse" ref="ocr_StepsFilePond">
+                                                        <div id="ocrStepsFilePondWrapper" class="mt-2 mb-4 collapse"
+                                                            ref="ocr_StepsFilePond">
                                                             <input id="ocrStepsFilePond" type="file"
-                                                                data-max-file-size="12MB" accept="image/jpeg, image/png" />
+                                                                data-max-file-size="12MB"
+                                                                accept="image/jpeg, image/png" />
                                                             <div id="ocrStepsCropWrapper" class="cropperImg"
                                                                 v-show="ocr_StepsEditMode"></div>
                                                             <button class="btn btn-success" v-show="ocr_StepsEditMode"
@@ -938,29 +1117,610 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div-->
                     <button id="submitRecipeButton" type="button" class="btn btn-success fancy-button mb-5"
                         @click="submitManagedRecipe" style="width: 100%;"
                         :disabled="isRecipeSubmitDisabled">{{ manage_smartButtonText }}</button>
                     <div id="mobile-padding"></div>
                 </div>
             </div>
+
+            <!-- OptionsView -->
+            <div class="optionsView" ref="optionsView">
+                <div>
+                    <div class="container">
+                        <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
+                            <img src="assets/icons/arrow-left-short.svg">
+                            <h5>Back</h5>
+                        </button>
+                    </div>
+                    <h6 class="m-0 mt-4 py-2 px-4 text-muted">General</h6>
+                    <ul class="list-group px-2">
+                        <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">12 Hr Time Format</div>
+                                Use an AM/PM format instead of 00:00
+                            </div>
+                            <span class="form-check form-switch align-self-center">
+                                <input class="form-check-input" type="checkbox">
+                            </span>
+                        </li>
+                    </ul>
+                    <h6 class="m-0 mt-4 py-2 px-4 text-muted">Explore Pane</h6>
+                    <ul class="list-group px-2">
+                        <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Customize</div>
+                                Choose which filters are most useful to you
+                                <hr>
+                                <div class="form-check">
+                                    <label class="form-check-label" for="tagsCheck">
+                                        Tags
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" value="" id="tagsCheck">
+                                </div>
+                                <div class="form-check">
+                                    <label class="form-check-label" for="timeCheck">
+                                        Time
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" value="" id="timeCheck">
+                                </div>
+                                <div class="form-check">
+                                    <label class="form-check-label" for="ingredientsCheck">
+                                        Ingredients
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" value="" id="ingredientsCheck">
+                                </div>
+                                <div class="form-check">
+                                    <label class="form-check-label" for="nutritionCheck">
+                                        Nutrition
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" value="" id="nutritionCheck">
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <h6 class="m-0 mt-4 py-2 px-4 text-muted">Accessibility</h6>
+                    <ul class="list-group px-2">
+                        <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Dark Mode</div>
+                                Change the colors to a noir setting
+                            </div>
+                            <span class="form-check form-switch align-self-center">
+                                <input class="form-check-input" type="checkbox">
+                            </span>
+                        </li>
+                        <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Font Size</div>
+                                Increase the size of the font
+                                <input type="range" class="form-range" min="0" max="2" step="0.5">
+                            </div>
+                        </li>
+                        <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Use Dyslexic Font</div>
+                                Use a font that makes it easier to read for those with dyslexia. Powered by
+                                OpenDyslexic.
+                            </div>
+                            <span class="form-check form-switch align-self-center">
+                                <input class="form-check-input" type="checkbox" v-model="isDyslexicFontSet">
+                            </span>
+                        </li>
+                        <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">High Contrast Mode</div>
+                                Use colors that contrast 4.5:1
+                            </div>
+                            <span class="form-check form-switch align-self-center">
+                                <input class="form-check-input" type="checkbox">
+                            </span>
+                        </li>
+                    </ul>
+                    <h6 class="m-0 mt-4 py-2 px-4 text-muted">Billing & Account</h6>
+                    <ul class="list-group px-2">
+                        <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                            <div class="ms-2" style="width: 100%;">
+                                <div class="fw-bold">Stripe Billing Portal</div>
+                                Update your payment options and manage your subscription
+                                <button class="btn btn-outline-primary" @click="stripeBillingPortal"
+                                    style="width: 100%;">Billing Portal</button>
+                            </div>
+                        </li>
+                        <li class="list-group-item py-3 d-flex justify-content-between align-items-start">
+                            <div class="ms-2" style="width: 100%;">
+                                <div class="fw-bold">Sign Out</div>
+                                Sign out on this device
+                                <button class="btn btn-outline-danger" @click="signOutApp" style="width: 100%;">Sign
+                                    Out</button>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list-group m-0 mt-4 px-2">
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                Firebase user ID: {{ userID }}
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                Browser Detection: {{ browserUtil }}
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
+                                href="https://opendyslexic.org/" target="_blank" rel="noopener noreferrer">
+                                OpenDyslexic: A typeface for Dyslexia
+                            </a>
+                            <span class="form-check form-switch align-self-center">
+                                <img src="assets/icons/arrow-up-right.svg">
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                FAQ / Contact Me
+                            </div>
+                            <span class="form-check form-switch align-self-center">
+                                <img src="assets/icons/arrow-up-right.svg">
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
+                                href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
+                                Terms of Service
+                            </a>
+                            <span class="form-check form-switch align-self-center">
+                                <img src="assets/icons/arrow-up-right.svg">
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
+                                href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
+                                Privacy Policy
+                            </a>
+                            <span class="form-check form-switch align-self-center">
+                                <img src="assets/icons/arrow-up-right.svg">
+                            </span>
+                        </li>
+                    </ul>
+                    <div class="my-4 mb-5 d-flex justify-content-center">Made with <span class="heart-emoji"
+                            style="margin: 0em 0.25em;">❤</span> by <a href="https://alexbeschler.com" target="_blank"
+                            rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Filtering offcanvas -->
+        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTags">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Explore by Tags</h5>
+                <button type="button" class="btn" @click="clickedClearTagFilters">
+                    <img src="assets/icons/trash.svg" width="20" height="20">
+                </button>
+            </div>
+            <div class="offcanvas-body small">
+                <input class="form-control mb-4" type="text" placeholder="Search Tags" v-model="tagModel">
+                <div v-for="(tag, $index) in filteredTagList" :key="$index">
+                    <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray" :value="tag">
+                    <label class="form-check-label">
+                        {{ tag }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTime">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Explore by Time</h5>
+                <button type="button" class="btn" @click="clickedClearTimeFilters">
+                    <img src="assets/icons/trash.svg" width="20" height="20">
+                </button>
+            </div>
+            <div class="offcanvas-body small">
+                <h4>Total recipe time</h4>
+                <div class="mb-3">
+                    <input type="number" class="form-control" id="totalTimeInput" v-model="totalRecipeTimeInput"
+                        placeholder="i.e. 25">
+                </div>
+                <h4>Or pick a time to be finished by</h4>
+                <div class="form-floating mb-3">
+                    <input type="time" class="form-control" id="totalTimeInput" placeholder="10"
+                        v-model="finishByTimeInput">
+                    <label for="totalTimeInput">Finish by</label>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1"
+            id="offcanvasFilterIngredients">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Explore by Ingredients</h5>
+                <button type="button" class="btn" @click="clickedClearIngredientFilters">
+                    <img src="assets/icons/trash.svg" width="20" height="20">
+                </button>
+            </div>
+            <div class="offcanvas-body small">
+                <input class="form-control mb-4" type="text" placeholder="Search Ingredients" v-model="ingredientModel">
+                <div v-for="(ingredient, $index) in filteredIngredientList" :key="$index">
+                    <input class="form-check-input" type="checkbox" value="" v-model="checkedIngredientsArray"
+                        :value="ingredient">
+                    <label class="form-check-label">
+                        {{ ingredient }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterNutrition">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Explore by Nutrition</h5>
+                <button type="button" class="btn">
+                    <img src="assets/icons/trash.svg" width="20" height="20">
+                </button>
+            </div>
+            <div class="offcanvas-body small">
+                <p>To implement</p>
+            </div>
+        </div>
+        <!-- Delete recipe modal -->
+        <div class="modal fade modal-sheet bg-secondary" tabindex="-1" role="dialog" ref="deleteRecipeModal"
+            id="deleteModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content rounded-6 shadow">
+                    <div class="modal-header border-bottom-0">
+                        <h5 class="modal-title">Delete Recipe</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body py-0">
+                        <p>Are you sure you want to delete this recipe? This is an <b>irreversible</b> process.</p>
+                    </div>
+                    <div class="modal-footer flex-column border-top-0">
+                        <button type="button" class="btn btn-lg btn-light w-100 mx-0 mb-2"
+                            @click="deleteRecipe" data-bs-dismiss="modal">Delete</button>
+                        <button type="button" class="btn btn-lg btn-primary w-100 mx-0"
+                            data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--
+    <div id="appContent" class="container-fluid my-4 main-wrap">
+
+        <div class="offcanvas offcanvas-bottom pb-5" tabindex="-1" id="explore-pane-filter-offcanvas"
+            aria-labelledby="exploreOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="exploreOffcanvasLabel">Filter</h5>
+                <button type="button" class="btn btn-outline-secondary btn-sm"
+                    @click.prevent="clearFilters">Clear</button>
+            </div>
+            <div class="offcanvas-body px-3">
+                <div v-if="explorePaneOffcanvasType === 'tag'">
+                    <div v-for="(tag, $index) in tagsArray" :key="$index">
+                        <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray"
+                            :value="tag">
+                        <label class="form-check-label">
+                            {{ tag }}
+                        </label>
+                    </div>
+                </div>
+                <div v-else-if="explorePaneOffcanvasType === 'time'">
+                    <h4>Total recipe time</h4>
+                    <div class="mb-3">
+                        <input type="number" class="form-control" id="totalTimeInput" v-model="totalRecipeTimeInput"
+                            placeholder="i.e. 25">
+                    </div>
+                    <h4>Or pick a time to be finished by</h4>
+                    <div class="form-floating mb-3">
+                        <input type="time" class="form-control" id="totalTimeInput" placeholder="10"
+                            v-model="finishByTimeInput">
+                        <label for="totalTimeInput">Finish by</label>
+                    </div>
+                </div>
+                <div v-else-if="explorePaneOffcanvasType === 'ingredient'">
+                    <div v-for="(ingredient, $index) in ingredientsArray" :key="$index">
+                        <input class="form-check-input" type="checkbox" value="" v-model="checkedIngredientsArray"
+                            :value="ingredient">
+                        <label class="form-check-label">
+                            {{ ingredient }}
+                        </label>
+                    </div>
+                </div>
+                <div v-else-if="explorePaneOffcanvasType === 'nutrition'">
+                    <div class="input-group my-3">
+                        <label class="input-group-text">Calories</label>
+                        <input type="number" class="form-control" v-model="nCalories">
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Total Fat</label>
+                        <input type="number" class="form-control" v-model="nFat">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Cholesterol</label>
+                        <input type="number" class="form-control" v-model="nCholesterol">
+                        <span class="input-group-text">mg</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Sodium</label>
+                        <input type="number" class="form-control" v-model="nSodium">
+                        <span class="input-group-text">mg</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Carbohydrate</label>
+                        <input type="number" class="form-control" v-model="nCarbohydrate">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Fiber</label>
+                        <input type="number" class="form-control" v-model="nFiber">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Sugars</label>
+                        <input type="number" class="form-control" v-model="nSugars">
+                        <span class="input-group-text">g</span>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text">Protein</label>
+                        <input type="number" class="form-control" v-model="nProtein">
+                        <span class="input-group-text">g</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="recipeOffcanvas" ref="recipeView">
+            <div class="offcanvas-body">
+                <div class="recipeview-nav">
+                    <div class="px-3 lead">{{ proto_title }}</div>
+                    <button type="button" class="btn recipe-close-button text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close">
+                        <img class="recipe-close-img" src="assets/icons/recipe-close.svg">
+                    </button>
+                </div>
+                <img v-if="proto_coverPhotoURL" v-bind:src="proto_coverPhotoURL" class="img-fluid recipe-cover-photo">
+                <img v-else src="img/lily-banse--stock-photo.jpg" class="img-fluid recipe-cover-photo">
+                <div class="container py-0">
+                    <div class="card d-flex align-items-center recipe-title shadow-sm">
+                        <div class="card-body display-6">{{ proto_title }}</div>
+                    </div>
+                    <div class="container mt-0 py-0 d-flex"
+                        style="justify-content: space-around;transform: translateY(-50%)">
+                        <button class="btn btn-outline-warning" @click="editRecipe">
+                            <img src="assets/icons/edit.svg">
+                        </button>
+                        <button class="btn btn-outline-success">
+                            <img src="assets/icons/share.svg">
+                        </button>
+                        <button class="btn btn-outline-danger" @click="deleteRecipe">
+                            <img src="assets/icons/trash.svg">
+                        </button>
+                    </div>
+                </div>
+                <div class="container">
+                    <div v-html="proto_description" class="mb-4"></div>
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-between mb-2">
+                            <span>Active Time</span>
+                            <span><b>{{ proto_activetime }} min</b></span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Prep Time</span>
+                            <span><b>{{ proto_preptime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Cook Time</span>
+                            <span><b>{{ proto_cooktime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <span>Total Time</span>
+                            <span><b>{{ proto_totaltime }} min</b>
+                                ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
+                        </div>
+                        <div class="col-12">
+                            Yields {{ proto_yield }}
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container">
+                    <h5 class="lead">Ingredients</h5>
+                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
+                        <ul class="list-group list-group-flush">
+                            <li v-for="(ingredient, ingredientIndex) in block.ingredients" :key="ingredientIndex"
+                                class="list-group-item">
+                                <input class="form-check-input" type="checkbox" value="">
+                                <label class="strikeable">
+                                    <span class="ingredient-amount-badge" v-if="ingredient.amount"
+                                        style="margin-left: .5rem;">{{ ingredient.amount }}</span>
+                                    <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container">
+                    <h5 class="lead">Steps</h5>
+                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
+                        <ul class="list-group list-group-flush">
+                            <li v-for="(step, stepIndex) in block.steps" :key="stepIndex" class="list-group-item">
+                                <input class="form-check-input" type="checkbox" value="">
+                                <label class="strikeable">
+                                    <span
+                                        class="ingredient-amount-badge mx-2">{{ stepIndex + 1 }}</span>{{ step.value }}
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <hr>
+                </div>
+                <div class="container">
+                    <h5 class="lead">Nutrition</h5>
+                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
+                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">Calories: {{ block.nCalories }} g</li>
+                            <li class="list-group-item">Total Fat: {{ block.nFat }} g</li>
+                            <li class="list-group-item">Cholesterol: {{ block.nCholesterol }} mg</li>
+                            <li class="list-group-item">Sodium: {{ block.nSodium }} mg</li>
+                            <li class="list-group-item">Carbohydrate: {{ block.nCarbohydrate }} g</li>
+                            <li class="list-group-item">Fiber: {{ block.nFiber }} g</li>
+                            <li class="list-group-item">Sugar: {{ block.nSugars }} g</li>
+                            <li class="list-group-item">Protein: {{ block.nProtein }} g</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+
+
+
         <div class="container undo-container undo-collapsed py-1" ref="undoContainer" @click="undoDeleteClicked"
             style="display: none!important;">
             <p class="mb-0 px-2">{{ undoText }}</p>
             <button class="btn stronger" ref="undoButton">Undo</button>
         </div>
     </div>
+    -->
 
-    <!-- BottomSheet -->
-    <template id="bottom-sheet-template">
-        <ul class="list-group list-group-flush cookbook-list-group">
-            <li class="list-group-item recipe-list-group-item" v-for="(recipe, index) in filteredCookbook" :key="index"
-                :index="index" @click="$emit('toggle-recipe-offcanvas', index)">{{ recipe.title }}</li>
+    <!-- RecipeView Special Equipment draggables -->
+    <template id="special-equipment-draggable-list-template">
+        <ul class="list-group list-group-flush">
+            <slot />
         </ul>
     </template>
-    <!-- Manage tags draggables -->
+    <template id="special-equipment-draggable-item-template">
+        <li v-if="!equipment.isDeleted" class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <input class="form-control" type="text" v-model="equipment.value">
+                <button class="btn pe-0" @click="$emit('delete-equipment', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </div>
+        </li>
+        <li v-else class="list-group-item">
+            <div class="d-flex align-items-center" style="justify-content: space-between;">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <small>Deleted</small>
+                <button class="btn btn-sm btn-outline-secondary"
+                    @click="$emit('undo-delete-equipment', index)">Undo</button>
+            </div>
+        </li>
+    </template>
+    <!-- RecipeView recipe notes draggables -->
+    <template id="recipe-notes-draggable-list-template">
+        <ul class="list-group list-group-flush">
+            <slot />
+        </ul>
+    </template>
+    <template id="recipe-notes-draggable-item-template">
+        <li v-if="!note.isDeleted" class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <input class="form-control" type="text" v-model="note.value">
+                <button class="btn pe-0" @click="$emit('delete-note', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </div>
+        </li>
+        <li v-else class="list-group-item">
+            <div class="d-flex align-items-center" style="justify-content: space-between;">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <small>Deleted</small>
+                <button class="btn btn-sm btn-outline-secondary" @click="$emit('undo-delete-note', index)">Undo</button>
+            </div>
+        </li>
+    </template>
+    <!-- RecipeView recipe ingredients draggables -->
+    <template id="recipe-ingredients-draggable-list-template">
+        <ul class="list-group list-group-flush">
+            <slot />
+        </ul>
+    </template>
+    <template id="recipe-ingredients-draggable-item-template">
+        <li v-if="!ingredient.isDeleted" class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <input class="form-control" type="text" v-model="ingredient.amount">
+                <input class="form-control" type="text" v-model="ingredient.value">
+                <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </div>
+        </li>
+        <li v-else class="list-group-item">
+            <div class="d-flex align-items-center" style="justify-content: space-between;">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <small>Deleted</small>
+                <button class="btn btn-sm btn-outline-secondary"
+                    @click="$emit('undo-delete-ingredient', index)">Undo</button>
+            </div>
+        </li>
+    </template>
+    <!-- RecipeView recipe steps draggables -->
+    <template id="recipe-steps-draggable-list-template">
+        <ul class="list-group list-group-flush">
+            <slot />
+        </ul>
+    </template>
+    <template id="recipe-steps-draggable-item-template">
+        <li v-if="!step.isDeleted" class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <textarea class="form-control" rows="3" v-model="step.value"></textarea>
+                <button class="btn pe-0" @click="$emit('delete-step', index)">
+                    <img src="assets/icons/trash.svg">
+                </button>
+            </div>
+        </li>
+        <li v-else class="list-group-item">
+            <div class="d-flex align-items-center" style="justify-content: space-between;">
+                <div class="btn ps-0 pe-2">
+                    <img src="assets/icons/chevron-bar-expand.svg">
+                </div>
+                <small>Deleted</small>
+                <button class="btn btn-sm btn-outline-secondary" @click="$emit('undo-delete-step', index)">Undo</button>
+            </div>
+        </li>
+    </template>
+
+
+
+
+
+
+
+
+
     <template id="tag-draggable-list-template">
         <ul class="list-group">
             <slot />
@@ -989,7 +1749,6 @@
         </li>
     </template>
 
-    <!-- Manage ingredients draggables -->
     <template id="ingredients-draggable-list-template">
         <ul class="list-group">
             <slot />
@@ -1005,7 +1764,7 @@
                 {{ ingredient.amount }} {{ ingredient.value }}
                 <button class="btn ps-2 pe-0 py-0" @click="$emit('edit-ingredient', index)">
                     <img v-if="!ingredient.editMode" src="assets/icons/edit.svg">
-                    <img v-else src="assets/icons/check.svg">
+                    <img v-else src="assets/icons/check-lg.svg">
                 </button>
             </div>
             <div v-else>
@@ -1016,7 +1775,7 @@
             </div>
             <span>
                 <button v-if="ingredient.editMode" class="btn pe-0" @click="$emit('edit-ingredient', index)">
-                    <img src="assets/icons/check.svg">
+                    <img src="assets/icons/check-lg.svg">
                 </button>
                 <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
                     <img src="assets/icons/trash.svg">
@@ -1025,7 +1784,6 @@
         </li>
     </template>
 
-    <!-- Manage steps draggables -->
     <template id="steps-draggable-list-template">
         <ul class="list-group">
             <slot />
@@ -1054,7 +1812,6 @@
         </li>
     </template>
 
-    <!-- Manage blocks draggables -->
     <template id="blocks-draggable-list-template">
         <ul class="list-group">
             <slot />
@@ -1174,14 +1931,6 @@
             <p class="mt-5 mb-3 text-muted">© 2021</p>
         </form>
     </template>
-    <!-- PWA Dependency -->
-    <script>
-        window.addEventListener("load", () => {
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("registerServiceWorker.js");
-            }
-        });
-    </script>
     <!-- Core Dependencies -->
     <script src="vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/vue/vue.js"></script>
@@ -1212,8 +1961,9 @@
     <script src="vendor/T-vK/DynamicQuillTools.min.js"></script>
     <script src="vendor/cropperjs/js/cropper.min.js"></script>
     <script src="vendor/axios/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="vendor/hammerjs/hammer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+        integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/nlp.js"></script>

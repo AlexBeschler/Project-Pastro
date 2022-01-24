@@ -382,7 +382,7 @@ async function createAccount(uid) {
 	});
 }
 
-exports.ocrTextDetection = functions.https.onRequest((req, res) => {
+exports.shadowspear = functions.https.onRequest((req, res) => {
 	cors(req, res, () => {
 		visionImageAnnotator(req, res);
 	});
@@ -409,7 +409,7 @@ async function visionImageAnnotator(req, res) {
  * Website parser
  */
 
-exports.autoParseURL = functions.https.onRequest((req, res) => {
+exports.embercleave = functions.https.onRequest((req, res) => {
 	
 	
 	
