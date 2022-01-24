@@ -261,7 +261,7 @@
                         <img src="assets/icons/arrow-left-short.svg">
                         <h5>Back</h5>
                     </button>
-                    <button class="btn btn-outline-success" style="z-index: 1;">
+                    <button class="btn btn-outline-success" style="z-index: 1;" @click="shareRecipe">
                         <img src="assets/icons/share-fill.svg">
                     </button>
                 </div>
@@ -569,11 +569,11 @@
                                 </span>
                             </small>
                             <ul v-if="stepsDisplayState === 'view'" class="list-group list-group-flush">
-                                <li v-for="(step, index) in section.steps" class="list-group-item"
+                                <li v-for="(step, index) in section.steps" class="list-group-item recipe-step-list-item"
                                     @click="e => clickedStrikeListItem(e)">
                                     <span class="lead strikeable-text">Step {{ index + 1 }}</span>
                                     <p class="my-3 strikeable-text">{{ step.value }}</p>
-                                    <img v-bind:src="step.coverPhotoURL" class="img-fluid">
+                                    <img v-bind:src="step.coverPhotoURL" class="img-fluid mb-3">
                                 </li>
                             </ul>
                             <div v-else>
@@ -1691,7 +1691,7 @@
         </ul>
     </template>
     <template id="recipe-steps-draggable-item-template">
-        <li v-if="!step.isDeleted" class="list-group-item">
+        <li v-if="!step.isDeleted" class="list-group-item recipe-step-list-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
                     <img src="assets/icons/chevron-bar-expand.svg">
@@ -1702,7 +1702,7 @@
                 </button>
             </div>
         </li>
-        <li v-else class="list-group-item">
+        <li v-else class="list-group-item recipe-step-list-item">
             <div class="d-flex align-items-center" style="justify-content: space-between;">
                 <div class="btn ps-0 pe-2">
                     <img src="assets/icons/chevron-bar-expand.svg">

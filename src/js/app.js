@@ -957,6 +957,7 @@
 				/** Utils **/
 				//Firebase db utils
 				db: null,
+				storage: null,
 				//Main app cookbook array
 				cookbook: payload,
 
@@ -1184,6 +1185,8 @@
 					self.navigateBackward();
 					history.pushState(null, null, document.URL);
 				});
+
+				this.storage = firebase.storage().ref();
 
 				//this.initQuill();
 
@@ -2438,6 +2441,11 @@
 					this.cookbook[id] = {};
 
 					this.navigateBackward();
+				},
+				shareRecipe: function() {
+					this.storage.child('users/' + utils._UID + '/recipes/' + this.selectedRecipe.docID + '/' + uuidv4() + '.html').putString(this.$refs.recipeView.innerHTML).then((snapshot) => {
+						console.log('Sharing ' + this.selectedRecipe.title);
+					});
 				},
 
 				/**** Utilities ****/
