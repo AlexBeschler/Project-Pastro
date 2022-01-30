@@ -26,7 +26,7 @@ var ProjectPastroUtils = function () {
     };
 
     //JS utils
-    this.deepClone = function(obj) {
+    this.deepClone = function (obj) {
         //Used from https://github.com/angus-c/just/tree/master/packages/collection-clone
         if (typeof obj == 'function') {
             return obj;
@@ -49,7 +49,7 @@ var ProjectPastroUtils = function () {
         return result;
     };
 
-    this.getRegExpFlags = function(regExp) {
+    this.getRegExpFlags = function (regExp) {
         //Used from https://github.com/angus-c/just/tree/master/packages/collection-clone
         if (typeof regExp.source.flags == 'string') {
             return regExp.source.flags;
@@ -62,6 +62,38 @@ var ProjectPastroUtils = function () {
             regExp.unicode && flags.push('u');
             return flags.join('');
         }
+    };
+
+    this.copyTextToClipboard = function (text) {
+        if (!navigator.clipboard) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Fallback: Copying text command was ' + msg);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+            return;
+        }
+        navigator.clipboard.writeText(text).then(function () {
+            //Success
+        }, function (err) {
+            console.error('Async: Could not copy text: ', err);
+        });
     };
 
     //DOM utils

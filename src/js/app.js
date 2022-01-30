@@ -2440,11 +2440,57 @@
 					//The reason we don't splice is because the FlexSearch index is dependent on this recipe's position
 					this.cookbook[id] = {};
 
+					//TODO: Delete all shared recipes
+					//Call delete recipe endpoint
+
 					this.navigateBackward();
 				},
 				shareRecipe: function() {
-					this.storage.child('users/' + utils._UID + '/recipes/' + this.selectedRecipe.docID + '/' + uuidv4() + '.html').putString(this.$refs.recipeView.innerHTML).then((snapshot) => {
-						console.log('Sharing ' + this.selectedRecipe.title);
+					//Create HTML document of recipe to upload to Firebase
+					var doc = document.implementation.createHTMLDocument();
+					
+					//Head
+					var meta1 = document.createElement('meta');
+					meta1.httpEquiv = "X-UA-Compatible";
+					meta1.content = "IE=edge";
+					doc.head.append(meta1);
+
+					var meta2 = document.createElement('meta');
+					meta2.name = 'viewport';
+					meta2.content = 'width=device-width, initial-scale=1.0';
+					doc.head.append(meta2);
+
+					var title = document.createElement('title');
+					title.innerHTML = this.selectedRecipe.title + ' | Project Pastro';
+					doc.head.append(title);
+					
+					doc.head.append(this.makeHeaderLink('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap'));
+					doc.head.append(this.makeHeaderLink('https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css'));
+					doc.head.append(this.makeHeaderLink('https://project-pastro-c95b1.web.app/css/app.css'));
+					
+					//Body
+					var b = this.$refs.recipeView.cloneNode(true);
+					doc.body.append(b);
+
+					//Remove the app features from shared recipe
+					doc.querySelectorAll('.remove-from-sharing').forEach(e => e.remove());
+
+					doc.body.append(this.makeScriptLink('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'));
+					doc.body.append(this.makeScriptLink('https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js'));
+
+					var str = new XMLSerializer().serializeToString(doc);
+
+					var metadata = {
+						contentType: 'text/html',
+					};
+
+					this.storage.child('users/' + utils._UID + '/recipes/' + this.selectedRecipe.docID + '/' + uuidv4() + '.html').putString(str).then((snapshot) => {
+						snapshot.ref.getDownloadURL().then((downloadURL) => {
+							snapshot.ref.updateMetadata(metadata).then((m) => {
+								utils.copyTextToClipboard(downloadURL);
+								alert('Link was copied to your clipboard');
+							});
+						});
 					});
 				},
 
@@ -2492,6 +2538,17 @@
 					try {
 						event.preventDefault();
 					} catch (e) {}
+				},
+				makeHeaderLink: function(link) {
+					var header = document.createElement('link');
+					header.rel = 'stylesheet';
+					header.href = link;
+					return header;
+				},
+				makeScriptLink: function(link) {
+					var script = document.createElement('script');
+					script.src = link;
+					return script;
 				},
 
 				/**** 3rd Party Methods & APIs ****/

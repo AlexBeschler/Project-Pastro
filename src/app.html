@@ -255,8 +255,8 @@
             </div>
 
             <!-- RecipeView -->
-            <div class="recipeView" ref="recipeView">
-                <div class="d-flex w-100 mt-3" style="justify-content: space-between; position: absolute;">
+            <div id="recipeView" class="recipeView" ref="recipeView">
+                <div class="d-flex w-100 mt-3 remove-from-sharing" style="justify-content: space-between; position: absolute;">
                     <button class="btn chip border-dark shadow" :disabled="searchBarExpanded" @click="navigateBackward">
                         <img src="assets/icons/arrow-left-short.svg">
                         <h5>Back</h5>
@@ -287,7 +287,7 @@
                     <div class="container">
                         <h5 class="lead heading d-flex" style="align-items: center;justify-content: space-between;">
                             Details
-                            <span>
+                            <span class="remove-from-sharing">
                                 <button v-if="detailsDisplayState === 'view'" class="btn d-flex"
                                     @click="editRecipeDetailsRecipeView">
                                     <img src="assets/icons/edit.svg">
@@ -394,7 +394,7 @@
                         </div>
                     </div>
                     <!-- Tags -->
-                    <div class="container">
+                    <div class="container remove-from-sharing">
                         <div class="row mt-4">
                             <div v-for="(tag, tagIndex) in selectedRecipe.tags" :key="tagIndex" class="col-auto">
                                 <div class="chip">{{ tag }}</div>
@@ -412,7 +412,7 @@
                                 <h6 class="card-title d-flex"
                                     style="align-items: center;justify-content: space-between;">
                                     Special equipment
-                                    <span>
+                                    <span class="remove-from-sharing">
                                         <button v-if="specialEquipmentDisplayState === 'view'" class="btn d-flex"
                                             @click="editSpecialEquipmentRecipeView">
                                             <img src="assets/icons/edit.svg">
@@ -455,7 +455,7 @@
                                 <h6 class="card-title d-flex"
                                     style="align-items: center;justify-content: space-between;">
                                     Recipe Notes
-                                    <span>
+                                    <span class="remove-from-sharing">
                                         <button v-if="notesDisplayState === 'view'" class="btn d-flex"
                                             @click="editRecipeNotesRecipeView">
                                             <img src="assets/icons/edit.svg">
@@ -501,7 +501,7 @@
                         <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
                             <small class="mb-3 d-flex text-muted uppercase subheading">
                                 {{ section.title }}
-                                <span>
+                                <span class="remove-from-sharing">
                                     <button v-if="ingredientsDisplayState === 'view'" class="btn d-flex"
                                         @click="editRecipeIngredientsRecipeView">
                                         <img src="assets/icons/edit.svg">
@@ -553,7 +553,7 @@
                         <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
                             <small class="mb-3 d-flex text-muted uppercase subheading">
                                 {{ section.title }}
-                                <span>
+                                <span class="remove-from-sharing">
                                     <button v-if="stepsDisplayState === 'view'" class="btn d-flex"
                                         @click="editRecipeStepsRecipeView">
                                         <img src="assets/icons/edit.svg">
@@ -670,7 +670,7 @@
                     </div>
                     <!-- Action buttons -->
                     <div class="container mt-4 py-0 d-flex" style="justify-content: space-around;">
-                        <button class="btn btn-large w-100 btn-outline-danger" data-bs-toggle="modal"
+                        <button class="btn btn-large w-100 btn-outline-danger remove-from-sharing" data-bs-toggle="modal"
                             data-bs-target="#deleteModal">
                             Delete {{ selectedRecipe.title }}
                         </button>
