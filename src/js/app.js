@@ -968,8 +968,6 @@
 				//   of the browser. When this happens, the app will pop the ViewStack and move backwards,
 				//   providing a seamless UX
 				ViewStack: [],
-				ticking: false,
-				parallaxPx: 6,
 				
 				/** Home screen data **/
 				headerText: '',
@@ -1016,6 +1014,7 @@
 				notesAddModel: '',
 				ingredientsAddModel: '',
 				stepsAddModel: '',
+				isSharing: false,
 
 				/** AddRecipeView data **/
 				manage_smartButtonText: 'Cover Photo »',
@@ -1029,6 +1028,11 @@
 				},
 				manage_activePane: 1,
 				showStickySubmit: false,
+
+				/** Utility data **/
+				toastInstance: null,
+				toastHeader: '',
+				toastBody: '',
 
 				/** 3rd Party & API data **/
 				//Quill
@@ -1441,6 +1445,12 @@
 				*/
 
 				//this.initRecipeViewQuill();
+
+				this.toastInstance = new bootstrap.Toast(this.$refs.toastNotification);
+				this.$refs.toastNotification.addEventListener('hidden.bs.toast', function() {
+					self.toastHeader = '';
+					self.toastBody = '';
+				});
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
@@ -1869,9 +1879,14 @@
 					this.ViewStack.push(navigateTo);
                 },
                 navigateBackward: function () {
+					if (!this.isRecipeViewInEditMode()) {
+						return;
+					}
+
 					if (this.ViewStack.length < 2) {
 						return;
 					}
+
 					var currentView = this.ViewStack.pop();
 					var previousView = this.ViewStack[this.ViewStack.length - 1];
                     var timeline = anime.timeline({});
@@ -2446,6 +2461,10 @@
 					this.navigateBackward();
 				},
 				shareRecipe: function() {
+					this.isSharing = true;
+
+					var self = this;
+
 					//Create HTML document of recipe to upload to Firebase
 					var doc = document.implementation.createHTMLDocument();
 					
@@ -2488,10 +2507,37 @@
 						snapshot.ref.getDownloadURL().then((downloadURL) => {
 							snapshot.ref.updateMetadata(metadata).then((m) => {
 								utils.copyTextToClipboard(downloadURL);
-								alert('Link was copied to your clipboard');
+								self.toastHeader = 'Link shared';
+								self.toastBody = 'Link was copied to your clipboard!';
+								self.toastInstance.show();
+								self.isSharing = false;
 							});
 						});
 					});
+				},
+				isRecipeViewInEditMode: function() {
+					//Check if anything in RecipeView is still in edit mode or loading
+					if (this.detailsDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewTitleInput.focus();
+						return false;
+					}
+					if (this.specialEquipmentDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewSpecialEquipmentInput.focus();
+						return false;
+					}
+					if (this.notesDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewNotesInput.focus();
+						return false;
+					}
+					if (this.ingredientsDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewIngredientsInputs[0].focus();
+						return false;
+					}
+					if (this.stepsDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewNutritionInputs[0].focus();
+						return false;
+					}
+					return true;
 				},
 
 				/**** Utilities ****/
