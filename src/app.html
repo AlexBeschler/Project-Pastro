@@ -183,7 +183,7 @@
             <!-- Filter recipe content -->
             <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
                 <button class="btn chip mb-4" @click="navigateBackward" :disabled="searchBarExpanded">
-                    <img src="assets/icons/arrow-left-short.svg" ref="fromFilterToHomeBackButtonImg">
+                    <img class="right-margin" src="assets/icons/arrow-left-short.svg" ref="fromFilterToHomeBackButtonImg">
                     <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
                 </button>
                 <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags">
@@ -258,7 +258,7 @@
             <div id="recipeView" class="recipeView" ref="recipeView">
                 <div class="d-flex w-100 mt-3 remove-from-sharing" style="justify-content: space-between; position: absolute;">
                     <button class="btn chip border-dark shadow" :disabled="searchBarExpanded" @click="navigateBackward">
-                        <img src="assets/icons/arrow-left-short.svg">
+                        <img class="right-margin" src="assets/icons/arrow-left-short.svg">
                         <h5>Back</h5>
                     </button>
                     <button class="btn chip border-dark shadow" style="z-index: 1;" @click="shareRecipe" :disabled="isSharing">
@@ -403,6 +403,16 @@
                         <div class="row mt-4">
                             <div v-for="(tag, tagIndex) in selectedRecipe.tags" :key="tagIndex" class="col-auto">
                                 <div class="chip">{{ tag }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="chip" @click="createRecipeTagRecipeView">
+                                    <img src="assets/icons/plus.svg">
+                                </div>
+                            </div>
+                            <div v-if="tagDisplayState === 'edit'" class="row">
+                                <div class="col-auto">
+                                    <input class="form-control" type="text" placeholder="Add tag" v-model="tagAddModel" v-on:keyup.enter="addTagRecipeView" ref="tagInputRecipeView">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -689,7 +699,7 @@
             <!-- AddRecipeView -->
             <div class="addRecipeView" ref="addRecipeView">
                 <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
-                    <img src="assets/icons/arrow-left-short.svg">
+                    <img class="right-margin" src="assets/icons/arrow-left-short.svg">
                     <h5>Back</h5>
                 </button>
                 <div class="container">
@@ -1138,7 +1148,7 @@
                 <div>
                     <div class="container">
                         <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
-                            <img src="assets/icons/arrow-left-short.svg">
+                            <img class="right-margin" src="assets/icons/arrow-left-short.svg">
                             <h5>Back</h5>
                         </button>
                     </div>

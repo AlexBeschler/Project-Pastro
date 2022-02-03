@@ -1006,10 +1006,13 @@
 				/** Recipe View data **/
 				selectedRecipe: {},
 				detailsDisplayState: 'view',
+				tagDisplayState: 'view',
 				specialEquipmentDisplayState: 'view',
 				notesDisplayState: 'view',
 				ingredientsDisplayState: 'view',
 				stepsDisplayState: 'view',
+
+				tagAddModel: '',
 				specialEquipmentAddModel: '',
 				notesAddModel: '',
 				ingredientsAddModel: '',
@@ -2218,7 +2221,7 @@
 						this.$refs.recipeViewTitleInput.focus();
 						return false;
 					}
-					//Verify title
+					//Verify description
 					if (!utils.isBigString(this.quillRecipeViewContent)) {
 						this.quillRecipeViewInstance.focus();
 						return false;
@@ -2265,6 +2268,39 @@
 					//TODO: Update to Firebase cloud services
 
 					this.detailsDisplayState = utils.DISPLAY_STATES.VIEW;
+				},
+				createRecipeTagRecipeView: function() {
+					this.tagDisplayState = utils.DISPLAY_STATES.EDIT;
+					//this.$refs.tagInputRecipeView.focus();
+				},
+				addTagRecipeView: function() {
+					if (!utils.isString(this.tagAddModel)) {
+						return;
+					}
+
+					this.selectedRecipe.tags.push(this.tagAddModel);
+
+					//Clean data
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+
+					//Overwrite data in cookbook
+					this.cookbook[serializedRecipe.id] = serializedRecipe;
+
+					//TODO: add filtered cookbook update
+
+					//Re-index recipe in the indices
+					//FIXME: this does not seem to correctly update the recipe title
+					this.flexSearch.update({
+						data: serializedRecipe
+					});
+
+					//TODO: Update to Firebase cloud services
+
+					this.tagDisplayState = utils.DISPLAY_STATES.VIEW;
+					this.tagAddModel = '';
+				},
+				deleteRecipeTagRecipeView: function() {
+					//
 				},
 				editSpecialEquipmentRecipeView: function() {
 					if (this.specialEquipmentDisplayState === utils.DISPLAY_STATES.VIEW) {
