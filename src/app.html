@@ -368,31 +368,31 @@
                                         <span>Active Time</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" v-model="selectedRecipe.activeTime">
+                                        <input class="form-control" type="number" v-model.number="selectedRecipe.activeTime" ref="recipeViewActiveTime">
                                     </div>
                                     <div class="col-6">
                                         <span>Prep Time</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" v-model="selectedRecipe.prepTime">
+                                        <input class="form-control" type="number" v-model.number="selectedRecipe.prepTime" ref="recipeViewPrepTime">
                                     </div>
                                     <div class="col-6">
                                         <span>Cook Time</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" v-model="selectedRecipe.cookTime">
+                                        <input class="form-control" type="number" v-model.number="selectedRecipe.cookTime" ref="recipeViewCookTime">
                                     </div>
                                     <div class="col-6">
                                         <span>Total Time</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" v-model="selectedRecipe.totalTime">
+                                        <input class="form-control" type="number" v-model.number="selectedRecipe.totalTime" ref="recipeViewTotalTime">
                                     </div>
                                     <div class="col-6">
                                         <span>Yield</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" v-model="selectedRecipe.yield">
+                                        <input class="form-control" v-model="selectedRecipe.yield" ref="recipeViewYield">
                                     </div>
                                 </div>
                             </transition>
@@ -594,7 +594,7 @@
                                         v-on:undo-delete-step="undoDeleteRecipeStepsRecipeView(sectionIndex, index)" />
                                 </recipe-steps-draggable-list>
                                 <textarea class="form-control mt-2" type="text" placeholder="Add step"
-                                    v-model="stepsAddModel" ref="recipeViewNutritionInputs"></textarea>
+                                    v-model="stepsAddModel" ref="recipeViewStepInputs"></textarea>
                                 <button class="btn btn-outline-primary mt-2"
                                     @click="addRecipeStepsRecipeView(sectionIndex)">Add step</button>
                             </div>

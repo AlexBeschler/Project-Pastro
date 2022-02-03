@@ -539,8 +539,12 @@ body {
     transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
 }
 
+.clickedShareAnimation-enter,
+.clickedShareAnimation-leave-to,
+
 .editRecipeTitleAnimation-enter,
 .editRecipeTitleAnimation-leave-to,
+
 .editRecipeDescriptionAnimation-enter,
 .editRecipeDescriptionAnimation-leave-to {
     opacity: 0;

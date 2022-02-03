@@ -134,8 +134,9 @@ var ProjectPastroUtils = function () {
     this.isString = function (toValidate) {
         return toValidate.trim().length > 0 && toValidate.trim().length < 82;
     };
+    //Measure if string is at least one byte and less or equal to 9,999 bytes 
     this.isBigString = function (toValidate) {
-        return toValidate.trim().length > 0 & toValidate.trim().length < 9999;
+        return (new Blob([toValidate]).size >= 1) && (new Blob([toValidate]).size <= 9999);
     };
     this.capitalizeFirstLetter = function (s) {
         return s.trim().charAt(0).toUpperCase() + s.slice(1);
@@ -148,6 +149,9 @@ var ProjectPastroUtils = function () {
     };
     this.isAllUppercase = function (s) {
         return s === s.toUpperCase();
+    };
+    this.checkMaximumFirebaseDocumentSize = function(doc) {
+        return new Blob([doc]).size <= 1048576;
     };
     //FlexSearch utils
     this.queryNumericIndex = function (index, query) {

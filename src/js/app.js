@@ -1925,7 +1925,8 @@
 				editRecipeDescriptionAfterAnimation: function(el) {
 					if (this.quillRecipeViewInstance === null) {
 						this.initRecipeViewQuill();
-						this.quillRecipeViewInstance.setContents(this.quillRecipeViewInstance.clipboard.convert(this.selectedRecipe.description), 'silent');
+						this.quillRecipeViewInstance.clipboard.dangerouslyPasteHTML(this.selectedRecipe.description);
+						this.quillRecipeViewContent = this.selectedRecipe.description;
 					} else {
 						this.quillRecipeViewInstance = null;
 					}
@@ -2210,6 +2211,40 @@
 						this.detailsDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
+
+					//Verify details before allowing submit to Firebase
+					//Verify title
+					if (!utils.isString(this.selectedRecipe.title)) {
+						this.$refs.recipeViewTitleInput.focus();
+						return false;
+					}
+					//Verify title
+					if (!utils.isBigString(this.quillRecipeViewContent)) {
+						this.quillRecipeViewInstance.focus();
+						return false;
+					}
+					//Verify recipe time metadata
+					if (!utils.isNumber(this.selectedRecipe.activeTime)) {
+						this.$refs.recipeViewActiveTime.focus();
+						return false;
+					}
+					if (!utils.isNumber(this.selectedRecipe.prepTime)) {
+						this.$refs.recipeViewPrepTime.focus();
+						return false;
+					}
+					if (!utils.isNumber(this.selectedRecipe.cookTime)) {
+						this.$refs.recipeViewCookTime.focus();
+						return false;
+					}
+					if (!utils.isNumber(this.selectedRecipe.totalTime)) {
+						this.$refs.recipeViewTotalTime.focus();
+						return false;
+					}
+					//Verify yield
+					if (!utils.isNumber(this.selectedRecipe.yield)) {
+						this.$refs.recipeViewYield.focus();
+						return false;
+					}
 					
 					this.detailsDisplayState = utils.DISPLAY_STATES.LOADING;
 					
@@ -2271,6 +2306,10 @@
 					this.selectedRecipe.specialEquipment[index].isDeleted = false;
 				},
 				addSpecialEquipmentRecipeView: function() {
+					if (!utils.isString(this.specialEquipmentAddModel)) {
+						return false;
+					}
+
 					this.selectedRecipe.specialEquipment.push({
 						value: this.specialEquipmentAddModel,
 						isDeleted: false
@@ -2317,6 +2356,10 @@
 					this.selectedRecipe.notes[index].isDeleted = false;
 				},
 				addRecipeNotesRecipeView: function() {
+					if (!utils.isString(this.notesAddModel)) {
+						return false;
+					}
+
 					this.selectedRecipe.notes.push({
 						value: this.notesAddModel,
 						isDeleted: false
@@ -2380,6 +2423,10 @@
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
 				},
 				addRecipeIngredientsRecipeView: function(sectionIndex) {
+					if (!utils.isString(this.ingredientsAddModel)) {
+						return false;
+					}
+
 					var ingredientObject = nlp.parseIngredient(this.ingredientsAddModel);
 					this.selectedRecipe.sections[sectionIndex].ingredients.push({
 						amount: ingredientObject.amount,
@@ -2439,6 +2486,11 @@
 					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = false;
 				},
 				addRecipeStepsRecipeView: function(sectionIndex) {
+					//Verify step
+					if (!utils.isString(this.stepsAddModel)) {
+						return false;
+					}
+
 					this.selectedRecipe.sections[sectionIndex].steps.push({
 						coverPhotoURL: 'https://via.placeholder.com/1024x1024.png',
 						isDeleted: false,
@@ -2534,7 +2586,7 @@
 						return false;
 					}
 					if (this.stepsDisplayState !== utils.DISPLAY_STATES.VIEW) {
-						this.$refs.recipeViewNutritionInputs[0].focus();
+						this.$refs.recipeViewStepInputs[0].focus();
 						return false;
 					}
 					return true;
