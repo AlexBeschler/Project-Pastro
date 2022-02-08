@@ -717,22 +717,21 @@
                     <h5>Back</h5>
                 </button>
                 <div class="container">
-                    <!--div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
+                    <div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
                         <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
-                                <button class="accordion-button manage-accordion-button pe-1" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#flush-overview">
+                                <button class="accordion-button manage-accordion-button pe-1" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#flush-overview">
                                     <span>1</span><span style="margin-left: 1rem;">Recipe Overview</span>
                                 </button>
                             </h2>
                             <div id="flush-overview" class="accordion-collapse manage-recipe-section collapse show"
-                                data-bs-parent="#manageRecipeAccordion" ref="manageOverviewAccordionButton">
+                                data-bs-parent="#manageRecipeAccordion" ref="addRecipeViewOverviewAccordionItem">
                                 <div class="accordion-body pe-1">
                                     <div class="mb-3">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control manage-recipe-input"
-                                                id="manage_form_name" v-model="manage_recipeName"
-                                                placeholder="Recipe name" required ref="recipeNameRef">
+                                            <input type="text" class="form-control manage-recipe-input" id="manage_form_name"
+                                                v-model="manage_recipeName" placeholder="Recipe name" required>
                                             <label for="manage_form_name">Recipe name</label>
                                             <div class="invalid-feedback">
                                                 Please enter a name
@@ -740,16 +739,15 @@
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="editor" class="form-label">Description</label>
-                                        <div id="editor" ref="recipeDescriptionRef"></div>
+                                        <label for="addRecipeViewEditor" class="form-label">Description</label>
+                                        <div id="addRecipeViewEditor" ref="addRecipeViewEditor"></div>
                                         <div class="invalid-feedback">
                                             Please enter a description
                                         </div>
-                                        <div class="mt-2 mb-4 collapse" ref="ocr_DescriptionFilePond">
+                                        <div class="mt-2 mb-4 collapse">
                                             <input id="ocrDescriptionFilePond" type="file" data-max-file-size="12MB"
                                                 accept="image/jpeg, image/png" />
-                                            <div id="ocrDescriptionCropWrapper" class="cropperImg"
-                                                v-show="ocr_DescriptionEditMode"></div>
+                                            <div id="ocrDescriptionCropWrapper" class="cropperImg" v-show="ocr_DescriptionEditMode"></div>
                                             <button class="btn btn-success" v-show="ocr_DescriptionEditMode"
                                                 @click="handleCrop('description')">Crop</button>
                                         </div>
@@ -757,9 +755,8 @@
                                     <div class="row">
                                         <div class="col">
                                             <div class="form-floating">
-                                                <input type="text" class="form-control manage-recipe-input me-3"
-                                                    id="manage_form_tags" v-model="manage_recipeTagInput"
-                                                    v-on:keyup.enter="addTag" placeholder="Tags" required>
+                                                <input type="text" class="form-control manage-recipe-input me-3" id="manage_form_tags"
+                                                    v-model="manage_recipeTagInput" v-on:keyup.enter="addTag" placeholder="Tags" required>
                                                 <label for="manage_form_tags">Tags</label>
                                             </div>
                                         </div>
@@ -767,15 +764,12 @@
                                     <div class="mt-3">
                                         <div class="col-lg-12">
                                             <div v-if="manage_recipeTagHolder.length">
-                                                <sortable-list :lock-axis="'y'" :press-delay.number=100
-                                                    v-model="manage_recipeTagHolder">
-                                                    <sortable-item v-for="(tag, index) in manage_recipeTagHolder"
-                                                        :index="index" :key="index" :tag="tag" :value="tag.value"
-                                                        :edit-mode="tag.editMode"
-                                                        :edit-mode-button-text="tag.editModeButtonText"
-                                                        v-on:edit-tag="editTag(index)"
-                                                        v-on:delete-tag="deleteTag(index)"
-                                                        @touchstart.native="scrollStop" @touchend.native="scrollMove" />
+                                                <sortable-list :lock-axis="'y'" :press-delay.number=100 v-model="manage_recipeTagHolder">
+                                                    <sortable-item v-for="(tag, index) in manage_recipeTagHolder" :index="index"
+                                                        :key="index" :tag="tag" :value="tag.value" :edit-mode="tag.editMode"
+                                                        :edit-mode-button-text="tag.editModeButtonText" v-on:edit-tag="editTag(index)"
+                                                        v-on:delete-tag="deleteTag(index)" @touchstart.native="scrollStop"
+                                                        @touchend.native="scrollMove" />
                                                 </sortable-list>
                                             </div>
                                         </div>
@@ -783,373 +777,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item manage-accordion-item accordion-border">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button manage-accordion-button collapsed pe-1" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#flush-cover-photo">
-                                    <span>2</span><span style="margin-left: 1rem;">Cover Photo</span>
-                                </button>
-                            </h2>
-                            <div id="flush-cover-photo" class="accordion-collapse manage-recipe-section collapse"
-                                data-bs-parent="#manageRecipeAccordion" ref="manageCoverPhotoAccordionButton">
-                                <div class="accordion-body pe-1">
-                                    <input id="coverPhotoURLInput" type="file" type="file" data-max-file-size="12MB"
-                                        accept="image/jpeg, image/png" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item manage-accordion-item accordion-border">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button manage-accordion-button collapsed pe-1" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#flush-time-servings">
-                                    <span>3</span><span style="margin-left: 1rem;">Time & Servings</span>
-                                </button>
-                            </h2>
-                            <div id="flush-time-servings" class="accordion-collapse manage-recipe-section collapse"
-                                data-bs-parent="#manageRecipeAccordion" ref="manageTimeServingsAccordionButton">
-                                <div class="accordion-body pe-1">
-                                    <div class="form-floating mb-2">
-                                        <input type="number" class="form-control manage-recipe-input"
-                                            id="manage_form_prep_time" v-model="manage_recipePrepTime"
-                                            placeholder="Prep Time (in minutes)" ref="recipePrepRef" required>
-                                        <div class="invalid-feedback">
-                                            Please enter a preparation time
-                                        </div>
-                                        <label for="manage_form_prep_time">Prep Time (in minutes)</label>
-                                    </div>
-                                    <div class="form-floating mb-2">
-                                        <input type="number" class="form-control manage-recipe-input"
-                                            id="manage_form_cook_time" v-model="manage_recipeCookTime"
-                                            placeholder="Cook Time (in minutes)" ref="recipeCookRef" required>
-                                        <div class="invalid-feedback">
-                                            Please enter a cook time
-                                        </div>
-                                        <label for="manage_form_cook_time">Cook Time (in minutes)</label>
-                                    </div>
-                                    <div class="form-floating mb-2">
-                                        <input type="number" class="form-control manage-recipe-input"
-                                            id="manage_form_total_time" v-model="manage_recipeTotalTime"
-                                            placeholder="Total Time (in minutes)" ref="recipeTotalRef" required>
-                                        <div class="invalid-feedback">
-                                            Please enter a total time
-                                        </div>
-                                        <label for="manage_form_total_time">Total Time (in minutes)</label>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-10">
-                                            <div class="form-floating">
-                                                <input type="number" class="form-control manage-recipe-input me-3"
-                                                    id="manage_form_active_time" v-model="manage_recipeActiveTime"
-                                                    placeholder="Active Time (in minutes)" ref="recipeActiveRef"
-                                                    required>
-                                                <div class="invalid-feedback">
-                                                    Please enter an active time
-                                                </div>
-                                                <label for="manage_form_active_time">Active Time (in minutes)</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-2 ps-0 d-flex align-items-end">
-                                            <button class="btn h-100 w-100" type="button"
-                                                @click.prevent="autofillActiveTime" style="padding: 0.375rem;">
-                                                <img src="assets/icons/lightning.svg">
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="form-floating mb-4">
-                                        <input type="text" class="form-control manage-recipe-input"
-                                            id="manage_form_yield" v-model="manage_recipeYield"
-                                            placeholder="Yield, i.e. 2 servings" ref="recipeYieldRef" required>
-                                        <div class="invalid-feedback">
-                                            Please enter a yield
-                                        </div>
-                                        <label for="manage_form_yield">Yield, i.e. 2 servings</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item manage-accordion-item accordion-border">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button manage-accordion-button pe-1 collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#flush-blocks">
-                                    <span>4</span><span style="margin-left: 1rem;">Recipe Sections</span>
-                                </button>
-                            </h2>
-                            <div id="flush-blocks" class="accordion-collapse manage-recipe-section collapse"
-                                data-bs-parent="#manageRecipeAccordion" ref="manageSectionsAccordionButton">
-                                <div class="accordion-body pe-1 pt-1">
-                                    <div class="mb-3">
-                                        <ul class="nav nav-pills manage-recipe-blocks-pills-nav" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button
-                                                    class="nav-link active position-relative manage-recipe-blocks-pills-tab"
-                                                    data-bs-toggle="pill" data-bs-target="#pills-manage-ingredients"
-                                                    type="button" role="tab" ref="manageIngredientsTab">Ingredients
-                                                    <span
-                                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                                                        v-if="manage_recipeBlockIngredients.length > 0">
-                                                        {{ manage_recipeBlockIngredients.length }}
-                                                    </span>
-                                                </button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button
-                                                    class="nav-link position-relative manage-recipe-blocks-pills-tab"
-                                                    data-bs-toggle="pill" data-bs-target="#pills-manage-steps"
-                                                    type="button" role="tab" ref="manageStepsTab">Steps
-                                                    <span
-                                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                                                        v-if="manage_recipeBlockSteps.length > 0">
-                                                        {{ manage_recipeBlockSteps.length }}
-                                                    </span>
-                                                </button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button
-                                                    class="nav-link position-relative manage-recipe-blocks-pills-tab"
-                                                    data-bs-toggle="pill" data-bs-target="#pills-manage-nutrition"
-                                                    type="button" role="tab" ref="manageNutritionTab">Nutrition</button>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content">
-                                            <div class="tab-pane fade active show" id="pills-manage-ingredients"
-                                                role="tabpanel" ref="manageIngredientsSectionButton">
-                                                <div class="my-3">
-                                                    <div class="input-group">
-                                                        <input id="manage_ing_amount"
-                                                            class="form-control manage-recipe-input me-3" type="text"
-                                                            placeholder="Ingredient"
-                                                            v-model="manage_recipeBlockIngredientValue"
-                                                            v-on:keyup.enter="addIngredient" ref="manage_ing_amount">
-                                                        <div id="ingredient-invalid-feedback" class="invalid-feedback">
-                                                        </div>
-                                                        <button class="btn" type="button" data-bs-toggle="collapse"
-                                                            data-bs-target="#ocrIngredientsFilePondWrapper">
-                                                            <img src="assets/icons/camera-fill.svg">
-                                                        </button>
-                                                    </div>
-                                                    <label for="manage_ing_amount" class="form-label mt-1 mb-3">Paste
-                                                        multiple ingredients</label>
-                                                    <div id="ocrIngredientsFilePondWrapper" class="mt-2 mb-4 collapse"
-                                                        ref="ocr_IngredientsFilePond">
-                                                        <input id="ocrIngredientsFilePond" type="file"
-                                                            data-max-file-size="12MB" accept="image/jpeg, image/png" />
-                                                        <div id="ocrIngredientsCropWrapper" class="cropperImg"
-                                                            v-show="ocr_IngredientsEditMode"></div>
-                                                        <button class="btn btn-success" v-show="ocr_IngredientsEditMode"
-                                                            @click="handleCrop('ingredients')">Crop</button>
-                                                    </div>
-                                                </div>
-                                                <hr class="margin-top-2"
-                                                    v-if="manage_recipeBlockIngredients.length > 0">
-                                                <div class="mb-3">
-                                                    <div v-if="manage_recipeBlockIngredients.length">
-                                                        <ingredients-draggable-list :lock-axis="'y'"
-                                                            :press-delay.number=100
-                                                            v-model="manage_recipeBlockIngredients">
-                                                            <ingredients-draggable-item
-                                                                v-for="(ingredient, index) in manage_recipeBlockIngredients"
-                                                                :index="index" :key="index" :ingredient="ingredient"
-                                                                :amount="ingredient.amount" :value="ingredient.value"
-                                                                :edit-mode="ingredient.editMode"
-                                                                :edit-mode-button-text="ingredient.editModeButtonText"
-                                                                v-on:edit-ingredient="editIngredient(index)"
-                                                                v-on:delete-ingredient="deleteIngredient(index)"
-                                                                v-on:update-focus="updateIngredientFocus($event)"
-                                                                @touchstart.native="scrollStop"
-                                                                @touchend.native="scrollMove"
-                                                                :ref="'ingredient' + index">
-                                                            </ingredients-draggable-item>
-                                                        </ingredients-draggable-list>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel"
-                                                ref="manageStepsSectionButton">
-                                                <div class="my-3">
-                                                    <div class="row">
-                                                        <div class="steps-textarea-holder">
-                                                            <textarea id="manage_step_value" class="form-control"
-                                                                v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
-                                                                v-model="manage_recipeBlockStepValue"
-                                                                ref="manageStepRef"></textarea>
-                                                        </div>
-                                                        <div id="step-invalid-feedback" class="invalid-feedback">
-                                                            Please enter at least one step
-                                                        </div>
-                                                        <label for="manage_step_value"
-                                                            class="form-label mt-1 mb-2 px-3">Paste multiple
-                                                            steps</label>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col px-1">
-                                                            <button class="btn text-primary button-no-outline"
-                                                                @click="addStep" ref="addStepToBlockButton">Add</button>
-                                                            <button class="btn text-primary button-no-outline"
-                                                                type="button" data-bs-toggle="collapse"
-                                                                data-bs-target="#ocrStepsFilePondWrapper">
-                                                                <img src="assets/icons/camera-fill.svg">
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div id="ocrStepsFilePondWrapper" class="mt-2 mb-4 collapse"
-                                                            ref="ocr_StepsFilePond">
-                                                            <input id="ocrStepsFilePond" type="file"
-                                                                data-max-file-size="12MB"
-                                                                accept="image/jpeg, image/png" />
-                                                            <div id="ocrStepsCropWrapper" class="cropperImg"
-                                                                v-show="ocr_StepsEditMode"></div>
-                                                            <button class="btn btn-success" v-show="ocr_StepsEditMode"
-                                                                @click="handleCrop('steps')">Crop</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <hr class="margin-top-2" v-if="manage_recipeBlockSteps.length">
-                                                <div class="mb-3">
-                                                    <div class="list-group" v-if="manage_recipeBlockSteps.length">
-                                                        <steps-draggable-list :lock-axis="'y'" :press-delay.number=100
-                                                            v-model="manage_recipeBlockSteps">
-                                                            <steps-draggable-item
-                                                                v-for="(step, index) in manage_recipeBlockSteps"
-                                                                :index="index" :key="index" :step="step"
-                                                                :value="step.value" :edit-mode="step.editMode"
-                                                                :edit-mode-button-text="step.editModeButtonText"
-                                                                v-on:edit-step="editStep(index)"
-                                                                v-on:delete-step="deleteStep(index)"
-                                                                @touchstart.native="scrollStop"
-                                                                @touchend.native="scrollMove">
-                                                            </steps-draggable-item>
-                                                        </steps-draggable-list>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel"
-                                                ref="manageNutritionSectionButton">
-                                                <div class="row mt-3 mb-2">
-                                                    <div class="col-10">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nCalories" placeholder="Calories"
-                                                                required>
-                                                            <label>Calories</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2 d-flex align-items-center">
-                                                        <span>g</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-2">
-                                                    <div class="col-10">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nFat" placeholder="Total Fat" required>
-                                                            <label>Total Fat</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2 d-flex align-items-center">
-                                                        <span>g</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-2">
-                                                    <div class="col-10">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nCholesterol" placeholder="Cholesterol"
-                                                                required>
-                                                            <label>Cholesterol</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2 d-flex align-items-center">
-                                                        <span>mg</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-2">
-                                                    <div class="col-10">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nSodium" placeholder="Sodium" required>
-                                                            <label>Sodium</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2 d-flex align-items-center">
-                                                        <span>mg</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-2">
-                                                    <div class="col-10">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nCarbohydrate"
-                                                                placeholder="Carbohydrate" required>
-                                                            <label>Carbohydrate</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2 d-flex align-items-center">
-                                                        <span>g</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-2">
-                                                    <div class="col-10">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nFiber" placeholder="Fiber" required>
-                                                            <label>Fiber</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2 d-flex align-items-center">
-                                                        <span>g</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-2">
-                                                    <div class="col-10">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nSugars" placeholder="Sugars" required>
-                                                            <label>Sugars</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2 d-flex align-items-center">
-                                                        <span>g</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-2">
-                                                    <div class="col-10">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nProtein" placeholder="Protein"
-                                                                required>
-                                                            <label>Protein</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2 d-flex align-items-center">
-                                                        <span>g</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <button class="btn d-flex mb-3" style="margin: 0 auto;" @click="addBlock"
-                                            v-if="manage_recipeBlockSteps.length">+ Add Section</button>
-                                        <div class="list-group" v-if="manage_recipeBlocks.length">
-                                            <blocks-draggable-list :lock-axis="'y'" :press-delay.number=100
-                                                v-model="manage_recipeBlocks">
-                                                <blocks-draggable-item class="list-group-item"
-                                                    v-for="(block, index) in manage_recipeBlocks" :key="index"
-                                                    :index="index" :block="block" :header="block.header"
-                                                    :edit-mode="block.header.editMode" :ingredient="block.ingredient"
-                                                    :step="block.step" v-on:edit-header="editHeader(index)"
-                                                    v-on:edit-block="editBlock(index)"
-                                                    v-on:delete-block="deleteBlock(index)"
-                                                    @touchstart.native="scrollStop" @touchend.native="scrollMove">
-                                                </blocks-draggable-item>
-                                            </blocks-draggable-list>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div-->
+                    </div>
                     <button id="submitRecipeButton" type="button" class="btn btn-success fancy-button mb-5"
                         @click="submitManagedRecipe" style="width: 100%;"
                         :disabled="isRecipeSubmitDisabled">{{ manage_smartButtonText }}</button>

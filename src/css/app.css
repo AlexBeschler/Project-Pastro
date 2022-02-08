@@ -650,6 +650,7 @@ span.ingredient-amount-badge.strike-list-item {
     -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     margin-bottom: 1.15rem;
+    padding: 1rem 0;
 }
 
 .manage-accordion-flush .manage-accordion-item .manage-accordion-button {

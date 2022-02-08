@@ -1032,8 +1032,12 @@
 
 				/** 3rd Party & API data **/
 				//Quill
+				//RecipeView
 				quillRecipeViewInstance: null,
 				quillRecipeViewContent: null,
+				//AddRecipeView
+				quillAddRecipeViewInstance: null,
+				quillAddRecipeViewContent: null,
 				toolbarOptions: [
 					['bold', 'italic'],
 					[{
@@ -1309,21 +1313,11 @@
 
 				this.filterPresetsList = filterPresets;
 
+				
+
+				
+
 				/*
-
-				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', function () {
-					self.$refs.undoContainer.style.display = 'none!important';
-				});
-
-				var ocrDescriptionButton = new QuillToolbarButton({
-					icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="999999" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/></svg>`
-				});
-				ocrDescriptionButton.onClick = function (quill) {
-					var bsCollapse = new bootstrap.Collapse(self.$refs.ocr_DescriptionFilePond);
-					self.$refs.ocr_DescriptionFilePond.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
-				}
-				ocrDescriptionButton.attach(this.quillInstance);
-
 				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
 						//If the user already clicked the crop button, don't let another instance be called
@@ -1404,9 +1398,6 @@
 				this.$refs.ocr_IngredientsFilePond.addEventListener('shown.bs.collapse', this.createIngredientsOCR_DOM);
 				this.$refs.ocr_StepsFilePond.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM);
 
-				this.recipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeView);
-				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
-
 				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
 
 				*/
@@ -1447,9 +1438,6 @@
 					self.toastHeader = '';
 					self.toastBody = '';
 				});
-			},
-			beforeDestroy() {
-				this.quillInstance.off('text-change');
 			},
 			watch: {
 				searchQuery: function(b, a) {
@@ -1530,13 +1518,6 @@
 				},
 				nProtein: function (b, a) {
 					this.checkNutritionInfo(b, a);
-				},
-				quillValue: function (newVal) {
-					// Only update the content if it's changed from an external source
-					// or else it'll act weird when you try to type anything
-					if (newVal !== this.quillContent) {
-						this.quillInstance.pasteHTML(newVal);
-					}
 				},
 				manage_recipeTagInput: function (b, a) {
 					if (b.length >= (2 + a.length)) {
@@ -1727,8 +1708,23 @@
                     console.log('Clicked meal plan');
                 },
 				clickedAddRecipe: function() {
-					//this.updateSmartButtonText();
-					this.navigateForward(this.$refs.addRecipeView, null, null);
+					var self = this;
+					this.navigateForward(this.$refs.addRecipeView, null, null).then(() => {
+						if (self.quillAddRecipeViewInstance === null) {
+							self.initAddRecipeViewQuill();
+							/*
+							var ocrDescriptionButton = new QuillToolbarButton({
+								icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="999999" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/></svg>`
+							});
+							ocrDescriptionButton.onClick = function (quill) {
+								console.log('OCR clicked');
+								//var bsCollapse = new bootstrap.Collapse(self.$refs.ocr_DescriptionFilePond);
+								//self.$refs.ocr_DescriptionFilePond.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
+							};
+							ocrDescriptionButton.attach(this.quillAddRecipeViewInstance);
+							*/
+						}
+					});
 				},
 				clickedClearTagFilters: function() {
 					this.checkedTagsArray = [];
@@ -1805,13 +1801,102 @@
                         }, '-=250');
                 },
                 navigateForward: function (navigateTo, backButtonImg, backButtonText) {
-                    var timeline = anime.timeline({});
-					var currentView = this.ViewStack[this.ViewStack.length - 1];
-					if (backButtonImg === null) {
+					var self = this;
+					return new Promise((resolve, reject) => {
+						var timeline = anime.timeline({});
+						var currentView = self.ViewStack[self.ViewStack.length - 1];
+						if (backButtonImg === null) {
+							timeline
+								.add({
+									targets: currentView,
+									translateX: ['0%', '-50%'],
+									opacity: [1, 0],
+									duration: utils.ViewStackExitAnimationDuration,
+									easing: 'easeInOutQuad',
+									complete: function (anim) {
+										currentView.classList.add('d-none');
+									}
+								})
+								.add({
+									targets: navigateTo,
+									translateX: ['50%', '0%'],
+									opacity: [0, 1],
+									duration: utils.ViewStackEnterAnimationDuration,
+									easing: 'easeInOutQuad',
+									begin: function (anim) {
+										navigateTo.classList.remove('d-none');
+										navigateTo.classList.add('d-block');
+									},
+									complete: function() {
+										resolve();
+									}
+								}, '+=' + utils.ViewStackAnimationDelayDuration);
+						} else {
+							timeline
+								.add({
+									targets: currentView,
+									translateX: ['0%', '-50%'],
+									opacity: [1, 0],
+									duration: 200,
+									easing: 'easeInOutQuad',
+									complete: function (anim) {
+										currentView.classList.add('d-none');
+									}
+								})
+								.add({
+									targets: navigateTo,
+									translateX: ['50%', '0%'],
+									opacity: [0, 1],
+									duration: 200,
+									easing: 'easeInOutQuad',
+									begin: function (anim) {
+										navigateTo.classList.remove('d-none');
+										navigateTo.classList.add('d-block');
+									}
+								}, '+=5')
+								.add({
+									targets: backButtonText,
+									translateX: ['-0.5rem', '0rem'],
+									opacity: [0, 1],
+									duration: 200,
+									easing: 'easeInOutQuad',
+									delay: 50
+								})
+								.add({
+									targets: backButtonImg,
+									opacity: [0, 1],
+									duration: 200,
+									easing: 'easeInOutQuad',
+									delay: 200,
+									complete: function() {
+										resolve();
+									}
+								}, '-=250');
+						}
+
+						self.hideHeader();
+
+						self.ViewStack.push(navigateTo);
+					});
+                },
+                navigateBackward: function () {
+					var self = this;
+					return new Promise((resolve, reject) => {
+						if (!self.isRecipeViewInEditMode()) {
+							return;
+						}
+	
+						if (self.ViewStack.length < 2) {
+							return;
+						}
+	
+						var currentView = self.ViewStack.pop();
+						var previousView = self.ViewStack[self.ViewStack.length - 1];
+						var timeline = anime.timeline({});
 						timeline
 							.add({
 								targets: currentView,
-								translateX: ['0%', '-50%'],
+								translateX: ['0%', '50%'],
 								opacity: [1, 0],
 								duration: utils.ViewStackExitAnimationDuration,
 								easing: 'easeInOutQuad',
@@ -1820,97 +1905,23 @@
 								}
 							})
 							.add({
-								targets: navigateTo,
-								translateX: ['50%', '0%'],
+								targets: previousView,
+								translateX: ['-50%', '0%'],
 								opacity: [0, 1],
 								duration: utils.ViewStackEnterAnimationDuration,
 								easing: 'easeInOutQuad',
 								begin: function (anim) {
-									navigateTo.classList.remove('d-none');
-									navigateTo.classList.add('d-block');
+									previousView.classList.remove('d-none');
+									previousView.classList.add('d-block');
+								},
+								complete: function() {
+									resolve();
 								}
 							}, '+=' + utils.ViewStackAnimationDelayDuration);
-					} else {
-						timeline
-							.add({
-								targets: currentView,
-								translateX: ['0%', '-50%'],
-								opacity: [1, 0],
-								duration: 200,
-								easing: 'easeInOutQuad',
-								complete: function (anim) {
-									currentView.classList.add('d-none');
-								}
-							})
-							.add({
-								targets: navigateTo,
-								translateX: ['50%', '0%'],
-								opacity: [0, 1],
-								duration: 200,
-								easing: 'easeInOutQuad',
-								begin: function (anim) {
-									navigateTo.classList.remove('d-none');
-									navigateTo.classList.add('d-block');
-								}
-							}, '+=5')
-							.add({
-								targets: backButtonText,
-								translateX: ['-0.5rem', '0rem'],
-								opacity: [0, 1],
-								duration: 200,
-								easing: 'easeInOutQuad',
-								delay: 50
-							})
-							.add({
-								targets: backButtonImg,
-								opacity: [0, 1],
-								duration: 200,
-								easing: 'easeInOutQuad',
-								delay: 200
-							}, '-=250');
-					}
-
-                    this.hideHeader();
-
-					this.ViewStack.push(navigateTo);
-                },
-                navigateBackward: function () {
-					if (!this.isRecipeViewInEditMode()) {
-						return;
-					}
-
-					if (this.ViewStack.length < 2) {
-						return;
-					}
-
-					var currentView = this.ViewStack.pop();
-					var previousView = this.ViewStack[this.ViewStack.length - 1];
-                    var timeline = anime.timeline({});
-                    timeline
-                        .add({
-                            targets: currentView,
-                            translateX: ['0%', '50%'],
-                            opacity: [1, 0],
-                            duration: utils.ViewStackExitAnimationDuration,
-                            easing: 'easeInOutQuad',
-                            complete: function (anim) {
-                                currentView.classList.add('d-none');
-                            }
-                        })
-                        .add({
-                            targets: previousView,
-                            translateX: ['-50%', '0%'],
-                            opacity: [0, 1],
-                            duration: utils.ViewStackEnterAnimationDuration,
-                            easing: 'easeInOutQuad',
-                            begin: function (anim) {
-                                previousView.classList.remove('d-none');
-                                previousView.classList.add('d-block');
-                            }
-                        }, '+=' + utils.ViewStackAnimationDelayDuration);
-
-					//Remove entrance animation for RecipeView
-					this.$refs.recipeDetails.classList.remove('show-finished-viewstack');
+	
+						//Remove entrance animation for RecipeView
+						self.$refs.recipeDetails.classList.remove('show-finished-viewstack');
+					});
                 },
 				editRecipeTitleOnFinishedAnimation: function() {
 					//If the app isn't editing
@@ -2698,6 +2709,7 @@
 				},
 
 				/**** 3rd Party Methods & APIs ****/
+				//RecipeView
 				initRecipeViewQuill: function () {
 					this.quillRecipeViewInstance = new Quill('#recipeViewEditor', {
 						modules: {
@@ -2738,6 +2750,53 @@
 							var newPosition = self.quillRecipeViewInstance.getSelection().index;
 							if (newPosition === oldPosition) {
 								self.quillRecipeViewInstance.setSelection(self.quillRecipeViewInstance.getSelection().index + 1, 0);
+							}
+						}, 15);
+						/* jshint ignore:end */
+					}
+				},
+				//AddRecipeView
+				initAddRecipeViewQuill: function () {
+					this.quillAddRecipeViewInstance = new Quill('#addRecipeViewEditor', {
+						modules: {
+							toolbar: this.toolbarOptions
+						},
+						theme: 'snow'
+					});
+					this.quillAddRecipeViewInstance.on('text-change', this.onAddRecipeViewQuillContentChange);
+					//Apply GKeyboard fix
+					this.quillAddRecipeViewInstance.on('editor-change', this.applyGoogleKeyboardFixToRecipeView);
+					this.setAddRecipeViewQuillContent();
+				},
+				onAddRecipeViewQuillContentChange: function () {
+					this.setAddRecipeViewQuillContent();
+					this.$emit('input', this.quillAddRecipeViewContent);
+				},
+				setAddRecipeViewQuillContent: function () {
+					this.quillAddRecipeViewContent = this.quillAddRecipeViewInstance.getText().trim() ? this.quillAddRecipeViewInstance.root.innerHTML : '';
+				},
+
+				applyGoogleKeyboardFixToAddRecipeView: function (eventName, ...args) {
+					if (eventName === 'text-change') {
+						/* jshint ignore:start */
+						var ops = args[0]['ops'];
+						var oldSelection = this.quillAddRecipeViewInstance.getSelection();
+						//Fix for #3
+						if (oldSelection === null || typeof oldSelection === 'undefined') {
+							return;
+						}
+						var oldPosition = oldSelection.index;
+						var oldSelectionLength = oldSelection.length;
+
+						if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["insert"] != "\n" || oldSelectionLength > 0) {
+							return;
+						}
+
+						var self = this;
+						setTimeout(function () {
+							var newPosition = self.quillAddRecipeViewInstance.getSelection().index;
+							if (newPosition === oldPosition) {
+								self.quillAddRecipeViewInstance.setSelection(self.quillAddRecipeViewInstance.getSelection().index + 1, 0);
 							}
 						}, 15);
 						/* jshint ignore:end */
