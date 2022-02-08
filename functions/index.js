@@ -1,3 +1,4 @@
+/*jshint esversion: 8 */
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
@@ -64,7 +65,7 @@ const ProjectPastroNLP = function () {
 		};
 		this.identifyEntities(r, 0);
 		return this.ingredientObject;
-	}
+	};
 
 	this.cleanAndTokenize = function (str) {
 		//Clean up data
@@ -101,7 +102,7 @@ const ProjectPastroNLP = function () {
 			r = t.split(' '); //Re-split sample with newly added isolated dash
 		}
 		return r;
-	}
+	};
 
 	this.identifyEntities = function (arr, offsetIndex) {
 		//Use simple NLP to parse ingredients
@@ -175,7 +176,7 @@ const ProjectPastroNLP = function () {
 							this.ingredientObject.ingredient = secondWord + ' ' + thirdWord;
 						}
 					} else {
-						var query = secondWord + ' ' + thirdWord;
+						var query = secondWord + ' ' + thirdWord; //jshint ignore:line
 						if (_.contains(unit_compound_dictionary, query.toLowerCase())) {
 							//Add first, second, and third word to amount
 							let u = ' ' + query;
@@ -197,7 +198,7 @@ const ProjectPastroNLP = function () {
 		} else {
 			this.ingredientObject.ingredient = arr.join(' ').trim(); //Move everything to the ingredient
 		}
-	}
+	};
 
 	this.strBuilder = function (arr, startIndex, endLength) {
 		var s = '';
@@ -210,8 +211,8 @@ const ProjectPastroNLP = function () {
 			s += ' ';
 		}
 		return s;
-	}
-}
+	};
+};
 
 function processOCR(res, compressParagraphs) {
 	var blocks = res.pages[0].blocks;
@@ -221,7 +222,7 @@ function processOCR(res, compressParagraphs) {
 	for (var i = 0; i < blocks.length; i++) {
 		//Get current line from paragraph
 		var paragraph = blocks[i].paragraphs[0]; //Each block seems to have only 1 paragraph
-		paragraph.words.forEach(word => {
+		paragraph.words.forEach(word => { //jshint ignore:line
 			line += word.symbols.map(s => s.text).join('');
 			line += ' ';
 		});
@@ -405,6 +406,42 @@ async function visionImageAnnotator(req, res) {
 	}
 }
 
+/* Recipe Utilities */
+/* 
+async function deleteCollection(db, collectionPath, batchSize) {
+	const collectionRef = db.collection(collectionPath);
+	const query = collectionRef.orderBy('__name__').limit(batchSize);
+
+	return new Promise((resolve, reject) => {
+		deleteQueryBatch(db, query, resolve).catch(reject);
+	});
+}
+
+async function deleteQueryBatch(db, query, resolve) {
+	const snapshot = await query.get();
+
+	const batchSize = snapshot.size;
+	if (batchSize === 0) {
+		// When there are no documents left, we are done
+		resolve();
+		return;
+	}
+
+	// Delete documents in a batch
+	const batch = db.batch();
+	snapshot.docs.forEach((doc) => {
+		batch.delete(doc.ref);
+	});
+	await batch.commit();
+
+	// Recurse on the next process tick, to avoid
+	// exploding the stack.
+	process.nextTick(() => {
+		deleteQueryBatch(db, query, resolve);
+	});
+}
+*/
+
 /* 
  * Website parser
  */
@@ -432,7 +469,7 @@ exports.embercleave = functions.https.onRequest((req, res) => {
 			}).catch((error) => {
 				//
 			});
-		})
+		});
 		/*
 		.catch(function (error) {
 			return res.status(201).send({
@@ -486,7 +523,7 @@ const parseHTML = function (dom) {
 
 		resolve(recipe);
 	});
-}
+};
 
 function domHas(DOM, textToSearch) {
 	if (typeof DOM == 'undefined') return false;
@@ -504,7 +541,7 @@ function allDescendants(node, textToSearch) {
 		//Check innerHTML for the given text
 		if (child.innerHTML != undefined && child.innerHTML !== 'undefined' && child.innerHTML !== null) {
 			var res = false;
-			textToSearch.forEach(t => {
+			textToSearch.forEach(t => { //jshint ignore:line
 				if (child.innerHTML.trim().toLowerCase().includes(t.trim().toLowerCase())) {
 					res = true;
 				}
@@ -792,10 +829,4 @@ const unit_compound_dictionary = [
 
 const ingredientsWebScraperTerms = [
 	'ingredient'
-];
-
-const stepsWebScraperTerms = [
-	'step',
-	'instruction',
-	'direction'
 ];

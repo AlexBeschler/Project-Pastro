@@ -276,7 +276,6 @@
 					},
 					{
 						"title": "Buttercream Frosting",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1½ cups",
@@ -370,7 +369,6 @@
 				"sections": [
 					{
 						"title": "Thai Tea",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "5 cups",
@@ -474,7 +472,6 @@
 					},
 					{
 						"title": "Thai Tea Sweetener Blend",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "6 tbps",
@@ -533,7 +530,6 @@
 				"sections": [
 					{
 						"title": "Hello World",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tbps",
@@ -565,7 +561,6 @@
 					},
 					{
 						"title": "Another hello world",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tub",
@@ -624,7 +619,6 @@
 				"sections": [
 					{
 						"title": "Hello World",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tbps",
@@ -656,7 +650,6 @@
 					},
 					{
 						"title": "Another hello world",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tub",
@@ -968,8 +961,6 @@
 				//   of the browser. When this happens, the app will pop the ViewStack and move backwards,
 				//   providing a seamless UX
 				ViewStack: [],
-				ticking: false,
-				parallaxPx: 6,
 				
 				/** Home screen data **/
 				headerText: '',
@@ -1008,14 +999,18 @@
 				/** Recipe View data **/
 				selectedRecipe: {},
 				detailsDisplayState: 'view',
+				tagDisplayState: 'view',
 				specialEquipmentDisplayState: 'view',
 				notesDisplayState: 'view',
 				ingredientsDisplayState: 'view',
 				stepsDisplayState: 'view',
+
+				tagAddModel: '',
 				specialEquipmentAddModel: '',
 				notesAddModel: '',
 				ingredientsAddModel: '',
 				stepsAddModel: '',
+				isSharing: false,
 
 				/** AddRecipeView data **/
 				manage_smartButtonText: 'Cover Photo »',
@@ -1029,6 +1024,11 @@
 				},
 				manage_activePane: 1,
 				showStickySubmit: false,
+
+				/** Utility data **/
+				toastInstance: null,
+				toastHeader: '',
+				toastBody: '',
 
 				/** 3rd Party & API data **/
 				//Quill
@@ -1441,6 +1441,12 @@
 				*/
 
 				//this.initRecipeViewQuill();
+
+				this.toastInstance = new bootstrap.Toast(this.$refs.toastNotification);
+				this.$refs.toastNotification.addEventListener('hidden.bs.toast', function() {
+					self.toastHeader = '';
+					self.toastBody = '';
+				});
 			},
 			beforeDestroy() {
 				this.quillInstance.off('text-change');
@@ -1869,9 +1875,14 @@
 					this.ViewStack.push(navigateTo);
                 },
                 navigateBackward: function () {
+					if (!this.isRecipeViewInEditMode()) {
+						return;
+					}
+
 					if (this.ViewStack.length < 2) {
 						return;
 					}
+
 					var currentView = this.ViewStack.pop();
 					var previousView = this.ViewStack[this.ViewStack.length - 1];
                     var timeline = anime.timeline({});
@@ -1910,7 +1921,8 @@
 				editRecipeDescriptionAfterAnimation: function(el) {
 					if (this.quillRecipeViewInstance === null) {
 						this.initRecipeViewQuill();
-						this.quillRecipeViewInstance.setContents(this.quillRecipeViewInstance.clipboard.convert(this.selectedRecipe.description), 'silent');
+						this.quillRecipeViewInstance.clipboard.dangerouslyPasteHTML(this.selectedRecipe.description);
+						this.quillRecipeViewContent = this.selectedRecipe.description;
 					} else {
 						this.quillRecipeViewInstance = null;
 					}
@@ -2195,6 +2207,40 @@
 						this.detailsDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
+
+					//Verify details before allowing submit to Firebase
+					//Verify title
+					if (!utils.isString(this.selectedRecipe.title)) {
+						this.$refs.recipeViewTitleInput.focus();
+						return false;
+					}
+					//Verify description
+					if (!utils.isBigString(this.quillRecipeViewContent)) {
+						this.quillRecipeViewInstance.focus();
+						return false;
+					}
+					//Verify recipe time metadata
+					if (!utils.isNumber(this.selectedRecipe.activeTime)) {
+						this.$refs.recipeViewActiveTime.focus();
+						return false;
+					}
+					if (!utils.isNumber(this.selectedRecipe.prepTime)) {
+						this.$refs.recipeViewPrepTime.focus();
+						return false;
+					}
+					if (!utils.isNumber(this.selectedRecipe.cookTime)) {
+						this.$refs.recipeViewCookTime.focus();
+						return false;
+					}
+					if (!utils.isNumber(this.selectedRecipe.totalTime)) {
+						this.$refs.recipeViewTotalTime.focus();
+						return false;
+					}
+					//Verify yield
+					if (!utils.isNumber(this.selectedRecipe.yield)) {
+						this.$refs.recipeViewYield.focus();
+						return false;
+					}
 					
 					this.detailsDisplayState = utils.DISPLAY_STATES.LOADING;
 					
@@ -2215,6 +2261,55 @@
 					//TODO: Update to Firebase cloud services
 
 					this.detailsDisplayState = utils.DISPLAY_STATES.VIEW;
+				},
+				createRecipeTagRecipeView: function() {
+					this.tagDisplayState = utils.DISPLAY_STATES.EDIT;
+					//this.$refs.tagInputRecipeView.focus();
+				},
+				addTagRecipeView: function() {
+					if (!utils.isString(this.tagAddModel)) {
+						return;
+					}
+
+					this.selectedRecipe.tags.push(this.tagAddModel);
+
+					//Clean data
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+
+					//Overwrite data in cookbook
+					this.cookbook[serializedRecipe.id] = serializedRecipe;
+
+					//TODO: add filtered cookbook update
+
+					//Re-index recipe in the indices
+					//FIXME: this does not seem to correctly update the recipe title
+					this.flexSearch.update({
+						data: serializedRecipe
+					});
+
+					//TODO: Update to Firebase cloud services
+
+					this.tagDisplayState = utils.DISPLAY_STATES.VIEW;
+					this.tagAddModel = '';
+				},
+				deleteRecipeTagRecipeView: function(index) {
+					this.selectedRecipe.tags.splice(index, 1);
+
+					//Clean data
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+
+					//Overwrite data in cookbook
+					this.cookbook[serializedRecipe.id] = serializedRecipe;
+
+					//TODO: add filtered cookbook update
+
+					//Re-index recipe in the indices
+					//FIXME: this does not seem to correctly update the recipe title
+					this.flexSearch.update({
+						data: serializedRecipe
+					});
+
+					//TODO: Update to Firebase cloud services
 				},
 				editSpecialEquipmentRecipeView: function() {
 					if (this.specialEquipmentDisplayState === utils.DISPLAY_STATES.VIEW) {
@@ -2256,6 +2351,10 @@
 					this.selectedRecipe.specialEquipment[index].isDeleted = false;
 				},
 				addSpecialEquipmentRecipeView: function() {
+					if (!utils.isString(this.specialEquipmentAddModel)) {
+						return false;
+					}
+
 					this.selectedRecipe.specialEquipment.push({
 						value: this.specialEquipmentAddModel,
 						isDeleted: false
@@ -2302,6 +2401,10 @@
 					this.selectedRecipe.notes[index].isDeleted = false;
 				},
 				addRecipeNotesRecipeView: function() {
+					if (!utils.isString(this.notesAddModel)) {
+						return false;
+					}
+
 					this.selectedRecipe.notes.push({
 						value: this.notesAddModel,
 						isDeleted: false
@@ -2365,6 +2468,10 @@
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
 				},
 				addRecipeIngredientsRecipeView: function(sectionIndex) {
+					if (!utils.isString(this.ingredientsAddModel)) {
+						return false;
+					}
+
 					var ingredientObject = nlp.parseIngredient(this.ingredientsAddModel);
 					this.selectedRecipe.sections[sectionIndex].ingredients.push({
 						amount: ingredientObject.amount,
@@ -2424,6 +2531,11 @@
 					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = false;
 				},
 				addRecipeStepsRecipeView: function(sectionIndex) {
+					//Verify step
+					if (!utils.isString(this.stepsAddModel)) {
+						return false;
+					}
+
 					this.selectedRecipe.sections[sectionIndex].steps.push({
 						coverPhotoURL: 'https://via.placeholder.com/1024x1024.png',
 						isDeleted: false,
@@ -2440,12 +2552,89 @@
 					//The reason we don't splice is because the FlexSearch index is dependent on this recipe's position
 					this.cookbook[id] = {};
 
+					//TODO: Delete all shared recipes
+					//Call delete recipe endpoint
+
 					this.navigateBackward();
 				},
 				shareRecipe: function() {
-					this.storage.child('users/' + utils._UID + '/recipes/' + this.selectedRecipe.docID + '/' + uuidv4() + '.html').putString(this.$refs.recipeView.innerHTML).then((snapshot) => {
-						console.log('Sharing ' + this.selectedRecipe.title);
+					this.isSharing = true;
+
+					var self = this;
+
+					//Create HTML document of recipe to upload to Firebase
+					var doc = document.implementation.createHTMLDocument();
+					
+					//Head
+					var meta1 = document.createElement('meta');
+					meta1.httpEquiv = "X-UA-Compatible";
+					meta1.content = "IE=edge";
+					doc.head.append(meta1);
+
+					var meta2 = document.createElement('meta');
+					meta2.name = 'viewport';
+					meta2.content = 'width=device-width, initial-scale=1.0';
+					doc.head.append(meta2);
+
+					var title = document.createElement('title');
+					title.innerHTML = this.selectedRecipe.title + ' | Project Pastro';
+					doc.head.append(title);
+					
+					doc.head.append(this.makeHeaderLink('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap'));
+					doc.head.append(this.makeHeaderLink('https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css'));
+					doc.head.append(this.makeHeaderLink('https://project-pastro-c95b1.web.app/css/app.css'));
+					
+					//Body
+					var b = this.$refs.recipeView.cloneNode(true);
+					doc.body.append(b);
+
+					//Remove the app features from shared recipe
+					doc.querySelectorAll('.remove-from-sharing').forEach(e => e.remove());
+
+					doc.body.append(this.makeScriptLink('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'));
+					doc.body.append(this.makeScriptLink('https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js'));
+
+					var str = new XMLSerializer().serializeToString(doc);
+
+					var metadata = {
+						contentType: 'text/html',
+					};
+
+					this.storage.child('users/' + utils._UID + '/recipes/' + this.selectedRecipe.docID + '/' + uuidv4() + '.html').putString(str).then((snapshot) => {
+						snapshot.ref.getDownloadURL().then((downloadURL) => {
+							snapshot.ref.updateMetadata(metadata).then((m) => {
+								utils.copyTextToClipboard(downloadURL);
+								self.toastHeader = 'Link shared';
+								self.toastBody = 'Link was copied to your clipboard!';
+								self.toastInstance.show();
+								self.isSharing = false;
+							});
+						});
 					});
+				},
+				isRecipeViewInEditMode: function() {
+					//Check if anything in RecipeView is still in edit mode or loading
+					if (this.detailsDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewTitleInput.focus();
+						return false;
+					}
+					if (this.specialEquipmentDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewSpecialEquipmentInput.focus();
+						return false;
+					}
+					if (this.notesDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewNotesInput.focus();
+						return false;
+					}
+					if (this.ingredientsDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewIngredientsInputs[0].focus();
+						return false;
+					}
+					if (this.stepsDisplayState !== utils.DISPLAY_STATES.VIEW) {
+						this.$refs.recipeViewStepInputs[0].focus();
+						return false;
+					}
+					return true;
 				},
 
 				/**** Utilities ****/
@@ -2492,6 +2681,20 @@
 					try {
 						event.preventDefault();
 					} catch (e) {}
+				},
+				makeHeaderLink: function(link) {
+					var header = document.createElement('link');
+					header.rel = 'stylesheet';
+					header.href = link;
+					return header;
+				},
+				makeScriptLink: function(link) {
+					var script = document.createElement('script');
+					script.src = link;
+					return script;
+				},
+				cleanAndPrepareForUpload: function(recipe) {
+					//
 				},
 
 				/**** 3rd Party Methods & APIs ****/

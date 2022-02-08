@@ -26,7 +26,7 @@ var ProjectPastroUtils = function () {
     };
 
     //JS utils
-    this.deepClone = function(obj) {
+    this.deepClone = function (obj) {
         //Used from https://github.com/angus-c/just/tree/master/packages/collection-clone
         if (typeof obj == 'function') {
             return obj;
@@ -49,7 +49,7 @@ var ProjectPastroUtils = function () {
         return result;
     };
 
-    this.getRegExpFlags = function(regExp) {
+    this.getRegExpFlags = function (regExp) {
         //Used from https://github.com/angus-c/just/tree/master/packages/collection-clone
         if (typeof regExp.source.flags == 'string') {
             return regExp.source.flags;
@@ -62,6 +62,38 @@ var ProjectPastroUtils = function () {
             regExp.unicode && flags.push('u');
             return flags.join('');
         }
+    };
+
+    this.copyTextToClipboard = function (text) {
+        if (!navigator.clipboard) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Fallback: Copying text command was ' + msg);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+            return;
+        }
+        navigator.clipboard.writeText(text).then(function () {
+            //Success
+        }, function (err) {
+            console.error('Async: Could not copy text: ', err);
+        });
     };
 
     //DOM utils
@@ -102,8 +134,9 @@ var ProjectPastroUtils = function () {
     this.isString = function (toValidate) {
         return toValidate.trim().length > 0 && toValidate.trim().length < 82;
     };
+    //Measure if string is at least one byte and less or equal to 9,999 bytes 
     this.isBigString = function (toValidate) {
-        return toValidate.trim().length > 0 & toValidate.trim().length < 9999;
+        return (new Blob([toValidate]).size >= 1) && (new Blob([toValidate]).size <= 9999);
     };
     this.capitalizeFirstLetter = function (s) {
         return s.trim().charAt(0).toUpperCase() + s.slice(1);
@@ -116,6 +149,9 @@ var ProjectPastroUtils = function () {
     };
     this.isAllUppercase = function (s) {
         return s === s.toUpperCase();
+    };
+    this.checkMaximumFirebaseDocumentSize = function(doc) {
+        return new Blob([doc]).size <= 1048576;
     };
     //FlexSearch utils
     this.queryNumericIndex = function (index, query) {

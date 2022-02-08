@@ -27,6 +27,14 @@ body {
     width: 100vw;
 }
 
+.toast-container {
+    z-index: 9;
+}
+
+.toast {
+    background-color: rgba(255, 255, 255, 1);
+}
+
 .disable-scroll {
     overflow-y: hidden;
 }
@@ -95,6 +103,9 @@ body {
 .chip>img {
     width: 1.5rem;
     height: 1.5rem;
+}
+
+.chip>img.right-margin {
     margin-right: 0.5rem;
 }
 
@@ -520,15 +531,23 @@ body {
     justify-content: space-between;
 }
 
+.clickedShareAnimation-enter-active,
+.clickedShareAnimation-leave-active,
+
 .editRecipeTitleAnimation-enter-active,
 .editRecipeTitleAnimation-leave-active,
+
 .editRecipeDescriptionAnimation-enter-active,
 .editRecipeDescriptionAnimation-leave-active {
     transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
 }
 
+.clickedShareAnimation-enter,
+.clickedShareAnimation-leave-to,
+
 .editRecipeTitleAnimation-enter,
 .editRecipeTitleAnimation-leave-to,
+
 .editRecipeDescriptionAnimation-enter,
 .editRecipeDescriptionAnimation-leave-to {
     opacity: 0;
