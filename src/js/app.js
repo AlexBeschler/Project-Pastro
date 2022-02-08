@@ -276,7 +276,6 @@
 					},
 					{
 						"title": "Buttercream Frosting",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1½ cups",
@@ -370,7 +369,6 @@
 				"sections": [
 					{
 						"title": "Thai Tea",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "5 cups",
@@ -474,7 +472,6 @@
 					},
 					{
 						"title": "Thai Tea Sweetener Blend",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "6 tbps",
@@ -533,7 +530,6 @@
 				"sections": [
 					{
 						"title": "Hello World",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tbps",
@@ -565,7 +561,6 @@
 					},
 					{
 						"title": "Another hello world",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tub",
@@ -624,7 +619,6 @@
 				"sections": [
 					{
 						"title": "Hello World",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tbps",
@@ -656,7 +650,6 @@
 					},
 					{
 						"title": "Another hello world",
-						"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
 						"ingredients": [
 							{
 								"amount": "1 tub",
@@ -2299,8 +2292,24 @@
 					this.tagDisplayState = utils.DISPLAY_STATES.VIEW;
 					this.tagAddModel = '';
 				},
-				deleteRecipeTagRecipeView: function() {
-					//
+				deleteRecipeTagRecipeView: function(index) {
+					this.selectedRecipe.tags.splice(index, 1);
+
+					//Clean data
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
+
+					//Overwrite data in cookbook
+					this.cookbook[serializedRecipe.id] = serializedRecipe;
+
+					//TODO: add filtered cookbook update
+
+					//Re-index recipe in the indices
+					//FIXME: this does not seem to correctly update the recipe title
+					this.flexSearch.update({
+						data: serializedRecipe
+					});
+
+					//TODO: Update to Firebase cloud services
 				},
 				editSpecialEquipmentRecipeView: function() {
 					if (this.specialEquipmentDisplayState === utils.DISPLAY_STATES.VIEW) {
@@ -2683,6 +2692,9 @@
 					var script = document.createElement('script');
 					script.src = link;
 					return script;
+				},
+				cleanAndPrepareForUpload: function(recipe) {
+					//
 				},
 
 				/**** 3rd Party Methods & APIs ****/

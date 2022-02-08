@@ -183,7 +183,8 @@
             <!-- Filter recipe content -->
             <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
                 <button class="btn chip mb-4" @click="navigateBackward" :disabled="searchBarExpanded">
-                    <img class="right-margin" src="assets/icons/arrow-left-short.svg" ref="fromFilterToHomeBackButtonImg">
+                    <img class="right-margin" src="assets/icons/arrow-left-short.svg"
+                        ref="fromFilterToHomeBackButtonImg">
                     <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
                 </button>
                 <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags">
@@ -256,14 +257,17 @@
 
             <!-- RecipeView -->
             <div id="recipeView" class="recipeView" ref="recipeView">
-                <div class="d-flex w-100 mt-3 remove-from-sharing" style="justify-content: space-between; position: absolute;">
+                <div class="d-flex w-100 mt-3 remove-from-sharing"
+                    style="justify-content: space-between; position: absolute;">
                     <button class="btn chip border-dark shadow" :disabled="searchBarExpanded" @click="navigateBackward">
                         <img class="right-margin" src="assets/icons/arrow-left-short.svg">
                         <h5>Back</h5>
                     </button>
-                    <button class="btn chip border-dark shadow" style="z-index: 1;" @click="shareRecipe" :disabled="isSharing">
+                    <button class="btn chip border-dark shadow" style="z-index: 1;" @click="shareRecipe"
+                        :disabled="isSharing">
                         <transition name="clickedShareAnimation" mode="out-in">
-                            <img v-if="!isSharing" src="assets/icons/share-fill.svg" style="width: 1rem;height: 1rem;margin: inherit;">
+                            <img v-if="!isSharing" src="assets/icons/share-fill.svg"
+                                style="width: 1rem;height: 1rem;margin: inherit;">
                             <div v-else class="spinner-border text-success" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
@@ -368,31 +372,36 @@
                                         <span>Active Time</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" type="number" v-model.number="selectedRecipe.activeTime" ref="recipeViewActiveTime">
+                                        <input class="form-control" type="number"
+                                            v-model.number="selectedRecipe.activeTime" ref="recipeViewActiveTime">
                                     </div>
                                     <div class="col-6">
                                         <span>Prep Time</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" type="number" v-model.number="selectedRecipe.prepTime" ref="recipeViewPrepTime">
+                                        <input class="form-control" type="number"
+                                            v-model.number="selectedRecipe.prepTime" ref="recipeViewPrepTime">
                                     </div>
                                     <div class="col-6">
                                         <span>Cook Time</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" type="number" v-model.number="selectedRecipe.cookTime" ref="recipeViewCookTime">
+                                        <input class="form-control" type="number"
+                                            v-model.number="selectedRecipe.cookTime" ref="recipeViewCookTime">
                                     </div>
                                     <div class="col-6">
                                         <span>Total Time</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" type="number" v-model.number="selectedRecipe.totalTime" ref="recipeViewTotalTime">
+                                        <input class="form-control" type="number"
+                                            v-model.number="selectedRecipe.totalTime" ref="recipeViewTotalTime">
                                     </div>
                                     <div class="col-6">
                                         <span>Yield</span>
                                     </div>
                                     <div class="col-6">
-                                        <input class="form-control" v-model="selectedRecipe.yield" ref="recipeViewYield">
+                                        <input class="form-control" v-model="selectedRecipe.yield"
+                                            ref="recipeViewYield">
                                     </div>
                                 </div>
                             </transition>
@@ -402,7 +411,14 @@
                     <div class="container remove-from-sharing">
                         <div class="row mt-4">
                             <div v-for="(tag, tagIndex) in selectedRecipe.tags" :key="tagIndex" class="col-auto">
-                                <div class="chip">{{ tag }}</div>
+                                <div class="chip position-relative">
+                                    {{ tag }}
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                        @click="deleteRecipeTagRecipeView(tagIndex)">
+                                        x
+                                    </span>
+                                </div>
                             </div>
                             <div class="col-auto">
                                 <div class="chip" @click="createRecipeTagRecipeView">
@@ -411,7 +427,8 @@
                             </div>
                             <div v-if="tagDisplayState === 'edit'" class="row">
                                 <div class="col-auto">
-                                    <input class="form-control" type="text" placeholder="Add tag" v-model="tagAddModel" v-on:keyup.enter="addTagRecipeView" ref="tagInputRecipeView">
+                                    <input class="form-control" type="text" placeholder="Add tag" v-model="tagAddModel"
+                                        v-on:keyup.enter="addTagRecipeView" ref="tagInputRecipeView">
                                 </div>
                             </div>
                         </div>
@@ -688,8 +705,8 @@
                     </div>
                     <!-- Action buttons -->
                     <div class="container mt-4 py-0 d-flex" style="justify-content: space-around;">
-                        <button class="btn btn-large w-100 btn-outline-danger remove-from-sharing" data-bs-toggle="modal"
-                            data-bs-target="#deleteModal">
+                        <button class="btn btn-large w-100 btn-outline-danger remove-from-sharing"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">
                             Delete {{ selectedRecipe.title }}
                         </button>
                     </div>
@@ -1405,8 +1422,8 @@
                         <p>Are you sure you want to delete this recipe? This is an <b>irreversible</b> process.</p>
                     </div>
                     <div class="modal-footer flex-column border-top-0">
-                        <button type="button" class="btn btn-lg btn-light w-100 mx-0 mb-2"
-                            @click="deleteRecipe" data-bs-dismiss="modal">Delete</button>
+                        <button type="button" class="btn btn-lg btn-light w-100 mx-0 mb-2" @click="deleteRecipe"
+                            data-bs-dismiss="modal">Delete</button>
                         <button type="button" class="btn btn-lg btn-primary w-100 mx-0"
                             data-bs-dismiss="modal">Cancel</button>
                     </div>
