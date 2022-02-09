@@ -894,19 +894,20 @@
 			template: '#recipe-steps-draggable-item-template'
 		});
 
-		/*
+		//** RecipeView component mixins **//
 		//Manage tag component
-		Vue.component('sortable-list', {
+		Vue.component('addrecipeview-tag-draggable-list', {
 			mixins: [ContainerMixin],
-			template: '#tag-draggable-list-template'
+			template: '#addrecipeview-tag-draggable-list-template'
 		});
 
-		Vue.component('sortable-item', {
+		Vue.component('addrecipeview-tag-draggable-item', {
 			mixins: [ElementMixin],
 			props: ['tag'],
-			template: '#tag-draggable-item-template'
+			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
+		/*
 		//Manage ingredients component
 		Vue.component('ingredients-draggable-list', {
 			mixins: [ContainerMixin],
@@ -1024,6 +1025,11 @@
 				},
 				manage_activePane: 1,
 				showStickySubmit: false,
+				//Step 1
+				manage_recipeTitle: '',
+				manage_recipeName: '',
+				manage_recipeTagInput: '',
+				manage_recipeTagHolder: [],
 
 				/** Utility data **/
 				toastInstance: null,
@@ -1073,10 +1079,6 @@
 
 
 				
-				undo_length_long: 4750,
-				undoObject: null,
-				undoText: '',
-				undoTimeOut: null,
 
 				//Explore pane
 
@@ -1124,13 +1126,6 @@
 				ocr_StepsPondEditor: null,
 				ocr_StepsEditMode: false,
 
-				//Step 2
-				manage_recipeTitle: '',
-				manage_recipeName: '',
-				//manage_recipeDescription: '',
-				manage_recipeTagInput: '',
-				manage_recipeTagHolder: [],
-
 				//Step 3
 				manage_recipePrepTime: '',
 				manage_recipeCookTime: '',
@@ -1157,19 +1152,6 @@
 				//Quill
 				quillInstance: null,
 				quillContent: null,
-				toolbarOptions: [
-					['bold', 'italic'],
-					[{
-						'list': 'ordered'
-					}, {
-						'list': 'bullet'
-					}, {
-						'indent': '-1'
-					}, {
-						'indent': '+1'
-					}],
-					['clean']
-				],
 
 				//Used for settings menu
 				isDyslexicFontSet: '',
@@ -2648,6 +2630,31 @@
 					return true;
 				},
 
+				/**** AddRecipeView Methods ****/
+				addTagAddRecipeView: function () {
+					if (utils.isString(this.manage_recipeTagInput)) {
+						this.manage_recipeTagHolder.push({
+							value: this.manage_recipeTagInput.trim(),
+							editMode: false
+						});
+						this.manage_recipeTagInput = '';
+					}
+				},
+				editTagAddRecipeView: function (index) {
+					console.log('Edit');
+					if (!this.manage_recipeTagHolder[index].editMode) {
+						this.manage_recipeTagHolder[index].editMode = true;
+					} else {
+						if (this.manage_recipeTagHolder[index].value.trim() === '' || this.manage_recipeTagHolder[index].value.trim() === null) {
+							return;
+						}
+						this.manage_recipeTagHolder[index].editMode = false;
+					}
+				},
+				deleteTagAddRecipeView: function (index) {
+					this.manage_recipeTagHolder.splice(index, 1);
+				},
+
 				/**** Utilities ****/
 				//used for displaying the ETA of the recipe
 				getTimeFromNowUsingMinutes: function (sMinutes) {
@@ -2775,7 +2782,6 @@
 				setAddRecipeViewQuillContent: function () {
 					this.quillAddRecipeViewContent = this.quillAddRecipeViewInstance.getText().trim() ? this.quillAddRecipeViewInstance.root.innerHTML : '';
 				},
-
 				applyGoogleKeyboardFixToAddRecipeView: function (eventName, ...args) {
 					if (eventName === 'text-change') {
 						/* jshint ignore:start */
@@ -2950,6 +2956,7 @@
 							//
 					}
 				},
+				/*
 				editRecipe: function () {
 					//Populate Manage Recipe fields
 					this.manage_recipeName = this.filteredCookbook[this.proto_index].title;
@@ -3012,6 +3019,7 @@
 
 					this.recipeOffcanvas.hide();
 				},
+				*/
 				checkForCancelRecipe: function () {
 					//Check if the user closed out of an edit screen
 					if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
@@ -3375,16 +3383,7 @@
 
 					}
 				},
-				addTag: function () {
-					if (utils.isString(this.manage_recipeTagInput)) {
-						this.manage_recipeTagHolder.push({
-							value: this.manage_recipeTagInput.trim(),
-							editMode: false,
-							editModeButtonText: 'Edit'
-						});
-						this.manage_recipeTagInput = '';
-					}
-				},
+				
 				handleCrop: function (type) {
 					var self = this;
 					var cropData = null;
@@ -3544,35 +3543,7 @@
 							console.error('Failed to read clipboard contents: ', err);
 						});
 				},
-				editTag: function (index) {
-					if (!this.manage_recipeTagHolder[index].editMode) {
-						this.manage_recipeTagHolder[index].editMode = true;
-						this.manage_recipeTagHolder[index].editModeButtonText = 'Update';
-						//If update button is being clicked
-					} else {
-						if (this.manage_recipeTagHolder[index].value.trim() === '' || this.manage_recipeTagHolder[index].value.trim() === null) {
-							return;
-						}
-						this.manage_recipeTagHolder[index].editMode = false;
-						this.manage_recipeTagHolder[index].editModeButtonText = 'Edit';
-					}
-				},
-				deleteTag: function (index) {
-					this.undoObject = {
-						o: this.manage_recipeTagHolder[index],
-						i: index,
-						f: function (self) {
-							self.manage_recipeTagHolder.splice(self.undoObject.i, 0, self.undoObject.o);
-							self.$refs.undoContainer.classList.add('undo-collapsed');
-						}
-					};
-					this.manage_recipeTagHolder.splice(index, 1);
-					this.undoText = 'Tag deleted';
-
-					this.$refs.undoContainer.classList.remove('undo-collapsed');
-
-					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
-				},
+				
 				autofillActiveTime: function () {
 					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
 				},
