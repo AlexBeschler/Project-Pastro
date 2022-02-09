@@ -1626,62 +1626,67 @@
                 },
                 clickedCloseSearch: function() {
 					var self = this;
-                    var timeline = anime.timeline({});
-                    timeline
-						.add({
-							targets: this.$refs.searchResultsContainer,
-							opacity: [1, 0],
-							duration: 150,
-							translateY: ['0rem', '-0.5rem'],
-							easing: 'easeInOutQuad',
-							complete: function (anim) {
-								self.$refs.searchResultsContainer.classList.add('d-none');
-							}
-						})
-						.add({
-                            targets: this.ViewStack[this.ViewStack.length - 1],
-                            opacity: [0, 1],
-                            translateY: ['0%', '-1rem'],
-                            duration: 150,
-                            easing: 'easeInOutQuad',
-							begin: function(anim) {
-								self.ViewStack[self.ViewStack.length - 1].classList.remove('d-none');
-								self.ViewStack[self.ViewStack.length - 1].classList.add('d-block');
-							}
-                        }, '-=5')
-						.add({
-							targets: this.$refs.searchBoxInput,
-							opacity: [1, 0],
-							duration: 100,
-							easing: 'easeInOutQuad',
-							complete: function(anim) {
-								self.$refs.searchBoxInput.classList.remove('d-flex');
-								self.$refs.searchBoxInput.classList.add('d-none');
-							}
-						}, '-=150')
-                        .add({
-                            targets: document.getElementById('innerSearchButtonText'),
-                            translateY: ['50%', '0%'],
-                            opacity: [0, 1],
-                            duration: 200,
-                            easing: 'easeInOutQuad',
-                        }, '-=100')
-						.add({
-                            targets: document.getElementById('innerSearchButtonImg2'),
-                            translateX: ['-175%', '0%'],
-                            opacity: [1, 0],
-                            duration: 200,
-                            easing: 'easeInOutQuad'
-                        }, '-=300')
-						.add({
-                            targets: document.getElementById('innerSearchButtonImg1'),
-                            translateX: ['-175%', '0%'],
-                            opacity: [0, 1],
-                            duration: 200,
-                            easing: 'easeInOutQuad'
-                        }, '-=200');
-					self.searchBarExpanded = false;
-					this.searchQuery = '';
+					return new Promise((resolve, reject) => {
+						var timeline = anime.timeline({});
+						timeline
+							.add({
+								targets: this.$refs.searchResultsContainer,
+								opacity: [1, 0],
+								duration: 150,
+								translateY: ['0rem', '-0.5rem'],
+								easing: 'easeInOutQuad',
+								complete: function (anim) {
+									self.$refs.searchResultsContainer.classList.add('d-none');
+								}
+							})
+							.add({
+								targets: this.ViewStack[this.ViewStack.length - 1],
+								opacity: [0, 1],
+								translateY: ['0%', '-1rem'],
+								duration: 150,
+								easing: 'easeInOutQuad',
+								begin: function(anim) {
+									self.ViewStack[self.ViewStack.length - 1].classList.remove('d-none');
+									self.ViewStack[self.ViewStack.length - 1].classList.add('d-block');
+								}
+							}, '-=5')
+							.add({
+								targets: this.$refs.searchBoxInput,
+								opacity: [1, 0],
+								duration: 100,
+								easing: 'easeInOutQuad',
+								complete: function(anim) {
+									self.$refs.searchBoxInput.classList.remove('d-flex');
+									self.$refs.searchBoxInput.classList.add('d-none');
+								}
+							}, '-=150')
+							.add({
+								targets: document.getElementById('innerSearchButtonText'),
+								translateY: ['50%', '0%'],
+								opacity: [0, 1],
+								duration: 200,
+								easing: 'easeInOutQuad',
+							}, '-=100')
+							.add({
+								targets: document.getElementById('innerSearchButtonImg2'),
+								translateX: ['-175%', '0%'],
+								opacity: [1, 0],
+								duration: 200,
+								easing: 'easeInOutQuad'
+							}, '-=300')
+							.add({
+								targets: document.getElementById('innerSearchButtonImg1'),
+								translateX: ['-175%', '0%'],
+								opacity: [0, 1],
+								duration: 200,
+								easing: 'easeInOutQuad',
+								complete: function() {
+									self.searchBarExpanded = false;
+									self.searchQuery = '';
+									resolve();
+								}
+							}, '-=200');
+					});
                 },             
                 clickedBrowse: function () {
                     this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
@@ -1784,7 +1789,8 @@
                 },
                 navigateForward: function (navigateTo, backButtonImg, backButtonText) {
 					var self = this;
-					return new Promise((resolve, reject) => {
+					
+					var forward = new Promise((resolve, reject) => {
 						var timeline = anime.timeline({});
 						var currentView = self.ViewStack[self.ViewStack.length - 1];
 						if (backButtonImg === null) {
@@ -1860,6 +1866,14 @@
 
 						self.ViewStack.push(navigateTo);
 					});
+
+					if (this.searchBarExpanded) {
+						this.clickedCloseSearch().then(() => {
+							return forward;
+						});
+					} else {
+						return forward;
+					}
                 },
                 navigateBackward: function () {
 					var self = this;
