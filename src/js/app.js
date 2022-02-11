@@ -945,7 +945,7 @@
 		});
 		*/
 
-		new Vue({
+		var pastroApp = new Vue({
 			el: '#appContent',
 			data: {
 				/** Utils **/
@@ -1030,6 +1030,15 @@
 				manage_recipeName: '',
 				manage_recipeTagInput: '',
 				manage_recipeTagHolder: [],
+				//Step 2
+				manage_specialEquipmentInput: '',
+				manage_specialEquipmentHolder: [],
+				//Step 3
+				manage_recipePrepTime: '',
+				manage_recipeCookTime: '',
+				manage_recipeTotalTime: '',
+				manage_recipeActiveTime: '',
+				manage_recipeYield: '',
 
 				/** Utility data **/
 				toastInstance: null,
@@ -1125,13 +1134,6 @@
 				ocr_StepsCropperObject: null,
 				ocr_StepsPondEditor: null,
 				ocr_StepsEditMode: false,
-
-				//Step 3
-				manage_recipePrepTime: '',
-				manage_recipeCookTime: '',
-				manage_recipeTotalTime: '',
-				manage_recipeActiveTime: '',
-				manage_recipeYield: '',
 
 				//Step 4
 				manage_recipeBlocks: [],
@@ -1699,17 +1701,6 @@
 					this.navigateForward(this.$refs.addRecipeView, null, null).then(() => {
 						if (self.quillAddRecipeViewInstance === null) {
 							self.initAddRecipeViewQuill();
-							/*
-							var ocrDescriptionButton = new QuillToolbarButton({
-								icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="999999" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/></svg>`
-							});
-							ocrDescriptionButton.onClick = function (quill) {
-								console.log('OCR clicked');
-								//var bsCollapse = new bootstrap.Collapse(self.$refs.ocr_DescriptionFilePond);
-								//self.$refs.ocr_DescriptionFilePond.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
-							};
-							ocrDescriptionButton.attach(this.quillAddRecipeViewInstance);
-							*/
 						}
 					});
 				},
@@ -2649,24 +2640,31 @@
 					if (utils.isString(this.manage_recipeTagInput)) {
 						this.manage_recipeTagHolder.push({
 							value: this.manage_recipeTagInput.trim(),
-							editMode: false
+							isDeleted: false
 						});
 						this.manage_recipeTagInput = '';
 					}
 				},
-				editTagAddRecipeView: function (index) {
-					console.log('Edit');
-					if (!this.manage_recipeTagHolder[index].editMode) {
-						this.manage_recipeTagHolder[index].editMode = true;
-					} else {
-						if (this.manage_recipeTagHolder[index].value.trim() === '' || this.manage_recipeTagHolder[index].value.trim() === null) {
-							return;
-						}
-						this.manage_recipeTagHolder[index].editMode = false;
+				deleteTagAddRecipeView: function (index) {
+					this.manage_recipeTagHolder[index].isDeleted = true;
+				},
+				undoTagAddRecipeView: function (index) {
+					this.manage_recipeTagHolder[index].isDeleted = false;
+				},
+				addSpecialEquipmentAddRecipeView: function() {
+					if (utils.isString(this.manage_specialEquipmentInput)) {
+						this.manage_specialEquipmentHolder.push({
+							value: this.manage_specialEquipmentInput.trim(),
+							isDeleted: false
+						});
+						this.manage_specialEquipmentInput = '';
 					}
 				},
-				deleteTagAddRecipeView: function (index) {
-					this.manage_recipeTagHolder.splice(index, 1);
+				deleteSpecialEquipmentAddRecipeView: function (index) {
+					this.manage_specialEquipmentHolder[index].isDeleted = true;
+				},
+				undoDeleteSpecialEquipmentAddRecipeView: function(index) {
+					this.manage_specialEquipmentHolder[index].isDeleted = false;
 				},
 
 				/**** Utilities ****/
@@ -2788,6 +2786,15 @@
 					//Apply GKeyboard fix
 					this.quillAddRecipeViewInstance.on('editor-change', this.applyGoogleKeyboardFixToRecipeView);
 					this.setAddRecipeViewQuillContent();
+					var ocrDescriptionButton = new QuillToolbarButton({
+						icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="999999" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/></svg>`
+					});
+					ocrDescriptionButton.onClick = function (quill) {
+						console.log('OCR clicked');
+						//var bsCollapse = new bootstrap.Collapse(self.$refs.ocr_DescriptionFilePond);
+						//self.$refs.ocr_DescriptionFilePond.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
+					};
+					ocrDescriptionButton.attach(this.quillAddRecipeViewInstance);
 				},
 				onAddRecipeViewQuillContentChange: function () {
 					this.setAddRecipeViewQuillContent();

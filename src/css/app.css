@@ -636,7 +636,6 @@ span.ingredient-amount-badge.strike-list-item {
 
 .manage-accordion-button {
     box-shadow: none;
-    color: #6c757d;
     opacity: 0.75;
 }
 
@@ -649,18 +648,21 @@ span.ingredient-amount-badge.strike-list-item {
     -webkit-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
-    margin-bottom: 1.15rem;
+    margin-bottom: 0.5rem;
     padding: 1rem 0;
+}
+
+.manage-accordion-item > h2 > button {
+    -webkit-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
+    -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
+    box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
 }
 
 .manage-accordion-flush .manage-accordion-item .manage-accordion-button {
     padding-top: 0rem;
 }
 
-.manage-tag-list-group-item,
-.manage-ingredients-list-group-item,
-.manage-steps-list-group-item,
-.manage-blocks-list-group-item {
+.grabbable {
     cursor: grab;
 }
 
@@ -683,7 +685,7 @@ span.ingredient-amount-badge.strike-list-item {
 }
 
 .manage-recipe-blocks-pills-nav {
-    justify-content: space-between;
+    justify-content: start;
     font-size: 1rem;
 }
 
