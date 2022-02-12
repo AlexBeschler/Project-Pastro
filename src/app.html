@@ -822,6 +822,31 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input id="manage_form_notes" class="form-control mt-2" type="text"
+                                                    placeholder="Add recipe notes" v-model="manage_recipeNotesInput"
+                                                    v-on:keyup.enter="addNotesAddRecipeView">
+                                                <label for="manage_form_notes">Recipe Notes</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="col-lg-12">
+                                            <div v-if="manage_recipeNotesHolder.length">
+                                                <recipe-notes-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                                    v-model="manage_recipeNotesHolder">
+                                                    <recipe-notes-draggable-item
+                                                        v-for="(note, index) in manage_recipeNotesHolder" :index="index"
+                                                        :key="index" :note="note" :value="note.value"
+                                                        @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                                        v-on:delete-note="deleteNotesAddRecipeView(index)"
+                                                        v-on:undo-delete-note="undoDeleteNotesAddRecipeView(index)" />
+                                                </recipe-notes-draggable-list>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -967,23 +992,26 @@
                                                     v-if="manage_recipeBlockIngredients.length > 0">
                                                 <div class="mb-3">
                                                     <div v-if="manage_recipeBlockIngredients.length">
-                                                        <ingredients-draggable-list :lock-axis="'y'"
-                                                            :press-delay.number=100
-                                                            v-model="manage_recipeBlockIngredients">
-                                                            <ingredients-draggable-item
-                                                                v-for="(ingredient, index) in manage_recipeBlockIngredients"
+                                                        <!-- TODO: cHANGE THIS TO CUSTOMIZE FOR RECIPE -->
+                                                        <recipe-ingredients-draggable-list :lock-axis="'y'"
+                                                            :press-delay.number=100 v-model="section.ingredients">
+                                                            <recipe-ingredients-draggable-item
+                                                                v-for="(ingredient, index) in section.ingredients"
                                                                 :index="index" :key="index" :ingredient="ingredient"
-                                                                :amount="ingredient.amount" :value="ingredient.value"
-                                                                :edit-mode="ingredient.editMode"
-                                                                :edit-mode-button-text="ingredient.editModeButtonText"
-                                                                v-on:edit-ingredient="editIngredient(index)"
-                                                                v-on:delete-ingredient="deleteIngredient(index)"
-                                                                v-on:update-focus="updateIngredientFocus($event)"
+                                                                :amount="ingredient.amount" :sectionindex="sectionIndex"
+                                                                :value="ingredient.value"
                                                                 @touchstart.native="scrollStop"
                                                                 @touchend.native="scrollMove"
-                                                                :ref="'ingredient' + index">
-                                                            </ingredients-draggable-item>
-                                                        </ingredients-draggable-list>
+                                                                v-on:delete-ingredient="deleteRecipeIngredientsRecipeView(sectionIndex, index)"
+                                                                v-on:undo-delete-ingredient="undoDeleteRecipeIngredientsRecipeView(sectionIndex, index)" />
+                                                        </recipe-ingredients-draggable-list>
+                                                        <div class="d-flex align-items-end">
+                                                            <input class="form-control mt-2" type="text"
+                                                                placeholder="Add ingredient"
+                                                                v-model="ingredientsAddModel"
+                                                                v-on:keyup.enter="addRecipeIngredientsRecipeView(sectionIndex)"
+                                                                ref="recipeViewIngredientsInputs">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1822,33 +1850,7 @@
 
 
 
-    <template id="tag-draggable-list-template">
-        <ul class="list-group">
-            <slot />
-        </ul>
-    </template>
-    <template id="tag-draggable-item-template">
-        <li class="list-group-item grabbable d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-end" v-if="!tag.editMode">
-                <div class="btn ps-0 pe-2 py-0">
-                    <img src="assets/icons/chevron-bar-expand.svg">
-                </div>
-                {{ tag.value }}
-                <button class="btn ps-2 pe-0 py-0" v-if="!tag.editMode" @click="$emit('edit-tag', index)">
-                    <img src="assets/icons/edit.svg">
-                </button>
-            </div>
-            <div v-else>
-                <input class="form-control" type="text" v-model="tag.value" v-on:keyup.enter="$emit('edit-tag', index)"
-                    @blur="$emit('edit-tag', index)">
-            </div>
-            <span>
-                <button class="btn pe-0" @click="$emit('delete-tag', index)">
-                    <img src="assets/icons/trash.svg">
-                </button>
-            </span>
-        </li>
-    </template>
+
 
     <template id="ingredients-draggable-list-template">
         <ul class="list-group">
