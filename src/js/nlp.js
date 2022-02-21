@@ -224,7 +224,7 @@ var ProjectPastroNLP = function () {
     this.init = function () {
         this.unicodeLettersNumbersPunctuationRegex = new XRegExp("[^\\p{N}\\p{L}\\p{P} ⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅚⅜⅝⅞¼½¾]", "g");
         this.sanitizeDash = new XRegExp("[-–—−]", "g");
-    }
+    };
     this.parseIngredient = function (str) {
         var r = this.cleanAndTokenize(str);
         if (r === null) {
@@ -247,7 +247,7 @@ var ProjectPastroNLP = function () {
         };
         this.identifyEntities(r, 0);
         return this.ingredientObject;
-    }
+    };
 
     this.cleanAndTokenize = function (str) {
         //Clean up data
@@ -268,8 +268,8 @@ var ProjectPastroNLP = function () {
         }
 
         //Check if the first 3 words contain a dash and if it has properly been separated with spaces
-        let w = false;
-        let l = r.length === 2 ? 2 : 3;
+        var w = false;
+        var l = r.length === 2 ? 2 : 3;
         var dashRegEx = /(?: - )/g;
         for (var i = 0; i < l; i++) {
             if (r[i].includes('-')) {
@@ -284,7 +284,7 @@ var ProjectPastroNLP = function () {
             r = t.split(' '); //Re-split sample with newly added isolated dash
         }
         return r;
-    }
+    };
 
     this.identifyEntities = function (arr, offsetIndex) {
         //Use simple NLP to parse ingredients
@@ -294,7 +294,7 @@ var ProjectPastroNLP = function () {
         //A successful match means we've identified the first word to be cardinal
         if (_.contains(this.cardinal_dictionary, firstWord.toLowerCase()) || (firstWord.length <= 5 && firstWord.length >= 1 && firstWord.includes('/')) || (firstWord.length <= 5 && firstWord.length > 1 && firstWord.includes('.'))) {
             if (offsetIndex > 0) {
-                let b = ' ' + firstWord;
+                var b = ' ' + firstWord;
                 this.ingredientObject.amount += b;
             } else {
                 this.ingredientObject.amount = firstWord;
@@ -303,7 +303,7 @@ var ProjectPastroNLP = function () {
             if (_.contains(this.unit_dictionary, secondWord.toLowerCase())) {
                 //Match the second word to units dictionary.
                 //A successful match means we've identified the second word to be a unit of some sort, and we can finish up
-                let u = ' ' + secondWord;
+                var u = ' ' + secondWord;
                 this.ingredientObject.amount += u;
                 //We don't know how long the array is, so this is a safer way of building the string
                 this.ingredientObject.ingredient = this.strBuilder(arr, 1 + offsetIndex, arr.length);
@@ -337,7 +337,7 @@ var ProjectPastroNLP = function () {
                                         var query = fourthWord + ' ' + fifthWord;
                                         if (_.contains(this.unit_compound_dictionary, query.toLowerCase())) {
                                             //Add first, second, and third word to amount
-                                            let u = ' ' + query;
+                                            var u = ' ' + query;
                                             this.ingredientObject.amount += u;
                                             //We don't know how long the array is, so this is a safer way of building the string
                                             this.ingredientObject.ingredient = this.strBuilder(arr, 4 + offsetIndex, arr.length);
@@ -361,7 +361,7 @@ var ProjectPastroNLP = function () {
                         var query = secondWord + ' ' + thirdWord;
                         if (_.contains(this.unit_compound_dictionary, query.toLowerCase())) {
                             //Add first, second, and third word to amount
-                            let u = ' ' + query;
+                            var u = ' ' + query;
                             this.ingredientObject.amount += u;
                             //We don't know how long the array is, so this is a safer way of building the string
                             this.ingredientObject.ingredient = this.strBuilder(arr, 2 + offsetIndex, arr.length);
@@ -380,7 +380,7 @@ var ProjectPastroNLP = function () {
         } else {
             this.ingredientObject.ingredient = arr.join(' ').trim(); //Move everything to the ingredient
         }
-    }
+    };
 
     this.strBuilder = function(arr, startIndex, endLength) {
         var s = '';
@@ -393,5 +393,5 @@ var ProjectPastroNLP = function () {
             s += ' ';
         }
         return s;
-    }
-}
+    };
+};

@@ -1041,6 +1041,21 @@
 				manage_recipeTotalTime: '',
 				manage_recipeActiveTime: '',
 				manage_recipeYield: '',
+				//Step 4
+				manage_recipeSections: [
+					{
+						"title": "",
+						"ingredients": [],
+						"steps": [],
+						"nFat": 0,
+						"nCholesterol": 0,
+						"nSodium": 0,
+						"nTotalCarbs": 0,
+						"nFiber": 0,
+						"nSugar": 0,
+						"nProtein": 0 
+					}
+				],
 
 				/** Utility data **/
 				toastInstance: null,
@@ -2683,6 +2698,68 @@
 				undoDeleteNotesAddRecipeView: function(index) {
 					this.manage_recipeNotesHolder[index].isDeleted = false;
 				},
+				addRecipeSectionAddRecipeView: function() {
+					this.manage_recipeSections.push({
+						"title": "",
+						"ingredients": [],
+						"steps": [],
+						"nFat": 0,
+						"nCholesterol": 0,
+						"nSodium": 0,
+						"nTotalCarbs": 0,
+						"nFiber": 0,
+						"nSugar": 0,
+						"nProtein": 0 
+					});
+				},
+				addIngredientsAddRecipeView: function(sectionIndex) {
+					if (sectionIndex === -1) {
+						var ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView.value);
+						var x = {
+							amount: ingredient.amount,
+							value: ingredient.ingredient,
+							isDeleted: false
+						};
+						this.manage_recipeSections[0].ingredients.push(x);
+						this.$refs.ingredientInputAddRecipeView.value = '';
+					} else {
+						var ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView[sectionIndex].value);
+						var x = {
+							amount: ingredient.amount,
+							value: ingredient.ingredient,
+							isDeleted: false
+						};
+						this.manage_recipeSections[sectionIndex].ingredients.push(x);
+						this.$refs.ingredientInputAddRecipeView[sectionIndex].value = '';
+					}
+					
+				},
+				deleteIngredientsAddRecipeView: function (sectionIndex, index) {
+					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = true;
+				},
+				undoDeleteIngredientsAddRecipeView: function(sectionIndex, index) {
+					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = false;
+				},
+				addStepsAddRecipeView: function () {
+					if ((this.manage_recipeBlockStepValue.trim() === '' || this.manage_recipeBlockStepValue.trim() === null) && this.manage_recipeBlockSteps.length === 0) {
+						this.$refs.manageStepRef.classList.add('is-invalid');
+						return;
+					}
+					var x = {
+						value: this.manage_recipeBlockStepValue.trim(),
+						isDeleted: false
+					};
+					this.manage_recipeSections[0].steps.push(x);
+					this.manage_recipeBlockStepValue = '';
+				},
+				deleteStepsAddRecipeView: function (sectionIndex, index) {
+					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = true;
+				},
+				undoDeleteStepsAddRecipeView: function(sectionIndex, index) {
+					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = false;
+				},
+
+
 
 				/**** Utilities ****/
 				//used for displaying the ETA of the recipe
