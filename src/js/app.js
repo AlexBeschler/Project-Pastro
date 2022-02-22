@@ -2740,17 +2740,32 @@
 				undoDeleteIngredientsAddRecipeView: function(sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = false;
 				},
-				addStepsAddRecipeView: function () {
-					if ((this.manage_recipeBlockStepValue.trim() === '' || this.manage_recipeBlockStepValue.trim() === null) && this.manage_recipeBlockSteps.length === 0) {
-						this.$refs.manageStepRef.classList.add('is-invalid');
-						return;
+				addStepsAddRecipeView: function (sectionIndex) {
+					if (sectionIndex === -1) {
+						if ((this.$refs.manageStepRef.value.trim() === '' || this.$refs.manageStepRef.value.trim() === null) && this.$refs.manageStepRef.value.length === 0) {
+							this.$refs.manageStepRef.classList.add('is-invalid');
+							return;
+						}
+						var x = {
+							value: this.$refs.manageStepRef.value.trim(),
+							isDeleted: false
+						};
+						this.manage_recipeSections[0].steps.push(x);
+						this.$refs.manageStepRef.value = '';
+					} else {
+						if ((this.$refs.manageStepRef[sectionIndex].value.trim() === '' || this.$refs.manageStepRef[sectionIndex].value.trim() === null) && this.$refs.manageStepRef[sectionIndex].value.length === 0) {
+							this.$refs.manageStepRef.classList.add('is-invalid');
+							return;
+						}
+						var x = {
+							value: this.$refs.manageStepRef[sectionIndex].value.trim(),
+							isDeleted: false
+						};
+						this.manage_recipeSections[sectionIndex].steps.push(x);
+						this.$refs.manageStepRef[sectionIndex].value = '';
 					}
-					var x = {
-						value: this.manage_recipeBlockStepValue.trim(),
-						isDeleted: false
-					};
-					this.manage_recipeSections[0].steps.push(x);
-					this.manage_recipeBlockStepValue = '';
+					
+					
 				},
 				deleteStepsAddRecipeView: function (sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = true;
@@ -2932,240 +2947,6 @@
 
 
 
-				//Explore pane
-				checkNutritionInfo: function (b, a) {
-					if ((utils.isBlank(this.nCalories)) &&
-						(utils.isBlank(this.nFat)) &&
-						(utils.isBlank(this.nCholesterol)) &&
-						(utils.isBlank(this.nSodium)) &&
-						(utils.isBlank(this.nCarbohydrate)) &&
-						(utils.isBlank(this.nFiber)) &&
-						(utils.isBlank(this.nSugars)) &&
-						(utils.isBlank(this.nProtein))) {
-						this.displayNutrition = 'has any nutritional value';
-					} else {
-						var t = '';
-						//Update display text
-						if (!utils.isBlank(this.nCalories)) {
-							t += this.nCalories + ' calories;';
-						}
-						if (!utils.isBlank(this.nFat)) {
-							t += this.nFat + 'g fat;';
-						}
-						if (!utils.isBlank(this.nCholesterol)) {
-							t += this.nCholesterol + 'mg cholesterol;';
-						}
-						if (!utils.isBlank(this.nSodium)) {
-							t += this.nSodium + 'mg sodium;';
-						}
-						if (!utils.isBlank(this.nCarbohydrate)) {
-							t += this.nCarbohydrate + 'g carbs;';
-						}
-						if (!utils.isBlank(this.nFiber)) {
-							t += this.nFiber + 'g fibers;';
-						}
-						if (!utils.isBlank(this.nSugars)) {
-							t += this.nSugars + 'g sugars;';
-						}
-						if (!utils.isBlank(this.nProtein)) {
-							t += this.nProtein + 'g proteins;';
-						}
-						var u = '';
-						t.split(';').forEach(element => {
-							if (element !== '') {
-								u += element + ', ';
-							}
-						});
-						u = u.replace(/,\s*$/, '');
-						this.displayNutrition = 'has ' + u + ' or less';
-					}
-					this.updateFilters();
-				},
-				/*
-				initQuill: function () {
-					this.quillInstance = new Quill('#editor', {
-						modules: {
-							toolbar: this.toolbarOptions
-						},
-						theme: 'snow'
-					});
-					this.quillInstance.on('text-change', this.onQuillContentChange);
-					//Apply GKeyboard fix
-					this.quillInstance.on('editor-change', this.applyGoogleKeyboardFix);
-					this.setQuillContent();
-				},
-				onQuillContentChange: function () {
-					this.setQuillContent();
-					this.$emit('input', this.quillContent);
-				},
-				setQuillContent: function () {
-					this.quillContent = this.quillInstance.getText().trim() ? this.quillInstance.root.innerHTML : '';
-				},
-				applyGoogleKeyboardFix: function (eventName, ...args) {
-					var self = this;
-					if (eventName === 'text-change') {
-						var ops = args[0]['ops'];
-						var oldSelection = self.quillInstance.getSelection();
-						//Fix for #3
-						if (oldSelection === null || typeof oldSelection === 'undefined') {
-							return;
-						}
-						var oldPosition = oldSelection.index;
-						var oldSelectionLength = oldSelection.length;
-
-						if (ops[0]["retain"] === undefined || !ops[1] || !ops[1]["insert"] || !ops[1]["insert"] || ops[1]["insert"] != "\n" || oldSelectionLength > 0) {
-							return;
-						}
-
-						setTimeout(function () {
-							var newPosition = self.quillInstance.getSelection().index;
-							if (newPosition === oldPosition) {
-								self.quillInstance.setSelection(self.quillInstance.getSelection().index + 1, 0);
-							}
-						}, 15);
-					}
-				},
-				*/
-
-
-				toggleExplorePaneOffcanvas: function (toggleType) {
-					//Set v-if value
-					if (typeof toggleType === 'string') {
-						this.explorePaneOffcanvasType = toggleType;
-					}
-					//Create new offcanvas object if not already created
-					if (this.exploreOffcanvas === null || typeof this.exploreOffcanvas === 'undefined') {
-						this.exploreOffcanvas = new bootstrap.Offcanvas(document.getElementById('explore-pane-filter-offcanvas'));
-					}
-					this.exploreOffcanvas.toggle();
-				},
-				toggleRecipeOffcanvas: function (index) {
-				},
-				
-				//Clear filters
-				clearFilters: function () {
-					var self = this;
-					switch (this.explorePaneOffcanvasType) {
-						case 'tag':
-							self.checkedTagsArray = [];
-							break;
-						case 'time':
-							self.totalRecipeTimeInput = '';
-							self.finishByTimeInput = '';
-							self.finishByTimeInputInMinutes = '';
-							break;
-						case 'ingredient':
-							self.checkedIngredientsArray = [];
-							break;
-						case 'nutrition':
-							self.nCalories = '';
-							self.nFat = '';
-							self.nCholesterol = '';
-							self.nSodium = '';
-							self.nCarbohydrate = '';
-							self.nFiber = '';
-							self.nSugars = '';
-							self.nProtein = '';
-							break;
-						default:
-							//
-					}
-				},
-				/*
-				editRecipe: function () {
-					//Populate Manage Recipe fields
-					this.manage_recipeName = this.filteredCookbook[this.proto_index].title;
-					this.manage_recipePrepTime = this.filteredCookbook[this.proto_index].prepTime;
-					this.manage_recipeCookTime = this.filteredCookbook[this.proto_index].cookTime;
-					this.manage_recipeTotalTime = this.filteredCookbook[this.proto_index].totalTime;
-					this.manage_recipeActiveTime = this.filteredCookbook[this.proto_index].activeTime;
-					this.manage_recipeYield = this.filteredCookbook[this.proto_index].yield;
-
-					this.manage_coverPhotoURL = this.filteredCookbook[this.proto_index].coverPhotoURL;
-
-					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
-						var o = {};
-						o.header = block.header;
-						o.nCalories = block.nCalories;
-						o.nCarbohydrate = block.nCarbohydrate;
-						o.nCholesterol = block.nCholesterol;
-						o.nFat = block.nFat;
-						o.nFiber = block.nFiber;
-						o.nProtein = block.nProtein;
-						o.nSodium = block.nSodium;
-						o.nSugars = block.nSugars;
-						o.ingredients = [];
-						o.steps = [];
-						block.ingredients.forEach(ingredient => {
-							o.ingredients.push({
-								amount: ingredient.amount,
-								editMode: false,
-								editModeButtonText: 'Edit',
-								value: ingredient.value
-							});
-						});
-						block.steps.forEach(step => {
-							o.steps.push({
-								editMode: false,
-								editModeButtonText: 'Edit',
-								value: step.value
-							});
-						});
-						this.manage_recipeBlocks.push(o);
-					});
-					this.filteredCookbook[this.proto_index].tags.forEach(tag => {
-						this.manage_recipeTagHolder.push({
-							editMode: false,
-							editModeButtonText: 'Edit',
-							value: tag
-						});
-					});
-
-					this.quillContent = this.filteredCookbook[this.proto_index].description;
-					this.quillInstance.clipboard.dangerouslyPasteHTML(1, this.filteredCookbook[this.proto_index].description);
-					//Remove newline character that shows up
-					this.quillInstance.deleteText(0, 1);
-
-					//Change DOM from Add to Edit
-					this.$refs.addRecipeButton.dataset.psButtonType = 'manage';
-
-					//Add listener
-					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.recipeViewListener);
-
-					this.recipeOffcanvas.hide();
-				},
-				*/
-				checkForCancelRecipe: function () {
-					//Check if the user closed out of an edit screen
-					if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
-						this.cleanupManageRecipe();
-					}
-				},
-				/*
-				deleteRecipe: function () {
-					//Add listener
-					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.deleteRecipeViewListener);
-					this.recipeOffcanvas.hide();
-				},
-				*/
-				deleteRecipeViewListener: function () {
-					//Remove recipeView listener
-					this.$refs.recipeView.removeEventListener('hidden.bs.offcanvas', this.deleteRecipeViewListener);
-					this.deleteRecipeOffcanvas.show();
-				},
-				deleteRecipeHelper: function () {
-					/*
-					//Remove all references to this recipe from indices
-					//this.index_times.remove(docIDToDelete, this.filteredCookbook[this.proto_index].totalTime);
-
-					//Delete old recipe in cookbook
-					this.cookbook.splice(this.proto_index, 1);
-
-					//Rebuild tags and ingredients array by doing the thing I'm avoiding
-
-					//Execute cloud variables
-					*/
-				},
 				//Manage recipe methods
 				//TODO: when the user clicks on the X button for FilePond, destroy CropperJS instance (if it exists)
 				createDescriptionOCR_DOM: function () {
@@ -3662,170 +3443,6 @@
 				autofillActiveTime: function () {
 					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
 				},
-				addIngredient: function () {
-					this.$refs.manage_ing_amount.classList.remove('is-invalid');
-					if (!utils.isString(this.manage_recipeBlockIngredientValue)) return;
-					var s = nlp.parseIngredient(this.manage_recipeBlockIngredientValue);
-					this.manage_recipeBlockIngredients.push({
-						amount: s.amount,
-						value: s.ingredient,
-						editMode: false,
-						editModeButtonText: 'Edit'
-					});
-
-					this.manage_recipeBlockIngredientValue = '';
-				},
-				editIngredient: function (index) {
-					//If edit button is being clicked
-					if (!this.manage_recipeBlockIngredients[index].editMode) {
-						this.manage_recipeBlockIngredients[index].editMode = true;
-						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Update';
-						//If update button is being clicked
-					} else {
-						if (this.manage_recipeBlockIngredients[index].value.trim() === '' || this.manage_recipeBlockIngredients[index].value.trim() === null) {
-							return;
-						}
-						this.manage_recipeBlockIngredients[index].editMode = false;
-						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Edit';
-					}
-				},
-				deleteIngredient: function (index) {
-					this.undoObject = {
-						o: this.manage_recipeBlockIngredients[index],
-						i: index,
-						f: function (self) {
-							self.manage_recipeBlockIngredients.splice(self.undoObject.i, 0, self.undoObject.o);
-							self.$refs.undoContainer.classList.add('undo-collapsed');
-						}
-					};
-					this.manage_recipeBlockIngredients.splice(index, 1);
-					this.undoText = 'Ingredient deleted';
-
-					this.$refs.undoContainer.classList.remove('undo-collapsed');
-
-					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
-				},
-				addStep: function () {
-					this.$refs.manageStepRef.classList.remove('is-invalid');
-					if ((this.manage_recipeBlockStepValue.trim() === '' || this.manage_recipeBlockStepValue.trim() === null) && this.manage_recipeBlockSteps.length === 0) {
-						this.$refs.manageStepRef.classList.add('is-invalid');
-						return;
-					}
-					this.manage_recipeBlockSteps.push({
-						value: this.manage_recipeBlockStepValue.trim(),
-						editMode: false,
-						editModeButtonText: 'Edit'
-					});
-					this.manage_recipeBlockStepValue = '';
-				},
-				editStep: function (index) {
-					//If edit button is being clicked
-					if (!this.manage_recipeBlockSteps[index].editMode) {
-						this.manage_recipeBlockSteps[index].editMode = true;
-						this.manage_recipeBlockSteps[index].editModeButtonText = 'Update';
-						//If update button is being clicked
-					} else {
-						if (this.manage_recipeBlockSteps[index].value.trim() === '' || this.manage_recipeBlockSteps[index].value.trim() === null) {
-							return;
-						}
-						this.manage_recipeBlockSteps[index].editMode = false;
-						this.manage_recipeBlockSteps[index].editModeButtonText = 'Edit';
-					}
-				},
-				deleteStep: function (index) {
-					this.undoObject = {
-						o: this.manage_recipeBlockSteps[index],
-						i: index,
-						f: function (self) {
-							self.manage_recipeBlockSteps.splice(self.undoObject.i, 0, self.undoObject.o);
-							self.$refs.undoContainer.classList.add('undo-collapsed');
-						}
-					};
-					this.manage_recipeBlockSteps.splice(index, 1);
-					this.undoText = 'Step deleted';
-
-					this.$refs.undoContainer.classList.remove('undo-collapsed');
-
-					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
-				},
-				addBlock: function () {
-					this.$refs.manageStepRef.classList.remove('is-invalid');
-					if (this.manage_recipeBlockSteps.length < 1) {
-						this.$refs.manageStepRef.classList.add('is-invalid');
-						return;
-					}
-					this.manage_recipeBlocks.push({
-						header: {
-							value: 'Recipe',
-							editMode: false
-						},
-						ingredients: this.manage_recipeBlockIngredients,
-						steps: this.manage_recipeBlockSteps,
-						nCalories: utils.isNumber(this.manage_nCalories) ? parseInt(this.manage_nCalories) : 0,
-						nCarbohydrate: utils.isNumber(this.manage_nCarbohydrate) ? parseInt(this.manage_nCarbohydrate) : 0,
-						nCholesterol: utils.isNumber(this.manage_nCholesterol) ? parseInt(this.manage_nCholesterol) : 0,
-						nFat: utils.isNumber(this.manage_nFat) ? parseInt(this.manage_nFat) : 0,
-						nFiber: utils.isNumber(this.manage_nFiber) ? parseInt(this.manage_nFiber) : 0,
-						nProtein: utils.isNumber(this.manage_nProtein) ? parseInt(this.manage_nProtein) : 0,
-						nSodium: utils.isNumber(this.manage_nSodium) ? parseInt(this.manage_nSodium) : 0,
-						nSugars: utils.isNumber(this.manage_nSugars) ? parseInt(this.manage_nSugars) : 0
-					});
-					this.manage_recipeBlockHeader = '';
-					this.manage_recipeBlockIngredients = [];
-					this.manage_recipeBlockSteps = [];
-					this.manage_nCalories = '';
-					this.manage_nCarbohydrate = '';
-					this.manage_nCholesterol = '';
-					this.manage_nFat = '';
-					this.manage_nFiber = '';
-					this.manage_nProtein = '';
-					this.manage_nSodium = '';
-					this.manage_nSugars = '';
-				},
-				editHeader: function (index) {
-					//If edit button is being clicked
-					if (!this.manage_recipeBlocks[index].header.editMode) {
-						this.manage_recipeBlocks[index].header.editMode = true;
-						//If update button is being clicked
-					} else {
-						if (this.manage_recipeBlocks[index].header.value.trim() === '' || this.manage_recipeBlocks[index].header.value.trim() === null) {
-							return;
-						}
-						this.manage_recipeBlocks[index].header.editMode = false;
-					}
-				},
-				editBlock: function (index) {
-					this.manage_recipeBlockHeader = this.manage_recipeBlocks[index].header;
-					this.manage_recipeBlockIngredients = this.manage_recipeBlocks[index].ingredients;
-					this.manage_recipeBlockSteps = this.manage_recipeBlocks[index].steps;
-
-					this.manage_nCalories = this.manage_recipeBlocks[index].nCalories;
-					this.manage_nCarbohydrate = this.manage_recipeBlocks[index].nCarbohydrate;
-					this.manage_nCholesterol = this.manage_recipeBlocks[index].nCholesterol;
-					this.manage_nFat = this.manage_recipeBlocks[index].nFat;
-					this.manage_nFiber = this.manage_recipeBlocks[index].nFiber;
-					this.manage_nProtein = this.manage_recipeBlocks[index].nProtein;
-					this.manage_nSodium = this.manage_recipeBlocks[index].nSodium;
-					this.manage_nSugars = this.manage_recipeBlocks[index].nSugars;
-
-					this.deleteBlock(index);
-				},
-				deleteBlock: function (index) {
-					this.undoObject = {
-						o: this.manage_recipeBlocks[index],
-						i: index,
-						f: function (self) {
-							self.manage_recipeBlocks.splice(self.undoObject.i, 0, self.undoObject.o);
-							self.$refs.undoContainer.classList.add('undo-collapsed');
-						}
-					};
-					this.manage_recipeBlocks.splice(index, 1);
-					this.undoText = 'Section deleted';
-
-					this.$refs.undoContainer.classList.remove('undo-collapsed');
-
-					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
-				},
 				submitManagedRecipe: function () {
 					var self = this;
 					if (this.manage_smartButtonText !== 'Submit Recipe') {
@@ -4079,32 +3696,7 @@
 						console.error(error);
 					});
 					/* jshint ignore:end */
-				},
-				cleanupManageRecipe: function () {
-					//Reset DOM
-					this.$refs.addRecipeButton.dataset.psButtonType = 'add';
-
-					//Reset manage recipe values
-					this.manage_recipeName = '';
-					this.manage_recipeTagInput = '';
-					this.manage_recipeTagHolder = [];
-					this.manage_recipePrepTime = '';
-					this.manage_recipeCookTime = '';
-					this.manage_recipeTotalTime = '';
-					this.manage_recipeActiveTime = '';
-					this.manage_recipeYield = '';
-					this.manage_recipeBlocks = [];
-					this.manage_recipeBlockIngredients = [];
-					this.manage_recipeBlockSteps = [];
-					this.manage_recipeBlockHeader = '';
-					this.manage_recipeBlockIngredientValue = '';
-					this.manage_recipeBlockStepValue = '';
-					this.quillInstance.setText('\n');
-
-					//Re-enable submit button
-					this.isRecipeSubmitDisabled = false;
-				},
-				
+				}
 			}
 		});
 

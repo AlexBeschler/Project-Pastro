@@ -1055,10 +1055,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button class="btn w-100 mt-3" type="button"
-                                                        @click="addRecipeSectionAddRecipeView">
-                                                        + Recipe Section
-                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel"
@@ -1069,12 +1065,11 @@
                                                         <div class="my-3">
                                                             <textarea id="manage_step_value" class="form-control mb-2"
                                                                 placeholder="Add step"
-                                                                v-model="manage_recipeBlockStepValue"
                                                                 ref="manageStepRef"></textarea>
                                                             <div class="row">
                                                                 <div class="col px-1">
                                                                     <button class="btn text-primary button-no-outline"
-                                                                        @click="addStepsAddRecipeView"
+                                                                        @click="addStepsAddRecipeView(-1)"
                                                                         ref="addStepToBlockButton">Add</button>
                                                                     <button class="btn text-primary button-no-outline"
                                                                         type="button" data-bs-toggle="collapse"
@@ -1119,49 +1114,68 @@
                                                     </div>
                                                     <!-- View if 2 sections or more are added -->
                                                     <div v-else>
-                                                        <!--button class="btn btn-outline-primary w-100 my-4" type="button"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#ocrIngredientsFilePondWrapper">
-                                                            <img src="assets/icons/camera-fill.svg">
-                                                        </button>
-                                                        <div v-for="(section, index) in manage_recipeSections"
-                                                            :index="index" :key="index">
-                                                            <input class="form-control manage-recipe-input mb-2"
-                                                                type="text" placeholder="Section Title"
-                                                                v-model="section.title">
-                                                            <div class="row mb-2">
-                                                                <div class="col-1"></div>
-                                                                <div class="col-11">
-                                                                    <input class="form-control manage-recipe-input"
-                                                                        type="text" placeholder="Add ingredient"
-                                                                        v-on:keyup.enter="addIngredientsAddRecipeView(index)"
-                                                                        ref="ingredientInputAddRecipeView">
-                                                                </div>
-                                                            </div>
+                                                        <div class="my-3">
+                                                            <button class="btn btn-outline-primary w-100 my-4"
+                                                                type="button" data-bs-toggle="collapse"
+                                                                data-bs-target="#ocrIngredientsFilePondWrapper">
+                                                                <img src="assets/icons/camera-fill.svg">
+                                                            </button>
                                                             <div class="row">
-                                                                <div class="col-12">
-                                                                    <recipe-ingredients-draggable-list :lock-axis="'y'"
-                                                                        :press-delay.number=100
-                                                                        v-model="section.ingredients">
-                                                                        <recipe-ingredients-draggable-item
-                                                                            v-for="(ingredient, i) in section.ingredients"
-                                                                            :index="i" :key="i" :ingredient="ingredient"
-                                                                            :amount="ingredient.amount"
-                                                                            :value="ingredient.value"
-                                                                            :sectionindex="index"
-                                                                            @touchstart.native="scrollStop"
-                                                                            @touchend.native="scrollMove"
-                                                                            v-on:delete-ingredient="deleteIngredientsAddRecipeView(index, i)"
-                                                                            v-on:undo-delete-ingredient="undoDeleteIngredientsAddRecipeView(index, i)" />
-                                                                    </recipe-ingredients-draggable-list>
+                                                                <div id="ocrStepsFilePondWrapper"
+                                                                    class="mt-2 mb-4 collapse" ref="ocr_StepsFilePond">
+                                                                    <input id="ocrStepsFilePond" type="file"
+                                                                        data-max-file-size="12MB"
+                                                                        accept="image/jpeg, image/png" />
+                                                                    <div id="ocrStepsCropWrapper" class="cropperImg"
+                                                                        v-show="ocr_StepsEditMode">
+                                                                    </div>
+                                                                    <button class="btn btn-success"
+                                                                        v-show="ocr_StepsEditMode"
+                                                                        @click="handleCrop('steps')">Crop</button>
                                                                 </div>
                                                             </div>
-                                                        </div-->
+                                                            <div v-for="(section, index) in manage_recipeSections"
+                                                                :index="index" :key="index">
+                                                                <input class="form-control manage-recipe-input mb-2"
+                                                                    type="text" placeholder="Section Title"
+                                                                    v-model="section.title">
+                                                                <div class="row mb-2">
+                                                                    <div class="col-1"></div>
+                                                                    <div class="col-11">
+                                                                        <textarea id="manage_step_value"
+                                                                            class="form-control mb-2"
+                                                                            placeholder="Add step"
+                                                                            ref="manageStepRef">
+                                                                    </textarea>
+                                                                    </div>
+                                                                    <div class="col-1"></div>
+                                                                    <div class="col-11">
+                                                                        <button
+                                                                            class="btn text-primary button-no-outline"
+                                                                            @click="addStepsAddRecipeView(index)"
+                                                                            ref="addStepToBlockButton">Add</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <recipe-steps-draggable-list
+                                                                            :lock-axis="'y'" :press-delay.number=100
+                                                                            v-model="section.steps">
+                                                                            <recipe-steps-draggable-item
+                                                                                v-for="(step, i) in section.steps"
+                                                                                :index="i" :key="i" :step="step"
+                                                                                :value="step.value"
+                                                                                :sectionindex="index"
+                                                                                v-on:delete-step="deleteStepsAddRecipeView(index, i)"
+                                                                                v-on:undo-delete-step="undoDeleteStepsAddRecipeView(index, i)"
+                                                                                @touchstart.native="scrollStop"
+                                                                                @touchend.native="scrollMove" />
+                                                                        </recipe-steps-draggable-list>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <button class="btn w-100 mt-3" type="button"
-                                                        @click="addRecipeSectionAddRecipeView">
-                                                        + Recipe Section
-                                                    </button>
                                                 </div>
                                             </div>
                                             <!--div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel"
@@ -1265,6 +1279,9 @@
                                             </div-->
                                         </div>
                                     </div>
+                                    <button class="btn w-100" type="button" @click="addRecipeSectionAddRecipeView">
+                                        + Recipe Section
+                                    </button>
                                 </div>
                             </div>
                         </div>
