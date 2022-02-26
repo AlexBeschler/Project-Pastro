@@ -716,8 +716,9 @@
                     <img class="right-margin" src="assets/icons/arrow-left-short.svg">
                     <h5>Back</h5>
                 </button>
-                <div class="container">
-                    <div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
+                <div>
+                    <div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4"
+                        ref="manageOverviewAccordionButton">
                         <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button pe-1" type="button"
@@ -972,6 +973,7 @@
                                                                 class="form-control manage-recipe-input me-3"
                                                                 type="text" placeholder="Ingredient"
                                                                 v-on:keyup.enter="addIngredientsAddRecipeView(-1)"
+                                                                v-model="ingredientModel_b[0]"
                                                                 ref="ingredientInputAddRecipeView">
                                                             <div id="ingredient-invalid-feedback"
                                                                 class="invalid-feedback">
@@ -1031,6 +1033,7 @@
                                                                 <div class="col-11">
                                                                     <input class="form-control manage-recipe-input"
                                                                         type="text" placeholder="Add ingredient"
+                                                                        v-model="ingredientModel_b[index]"
                                                                         v-on:keyup.enter="addIngredientsAddRecipeView(index)"
                                                                         ref="ingredientInputAddRecipeView">
                                                                 </div>
@@ -1064,8 +1067,7 @@
                                                     <div v-if="manage_recipeSections.length <= 1">
                                                         <div class="my-3">
                                                             <textarea id="manage_step_value" class="form-control mb-2"
-                                                                placeholder="Add step"
-                                                                ref="manageStepRef"></textarea>
+                                                                placeholder="Add step" ref="manageStepRef" v-model="stepModel_b[0]"></textarea>
                                                             <div class="row">
                                                                 <div class="col px-1">
                                                                     <button class="btn text-primary button-no-outline"
@@ -1144,8 +1146,7 @@
                                                                     <div class="col-11">
                                                                         <textarea id="manage_step_value"
                                                                             class="form-control mb-2"
-                                                                            placeholder="Add step"
-                                                                            ref="manageStepRef">
+                                                                            placeholder="Add step" ref="manageStepRef" v-model="stepModel_b[index]">
                                                                     </textarea>
                                                                     </div>
                                                                     <div class="col-1"></div>
@@ -1158,8 +1159,8 @@
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-12">
-                                                                        <recipe-steps-draggable-list
-                                                                            :lock-axis="'y'" :press-delay.number=100
+                                                                        <recipe-steps-draggable-list :lock-axis="'y'"
+                                                                            :press-delay.number=100
                                                                             v-model="section.steps">
                                                                             <recipe-steps-draggable-item
                                                                                 v-for="(step, i) in section.steps"

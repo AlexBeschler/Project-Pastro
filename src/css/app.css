@@ -174,7 +174,6 @@ body {
     transition-delay: 0s, 0s;
     border-bottom-right-radius: 0.25rem;
     border-bottom-left-radius: 0.25rem;
-    border: 1px solid #ccc;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
 }
@@ -610,10 +609,6 @@ span.ingredient-amount-badge.strike-list-item {
     background-color: inherit;
 }
 
-.recipe-step-list-item {
-    border-bottom: 1px solid rgb(0 0 0 / 65%);
-}
-
 /* Manage Recipe View */
 .manage-recipe-input:focus {
     border-color: var(--ps-primary-color);
@@ -648,7 +643,6 @@ span.ingredient-amount-badge.strike-list-item {
     -webkit-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
-    margin-bottom: 0.5rem;
     padding: 1rem 0;
 }
 

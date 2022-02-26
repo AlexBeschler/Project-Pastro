@@ -48,6 +48,20 @@ var ProjectPastroUtils = function () {
         }
         return result;
     };
+    this.isEmptyArray = function(array) {
+        if (array.length === 0) {
+            return true;
+        }
+        //Start with the assumption that array is completely empty
+        var isEmpty = true;
+        for (var i = 0; i < array.length; i++) {
+            if (array[i] !== '') {
+                isEmpty = false;
+                break;
+            }
+        }
+        return isEmpty;
+    };
 
     this.getRegExpFlags = function (regExp) {
         //Used from https://github.com/angus-c/just/tree/master/packages/collection-clone

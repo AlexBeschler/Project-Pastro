@@ -1056,6 +1056,10 @@
 						"nProtein": 0 
 					}
 				],
+        		ingredientModel_a: [],
+				ingredientModel_b: [],
+				stepModel_a: [],
+				stepModel_b: [],
 
 				/** Utility data **/
 				toastInstance: null,
@@ -1105,10 +1109,6 @@
 
 
 				
-
-				//Explore pane
-
-				//Recipe
 
 				//All tags and ingredients in cookbook
 				tagsArray: listOfTags,
@@ -1406,7 +1406,6 @@
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
 
-				/*
 				//Add smart button listeners for ManageRecipe
 				var smartButtonListeners = [
 					this.$refs.manageOverviewAccordionButton,
@@ -1423,22 +1422,20 @@
 				var smartTabListeners = [
 					this.$refs.manageIngredientsTab,
 					this.$refs.manageStepsTab,
-					this.$refs.manageNutritionTab
+					//this.$refs.manageNutritionTab
 				];
 				smartTabListeners.forEach(element => {
 					element.addEventListener('shown.bs.tab', function () {
 						self.updateSmartButtonText();
 					});
 				});
-				*/
-
-				//this.initRecipeViewQuill();
 
 				this.toastInstance = new bootstrap.Toast(this.$refs.toastNotification);
 				this.$refs.toastNotification.addEventListener('hidden.bs.toast', function() {
 					self.toastHeader = '';
 					self.toastBody = '';
 				});
+
 			},
 			watch: {
 				searchQuery: function(b, a) {
@@ -1527,10 +1524,7 @@
 					}
 				},
 				manage_recipeBlockIngredientValue: function (b, a) {
-					if (b.length >= (2 + a.length)) {
-						this.pasteFromClipboard('ingredients');
-						this.manage_recipeBlockIngredientValue = '';
-					}
+					
 				},
 				manage_recipeBlockStepValue: function (b, a) {
 					if (!utils.isEmpty(b)) {
@@ -1558,6 +1552,131 @@
 					});
 				}
 				*/
+				ingredientModel_b: {
+					handler: function (after, before) {
+						var vm = this;
+						var j = 0;
+						var changed = null;
+						
+						if (utils.isEmptyArray(vm.$data.ingredientModel_b)) {
+							return;
+						}
+						// Return the object that changed
+						if (utils.isEmptyArray(vm.$data.ingredientModel_a)) {
+							changed = after;
+							for (var i = 0; i < vm.$data.ingredientModel_b.length; i++) {
+								var k = 0;
+								var isErr = false;
+								try {
+									k = vm.$data.ingredientModel_b[i].length;
+								} catch(f) {
+									isErr = true;
+								}
+								if (k > 0 && !isErr) {
+									j = i;
+									break;
+								}
+							}
+						} else {
+							changed = after.filter(function(p, idx) {
+								return Object.keys(p).some(function(prop) {
+									j = idx;
+									return p[prop] !== vm.$data.ingredientModel_a[idx][prop];
+								});
+							});
+						}
+						
+						// Log it
+						vm.setIngredientVModelHistory();
+						
+						//Do NLP stuff here
+						navigator.clipboard.readText()
+							.then(text => {
+								//Split by newline character
+								var lines = text.split('\n');
+								lines.forEach(line => {
+									if (!utils.isEmpty(line)) {
+										var s = nlp.parseIngredient(line);
+										vm.manage_recipeSections[j].ingredients.push({
+											amount: s.amount,
+											value: s.ingredient,
+											isDeleted: false
+										});
+									}
+								});
+							})
+							.catch(err => {
+								console.error('Failed to read clipboard contents: ', err);
+							});
+
+						vm.$data.ingredientModel_b = [];
+						vm.setIngredientVModelHistory();
+					},
+					deep: true
+				},
+				stepModel_b: {
+					handler: function(after, before) {
+						var vm = this;
+						var j = 0;
+						var changed = null;
+						
+						if (utils.isEmptyArray(vm.$data.stepModel_b)) {
+							return;
+						}
+						// Return the object that changed
+						if (utils.isEmptyArray(vm.$data.stepModel_a)) {
+							changed = after;
+							for (var i = 0; i < vm.$data.stepModel_b.length; i++) {
+								var k = 0;
+								var isErr = false;
+								try {
+									k = vm.$data.stepModel_b[i].length;
+								} catch(f) {
+									isErr = true;
+								}
+								if (k > 0 && !isErr) {
+									j = i;
+									break;
+								}
+							}
+						} else {
+							changed = after.filter(function(p, idx) {
+								return Object.keys(p).some(function(prop) {
+									j = idx;
+									return p[prop] !== vm.$data.stepModel_a[idx][prop];
+								});
+							});
+						}
+						
+						// Log it
+						vm.setStepVModelHistory();
+						
+						//Do NLP stuff here
+						navigator.clipboard.readText()
+							.then(text => {
+								var lines = text.split('\n');
+								lines.forEach(line => {
+									if (!utils.isEmpty(line)) {
+										try {
+											vm.manage_recipeSections[j].steps.push({
+												value: utils.capitalizeFirstLetter(line.trim()),
+												isDeleted: false
+											});
+										} catch (e) {
+											console.log(e);
+										}
+									}
+								});
+							})
+							.catch(err => {
+								console.error('Failed to read clipboard contents: ', err);
+							});
+
+						vm.$data.stepModel_b = [];
+						vm.setStepVModelHistory();
+					},
+					deep: true
+				}
 			},
 			methods: {
 				/**** Button Helpers ****/
@@ -2483,17 +2602,17 @@
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
 				},
 				addRecipeIngredientsRecipeView: function(sectionIndex) {
-					if (!utils.isString(this.ingredientsAddModel)) {
+					if (!utils.isString(this.ingredientModel_b[sectionIndex])) {
 						return false;
 					}
 
-					var ingredientObject = nlp.parseIngredient(this.ingredientsAddModel);
+					var ingredientObject = nlp.parseIngredient(this.ingredientModel_b[sectionIndex]);
 					this.selectedRecipe.sections[sectionIndex].ingredients.push({
 						amount: ingredientObject.amount,
 						isDeleted: false,
 						value: ingredientObject.ingredient
 					});
-					this.ingredientsAddModel = '';
+					this.ingredientModel_b[sectionIndex] = '';
 				},
 				editRecipeStepsRecipeView: function() {
 					if (this.stepsDisplayState === utils.DISPLAY_STATES.VIEW) {
@@ -2653,6 +2772,9 @@
 				},
 
 				/**** AddRecipeView Methods ****/
+				autofillActiveTime: function () {
+					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
+				},
 				addTagAddRecipeView: function () {
 					if (utils.isString(this.manage_recipeTagInput)) {
 						this.manage_recipeTagHolder.push({
@@ -2773,8 +2895,58 @@
 				undoDeleteStepsAddRecipeView: function(sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = false;
 				},
-
-
+				updateSmartButtonText: function () {
+					//Check text to set for smart button
+					if (this.$refs.manageOverviewAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Cover Photo »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.overview;
+					}
+					if (this.$refs.manageCoverPhotoAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Time & Servings »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.coverPhoto;
+					}
+					if (this.$refs.manageTimeServingsAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Recipe Ingredients »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.timeServings;
+					}
+					if (this.$refs.manageSectionsAccordionButton.classList.contains('show')) {
+						//Bootstrap 5 has a bug related to nav tabs inside an accordion -
+						// if the user expands other sections of the accordion, the "show" class of the active (hidden)
+						// tab is removed automatically. We need to overcome this by finding the "active" class
+						// and adding the "show" class to the corresponding nav tab content
+						if (this.$refs.manageIngredientsTab.classList.contains('active')) {
+							if (!this.$refs.manageIngredientsSectionButton.classList.contains('show')) {
+								this.$refs.manageIngredientsSectionButton.classList.add('active');
+								this.$refs.manageIngredientsSectionButton.classList.add('show');
+							}
+							if (!this.showStickySubmit) {
+								this.manage_smartButtonText = 'Recipe Steps »';
+							}
+							this.manage_activePane = this.manage_smartButtonProgress.ingredients;
+						}
+						if (this.$refs.manageStepsTab.classList.contains('active')) {
+							if (!this.$refs.manageStepsSectionButton.classList.contains('show')) {
+								this.$refs.manageStepsSectionButton.classList.add('active');
+								this.$refs.manageStepsSectionButton.classList.add('show');
+							}
+							this.manage_smartButtonText = 'Submit Recipe';
+							this.manage_activePane = this.manage_smartButtonProgress.steps;
+							this.showStickySubmit = true;
+						}
+					}
+				},
+				setIngredientVModelHistory: function () {
+					this.ingredientModel_a = utils.deepClone(this.ingredientModel_b);
+				},
+				setStepVModelHistory: function() {
+					this.stepModel_a = utils.deepClone(this.stepModel_b);
+				},
 
 				/**** Utilities ****/
 				//used for displaying the ETA of the recipe
@@ -3212,62 +3384,6 @@
 						}
 					});
 				},
-				updateSmartButtonText: function () {
-					//Check text to set for smart button
-					if (this.$refs.manageOverviewAccordionButton.classList.contains('show')) {
-						if (!this.showStickySubmit) {
-							this.manage_smartButtonText = 'Cover Photo »';
-						}
-						this.manage_activePane = this.manage_smartButtonProgress.overview;
-					}
-					if (this.$refs.manageCoverPhotoAccordionButton.classList.contains('show')) {
-						if (!this.showStickySubmit) {
-							this.manage_smartButtonText = 'Time & Servings »';
-						}
-						this.manage_activePane = this.manage_smartButtonProgress.coverPhoto;
-					}
-					if (this.$refs.manageTimeServingsAccordionButton.classList.contains('show')) {
-						if (!this.showStickySubmit) {
-							this.manage_smartButtonText = 'Recipe Ingredients »';
-						}
-						this.manage_activePane = this.manage_smartButtonProgress.timeServings;
-					}
-					if (this.$refs.manageSectionsAccordionButton.classList.contains('show')) {
-						//Bootstrap 5 has a bug related to nav tabs inside an accordion -
-						// if the user expands other sections of the accordion, the "show" class of the active (hidden)
-						// tab is removed automatically. We need to overcome this by finding the "active" class
-						// and adding the "show" class to the corresponding nav tab content
-						if (this.$refs.manageIngredientsTab.classList.contains('active')) {
-							if (!this.$refs.manageIngredientsSectionButton.classList.contains('show')) {
-								this.$refs.manageIngredientsSectionButton.classList.add('active');
-								this.$refs.manageIngredientsSectionButton.classList.add('show');
-							}
-							if (!this.showStickySubmit) {
-								this.manage_smartButtonText = 'Recipe Steps »';
-							}
-							this.manage_activePane = this.manage_smartButtonProgress.ingredients;
-						}
-						if (this.$refs.manageStepsTab.classList.contains('active')) {
-							if (!this.$refs.manageStepsSectionButton.classList.contains('show')) {
-								this.$refs.manageStepsSectionButton.classList.add('active');
-								this.$refs.manageStepsSectionButton.classList.add('show');
-							}
-							if (!this.showStickySubmit) {
-								this.manage_smartButtonText = 'Recipe Nutrition »';
-							}
-							this.manage_activePane = this.manage_smartButtonProgress.steps;
-						}
-						if (this.$refs.manageNutritionTab.classList.contains('active')) {
-							if (!this.$refs.manageNutritionSectionButton.classList.contains('show')) {
-								this.$refs.manageNutritionSectionButton.classList.add('active');
-								this.$refs.manageNutritionSectionButton.classList.add('show');
-							}
-							this.manage_smartButtonText = 'Submit Recipe';
-							this.manage_activePane = this.manage_smartButtonProgress.nutrition;
-							this.showStickySubmit = true;
-						}
-					}
-				},
 				undoDeleteClicked: function () {
 					this.undoObject.f(this);
 					clearTimeout(this.undoTimeOut);
@@ -3438,10 +3554,6 @@
 						.catch(err => {
 							console.error('Failed to read clipboard contents: ', err);
 						});
-				},
-				
-				autofillActiveTime: function () {
-					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
 				},
 				submitManagedRecipe: function () {
 					var self = this;
