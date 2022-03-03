@@ -907,44 +907,6 @@
 			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
-		/*
-		//Manage ingredients component
-		Vue.component('ingredients-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#ingredients-draggable-list-template'
-		});
-
-		Vue.component('ingredients-draggable-item', {
-			mixins: [ElementMixin],
-			props: ['ingredient'],
-			template: '#ingredients-draggable-item-template'
-		});
-
-		//Manage steps component
-		Vue.component('steps-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#steps-draggable-list-template'
-		});
-
-		Vue.component('steps-draggable-item', {
-			mixins: [ElementMixin],
-			props: ['step'],
-			template: '#steps-draggable-item-template'
-		});
-
-		//Manage steps
-		Vue.component('blocks-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#blocks-draggable-list-template'
-		});
-
-		Vue.component('blocks-draggable-item', {
-			mixins: [ElementMixin],
-			props: ['block'],
-			template: '#blocks-draggable-item-template'
-		});
-		*/
-
 		var pastroApp = new Vue({
 			el: '#appContent',
 			data: {
@@ -1030,6 +992,10 @@
 				manage_recipeName: '',
 				manage_recipeTagInput: '',
 				manage_recipeTagHolder: [],
+				ocr_DescriptionFilePond: null,
+				ocr_DescriptionCropperObject: null,
+				ocr_DescriptionPondEditor: null,
+				ocr_DescriptionEditMode: false,
 				//Step 2
 				manage_specialEquipmentInput: '',
 				manage_specialEquipmentHolder: [],
@@ -1137,10 +1103,7 @@
 				manage_coverPhotoURL: '',
 				manage_coverPhotoThumbnail: '',
 
-				ocr_DescriptionFilePond: null,
-				ocr_DescriptionCropperObject: null,
-				ocr_DescriptionPondEditor: null,
-				ocr_DescriptionEditMode: false,
+				
 
 				ocr_IngredientsFilePond: null,
 				ocr_IngredientsCropperObject: null,
@@ -1193,9 +1156,7 @@
 
 				this.storage = firebase.storage().ref();
 
-				//this.initQuill();
-
-				//FilePond.registerPlugin(FilePondPluginImageTransform, FilePondPluginImageCrop, FilePondPluginImagePreview, FilePondPluginImageResize, FilePondPluginImageTransform, FilePondPluginImageEdit, FilePondPluginFileValidateType);				
+				FilePond.registerPlugin(FilePondPluginImageTransform, FilePondPluginImageCrop, FilePondPluginImagePreview, FilePondPluginImageResize, FilePondPluginImageTransform, FilePondPluginImageEdit, FilePondPluginFileValidateType);				
 
 				//On mobile, chrome/safari address bar is 60px and takes up part of the 100vh
 				//Meaning if the UA is mobile we need to add an additional 60px to the height of offcanvas
@@ -1314,11 +1275,8 @@
 
 				this.filterPresetsList = filterPresets;
 
-				
+				//Create OCR objects
 
-				
-
-				/*
 				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
 						//If the user already clicked the crop button, don't let another instance be called
@@ -1333,7 +1291,7 @@
 							image.id = 'descriptionCropper';
 							document.getElementById('ocrDescriptionCropWrapper').appendChild(image);
 							self.ocr_DescriptionCropperObject = new Cropper(document.getElementById('descriptionCropper'));
-						}
+						};
 						reader.readAsDataURL(file);
 					},
 
@@ -1342,8 +1300,11 @@
 					oncancel: () => {},
 
 					onclose: () => {}
-				}
+				};
 
+				
+
+				/*
 				this.ocr_IngredientsPondEditor = {
 					open: (file, instructions) => {
 						//If the user already clicked the crop button, don't let another instance be called
@@ -3057,6 +3018,7 @@
 				},
 				//AddRecipeView
 				initAddRecipeViewQuill: function () {
+					var self = this;
 					this.quillAddRecipeViewInstance = new Quill('#addRecipeViewEditor', {
 						modules: {
 							toolbar: this.toolbarOptions
@@ -3071,9 +3033,8 @@
 						icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="999999" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/></svg>`
 					});
 					ocrDescriptionButton.onClick = function (quill) {
-						console.log('OCR clicked');
-						//var bsCollapse = new bootstrap.Collapse(self.$refs.ocr_DescriptionFilePond);
-						//self.$refs.ocr_DescriptionFilePond.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
+						new bootstrap.Collapse(self.$refs.ocrDescriptionCollapse);
+						self.$refs.ocrDescriptionCollapse.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
 					};
 					ocrDescriptionButton.attach(this.quillAddRecipeViewInstance);
 				},
@@ -3110,15 +3071,6 @@
 						/* jshint ignore:end */
 					}
 				},
-
-
-
-
-
-
-
-
-
 				//Manage recipe methods
 				//TODO: when the user clicks on the X button for FilePond, destroy CropperJS instance (if it exists)
 				createDescriptionOCR_DOM: function () {
@@ -3143,7 +3095,7 @@
 								let meta = {
 									contentType: file.type,
 								};
-
+								
 								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, meta);
 
 								uploadTask.on('state_changed', (snapshot) => {
@@ -3153,7 +3105,7 @@
 									error('Error uploading file: ' + e);
 								}, () => {
 									//Give user some sort of indications that something is going on behind the scenes
-									self.quillInstance.setText('Loading...');
+									self.quillAddRecipeViewInstance.setText('Loading...');
 
 									//Perform upload to Firebase storage
 									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
@@ -3171,7 +3123,7 @@
 											//Instance may not exist yet 
 										}
 
-										self.quillInstance.setText(res.data.recognizedText);
+										self.quillAddRecipeViewInstance.setText(res.data.recognizedText);
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
 									}).catch(err => {
 										//console.log(err.response.data.message);
@@ -3188,6 +3140,23 @@
 						}
 					});
 				},
+				handleDescriptionOCRCrop: function() {
+					this.ocr_DescriptionPondEditor.onconfirm(utils.getCropData(this.ocr_DescriptionCropperObject.getData(), this.ocr_DescriptionCropperObject.getCanvasData()));
+					this.ocr_DescriptionEditMode = false;
+					this.ocr_DescriptionCropperObject.destroy();
+					this.ocr_DescriptionCropperObject = null;
+					document.getElementById('ocrDescriptionCropWrapper').innerHTML = "";
+				},
+
+
+
+
+
+
+
+
+
+				
 				createIngredientsOCR_DOM: function() {
 					var self = this;
 					if (this.ocr_IngredientsFilePond !== null) {
@@ -3398,13 +3367,7 @@
 				
 				handleCrop: function (type) {
 					var self = this;
-					var cropData = null;
-					var canvasData = null;
 					switch (type) {
-						case 'description':
-							cropData = this.ocr_DescriptionCropperObject.getData();
-							canvasData = this.ocr_DescriptionCropperObject.getCanvasData();
-							break;
 						case 'ingredients':
 							cropData = this.ocr_IngredientsCropperObject.getData();
 							canvasData = this.ocr_IngredientsCropperObject.getCanvasData();
@@ -3417,68 +3380,7 @@
 							break;
 					}
 
-					//Ratio of selected crop area
-					var cropAreaRatio = cropData.height / cropData.width;
-
-					//Center point of crop area in percent
-					var percentX = (cropData.x + cropData.width / 2) / canvasData.naturalWidth;
-					var percentY = (cropData.y + cropData.height / 2) / canvasData.naturalHeight;
-
-					//Calculate available space round image center position
-					var cx = percentX > 0.5 ? 1 - percentX : percentX;
-					var cy = percentY > 0.5 ? 1 - percentY : percentY;
-
-					//Calculate image rectangle respecting space round image from crop area
-					var width = canvasData.naturalWidth;
-					var height = width * cropAreaRatio;
-
-					if (height > canvasData.naturalHeight) {
-						height = canvasData.naturalHeight;
-						width = height / cropAreaRatio;
-					}
-					var rectWidth = cx * 2 * width;
-					var rectHeight = cy * 2 * height;
-
-					//Calculate zoom
-					//If the crop rectangle is TALLER than wider, use Math.min
-					//If the crop rectangle is WIDER than taller, use Math.max
-					var zoom = 0.0;
-					if (rectHeight / cropData.height > rectWidth / cropData.width) {
-						zoom = Math.min(rectWidth / cropData.width, rectHeight / cropData.height);
-					} else {
-						zoom = Math.max(rectWidth / cropData.width, rectHeight / cropData.height);
-					}
-					//TODO: Cropper does not quite nail edges. If a taller crop rectangle shares a border
-					// with the image, it seems to include superfluous detail.
-					//Use https://github.com/pqina/filepond-plugin-image-edit/issues/1 as reference
-
-					var payload = {
-						data: {
-							crop: {
-								center: {
-									x: percentX,
-									y: percentY
-								},
-								flip: {
-									horizontal: cropData.scaleX < 0,
-									vertical: cropData.scaleY < 0
-								},
-								zoom: zoom,
-								//There were some rotation issues with certain types of photos. Switched to 0 rotation
-								rotation: 0,
-								aspectRatio: cropAreaRatio
-							}
-						}
-					};
-
 					switch (type) {
-						case 'description':
-							self.ocr_DescriptionPondEditor.onconfirm(payload);
-							self.ocr_DescriptionEditMode = false;
-							self.ocr_DescriptionCropperObject.destroy();
-							self.ocr_DescriptionCropperObject = null;
-							document.getElementById('ocrDescriptionCropWrapper').innerHTML = "";
-							break;
 						case 'ingredients':
 							self.ocr_IngredientsPondEditor.onconfirm(payload);
 							self.ocr_IngredientsEditMode = false;
@@ -3496,64 +3398,6 @@
 						default:
 							break;
 					}
-				},
-				pasteFromClipboard: function (pasteDestination) {
-					var self = this;
-					navigator.clipboard.readText()
-						.then(text => {
-							//Split by newline character
-							var lines = text.split('\n');
-							switch (pasteDestination) {
-								case 'tags':
-									lines.forEach(line => {
-										if (!utils.isEmpty(line)) {
-											try {
-												self.manage_recipeTagHolder.push({
-													value: utils.capitalizeFirstLetter(line.trim()),
-													editMode: false,
-													editModeButtonText: 'Edit'
-												});
-											} catch (e) {
-												console.log(e);
-											}
-										}
-									});
-									break;
-								case 'ingredients':
-									lines.forEach(line => {
-										if (!utils.isEmpty(line)) {
-											var s = nlp.parseIngredient(line);
-											self.manage_recipeBlockIngredients.push({
-												amount: s.amount,
-												value: s.ingredient,
-												editMode: false,
-												editModeButtonText: 'Edit'
-											});
-										}
-									});
-									break;
-								case 'steps':
-									lines.forEach(line => {
-										if (!utils.isEmpty(line)) {
-											try {
-												self.manage_recipeBlockSteps.push({
-													value: utils.capitalizeFirstLetter(line.trim()),
-													editMode: false,
-													editModeButtonText: 'Edit'
-												});
-											} catch (e) {
-												console.log(e);
-											}
-										}
-									});
-									break;
-								default:
-									break;
-							}
-						})
-						.catch(err => {
-							console.error('Failed to read clipboard contents: ', err);
-						});
 				},
 				submitManagedRecipe: function () {
 					var self = this;
