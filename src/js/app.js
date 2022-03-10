@@ -1024,8 +1024,16 @@
 				],
         		ingredientModel_a: [],
 				ingredientModel_b: [],
+				
+				ingredientTest: [],
+				ingredientModelA: [],
+				
 				stepModel_a: [],
 				stepModel_b: [],
+				ocr_IngredientsFilePond: null,
+				ocr_IngredientsCropperObject: null,
+				ocr_IngredientsPondEditor: null,
+				ocr_IngredientsEditMode: false,
 
 				/** Utility data **/
 				toastInstance: null,
@@ -1102,13 +1110,6 @@
 				manage_filePondCoverPhoto: null,
 				manage_coverPhotoURL: '',
 				manage_coverPhotoThumbnail: '',
-
-				
-
-				ocr_IngredientsFilePond: null,
-				ocr_IngredientsCropperObject: null,
-				ocr_IngredientsPondEditor: null,
-				ocr_IngredientsEditMode: false,
 
 				ocr_StepsFilePond: null,
 				ocr_StepsCropperObject: null,
@@ -1302,6 +1303,32 @@
 					onclose: () => {}
 				};
 
+				this.ocr_IngredientsPondEditor = {
+					open: (file, instructions) => {
+						//If the user already clicked the crop button, don't let another instance be called
+						if (self.ocr_IngredientsCropperObject !== null) {
+							return;
+						}
+						var reader = new FileReader();
+						reader.onloadend = function () {
+							self.ocr_IngredientsEditMode = true;
+							var image = new Image();
+							image.src = reader.result;
+							image.id = 'IngredientsCropper';
+							document.getElementById('ocrIngredientsCropWrapper').appendChild(image);
+							self.ocr_IngredientsCropperObject = new Cropper(document.getElementById('ingredientsCropper'));
+						};
+						reader.readAsDataURL(file);
+					},
+
+					onconfirm: (output, item) => {},
+
+					oncancel: () => {},
+
+					onclose: () => {}
+				};
+				
+				this.$refs.ocrIngredientsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createIngredientsOCR_DOM());
 				
 
 				/*
@@ -1454,30 +1481,6 @@
 					}
 					this.updateFilteredIngredients(b);
 				},
-				nCalories: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nFat: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nCholesterol: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nSodium: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nCarbohydrate: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nFiber: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nSugars: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nProtein: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
 				manage_recipeTagInput: function (b, a) {
 					if (b.length >= (2 + a.length)) {
 						this.pasteFromClipboard('tags');
@@ -1519,9 +1522,6 @@
 						var j = 0;
 						var changed = null;
 						
-						if (utils.isEmptyArray(vm.$data.ingredientModel_b)) {
-							return;
-						}
 						// Return the object that changed
 						if (utils.isEmptyArray(vm.$data.ingredientModel_a)) {
 							changed = after;
@@ -1546,29 +1546,21 @@
 								});
 							});
 						}
+
+						var copied = false;
+						
+						for (var l = 0; l < this.ingredientModel_a.length; l++) {
+							if (this.ingredientModel_b[l].length >= (this.ingredientModel_a[l].length + 2)) {
+								copied = true;
+							}
+						}
 						
 						// Log it
 						vm.setIngredientVModelHistory();
-						
-						//Do NLP stuff here
-						navigator.clipboard.readText()
-							.then(text => {
-								//Split by newline character
-								var lines = text.split('\n');
-								lines.forEach(line => {
-									if (!utils.isEmpty(line)) {
-										var s = nlp.parseIngredient(line);
-										vm.manage_recipeSections[j].ingredients.push({
-											amount: s.amount,
-											value: s.ingredient,
-											isDeleted: false
-										});
-									}
-								});
-							})
-							.catch(err => {
-								console.error('Failed to read clipboard contents: ', err);
-							});
+
+						if (!copied) {
+							return;
+						}
 
 						vm.$data.ingredientModel_b = [];
 						vm.setIngredientVModelHistory();
@@ -1635,6 +1627,57 @@
 
 						vm.$data.stepModel_b = [];
 						vm.setStepVModelHistory();
+					},
+					deep: true
+				},
+				ingredientTest: {
+					handler: function (after, before) {
+						if (_.isEmpty(after)) {
+							this.ingredientModelA = [];
+							return;
+						}
+						var self = this;
+						var pasteDetected = false;
+						var k = 0;
+						if (_.isEmpty(this.ingredientModelA)) {
+							for (var i = 0; i < after.length; i++) {
+								if (after[i].length >= 2) {
+									pasteDetected = true;
+								}
+							}
+						} else {
+							for (var j = 0; j < this.ingredientModelA.length; j++) {
+								if (after[j].length >= (this.ingredientModelA[j].length + 2)) {
+									pasteDetected = true;
+									k = j;
+								}
+							}
+						}
+						if (pasteDetected) {
+							//Do NLP stuff here
+							navigator.clipboard.readText()
+								.then(text => {
+									//Split by newline character
+									var lines = text.split('\n');
+									lines.forEach(line => {
+										if (!utils.isEmpty(line)) {
+											var s = nlp.parseIngredient(line);
+											self.manage_recipeSections[k].ingredients.push({
+												amount: s.amount,
+												value: s.ingredient,
+												isDeleted: false
+											});
+										}
+									});
+								})
+								.catch(err => {
+									console.error('Failed to read clipboard contents: ', err);
+								});
+							this.ingredientModelA = utils.deepClone(after);
+							this.ingredientTest = [];
+						} else {
+							this.ingredientModelA = utils.deepClone(after);
+						}
 					},
 					deep: true
 				}
@@ -3147,17 +3190,7 @@
 					this.ocr_DescriptionCropperObject = null;
 					document.getElementById('ocrDescriptionCropWrapper').innerHTML = "";
 				},
-
-
-
-
-
-
-
-
-
-				
-				createIngredientsOCR_DOM: function() {
+				createIngredientsOCR_DOM: function () {
 					var self = this;
 					if (this.ocr_IngredientsFilePond !== null) {
 						return;
@@ -3176,12 +3209,12 @@
 								var fileEndingRegex = /(?:\.([^.]+))?$/;
 								var fileType = fileEndingRegex.exec(file.name)[1];
 								var fileName = uuidv4() + '.' + fileType;
-								var meta = {
+								let meta = {
 									contentType: file.type,
 								};
-					
+								
 								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, meta);
-					
+
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
@@ -3197,34 +3230,28 @@
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
 											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
 										});
-					
+
 										try {
 											self.ocr_IngredientsCropperObject.destroy();
 										} catch (e) {
 											//Instance may not exist yet 
 										}
 
-										//Clear the currently logged ingredients because the user has most likely done a crop
-										// and we don't want duplicates
-										self.manage_recipeBlockIngredients = [];
 										res.data.recognizedText.forEach(ingredient => {
-											self.$refs.manage_ing_amount.classList.remove('is-invalid');
 											var s = nlp.parseIngredient(ingredient);
-											self.manage_recipeBlockIngredients.push({
+											self.manage_recipeSections[0].ingredients.push({
 												amount: s.amount,
 												value: s.ingredient,
-												editMode: false,
-												editModeButtonText: 'Edit'
+												isDeleted: false
 											});
 										});
-					
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
 									}).catch(err => {
-										//console.log(err.response.data.message);
-										utils.reportError('Error', err.toString(), 'Functions error reported. Doc ID: ' + err.response.data.message.toString());
+										utils.reportError('Error', err.toString(), 'Functions error reported.');
+										console.log(err.toString());
 									});
 								});
-					
+
 								return {
 									abort: () => {
 										abort();
@@ -3234,6 +3261,24 @@
 						}
 					});
 				},
+				handleIngredientsOCRCrop: function() {
+					this.ocr_IngredientsPondEditor.onconfirm(utils.getCropData(this.ocr_IngredientsCropperObject.getData(), this.ocr_IngredientsCropperObject.getCanvasData()));
+					this.ocr_IngredientsEditMode = false;
+					this.ocr_IngredientsCropperObject.destroy();
+					this.ocr_IngredientsCropperObject = null;
+					document.getElementById('ocrIngredientsCropWrapper').innerHTML = "";
+				},
+
+
+
+
+
+
+
+
+
+				
+				
 				createStepsOCR_DOM: function() {
 					var self = this;
 					if (this.ocr_StepsFilePond !== null) {

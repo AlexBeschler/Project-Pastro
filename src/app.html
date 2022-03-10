@@ -966,6 +966,20 @@
                                             <div class="fade collapse active show" id="pills-manage-ingredients"
                                                 role="tabpanel" ref="manageIngredientsSectionButton">
                                                 <div class="mb-3">
+                                                    <button class="btn btn-outline-primary w-100 my-4" type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#ocrIngredientsFilePondWrapper">
+                                                        <img src="assets/icons/camera-fill.svg">
+                                                    </button>
+                                                    <div id="ocrIngredientsFilePondWrapper" class="mb-4 collapse"
+                                                        ref="ocrIngredientsFilePondWrapperRef">
+                                                        <input id="ocrIngredientsFilePond" type="file"
+                                                            data-max-file-size="12MB" accept="image/jpeg, image/png" />
+                                                        <div id="ocrIngredientsCropWrapper" class="cropperImg"
+                                                            v-show="ocr_IngredientsEditMode"></div>
+                                                        <button class="btn btn-success" v-show="ocr_IngredientsEditMode"
+                                                            @click="handleIngredientsOCRCrop">Crop</button>
+                                                    </div>
                                                     <!-- View if only 1 section is added -->
                                                     <div v-if="manage_recipeSections.length <= 1">
                                                         <div class="input-group my-3">
@@ -973,26 +987,11 @@
                                                                 class="form-control manage-recipe-input me-3"
                                                                 type="text" placeholder="Ingredient"
                                                                 v-on:keyup.enter="addIngredientsAddRecipeView(-1)"
-                                                                v-model="ingredientModel_b[0]"
+                                                                v-model="ingredientTest[0]"
                                                                 ref="ingredientInputAddRecipeView">
                                                             <div id="ingredient-invalid-feedback"
                                                                 class="invalid-feedback">
                                                             </div>
-                                                            <button class="btn" type="button" data-bs-toggle="collapse"
-                                                                data-bs-target="#ocrIngredientsFilePondWrapper">
-                                                                <img src="assets/icons/camera-fill.svg">
-                                                            </button>
-                                                        </div>
-                                                        <div id="ocrIngredientsFilePondWrapper"
-                                                            class="mt-2 mb-4 collapse" ref="ocr_IngredientsFilePond">
-                                                            <input id="ocrIngredientsFilePond" type="file"
-                                                                data-max-file-size="12MB"
-                                                                accept="image/jpeg, image/png" />
-                                                            <div id="ocrIngredientsCropWrapper" class="cropperImg"
-                                                                v-show="ocr_IngredientsEditMode"></div>
-                                                            <button class="btn btn-success"
-                                                                v-show="ocr_IngredientsEditMode"
-                                                                @click="handleCrop('ingredients')">Crop</button>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-12">
@@ -1018,11 +1017,6 @@
                                                     </div>
                                                     <!-- View if 2 sections or more are added -->
                                                     <div v-else>
-                                                        <button class="btn btn-outline-primary w-100 my-4" type="button"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#ocrIngredientsFilePondWrapper">
-                                                            <img src="assets/icons/camera-fill.svg">
-                                                        </button>
                                                         <div v-for="(section, index) in manage_recipeSections"
                                                             :index="index" :key="index">
                                                             <input class="form-control manage-recipe-input mb-2"
@@ -1033,7 +1027,7 @@
                                                                 <div class="col-11">
                                                                     <input class="form-control manage-recipe-input"
                                                                         type="text" placeholder="Add ingredient"
-                                                                        v-model="ingredientModel_b[index]"
+                                                                        v-model="ingredientTest[index]"
                                                                         v-on:keyup.enter="addIngredientsAddRecipeView(index)"
                                                                         ref="ingredientInputAddRecipeView">
                                                                 </div>
@@ -1067,7 +1061,8 @@
                                                     <div v-if="manage_recipeSections.length <= 1">
                                                         <div class="my-3">
                                                             <textarea id="manage_step_value" class="form-control mb-2"
-                                                                placeholder="Add step" ref="manageStepRef" v-model="stepModel_b[0]"></textarea>
+                                                                placeholder="Add step" ref="manageStepRef"
+                                                                v-model="stepModel_b[0]"></textarea>
                                                             <div class="row">
                                                                 <div class="col px-1">
                                                                     <button class="btn text-primary button-no-outline"
@@ -1146,7 +1141,8 @@
                                                                     <div class="col-11">
                                                                         <textarea id="manage_step_value"
                                                                             class="form-control mb-2"
-                                                                            placeholder="Add step" ref="manageStepRef" v-model="stepModel_b[index]">
+                                                                            placeholder="Add step" ref="manageStepRef"
+                                                                            v-model="stepModel_b[index]">
                                                                     </textarea>
                                                                     </div>
                                                                     <div class="col-1"></div>
@@ -1649,15 +1645,21 @@
     </template>
     <template id="recipe-ingredients-draggable-item-template">
         <li v-if="!ingredient.isDeleted" class="list-group-item">
-            <div class="d-flex align-items-end">
-                <div class="btn ps-0 pe-2">
-                    <img src="assets/icons/chevron-bar-expand.svg">
+            <div class="row">
+                <div class="col-1 d-flex align-items-center justify-content-center">
+                    <div class="btn">
+                        <img src="assets/icons/chevron-bar-expand.svg">
+                    </div>
                 </div>
-                <input class="form-control" type="text" v-model="ingredient.amount">
-                <input class="form-control" type="text" v-model="ingredient.value">
-                <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
-                    <img src="assets/icons/trash.svg">
-                </button>
+                <div class="col-10">
+                    <input type="text" class="form-control mb-1" v-model="ingredient.amount">
+                    <input type="text" class="form-control" v-model="ingredient.value">
+                </div>
+                <div class="col-1 d-flex align-items-center justify-content-center">
+                    <button class="btn" @click="$emit('delete-ingredient', index)">
+                        <img src="assets/icons/trash.svg">
+                    </button>
+                </div>
             </div>
         </li>
         <li v-else class="list-group-item">
