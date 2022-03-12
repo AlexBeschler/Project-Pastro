@@ -1024,9 +1024,9 @@
 				
 				addIngredientModel: [],
 				ingredientModelA: [],
+				addStepModel: [],
+				stepModelA: [],
 				
-				stepModel_a: [],
-				stepModel_b: [],
 				ocr_IngredientsFilePond: null,
 				ocr_IngredientsCropperObject: null,
 				ocr_IngredientsPondEditor: null,
@@ -1491,69 +1491,6 @@
 					});
 				}
 				*/
-				stepModel_b: {
-					handler: function(after, before) {
-						var vm = this;
-						var j = 0;
-						var changed = null;
-						
-						if (utils.isEmptyArray(vm.$data.stepModel_b)) {
-							return;
-						}
-						// Return the object that changed
-						if (utils.isEmptyArray(vm.$data.stepModel_a)) {
-							changed = after;
-							for (var i = 0; i < vm.$data.stepModel_b.length; i++) {
-								var k = 0;
-								var isErr = false;
-								try {
-									k = vm.$data.stepModel_b[i].length;
-								} catch(f) {
-									isErr = true;
-								}
-								if (k > 0 && !isErr) {
-									j = i;
-									break;
-								}
-							}
-						} else {
-							changed = after.filter(function(p, idx) {
-								return Object.keys(p).some(function(prop) {
-									j = idx;
-									return p[prop] !== vm.$data.stepModel_a[idx][prop];
-								});
-							});
-						}
-						
-						// Log it
-						vm.setStepVModelHistory();
-						
-						//Do NLP stuff here
-						navigator.clipboard.readText()
-							.then(text => {
-								var lines = text.split('\n');
-								lines.forEach(line => {
-									if (!utils.isEmpty(line)) {
-										try {
-											vm.manage_recipeSections[j].steps.push({
-												value: utils.capitalizeFirstLetter(line.trim()),
-												isDeleted: false
-											});
-										} catch (e) {
-											console.log(e);
-										}
-									}
-								});
-							})
-							.catch(err => {
-								console.error('Failed to read clipboard contents: ', err);
-							});
-
-						vm.$data.stepModel_b = [];
-						vm.setStepVModelHistory();
-					},
-					deep: true
-				},
 				addIngredientModel: {
 					handler: function (after, before) {
 						if (_.isEmpty(after)) {
@@ -1598,9 +1535,62 @@
 									console.error('Failed to read clipboard contents: ', err);
 								});
 							this.ingredientModelA = utils.deepClone(after);
-							this.ingredientTest = [];
+							this.addIngredientModel = [];
 						} else {
 							this.ingredientModelA = utils.deepClone(after);
+						}
+					},
+					deep: true
+				},
+				addStepModel: {
+					handler: function (after, before) {
+						if (_.isEmpty(after)) {
+							this.stepModelA = [];
+							return;
+						}
+						var self = this;
+						var pasteDetected = false;
+						var k = 0;
+						if (_.isEmpty(this.stepModelA)) {
+							for (var i = 0; i < after.length; i++) {
+								if (after[i].length >= 2) {
+									pasteDetected = true;
+								}
+							}
+						} else {
+							for (var j = 0; j < this.pasteModelA.length; j++) {
+								if (after[j].length >= (this.pasteModelA[j].length + 2)) {
+									pasteDetected = true;
+									k = j;
+								}
+							}
+						}
+						if (pasteDetected) {
+							//Do NLP stuff here
+							navigator.clipboard.readText()
+								.then(text => {
+									//Split by newline character
+									var lines = text.split('\n');
+									lines.forEach(line => {
+										if (!utils.isEmpty(line)) {
+											try {
+												self.manage_recipeSections[k].steps.push({
+													value: utils.capitalizeFirstLetter(line.trim()),
+													isDeleted: false
+												});
+											} catch (e) {
+												console.log(e);
+											}
+										}
+									});
+								})
+								.catch(err => {
+									console.error('Failed to read clipboard contents: ', err);
+								});
+							this.stepModelA = utils.deepClone(after);
+							this.addStepModel = [];
+						} else {
+							this.stepModelA = utils.deepClone(after);
 						}
 					},
 					deep: true
