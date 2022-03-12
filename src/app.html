@@ -568,7 +568,6 @@
                                 </recipe-ingredients-draggable-list>
                                 <div class="d-flex align-items-end">
                                     <input class="form-control mt-2" type="text" placeholder="Add ingredient"
-                                        v-model="ingredientsAddModel"
                                         v-on:keyup.enter="addRecipeIngredientsRecipeView(sectionIndex)"
                                         ref="recipeViewIngredientsInputs">
                                 </div>
@@ -987,7 +986,7 @@
                                                                 class="form-control manage-recipe-input me-3"
                                                                 type="text" placeholder="Ingredient"
                                                                 v-on:keyup.enter="addIngredientsAddRecipeView(-1)"
-                                                                v-model="ingredientTest[0]"
+                                                                v-model="addIngredientModel[0]"
                                                                 ref="ingredientInputAddRecipeView">
                                                             <div id="ingredient-invalid-feedback"
                                                                 class="invalid-feedback">
@@ -1027,7 +1026,7 @@
                                                                 <div class="col-11">
                                                                     <input class="form-control manage-recipe-input"
                                                                         type="text" placeholder="Add ingredient"
-                                                                        v-model="ingredientTest[index]"
+                                                                        v-model="addIngredientModel[index]"
                                                                         v-on:keyup.enter="addIngredientsAddRecipeView(index)"
                                                                         ref="ingredientInputAddRecipeView">
                                                                 </div>

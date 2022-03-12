@@ -971,7 +971,6 @@
 				tagAddModel: '',
 				specialEquipmentAddModel: '',
 				notesAddModel: '',
-				ingredientsAddModel: '',
 				stepsAddModel: '',
 				isSharing: false,
 
@@ -1022,10 +1021,8 @@
 						"nProtein": 0 
 					}
 				],
-        		ingredientModel_a: [],
-				ingredientModel_b: [],
 				
-				ingredientTest: [],
+				addIngredientModel: [],
 				ingredientModelA: [],
 				
 				stepModel_a: [],
@@ -1481,28 +1478,6 @@
 					}
 					this.updateFilteredIngredients(b);
 				},
-				manage_recipeTagInput: function (b, a) {
-					if (b.length >= (2 + a.length)) {
-						this.pasteFromClipboard('tags');
-						this.manage_recipeTagInput = '';
-					}
-				},
-				manage_recipeBlockIngredientValue: function (b, a) {
-					
-				},
-				manage_recipeBlockStepValue: function (b, a) {
-					if (!utils.isEmpty(b)) {
-						this.$refs.addStepToBlockButton.classList.remove('button-no-outline');
-						this.$refs.addStepToBlockButton.classList.add('btn-outline-success');
-					} else {
-						this.$refs.addStepToBlockButton.classList.remove('btn-outline-success');
-						this.$refs.addStepToBlockButton.classList.add('button-no-outline');
-					}
-					if (b.length >= (2 + a.length)) {
-						this.pasteFromClipboard('steps');
-						this.manage_recipeBlockStepValue = '';
-					}
-				},
 				/*
 				isDyslexicFontSet: function (b, a) {
 					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
@@ -1516,57 +1491,6 @@
 					});
 				}
 				*/
-				ingredientModel_b: {
-					handler: function (after, before) {
-						var vm = this;
-						var j = 0;
-						var changed = null;
-						
-						// Return the object that changed
-						if (utils.isEmptyArray(vm.$data.ingredientModel_a)) {
-							changed = after;
-							for (var i = 0; i < vm.$data.ingredientModel_b.length; i++) {
-								var k = 0;
-								var isErr = false;
-								try {
-									k = vm.$data.ingredientModel_b[i].length;
-								} catch(f) {
-									isErr = true;
-								}
-								if (k > 0 && !isErr) {
-									j = i;
-									break;
-								}
-							}
-						} else {
-							changed = after.filter(function(p, idx) {
-								return Object.keys(p).some(function(prop) {
-									j = idx;
-									return p[prop] !== vm.$data.ingredientModel_a[idx][prop];
-								});
-							});
-						}
-
-						var copied = false;
-						
-						for (var l = 0; l < this.ingredientModel_a.length; l++) {
-							if (this.ingredientModel_b[l].length >= (this.ingredientModel_a[l].length + 2)) {
-								copied = true;
-							}
-						}
-						
-						// Log it
-						vm.setIngredientVModelHistory();
-
-						if (!copied) {
-							return;
-						}
-
-						vm.$data.ingredientModel_b = [];
-						vm.setIngredientVModelHistory();
-					},
-					deep: true
-				},
 				stepModel_b: {
 					handler: function(after, before) {
 						var vm = this;
@@ -1630,7 +1554,7 @@
 					},
 					deep: true
 				},
-				ingredientTest: {
+				addIngredientModel: {
 					handler: function (after, before) {
 						if (_.isEmpty(after)) {
 							this.ingredientModelA = [];
@@ -2606,17 +2530,17 @@
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
 				},
 				addRecipeIngredientsRecipeView: function(sectionIndex) {
-					if (!utils.isString(this.ingredientModel_b[sectionIndex])) {
+					if (!utils.isString(this.$refs.recipeViewIngredientsInputs[sectionIndex].value)) {
 						return false;
 					}
 
-					var ingredientObject = nlp.parseIngredient(this.ingredientModel_b[sectionIndex]);
+					var ingredientObject = nlp.parseIngredient(this.$refs.recipeViewIngredientsInputs[sectionIndex].value);
 					this.selectedRecipe.sections[sectionIndex].ingredients.push({
 						amount: ingredientObject.amount,
 						isDeleted: false,
 						value: ingredientObject.ingredient
 					});
-					this.ingredientModel_b[sectionIndex] = '';
+					this.$refs.recipeViewIngredientsInputs[sectionIndex].value = '';
 				},
 				editRecipeStepsRecipeView: function() {
 					if (this.stepsDisplayState === utils.DISPLAY_STATES.VIEW) {
@@ -2944,12 +2868,6 @@
 							this.showStickySubmit = true;
 						}
 					}
-				},
-				setIngredientVModelHistory: function () {
-					this.ingredientModel_a = utils.deepClone(this.ingredientModel_b);
-				},
-				setStepVModelHistory: function() {
-					this.stepModel_a = utils.deepClone(this.stepModel_b);
 				},
 
 				/**** Utilities ****/
