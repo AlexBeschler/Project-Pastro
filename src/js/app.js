@@ -105,7 +105,6 @@
 				//When authstate changes
 				firebase.auth().onAuthStateChanged(function (user) {
 					if (user) { //user is signed in
-						console.log('User is signed in');
 						utils._USER = user;
 						utils._UID = user.uid;
 						//Fix for when people's Google account name is all caps
@@ -907,7 +906,7 @@
 			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
-		var pastroApp = new Vue({
+		new Vue({
 			el: '#appContent',
 			data: {
 				/** Utils **/
