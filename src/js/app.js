@@ -826,15 +826,6 @@
 					block.ingredients.forEach(ingredient => {
 						listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
 					});
-					//Nutrition Facts
-					sortedCalories.add(docID, parseInt(block.nCalories));
-					sortedCarbohydrate.add(docID, parseInt(block.nCarbohydrate));
-					sortedCholesterol.add(docID, parseInt(block.nCholesterol));
-					sortedFat.add(docID, parseInt(block.nFat));
-					sortedFiber.add(docID, parseInt(block.nFiber));
-					sortedProtein.add(docID, parseInt(block.nProtein));
-					sortedSodium.add(docID, parseInt(block.nSodium));
-					sortedSugars.add(docID, parseInt(block.nSugars));
 				});
 			});
 		}).then(function () {
@@ -1084,15 +1075,6 @@
 				tagsArray: listOfTags,
 				ingredientsArray: listOfIngredients,
 
-				nCalories: null,
-				nFat: null,
-				nCholesterol: null,
-				nSodium: null,
-				nCarbohydrate: null,
-				nFiber: null,
-				nSugars: null,
-				nProtein: null,
-
 				//Indices
 
 				//For use in search queries
@@ -1119,14 +1101,6 @@
 				manage_recipeBlockHeader: '',
 				manage_recipeBlockIngredientValue: '',
 				manage_recipeBlockStepValue: '',
-				manage_nCalories: '',
-				manage_nFat: '',
-				manage_nCholesterol: '',
-				manage_nSodium: '',
-				manage_nCarbohydrate: '',
-				manage_nFiber: '',
-				manage_nSugars: '',
-				manage_nProtein: '',
 
 				//Quill
 				quillInstance: null,
@@ -2084,64 +2058,6 @@
 							filterIDs = _.union(filterIDs, result);
 						}
 					}
-					/*
-					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_calories.search(parseInt(this.nCalories)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nFat != '' && parseInt(this.nFat) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_fat.search(parseInt(this.nFat)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nCholesterol != '' && parseInt(this.nCholesterol) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_cholesterol.search(parseInt(this.nCholesterol)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nSodium != '' && parseInt(this.nSodium) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_sodium.search(parseInt(this.nSodium)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nCarbohydrate != '' && parseInt(this.nCarbohydrate) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_carbohydrate.search(parseInt(this.nCarbohydrate)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nFiber != '' && parseInt(this.nFiber) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_fiber.search(parseInt(this.nFiber)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nSugars != '' && parseInt(this.nSugars) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_sugars.search(parseInt(this.nSugars)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nProtein != '' && parseInt(this.nProtein) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_protein.search(parseInt(this.nProtein)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					*/
 
 					//Exact matching parameters
 					if (this.checkedTagsArray.length > 0) {
@@ -3481,16 +3397,6 @@
 								return _.omit(row, ['editMode', 'editModeButtonText']);
 							});
 
-							//Serialize nutrition facts
-							o.nCalories = this.manage_recipeBlocks[i].nCalories;
-							o.nCarbohydrate = this.manage_recipeBlocks[i].nCarbohydrate;
-							o.nCholesterol = this.manage_recipeBlocks[i].nCholesterol;
-							o.nFat = this.manage_recipeBlocks[i].nFat;
-							o.nFiber = this.manage_recipeBlocks[i].nFiber;
-							o.nProtein = this.manage_recipeBlocks[i].nProtein;
-							o.nSodium = this.manage_recipeBlocks[i].nSodium;
-							o.nSugars = this.manage_recipeBlocks[i].nSugars;
-
 							serializedRecipe.blocks.push(o);
 						}
 						/* jshint ignore:end */
@@ -3531,16 +3437,6 @@
 						//Remove document from FlexSearch
 						this.flexSearch.remove(this.filteredCookbook[this.proto_index]);
 
-						this.filteredCookbook[this.proto_index].blocks.forEach(block => {
-							this.index_calories.remove(docIDToUpdate, block.nCalories);
-							this.index_carbohydrate.remove(docIDToUpdate, block.nCarbohydrate);
-							this.index_cholesterol.remove(docIDToUpdate, block.nCholesterol);
-							this.index_fat.remove(docIDToUpdate, block.nFat);
-							this.index_fiber.remove(docIDToUpdate, block.nFiber);
-							this.index_protein.remove(docIDToUpdate, block.nProtein);
-							this.index_sodium.remove(docIDToUpdate, block.nSodium);
-							this.index_sugars.remove(docIDToUpdate, block.nSugars);
-						});
 						//Replace old recipe in cookbook 
 						if (this.cookbook.length > 0) {
 							this.cookbook.splice(this.proto_index, 1, serializedRecipe);
@@ -3576,15 +3472,6 @@
 						self.ingredientsArray = _.union(Array.from(self.ingredientsArray), block.ingredients.map(f => {
 							return utils.capitalizeFirstLetter(f.value);
 						}));
-						//Insert nutrition facts
-						this.index_calories.add(serializedRecipe.docID, parseInt(block.nCalories));
-						this.index_carbohydrate.add(serializedRecipe.docID, parseInt(block.nCarbohydrate));
-						this.index_cholesterol.add(serializedRecipe.docID, parseInt(block.nCholesterol));
-						this.index_fat.add(serializedRecipe.docID, parseInt(block.nFat));
-						this.index_fiber.add(serializedRecipe.docID, parseInt(block.nFiber));
-						this.index_protein.add(serializedRecipe.docID, parseInt(block.nProtein));
-						this.index_sodium.add(serializedRecipe.docID, parseInt(block.nSodium));
-						this.index_sugars.add(serializedRecipe.docID, parseInt(block.nSugars));
 					});
 
 					this.updateFilters();
