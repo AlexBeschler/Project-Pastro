@@ -992,6 +992,7 @@
 						"title": "",
 						"ingredients": [],
 						"steps": [],
+						"calories": 0,
 						"fat": 0,
 						"cholesterol": 0,
 						"sodium": 0,
