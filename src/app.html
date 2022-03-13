@@ -936,11 +936,6 @@
                                                     class="nav-link active position-relative manage-recipe-blocks-pills-tab me-2"
                                                     data-bs-toggle="pill" data-bs-target="#pills-manage-ingredients"
                                                     type="button" role="tab" ref="manageIngredientsTab">Ingredients
-                                                    <span
-                                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                                                        v-if="manage_recipeBlockIngredients.length > 0">
-                                                        {{ manage_recipeBlockIngredients.length }}
-                                                    </span>
                                                 </button>
                                             </li>
                                             <li class="nav-item" role="presentation">
@@ -948,11 +943,6 @@
                                                     class="nav-link position-relative manage-recipe-blocks-pills-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-manage-steps"
                                                     type="button" role="tab" ref="manageStepsTab">Steps
-                                                    <span
-                                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                                                        v-if="manage_recipeBlockSteps.length > 0">
-                                                        {{ manage_recipeBlockSteps.length }}
-                                                    </span>
                                                 </button>
                                             </li>
                                             <!--li class="nav-item" role="presentation">
@@ -1056,38 +1046,26 @@
                                             <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel"
                                                 ref="manageStepsSectionButton">
                                                 <div class="mb-3">
+                                                    <button class="btn btn-outline-primary w-100 my-4"
+                                                        type="button" data-bs-toggle="collapse"
+                                                        data-bs-target="#ocrStepsFilePondWrapper">
+                                                        <img src="assets/icons/camera-fill.svg">
+                                                    </button>
+                                                    <div id="ocrStepsFilePondWrapper" class="mb-4 collapse"
+                                                        ref="ocrStepsFilePondWrapperRef">
+                                                        <input id="ocrStepsFilePond" type="file"
+                                                            data-max-file-size="12MB" accept="image/jpeg, image/png" />
+                                                        <div id="ocrStepsCropWrapper" class="cropperImg"
+                                                            v-show="ocr_StepsEditMode"></div>
+                                                        <button class="btn btn-success" v-show="ocr_StepsEditMode"
+                                                            @click="handleStepsOCRCrop">Crop</button>
+                                                    </div>
                                                     <!-- View if only 1 section is added -->
                                                     <div v-if="manage_recipeSections.length <= 1">
                                                         <div class="my-3">
                                                             <textarea id="manage_step_value" class="form-control mb-2"
                                                                 placeholder="Add step" ref="manageStepRef"
                                                                 v-model="addStepModel[0]"></textarea>
-                                                            <div class="row">
-                                                                <div class="col px-1">
-                                                                    <button class="btn text-primary button-no-outline"
-                                                                        @click="addStepsAddRecipeView(-1)"
-                                                                        ref="addStepToBlockButton">Add</button>
-                                                                    <button class="btn text-primary button-no-outline"
-                                                                        type="button" data-bs-toggle="collapse"
-                                                                        data-bs-target="#ocrStepsFilePondWrapper">
-                                                                        <img src="assets/icons/camera-fill.svg">
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div id="ocrStepsFilePondWrapper"
-                                                                    class="mt-2 mb-4 collapse" ref="ocr_StepsFilePond">
-                                                                    <input id="ocrStepsFilePond" type="file"
-                                                                        data-max-file-size="12MB"
-                                                                        accept="image/jpeg, image/png" />
-                                                                    <div id="ocrStepsCropWrapper" class="cropperImg"
-                                                                        v-show="ocr_StepsEditMode">
-                                                                    </div>
-                                                                    <button class="btn btn-success"
-                                                                        v-show="ocr_StepsEditMode"
-                                                                        @click="handleCrop('steps')">Crop</button>
-                                                                </div>
-                                                            </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-12">
@@ -1111,25 +1089,6 @@
                                                     <!-- View if 2 sections or more are added -->
                                                     <div v-else>
                                                         <div class="my-3">
-                                                            <button class="btn btn-outline-primary w-100 my-4"
-                                                                type="button" data-bs-toggle="collapse"
-                                                                data-bs-target="#ocrIngredientsFilePondWrapper">
-                                                                <img src="assets/icons/camera-fill.svg">
-                                                            </button>
-                                                            <div class="row">
-                                                                <div id="ocrStepsFilePondWrapper"
-                                                                    class="mt-2 mb-4 collapse" ref="ocr_StepsFilePond">
-                                                                    <input id="ocrStepsFilePond" type="file"
-                                                                        data-max-file-size="12MB"
-                                                                        accept="image/jpeg, image/png" />
-                                                                    <div id="ocrStepsCropWrapper" class="cropperImg"
-                                                                        v-show="ocr_StepsEditMode">
-                                                                    </div>
-                                                                    <button class="btn btn-success"
-                                                                        v-show="ocr_StepsEditMode"
-                                                                        @click="handleCrop('steps')">Crop</button>
-                                                                </div>
-                                                            </div>
                                                             <div v-for="(section, index) in manage_recipeSections"
                                                                 :index="index" :key="index">
                                                                 <input class="form-control manage-recipe-input mb-2"

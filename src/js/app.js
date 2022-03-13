@@ -1021,6 +1021,11 @@
 				ocr_IngredientsCropperObject: null,
 				ocr_IngredientsPondEditor: null,
 				ocr_IngredientsEditMode: false,
+				
+				ocr_StepsFilePond: null,
+				ocr_StepsCropperObject: null,
+				ocr_StepsPondEditor: null,
+				ocr_StepsEditMode: false,
 
 				/** Utility data **/
 				toastInstance: null,
@@ -1080,7 +1085,6 @@
 				//For use in search queries
 
 				//For use with manage recipes
-				manageOffcanvas: null,
 				isRecipeSubmitDisabled: false,
 				
 
@@ -1089,22 +1093,9 @@
 				manage_coverPhotoURL: '',
 				manage_coverPhotoThumbnail: '',
 
-				ocr_StepsFilePond: null,
-				ocr_StepsCropperObject: null,
-				ocr_StepsPondEditor: null,
-				ocr_StepsEditMode: false,
-
 				//Step 4
 				manage_recipeBlocks: [],
-				manage_recipeBlockIngredients: [],
 				manage_recipeBlockSteps: [],
-				manage_recipeBlockHeader: '',
-				manage_recipeBlockIngredientValue: '',
-				manage_recipeBlockStepValue: '',
-
-				//Quill
-				quillInstance: null,
-				quillContent: null,
 
 				//Used for settings menu
 				isDyslexicFontSet: '',
@@ -1207,16 +1198,6 @@
 					duration: 450,
 					easing: 'easeOutBack'
 				})
-				/*
-				.add({
-                    targets: this.$refs.headerText,
-                    translateY: ['-25%', '0%'],
-                    opacity: [0, 1],
-                    delay: 250,
-                    duration: 200,
-                    easing: 'easeInOutQuad'
-				
-                })*/
 				.add({
                     targets: this.$refs.headerText,
                     translateY: ['0%', '50%'],
@@ -1300,33 +1281,6 @@
 				
 				this.$refs.ocrIngredientsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createIngredientsOCR_DOM());
 				
-
-				/*
-				this.ocr_IngredientsPondEditor = {
-					open: (file, instructions) => {
-						//If the user already clicked the crop button, don't let another instance be called
-						if (self.ocr_IngredientsCropperObject !== null) {
-							return;
-						}
-						var reader = new FileReader();
-						reader.onloadend = function () {
-							self.ocr_IngredientsEditMode = true;
-							var image = new Image();
-							image.src = reader.result;
-							image.id = 'ingredientsCropper';
-							document.getElementById('ocrIngredientsCropWrapper').appendChild(image);
-							self.ocr_IngredientsCropperObject = new Cropper(document.getElementById('ingredientsCropper'));
-						}
-						reader.readAsDataURL(file);
-					},
-
-					onconfirm: (output, item) => {},
-
-					oncancel: () => {},
-
-					onclose: () => {}
-				}
-
 				this.ocr_StepsPondEditor = {
 					open: (file, instructions) => {
 						//If the user already clicked the crop button, don't let another instance be called
@@ -1338,10 +1292,10 @@
 							self.ocr_StepsEditMode = true;
 							var image = new Image();
 							image.src = reader.result;
-							image.id = 'stepsCropper';
+							image.id = 'StepsCropper';
 							document.getElementById('ocrStepsCropWrapper').appendChild(image);
-							self.ocr_StepsCropperObject = new Cropper(document.getElementById('stepsCropper'));
-						}
+							self.ocr_StepsCropperObject = new Cropper(document.getElementById('StepsCropper'));
+						};
 						reader.readAsDataURL(file);
 					},
 
@@ -1350,16 +1304,9 @@
 					oncancel: () => {},
 
 					onclose: () => {}
-				}
-				
-				//FilePond does not render unless browser 'sees' it. Click listener is to dynamically load FilePond instance
-				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhoto_DOM);
-				this.$refs.ocr_IngredientsFilePond.addEventListener('shown.bs.collapse', this.createIngredientsOCR_DOM);
-				this.$refs.ocr_StepsFilePond.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM);
+				};
 
-				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
-
-				*/
+				this.$refs.ocrStepsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM());
 
 				//Load settings
 				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
@@ -3091,17 +3038,6 @@
 					this.ocr_IngredientsCropperObject = null;
 					document.getElementById('ocrIngredientsCropWrapper').innerHTML = "";
 				},
-
-
-
-
-
-
-
-
-
-				
-				
 				createStepsOCR_DOM: function() {
 					var self = this;
 					if (this.ocr_StepsFilePond !== null) {
@@ -3149,22 +3085,19 @@
 											//Instance may not exist yet 
 										}
 
-										//Clear the currently logged steps because the user has most likely done a crop
-										// and we don't want duplicates
-										self.manage_recipeBlockSteps = [];
 										var s = res.data.recognizedText.split('\n');
 										s.forEach(step => {
-											self.manage_recipeBlockSteps.push({
+											self.manage_recipeSections[0].steps.push({
 												value: step,
-												editMode: false,
-												editModeButtonText: 'Edit'
+												isDeleted: false
 											});
 										});
 					
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
 									}).catch(err => {
 										console.log(err.response.data);
-										utils.reportError('Error', err.toString(), 'Functions error reported. Doc ID: ' + err.response.data.message.toString());
+										utils.reportError('Error', err.toString(), 'Functions error reported.');
+										console.log(err.toString());
 									});
 								});
 					
@@ -3177,6 +3110,24 @@
 						}
 					});
 				},
+				handleStepsOCRCrop: function() {
+					this.ocr_StepsPondEditor.onconfirm(utils.getCropData(this.ocr_StepsCropperObject.getData(), this.ocr_StepsCropperObject.getCanvasData()));
+					this.ocr_StepsEditMode = false;
+					this.ocr_StepsCropperObject.destroy();
+					this.ocr_StepsCropperObject = null;
+					document.getElementById('ocrStepsCropWrapper').innerHTML = "";
+				},
+
+
+
+
+
+
+
+
+				
+				
+				
 				createCoverPhoto_DOM: function () {
 					var self = this;
 					if (this.manage_filePondCoverPhoto !== null) {
@@ -3220,52 +3171,6 @@
 							});
 						}
 					});
-				},
-				undoDeleteClicked: function () {
-					this.undoObject.f(this);
-					clearTimeout(this.undoTimeOut);
-				},
-				undoDeleteTimeOut: function () {
-					if (!this.$refs.undoContainer.classList.contains('undo-collapsed')) {
-						this.$refs.undoContainer.classList.add('undo-collapsed');
-						this.undoObject = null;
-
-					}
-				},
-				
-				handleCrop: function (type) {
-					var self = this;
-					switch (type) {
-						case 'ingredients':
-							cropData = this.ocr_IngredientsCropperObject.getData();
-							canvasData = this.ocr_IngredientsCropperObject.getCanvasData();
-							break;
-						case 'steps':
-							cropData = this.ocr_StepsCropperObject.getData();
-							canvasData = this.ocr_StepsCropperObject.getCanvasData();
-							break;
-						default:
-							break;
-					}
-
-					switch (type) {
-						case 'ingredients':
-							self.ocr_IngredientsPondEditor.onconfirm(payload);
-							self.ocr_IngredientsEditMode = false;
-							self.ocr_IngredientsCropperObject.destroy();
-							self.ocr_IngredientsCropperObject = null;
-							document.getElementById('ocrIngredientsCropWrapper').innerHTML = "";
-							break;
-						case 'steps':
-							self.ocr_StepsPondEditor.onconfirm(payload);
-							self.ocr_StepsEditMode = false;
-							self.ocr_StepsCropperObject.destroy();
-							self.ocr_StepsCropperObject = null;
-							document.getElementById('ocrStepsCropWrapper').innerHTML = "";
-							break;
-						default:
-							break;
-					}
 				},
 				submitManagedRecipe: function () {
 					var self = this;
@@ -3486,7 +3391,6 @@
 					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(sR).then(function () {
 						self.cleanupManageRecipe();
 						//Toggle offcanvas
-						self.manageOffcanvas.hide();
 					}).catch(function (error) {
 						console.error(error);
 					});
