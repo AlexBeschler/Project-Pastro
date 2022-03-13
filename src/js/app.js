@@ -265,13 +265,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
 							}
 						],
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					},
 					{
 						"title": "Buttercream Frosting",
@@ -323,14 +324,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				]
 			},
@@ -460,14 +461,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					},
 					{
 						"title": "Thai Tea Sweetener Blend",
@@ -491,14 +492,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							},	
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				]
 			},
@@ -549,14 +550,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					},
 					{
 						"title": "Another hello world",
@@ -580,14 +581,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				]
 			},
@@ -638,14 +639,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					},
 					{
 						"title": "Another hello world",
@@ -669,14 +670,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				]
 			}
@@ -766,18 +767,8 @@
 		});
 
 		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex, flexIndex);
-		//utils._NANOBAR.go(75);
 		/*
 		var payload = [];
-		var sortedTimeIndex = new ProjectPastroRangeIndex();
-		var sortedCalories = new ProjectPastroRangeIndex();
-		var sortedCarbohydrate = new ProjectPastroRangeIndex();
-		var sortedCholesterol = new ProjectPastroRangeIndex();
-		var sortedFat = new ProjectPastroRangeIndex();
-		var sortedFiber = new ProjectPastroRangeIndex();
-		var sortedProtein = new ProjectPastroRangeIndex();
-		var sortedSodium = new ProjectPastroRangeIndex();
-		var sortedSugars = new ProjectPastroRangeIndex();
 
 		var listOfIngredients = [];
 		var listOfTags = [];
@@ -829,8 +820,7 @@
 				});
 			});
 		}).then(function () {
-			//utils._NANOBAR.go(100);
-			appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
+			appFunctionality(payload, sortedTimeIndex, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
 		});
 		*/
 	}
@@ -1002,13 +992,13 @@
 						"title": "",
 						"ingredients": [],
 						"steps": [],
-						"nFat": 0,
-						"nCholesterol": 0,
-						"nSodium": 0,
-						"nTotalCarbs": 0,
-						"nFiber": 0,
-						"nSugar": 0,
-						"nProtein": 0 
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				],
 				
@@ -2607,13 +2597,14 @@
 						"title": "",
 						"ingredients": [],
 						"steps": [],
-						"nFat": 0,
-						"nCholesterol": 0,
-						"nSodium": 0,
-						"nTotalCarbs": 0,
-						"nFiber": 0,
-						"nSugar": 0,
-						"nProtein": 0 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					});
 				},
 				addIngredientsAddRecipeView: function(sectionIndex) {
