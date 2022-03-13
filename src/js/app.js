@@ -765,7 +765,7 @@
 			flexIndex++;
 		});
 
-		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex);
+		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex, flexIndex);
 		//utils._NANOBAR.go(75);
 		/*
 		var payload = [];
@@ -835,7 +835,7 @@
 		*/
 	}
 
-	function appFunctionality(payload, filterPresets, listOfIngredients, listOfTags, indexedRecipes, numberMetaIndex) {
+	function appFunctionality(payload, filterPresets, listOfIngredients, listOfTags, indexedRecipes, numberMetaIndex, injectedFlexIndex) {
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -1026,6 +1026,8 @@
 				ocr_StepsCropperObject: null,
 				ocr_StepsPondEditor: null,
 				ocr_StepsEditMode: false,
+
+				injectedFlexIndex: injectedFlexIndex,
 
 				/** Utility data **/
 				toastInstance: null,
@@ -2778,9 +2780,6 @@
 					script.src = link;
 					return script;
 				},
-				cleanAndPrepareForUpload: function(recipe) {
-					//
-				},
 
 				/**** 3rd Party Methods & APIs ****/
 				//RecipeView
@@ -3117,7 +3116,173 @@
 					this.ocr_StepsCropperObject = null;
 					document.getElementById('ocrStepsCropWrapper').innerHTML = "";
 				},
+				submitManagedRecipe: function () {
+					var self = this;
+					if (!this.showStickySubmit) {
+						//Activate smart button
+						var el = null;
+						var bs = null;
 
+						switch (this.manage_activePane) {
+							case this.manage_smartButtonProgress.overview:
+								el = this.$refs.manageCoverPhotoAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.coverPhoto:
+								el = this.$refs.manageTimeServingsAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.timeServings:
+								el = this.$refs.manageSectionsAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.ingredients:
+								el = this.$refs.manageStepsTab;
+								bs = new bootstrap.Tab(el);
+								bs.show();
+								break;
+							case this.manage_smartButtonProgress.steps:
+								el = this.$refs.manageNutritionTab;
+								bs = new bootstrap.Tab(el);
+								bs.show();
+								break;
+							default:
+								break;
+						}
+						return;
+					}
+
+					var anyInvalid = false;
+					var serializedRecipe = {};
+
+					//Clear all form invalid classes
+					Array.prototype.slice.call(document.querySelectorAll('.is-invalid')).forEach(function (form) {
+						form.classList.remove('is-invalid');
+					});
+
+					//Check name
+					if (utils.isString(this.manage_recipeName)) {
+						serializedRecipe.title = this.manage_recipeName.toString().trim();
+					} else {
+						this.$refs.recipeNameRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check description
+					if (utils.isBigString(this.quillAddRecipeViewContent)) {
+						serializedRecipe.description = this.quillAddRecipeViewContent;
+					} else {
+						this.$refs.recipeDescriptionRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Serialize tag array
+					if (this.manage_recipeTagHolder.length > 0) {
+						serializedRecipe.tags = _.uniq(_.pluck(this.manage_recipeTagHolder, 'value'), false);
+					}
+
+					//Check special equipment
+					if (this.manage_specialEquipmentHolder.length > 0) {
+						serializedRecipe.specialEquipment = _.uniq(_.pluck(this.manage_specialEquipmentHolder, 'value'), false);
+					}
+
+					//Check notes
+					if (this.manage_recipeNotesHolder.length > 0) {
+						serializedRecipe.notes = _.uniq(_.pluck(this.manage_recipeNotesHolder, 'value'), false);
+					}
+
+					//Check prep time
+					if (utils.isNumber(this.manage_recipePrepTime)) {
+						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
+					} else {
+						this.$refs.recipePrepRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check cook time
+					if (utils.isNumber(this.manage_recipeCookTime)) {
+						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
+					} else {
+						this.$refs.recipeCookRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check total time
+					if (utils.isNumber(this.manage_recipeTotalTime)) {
+						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
+					} else {
+						this.$refs.recipeTotalRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check active time
+					if (utils.isNumber(this.manage_recipeActiveTime)) {
+						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
+					} else {
+						this.$refs.recipeActiveRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					if (utils.isString(this.manage_recipeYield.toString())) {
+						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
+					} else {
+						this.$refs.recipeYieldRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//TODO: Add and serialize sections
+
+					/*
+					//Serialize recipe block for push to Firebase
+					if (this.manage_recipeBlocks.length > 0) {
+						serializedRecipe.blocks = [];
+						for (var i = 0; i < this.manage_recipeBlocks.length; i++) {
+							let o = {};
+							o.header = this.manage_recipeBlocks[i].header;
+							o.ingredients = _.map(this.manage_recipeBlocks[i].ingredients, function (row) {
+								return _.omit(row, ['editMode', 'editModeButtonText']);
+							});
+
+							o.steps = _.map(this.manage_recipeBlocks[i].steps, function (row) {
+								return _.omit(row, ['editMode', 'editModeButtonText']);
+							});
+
+							serializedRecipe.blocks.push(o);
+						}
+					} else {
+						anyInvalid = true;
+					}
+
+					*/
+					
+					if (anyInvalid) return;
+
+					//TODO: Disable Submit button
+					serializedRecipe.docID = uuidv4();
+					let now = Date.now();
+					serializedRecipe.dateAdded = now;
+					serializedRecipe.dateModified = now;
+					serializedRecipe.favorite = false;
+
+					//TODO: Add to Firebase
+					
+					serializedRecipe.id = this.injectedFlexIndex;
+					this.injectedFlexIndex = this.injectedFlexIndex + 1;
+					//Push to cookbook array
+					//Update flex index
+					//Update tags & ingredients filters array
+
+					return;
+					
+
+					this.isRecipeSubmitDisabled = true;
+
+					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(sR).then(function () {
+						//Toggle offcanvas
+					}).catch(function (error) {
+						console.error(error);
+					});
+				},
 
 
 
@@ -3172,230 +3337,7 @@
 						}
 					});
 				},
-				submitManagedRecipe: function () {
-					var self = this;
-					if (this.manage_smartButtonText !== 'Submit Recipe') {
-						//Activate smart button
-						var el = null;
-						var bs = null;
-
-						switch (this.manage_activePane) {
-							case this.manage_smartButtonProgress.overview:
-								el = this.$refs.manageCoverPhotoAccordionButton;
-								bs = new bootstrap.Collapse(el);
-								break;
-							case this.manage_smartButtonProgress.coverPhoto:
-								el = this.$refs.manageTimeServingsAccordionButton;
-								bs = new bootstrap.Collapse(el);
-								break;
-							case this.manage_smartButtonProgress.timeServings:
-								el = this.$refs.manageSectionsAccordionButton;
-								bs = new bootstrap.Collapse(el);
-								break;
-							case this.manage_smartButtonProgress.ingredients:
-								el = this.$refs.manageStepsTab;
-								bs = new bootstrap.Tab(el);
-								bs.show();
-								break;
-							case this.manage_smartButtonProgress.steps:
-								el = this.$refs.manageNutritionTab;
-								bs = new bootstrap.Tab(el);
-								bs.show();
-								break;
-							default:
-								break;
-						}
-						return;
-					}
-
-					var anyInvalid = false;
-					var serializedRecipe = {};
-
-					//Clear all form invalid classes
-					Array.prototype.slice.call(document.querySelectorAll('.is-invalid')).forEach(function (form) {
-						form.classList.remove('is-invalid');
-					});
-
-					//Check name
-					if (utils.isString(this.manage_recipeName)) {
-						serializedRecipe.title = this.manage_recipeName.toString().trim();
-					} else {
-						this.$refs.recipeNameRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check description
-					if (utils.isBigString(this.quillContent)) {
-						serializedRecipe.description = this.quillContent;
-					} else {
-						this.$refs.recipeDescriptionRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Serialize tag array
-					if (this.manage_recipeTagHolder.length > 0) {
-						serializedRecipe.tags = _.uniq(_.pluck(this.manage_recipeTagHolder, 'value'), false);
-					}
-
-					//Check prep time
-					if (utils.isNumber(this.manage_recipePrepTime)) {
-						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
-					} else {
-						this.$refs.recipePrepRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check cook time
-					if (utils.isNumber(this.manage_recipeCookTime)) {
-						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
-					} else {
-						this.$refs.recipeCookRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check total time
-					if (utils.isNumber(this.manage_recipeTotalTime)) {
-						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
-					} else {
-						this.$refs.recipeTotalRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check active time
-					if (utils.isNumber(this.manage_recipeActiveTime)) {
-						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
-					} else {
-						this.$refs.recipeActiveRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					if (utils.isString(this.manage_recipeYield.toString().trim())) {
-						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
-					} else {
-						this.$refs.recipeYieldRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check if any blocks have been added
-					if (this.manage_recipeBlocks.length < 1) {
-						//The user probably didn't add a section. Check if there's any steps
-						if (this.manage_recipeBlockSteps < 1) {
-							this.$refs.manageStepRef.classList.add('is-invalid');
-							anyInvalid = true;
-						} else {
-							//TODO: Package steps & ingredients to a section
-						}
-					}
-
-					//Serialize recipe block for push to Firebase
-					if (this.manage_recipeBlocks.length > 0) {
-						serializedRecipe.blocks = [];
-						/* jshint ignore:start */
-						for (var i = 0; i < this.manage_recipeBlocks.length; i++) {
-							let o = {};
-							o.header = this.manage_recipeBlocks[i].header;
-							o.ingredients = _.map(this.manage_recipeBlocks[i].ingredients, function (row) {
-								return _.omit(row, ['editMode', 'editModeButtonText']);
-							});
-
-							o.steps = _.map(this.manage_recipeBlocks[i].steps, function (row) {
-								return _.omit(row, ['editMode', 'editModeButtonText']);
-							});
-
-							serializedRecipe.blocks.push(o);
-						}
-						/* jshint ignore:end */
-					} else {
-						anyInvalid = true;
-					}
-
-					return;
-
-					/* jshint ignore:start */
-					if (anyInvalid) return;
-
-					this.isRecipeSubmitDisabled = true;
-
-					serializedRecipe.docID = uuidv4();
-					serializedRecipe.addDate = Date.now();
-
-					if (this.$refs.addRecipeButton.dataset.psButtonType == 'add') {
-						this.manage_coverPhotoURL !== '' ? serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL : serializedRecipe.coverPhotoURL = '';
-						//Add runtime-injected ID for index
-						serializedRecipe.id = this.injectedSearchIndexID;
-						//Increase for next time
-						this.injectedSearchIndexID++;
-						//Push serialized recipe into sorted position to cookbook
-						this.cookbook.push(serializedRecipe);
-					} else if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
-						serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL;
-
-						var docIDToUpdate = this.filteredCookbook[this.proto_index].docID;
-						serializedRecipe.docID = docIDToUpdate;
-
-						//Inherit same runtime ID
-						serializedRecipe.id = this.filteredCookbook[this.proto_index].id;
-
-						//Remove all references to this recipe from indices
-						//this.index_times.remove(docIDToUpdate, this.filteredCookbook[this.proto_index].totalTime);
-
-						//Remove document from FlexSearch
-						this.flexSearch.remove(this.filteredCookbook[this.proto_index]);
-
-						//Replace old recipe in cookbook 
-						if (this.cookbook.length > 0) {
-							this.cookbook.splice(this.proto_index, 1, serializedRecipe);
-						} else {
-							this.cookbook.push(serializedRecipe);
-						}
-
-						//Rebuild tags and ingredients array by doing the thing I'm avoiding
-						this.cookbook.forEach(recipe => {
-							recipe.tags.forEach(tag => {
-								self.tagsArray = _.union(self.tagsArray, recipe.tags);
-							});
-							recipe.blocks.forEach(block => {
-								//Ingredients
-								block.ingredients.forEach(ingredient => {
-									self.ingredientsArray = _.union(self.ingredientsArray, [utils.capitalizeFirstLetter(ingredient.value)]);
-								});
-							});
-						});
-					}
-
-					//Merge tags to Explore pane
-					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
-
-					//Insert into index
-					this.flexSearch.add(serializedRecipe);
-
-					//Insert time
-					this.index_times.add(serializedRecipe.docID, serializedRecipe.totalTime);
-
-					serializedRecipe.blocks.forEach(block => {
-						//Merge ingredients to Explore pane
-						self.ingredientsArray = _.union(Array.from(self.ingredientsArray), block.ingredients.map(f => {
-							return utils.capitalizeFirstLetter(f.value);
-						}));
-					});
-
-					this.updateFilters();
-
-					//Destructure object before submitting to Firebase
-					//delete keyword seems to modify object in RAM
-					var {
-						id,
-						...sR
-					} = serializedRecipe;
-
-					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(sR).then(function () {
-						self.cleanupManageRecipe();
-						//Toggle offcanvas
-					}).catch(function (error) {
-						console.error(error);
-					});
-					/* jshint ignore:end */
-				}
+				
 			}
 		});
 
