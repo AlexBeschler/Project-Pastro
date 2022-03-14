@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cookbook | Project Pastro</title>
+    <title>My Cookbook | Pantry</title>
 
     <!-- Custom font for fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
@@ -20,8 +20,8 @@
     <link href="vendor/filepond/css/filepond-plugin-image-preview.min.css" rel="stylesheet">
     <link href="vendor/filepond/css/filepond-plugin-image-edit.min.css" rel="stylesheet">
 
-    <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
+    <script src="vendor/filepond/js/filepond-plugin-image-resize.js"></script>
+    <script src="vendor/filepond/js/filepond-plugin-image-crop.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-transform.min.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-preview.min.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-edit.min.js"></script>
@@ -1066,6 +1066,9 @@
                                                             <textarea id="manage_step_value" class="form-control mb-2"
                                                                 placeholder="Add step" ref="manageStepRef"
                                                                 v-model="addStepModel[0]"></textarea>
+                                                            <button
+                                                                class="btn text-primary button-no-outline"
+                                                                @click="addStepsAddRecipeView(-1)">Add</button>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-12">
@@ -1107,8 +1110,7 @@
                                                                     <div class="col-11">
                                                                         <button
                                                                             class="btn text-primary button-no-outline"
-                                                                            @click="addStepsAddRecipeView(index)"
-                                                                            ref="addStepToBlockButton">Add</button>
+                                                                            @click="addStepsAddRecipeView(index)">Add</button>
                                                                     </div>
                                                                 </div>
                                                                 <div class="row">
@@ -1689,8 +1691,8 @@
     <!-- Admin templates -->
     <template id="sign-in-layout-template">
         <form class="login-form">
-            <img class="mb-4" src="assets/logo/pastro.svg" alt="" width="72" height="57">
-            <h2>Sign into Pastro</h2>
+            <img class="mb-4" src="assets/logo/pantry.png" alt="" width="72" height="57">
+            <h2>Sign into Pantry</h2>
 
             <p>Sign in with your Google Account</p>
             <button id="sign-in-button" class="btn btn-success" role="button" @click.prevent="signIn">Sign

@@ -1406,21 +1406,28 @@
 				*/
 				addIngredientModel: {
 					handler: function (after, before) {
-						if (_.isEmpty(after)) {
+						if (utils.isEmptyArray(after)) {
 							this.ingredientModelA = [];
 							return;
 						}
 						var self = this;
 						var pasteDetected = false;
 						var k = 0;
-						if (_.isEmpty(this.ingredientModelA)) {
+						if (utils.isEmptyArray(this.ingredientModelA)) {
 							for (var i = 0; i < after.length; i++) {
+								if (typeof after[i] == 'undefined') {
+									continue;
+								}
 								if (after[i].length >= 2) {
 									pasteDetected = true;
+									k = i;
 								}
 							}
 						} else {
 							for (var j = 0; j < this.ingredientModelA.length; j++) {
+								if (typeof after[j] == 'undefined') {
+									continue;
+								}
 								if (after[j].length >= (this.ingredientModelA[j].length + 2)) {
 									pasteDetected = true;
 									k = j;
@@ -1457,22 +1464,29 @@
 				},
 				addStepModel: {
 					handler: function (after, before) {
-						if (_.isEmpty(after)) {
+						if (utils.isEmptyArray(after)) {
 							this.stepModelA = [];
 							return;
 						}
 						var self = this;
 						var pasteDetected = false;
 						var k = 0;
-						if (_.isEmpty(this.stepModelA)) {
+						if (utils.isEmptyArray(this.stepModelA)) {
 							for (var i = 0; i < after.length; i++) {
+								if (typeof after[i] == 'undefined') {
+									continue;
+								}
 								if (after[i].length >= 2) {
 									pasteDetected = true;
+									k = i;
 								}
 							}
 						} else {
-							for (var j = 0; j < this.pasteModelA.length; j++) {
-								if (after[j].length >= (this.pasteModelA[j].length + 2)) {
+							for (var j = 0; j < this.stepModelA.length; j++) {
+								if (typeof after[j] == 'undefined') {
+									continue;
+								}
+								if (after[j].length >= (this.stepModelA[j].length + 2)) {
 									pasteDetected = true;
 									k = j;
 								}
@@ -2610,23 +2624,23 @@
 				},
 				addIngredientsAddRecipeView: function(sectionIndex) {
 					if (sectionIndex === -1) {
-						var ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView.value);
-						var x = {
+						let ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView.value);
+						let x = {
 							amount: ingredient.amount,
 							value: ingredient.ingredient,
 							isDeleted: false
 						};
 						this.manage_recipeSections[0].ingredients.push(x);
-						this.$refs.ingredientInputAddRecipeView.value = '';
+						this.addIngredientModel[0] = '';
 					} else {
-						var ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView[sectionIndex].value);
-						var x = {
+						let ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView[sectionIndex].value);
+						let x = {
 							amount: ingredient.amount,
 							value: ingredient.ingredient,
 							isDeleted: false
 						};
 						this.manage_recipeSections[sectionIndex].ingredients.push(x);
-						this.$refs.ingredientInputAddRecipeView[sectionIndex].value = '';
+						this.addIngredientModel[sectionIndex] = '';
 					}
 					
 				},
@@ -2642,23 +2656,25 @@
 							this.$refs.manageStepRef.classList.add('is-invalid');
 							return;
 						}
-						var x = {
+						let x = {
 							value: this.$refs.manageStepRef.value.trim(),
+							coverPhotoURL: '',
 							isDeleted: false
 						};
 						this.manage_recipeSections[0].steps.push(x);
-						this.$refs.manageStepRef.value = '';
+						this.addStepModel[0] = '';
 					} else {
 						if ((this.$refs.manageStepRef[sectionIndex].value.trim() === '' || this.$refs.manageStepRef[sectionIndex].value.trim() === null) && this.$refs.manageStepRef[sectionIndex].value.length === 0) {
 							this.$refs.manageStepRef.classList.add('is-invalid');
 							return;
 						}
-						var x = {
+						let x = {
 							value: this.$refs.manageStepRef[sectionIndex].value.trim(),
+							coverPhotoURL: '',
 							isDeleted: false
 						};
 						this.manage_recipeSections[sectionIndex].steps.push(x);
-						this.$refs.manageStepRef[sectionIndex].value = '';
+						this.addStepModel[sectionIndex] = '';
 					}
 					
 					
@@ -3222,55 +3238,64 @@
 						anyInvalid = true;
 					}
 
-					//TODO: Add and serialize sections
-
-					/*
-					//Serialize recipe block for push to Firebase
-					if (this.manage_recipeBlocks.length > 0) {
-						serializedRecipe.blocks = [];
-						for (var i = 0; i < this.manage_recipeBlocks.length; i++) {
+					//Serialize recipe sections
+					if (this.manage_recipeSections.length > 0) {
+						serializedRecipe.sections = [];
+						for (var i = 0; i < this.manage_recipeSections.length; i++) {
 							let o = {};
-							o.header = this.manage_recipeBlocks[i].header;
-							o.ingredients = _.map(this.manage_recipeBlocks[i].ingredients, function (row) {
-								return _.omit(row, ['editMode', 'editModeButtonText']);
+							
+							if (typeof this.manage_recipeSections.title === 'undefined') {
+								o.title = 'Recipe';
+							} else {
+								o.title = this.manage_recipeSections.title;
+							}
+							
+							o.calories = 0;
+							o.fat = 0;
+							o.cholesterol = 0;
+							o.sodium = 0;
+							o.totalCarbs = 0;
+							o.fiber = 0;
+							o.sugar = 0;
+							o.protein = 0;
+
+							o.ingredients = _.map(this.manage_recipeSections[i].ingredients, function (row) {
+								return _.omit(row, ['isDeleted']);
 							});
 
-							o.steps = _.map(this.manage_recipeBlocks[i].steps, function (row) {
-								return _.omit(row, ['editMode', 'editModeButtonText']);
+							o.steps = _.map(this.manage_recipeSections[i].steps, function (row) {
+								return _.omit(row, ['isDeleted']);
 							});
 
-							serializedRecipe.blocks.push(o);
+							serializedRecipe.sections.push(o);
 						}
 					} else {
 						anyInvalid = true;
 					}
-
-					*/
 					
 					if (anyInvalid) return;
 
-					//TODO: Disable Submit button
-					serializedRecipe.docID = uuidv4();
+					this.isRecipeSubmitDisabled = true;
+
+					serializedRecipe.docID = uuidv4().toString();
 					let now = Date.now();
 					serializedRecipe.dateAdded = now;
 					serializedRecipe.dateModified = now;
 					serializedRecipe.favorite = false;
+					serializedRecipe.coverPhotoURL = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash.jpg?alt=media&token=ef21ab61-5730-47b8-8ed8-3b9b5b6fa757';
+					serializedRecipe.thumbnail = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash_thumbnail.png?alt=media&token=a3e0019c-f553-4c85-97b7-f405ab31609c';
+					console.log(serializedRecipe);
 
-					//TODO: Add to Firebase
-					
-					serializedRecipe.id = this.injectedFlexIndex;
-					this.injectedFlexIndex = this.injectedFlexIndex + 1;
-					//Push to cookbook array
-					//Update flex index
-					//Update tags & ingredients filters array
+					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
+						//Update flex index
+						serializedRecipe.id = self.injectedFlexIndex;
+						self.injectedFlexIndex = self.injectedFlexIndex + 1;
 
-					return;
-					
+						//Push to cookbook array
+						//Update tags & ingredients filters array
 
-					this.isRecipeSubmitDisabled = true;
+						self.isRecipeSubmitDisabled = false;
 
-					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(sR).then(function () {
-						//Toggle offcanvas
 					}).catch(function (error) {
 						console.error(error);
 					});
