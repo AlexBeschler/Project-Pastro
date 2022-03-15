@@ -732,7 +732,7 @@
                                         <div class="form-floating">
                                             <input type="text" class="form-control manage-recipe-input"
                                                 id="manage_form_name" v-model="manage_recipeName"
-                                                placeholder="Recipe name" required>
+                                                placeholder="Recipe name" required ref="recipeNameRef">
                                             <label for="manage_form_name">Recipe name</label>
                                             <div class="invalid-feedback">
                                                 Please enter a name
@@ -978,9 +978,6 @@
                                                                 v-on:keyup.enter="addIngredientsAddRecipeView(-1)"
                                                                 v-model="addIngredientModel[0]"
                                                                 ref="ingredientInputAddRecipeView">
-                                                            <div id="ingredient-invalid-feedback"
-                                                                class="invalid-feedback">
-                                                            </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-12">
@@ -1066,6 +1063,9 @@
                                                             <textarea id="manage_step_value" class="form-control mb-2"
                                                                 placeholder="Add step" ref="manageStepRef"
                                                                 v-model="addStepModel[0]"></textarea>
+                                                            <div class="invalid-feedback">
+                                                                Please add at least 1 step
+                                                            </div>
                                                             <button
                                                                 class="btn text-primary button-no-outline"
                                                                 @click="addStepsAddRecipeView(-1)">Add</button>
@@ -1105,6 +1105,9 @@
                                                                             placeholder="Add step" ref="manageStepRef"
                                                                             v-model="addStepModel[index]">
                                                                     </textarea>
+                                                                    <div class="invalid-feedback">
+                                                                        Please add at least 1 step
+                                                                    </div>
                                                                     </div>
                                                                     <div class="col-1"></div>
                                                                     <div class="col-11">

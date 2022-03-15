@@ -1220,6 +1220,9 @@
 
 				this.filterPresetsList = filterPresets;
 
+				//FilePond for cover photo
+				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhoto_DOM);
+
 				//Create OCR objects
 
 				this.ocr_DescriptionPondEditor = {
@@ -2893,6 +2896,54 @@
 				},
 				//Manage recipe methods
 				//TODO: when the user clicks on the X button for FilePond, destroy CropperJS instance (if it exists)
+				createCoverPhoto_DOM: function () {
+					var self = this;
+					if (this.manage_filePondCoverPhoto !== null) {
+						return;
+					}
+					this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
+					this.manage_filePondCoverPhoto.setOptions({
+						labelIdle: 'Drag & drop your file or <span class="filepond--label-action"> Browse </span>',
+						imageResizeMode: 'contain',
+						imageCropAspectRatio: 1,
+						imageResizeTargetWidth: 96,
+						imageTransformVariantsIncludeOriginal: true,
+						onpreparefile: (fileItem, outputFiles) => {
+							var u = uuidv4().toString();
+							outputFiles.forEach(output => {
+								var fileName = u;
+								var isThumbnail = false;
+								
+								const img = new Image();
+								img.onload = function() {
+									if (img.width == 96) {
+										fileName += '_thumb';
+										isThumbnail = true;
+									}
+									var fileEndingRegex = /(?:\.([^.]+))?$/;
+									var fileType = fileEndingRegex.exec(output.file.name)[1];
+									fileName += '.';
+									fileName += fileType;
+									var metadata = {
+										contentType: output.file.type,
+									};
+									
+									uploadCoverPhoto({file: output.file, name: fileName, meta: metadata}).then(function(downloadURL) {
+										console.log(downloadURL);
+										if (isThumbnail) {
+											self.manage_coverPhotoThumbnail = downloadURL;
+										} else {
+											self.manage_coverPhotoURL = downloadURL;
+										}
+									});
+									
+								};
+								img.src = URL.createObjectURL(output.file);
+								
+							});
+						}
+					});
+				},
 				createDescriptionOCR_DOM: function () {
 					var self = this;
 					if (this.ocr_DescriptionFilePond !== null) {
@@ -3180,7 +3231,7 @@
 					if (utils.isBigString(this.quillAddRecipeViewContent)) {
 						serializedRecipe.description = this.quillAddRecipeViewContent;
 					} else {
-						this.$refs.recipeDescriptionRef.classList.add('is-invalid');
+						this.$refs.addRecipeViewEditor.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
@@ -3239,7 +3290,7 @@
 					}
 
 					//Serialize recipe sections
-					if (this.manage_recipeSections.length > 0) {
+					if (this.manage_recipeSections.steps.length > 0) {
 						serializedRecipe.sections = [];
 						for (var i = 0; i < this.manage_recipeSections.length; i++) {
 							let o = {};
@@ -3270,6 +3321,7 @@
 							serializedRecipe.sections.push(o);
 						}
 					} else {
+						this.$refs.manageStepRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 					
@@ -3282,8 +3334,19 @@
 					serializedRecipe.dateAdded = now;
 					serializedRecipe.dateModified = now;
 					serializedRecipe.favorite = false;
-					serializedRecipe.coverPhotoURL = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash.jpg?alt=media&token=ef21ab61-5730-47b8-8ed8-3b9b5b6fa757';
-					serializedRecipe.thumbnail = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash_thumbnail.png?alt=media&token=a3e0019c-f553-4c85-97b7-f405ab31609c';
+					
+					if (this.manage_coverPhotoURL === '') {
+						serializedRecipe.coverPhotoURL = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash.jpg?alt=media&token=ef21ab61-5730-47b8-8ed8-3b9b5b6fa757';
+					} else {
+						serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL;
+					}
+
+					if (this.manage_coverPhotoThumbnail === '') {
+						serializedRecipe.thumbnail = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash_thumbnail.png?alt=media&token=a3e0019c-f553-4c85-97b7-f405ab31609c';
+					} else {
+						serializedRecipe.thumbnail = this.manage_coverPhotoThumbnail;
+					}
+
 					console.log(serializedRecipe);
 
 					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
@@ -3299,62 +3362,7 @@
 					}).catch(function (error) {
 						console.error(error);
 					});
-				},
-
-
-
-
-
-
-
-				
-				
-				
-				createCoverPhoto_DOM: function () {
-					var self = this;
-					if (this.manage_filePondCoverPhoto !== null) {
-						return;
-					}
-					this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
-					this.manage_filePondCoverPhoto.setOptions({
-						labelIdle: 'Drag & drop your file or <span class="filepond--label-action"> Browse </span>',
-						imageResizeMode: 'contain',
-						imageCropAspectRatio: 1,
-						imageResizeTargetWidth: 96,
-						imageTransformVariantsIncludeOriginal: true,
-						onpreparefile: (fileItem, outputFiles) => {
-							var u = uuidv4();
-							outputFiles.forEach(output => {
-								var fileName = u;
-								var isThumbnail = false;
-								const img = new Image();
-								img.onload = function() {
-									if (img.width == 96) {
-										fileName += '_thumb';
-										isThumbnail = true;
-									}
-									var fileEndingRegex = /(?:\.([^.]+))?$/;
-									var fileType = fileEndingRegex.exec(output.file.name)[1];
-									fileName += '.';
-									fileName += fileType;
-									var metadata = {
-										contentType: output.file.type,
-									};
-									uploadCoverPhoto({file: output.file, name: fileName, meta: metadata}).then(function(downloadURL) {
-										console.log(downloadURL);
-										if (isThumbnail) {
-											self.manage_coverPhotoThumbnail = downloadURL;
-										} else {
-											self.manage_coverPhotoURL = downloadURL;
-										}
-									});
-								};
-								img.src = URL.createObjectURL(output.file);
-							});
-						}
-					});
-				},
-				
+				}
 			}
 		});
 
