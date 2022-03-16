@@ -1281,11 +1281,34 @@
 				this.$refs.ocrStepsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM());
 
 				//Load settings
-				if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
-					this.isDyslexicFontSet = true;
-				} else {
-					this.isDyslexicFontSet = false;
+				this.is12HourFormatSet = (utils.getLocalStorage(utils.TWELVE_HOUR_FORMAT_SET) === 'true') ? true : false;
+				
+				this.isTagsChecked = (utils.getLocalStorage(utils.TAGS_CHECKED) === 'true') ? true : false;
+				this.isTimeChecked = (utils.getLocalStorage(utils.TIME_CHECKED) === 'true') ? true : false;
+				this.isIngredientsChecked = (utils.getLocalStorage(utils.INGREDIENTS_CHECKED) === 'true') ? true : false;
+				
+				this.isDarkModeSet = (utils.getLocalStorage(utils.DARK_MODE_SET) === 'true') ? true : false;
+				var q = 0;
+				switch (utils.getLocalStorage(utils.LEVEL_FONT_SET)) {
+					case '1':
+						q = 1;
+						break;
+					case '2':
+						q = 2;
+						break;
+					case '3':
+						q = 3;
+						break;
+					case '4':
+						q = 4;
+						break;
+					default:
+						q = 1;
 				}
+				this.levelFontSize = q;
+				this.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
+				this.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
+
 
 				//Add smart button listeners for ManageRecipe
 				var smartButtonListeners = [
@@ -2486,7 +2509,7 @@
 					
 					doc.head.append(this.makeHeaderLink('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap'));
 					doc.head.append(this.makeHeaderLink('https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css'));
-					doc.head.append(this.makeHeaderLink('https://project-pastro-c95b1.web.app/css/app.css'));
+					doc.head.append(this.makeHeaderLink('https://pantryrecipes.app/css/app.css'));
 					
 					//Body
 					var b = this.$refs.recipeView.cloneNode(true);

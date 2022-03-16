@@ -6,12 +6,22 @@ var ProjectPastroUtils = function () {
     this._isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/g.test(navigator.userAgent || navigator.vendor || window.opera);
     this._PRICE = 'price_1Im2dgCwcvKw4V4OHGN954pX';
     this._TAX_RATES = ['txr_1Im2egCwcvKw4V4O7Cf3wN4g'];
-    //this._SUCCESS_URL = 'https://project-pastro-c95b1.web.app/app.html';
-    //this._CANCEL_URL = 'https://project-pastro-c95b1.web.app';
+    //this._SUCCESS_URL = 'https://pantryrecipes.app/app.html';
+    //this._CANCEL_URL = 'https://pantryrecipes.app/';
     this._SUCCESS_URL = 'http://localhost:5000/app.html';
     this._CANCEL_URL = 'http://localhost:5000/';
     this._STRIPE_CODE = 'pk_test_51IinkiCwcvKw4V4OGf5Yv6eCKrA3tSXGgUUvF6tPmdlpRmgoX4yq8NApouvHn5Q0BkVre82I9qKDECymsTct3MNx00ekEDzexj';
+    
+    //OptionsView variables
+    this.TWELVE_HOUR_FORMAT_SET = 'is12HourFormatSet';
+    this.TAGS_CHECKED = 'isTagsChecked';
+    this.TIME_CHECKED = 'isTimeChecked';
+    this.INGREDIENTS_CHECKED = 'isIngredientsChecked';
+    this.DARK_MODE_SET = 'isDarkModeSet';
+    this.LEVEL_FONT_SET = 'levelFontSize';
     this.DYSLEXIC_FONT_SET = 'isDyslexicFontSet';
+    this.HIGH_CONTRAST_SET = 'isHighContrastModeSet';
+    
     this.DISPLAY_STATES = {
         VIEW: "view",
         EDIT: "edit",
