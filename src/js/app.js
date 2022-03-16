@@ -105,7 +105,6 @@
 				//When authstate changes
 				firebase.auth().onAuthStateChanged(function (user) {
 					if (user) { //user is signed in
-						console.log('User is signed in');
 						utils._USER = user;
 						utils._UID = user.uid;
 						//Fix for when people's Google account name is all caps
@@ -266,13 +265,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
 							}
 						],
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					},
 					{
 						"title": "Buttercream Frosting",
@@ -324,14 +324,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				]
 			},
@@ -461,14 +461,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					},
 					{
 						"title": "Thai Tea Sweetener Blend",
@@ -492,14 +492,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							},	
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				]
 			},
@@ -550,14 +550,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					},
 					{
 						"title": "Another hello world",
@@ -581,14 +581,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				]
 			},
@@ -639,14 +639,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					},
 					{
 						"title": "Another hello world",
@@ -670,14 +670,14 @@
 								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
 							}
 						],
-						"nCalories": 12,
-						"nFat": 1,
-						"nCholesterol": 1,
-						"nSodium": 1,
-						"nTotalCarbs": 1,
-						"nFiber": 1,
-						"nSugar": 1,
-						"nProtein": 1 
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
 					}
 				]
 			}
@@ -766,19 +766,9 @@
 			flexIndex++;
 		});
 
-		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex);
-		//utils._NANOBAR.go(75);
+		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex, flexIndex);
 		/*
 		var payload = [];
-		var sortedTimeIndex = new ProjectPastroRangeIndex();
-		var sortedCalories = new ProjectPastroRangeIndex();
-		var sortedCarbohydrate = new ProjectPastroRangeIndex();
-		var sortedCholesterol = new ProjectPastroRangeIndex();
-		var sortedFat = new ProjectPastroRangeIndex();
-		var sortedFiber = new ProjectPastroRangeIndex();
-		var sortedProtein = new ProjectPastroRangeIndex();
-		var sortedSodium = new ProjectPastroRangeIndex();
-		var sortedSugars = new ProjectPastroRangeIndex();
 
 		var listOfIngredients = [];
 		var listOfTags = [];
@@ -827,25 +817,15 @@
 					block.ingredients.forEach(ingredient => {
 						listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
 					});
-					//Nutrition Facts
-					sortedCalories.add(docID, parseInt(block.nCalories));
-					sortedCarbohydrate.add(docID, parseInt(block.nCarbohydrate));
-					sortedCholesterol.add(docID, parseInt(block.nCholesterol));
-					sortedFat.add(docID, parseInt(block.nFat));
-					sortedFiber.add(docID, parseInt(block.nFiber));
-					sortedProtein.add(docID, parseInt(block.nProtein));
-					sortedSodium.add(docID, parseInt(block.nSodium));
-					sortedSugars.add(docID, parseInt(block.nSugars));
 				});
 			});
 		}).then(function () {
-			//utils._NANOBAR.go(100);
-			appFunctionality(payload, sortedTimeIndex, sortedCalories, sortedCarbohydrate, sortedCholesterol, sortedFat, sortedFiber, sortedProtein, sortedSodium, sortedSugars, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
+			appFunctionality(payload, sortedTimeIndex, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
 		});
 		*/
 	}
 
-	function appFunctionality(payload, filterPresets, listOfIngredients, listOfTags, indexedRecipes, numberMetaIndex) {
+	function appFunctionality(payload, filterPresets, listOfIngredients, listOfTags, indexedRecipes, numberMetaIndex, injectedFlexIndex) {
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
 
@@ -894,55 +874,18 @@
 			template: '#recipe-steps-draggable-item-template'
 		});
 
-		/*
+		//** RecipeView component mixins **//
 		//Manage tag component
-		Vue.component('sortable-list', {
+		Vue.component('addrecipeview-tag-draggable-list', {
 			mixins: [ContainerMixin],
-			template: '#tag-draggable-list-template'
+			template: '#addrecipeview-tag-draggable-list-template'
 		});
 
-		Vue.component('sortable-item', {
+		Vue.component('addrecipeview-tag-draggable-item', {
 			mixins: [ElementMixin],
 			props: ['tag'],
-			template: '#tag-draggable-item-template'
+			template: '#addrecipeview-tag-draggable-item-template'
 		});
-
-		//Manage ingredients component
-		Vue.component('ingredients-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#ingredients-draggable-list-template'
-		});
-
-		Vue.component('ingredients-draggable-item', {
-			mixins: [ElementMixin],
-			props: ['ingredient'],
-			template: '#ingredients-draggable-item-template'
-		});
-
-		//Manage steps component
-		Vue.component('steps-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#steps-draggable-list-template'
-		});
-
-		Vue.component('steps-draggable-item', {
-			mixins: [ElementMixin],
-			props: ['step'],
-			template: '#steps-draggable-item-template'
-		});
-
-		//Manage steps
-		Vue.component('blocks-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#blocks-draggable-list-template'
-		});
-
-		Vue.component('blocks-draggable-item', {
-			mixins: [ElementMixin],
-			props: ['block'],
-			template: '#blocks-draggable-item-template'
-		});
-		*/
 
 		new Vue({
 			el: '#appContent',
@@ -996,7 +939,11 @@
 				finishByTimeInput: '',
 				finishByTimeInputInMinutes: '',
 
-				/** Recipe View data **/
+				//All tags and ingredients in cookbook
+				tagsArray: listOfTags,
+				ingredientsArray: listOfIngredients,
+
+				/** RecipeView data **/
 				selectedRecipe: {},
 				detailsDisplayState: 'view',
 				tagDisplayState: 'view',
@@ -1008,7 +955,6 @@
 				tagAddModel: '',
 				specialEquipmentAddModel: '',
 				notesAddModel: '',
-				ingredientsAddModel: '',
 				stepsAddModel: '',
 				isSharing: false,
 
@@ -1024,6 +970,79 @@
 				},
 				manage_activePane: 1,
 				showStickySubmit: false,
+				//Step 1
+				manage_recipeTitle: '',
+				manage_recipeName: '',
+				manage_recipeTagInput: '',
+				manage_recipeTagHolder: [],
+				ocr_DescriptionFilePond: null,
+				ocr_DescriptionCropperObject: null,
+				ocr_DescriptionPondEditor: null,
+				ocr_DescriptionEditMode: false,
+				//Step 2
+				manage_filePondCoverPhoto: null,
+				manage_coverPhotoURL: '',
+				manage_coverPhotoThumbnail: '',
+				manage_specialEquipmentInput: '',
+				manage_specialEquipmentHolder: [],
+				manage_recipeNotesInput: '',
+				manage_recipeNotesHolder: [],
+				//Step 3
+				manage_recipePrepTime: '',
+				manage_recipeCookTime: '',
+				manage_recipeTotalTime: '',
+				manage_recipeActiveTime: '',
+				manage_recipeYield: '',
+				//Step 4
+				manage_recipeSections: [
+					{
+						"title": "",
+						"ingredients": [],
+						"steps": [],
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
+					}
+				],
+				
+				addIngredientModel: [],
+				ingredientModelA: [],
+				addStepModel: [],
+				stepModelA: [],
+				
+				ocr_IngredientsFilePond: null,
+				ocr_IngredientsCropperObject: null,
+				ocr_IngredientsPondEditor: null,
+				ocr_IngredientsEditMode: false,
+				
+				ocr_StepsFilePond: null,
+				ocr_StepsCropperObject: null,
+				ocr_StepsPondEditor: null,
+				ocr_StepsEditMode: false,
+
+				injectedFlexIndex: injectedFlexIndex,
+
+				isRecipeSubmitDisabled: false,
+
+				/** OptionsView data **/
+				//General
+				is12HourFormatSet: false,
+				//Explore
+				isTagsChecked: false,
+				isTimeChecked: false,
+				isIngredientsChecked: false,
+				//Accessibility
+				isDarkModeSet: false,
+				levelFontSize: 1,
+				isDyslexicFontSet: false,
+				isHighContrastModeSet: false,
+				userID: utils._UID,
+				browserUtil: '',
 
 				/** Utility data **/
 				toastInstance: null,
@@ -1032,8 +1051,12 @@
 
 				/** 3rd Party & API data **/
 				//Quill
+				//RecipeView
 				quillRecipeViewInstance: null,
 				quillRecipeViewContent: null,
+				//AddRecipeView
+				quillAddRecipeViewInstance: null,
+				quillAddRecipeViewContent: null,
 				toolbarOptions: [
 					['bold', 'italic'],
 					[{
@@ -1047,130 +1070,6 @@
 					}],
 					['clean']
 				],
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-				
-				undo_length_long: 4750,
-				undoObject: null,
-				undoText: '',
-				undoTimeOut: null,
-
-				//Explore pane
-
-				//Recipe
-
-				//All tags and ingredients in cookbook
-				tagsArray: listOfTags,
-				ingredientsArray: listOfIngredients,
-
-				nCalories: null,
-				nFat: null,
-				nCholesterol: null,
-				nSodium: null,
-				nCarbohydrate: null,
-				nFiber: null,
-				nSugars: null,
-				nProtein: null,
-
-				//Indices
-
-				//For use in search queries
-
-				//For use with manage recipes
-				manageOffcanvas: null,
-				isRecipeSubmitDisabled: false,
-				
-
-				//Step 1
-				manage_filePondCoverPhoto: null,
-				manage_coverPhotoURL: '',
-				manage_coverPhotoThumbnail: '',
-
-				ocr_DescriptionFilePond: null,
-				ocr_DescriptionCropperObject: null,
-				ocr_DescriptionPondEditor: null,
-				ocr_DescriptionEditMode: false,
-
-				ocr_IngredientsFilePond: null,
-				ocr_IngredientsCropperObject: null,
-				ocr_IngredientsPondEditor: null,
-				ocr_IngredientsEditMode: false,
-
-				ocr_StepsFilePond: null,
-				ocr_StepsCropperObject: null,
-				ocr_StepsPondEditor: null,
-				ocr_StepsEditMode: false,
-
-				//Step 2
-				manage_recipeTitle: '',
-				manage_recipeName: '',
-				//manage_recipeDescription: '',
-				manage_recipeTagInput: '',
-				manage_recipeTagHolder: [],
-
-				//Step 3
-				manage_recipePrepTime: '',
-				manage_recipeCookTime: '',
-				manage_recipeTotalTime: '',
-				manage_recipeActiveTime: '',
-				manage_recipeYield: '',
-
-				//Step 4
-				manage_recipeBlocks: [],
-				manage_recipeBlockIngredients: [],
-				manage_recipeBlockSteps: [],
-				manage_recipeBlockHeader: '',
-				manage_recipeBlockIngredientValue: '',
-				manage_recipeBlockStepValue: '',
-				manage_nCalories: '',
-				manage_nFat: '',
-				manage_nCholesterol: '',
-				manage_nSodium: '',
-				manage_nCarbohydrate: '',
-				manage_nFiber: '',
-				manage_nSugars: '',
-				manage_nProtein: '',
-
-				//Quill
-				quillInstance: null,
-				quillContent: null,
-				toolbarOptions: [
-					['bold', 'italic'],
-					[{
-						'list': 'ordered'
-					}, {
-						'list': 'bullet'
-					}, {
-						'indent': '-1'
-					}, {
-						'indent': '+1'
-					}],
-					['clean']
-				],
-
-				//Used for settings menu
-				isDyslexicFontSet: '',
-				userID: utils._UID,
-				browserUtil: ''
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -1188,9 +1087,7 @@
 
 				this.storage = firebase.storage().ref();
 
-				//this.initQuill();
-
-				//FilePond.registerPlugin(FilePondPluginImageTransform, FilePondPluginImageCrop, FilePondPluginImagePreview, FilePondPluginImageResize, FilePondPluginImageTransform, FilePondPluginImageEdit, FilePondPluginFileValidateType);				
+				FilePond.registerPlugin(FilePondPluginImageTransform, FilePondPluginImageCrop, FilePondPluginImagePreview, FilePondPluginImageResize, FilePondPluginImageTransform, FilePondPluginImageEdit, FilePondPluginFileValidateType);				
 
 				//On mobile, chrome/safari address bar is 60px and takes up part of the 100vh
 				//Meaning if the UA is mobile we need to add an additional 60px to the height of offcanvas
@@ -1270,16 +1167,6 @@
 					duration: 450,
 					easing: 'easeOutBack'
 				})
-				/*
-				.add({
-                    targets: this.$refs.headerText,
-                    translateY: ['-25%', '0%'],
-                    opacity: [0, 1],
-                    delay: 250,
-                    duration: 200,
-                    easing: 'easeInOutQuad'
-				
-                })*/
 				.add({
                     targets: this.$refs.headerText,
                     translateY: ['0%', '50%'],
@@ -1309,20 +1196,10 @@
 
 				this.filterPresetsList = filterPresets;
 
-				/*
+				//FilePond for cover photo
+				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhoto_DOM);
 
-				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', function () {
-					self.$refs.undoContainer.style.display = 'none!important';
-				});
-
-				var ocrDescriptionButton = new QuillToolbarButton({
-					icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="999999" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/></svg>`
-				});
-				ocrDescriptionButton.onClick = function (quill) {
-					var bsCollapse = new bootstrap.Collapse(self.$refs.ocr_DescriptionFilePond);
-					self.$refs.ocr_DescriptionFilePond.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
-				}
-				ocrDescriptionButton.attach(this.quillInstance);
+				//Create OCR objects
 
 				this.ocr_DescriptionPondEditor = {
 					open: (file, instructions) => {
@@ -1338,7 +1215,7 @@
 							image.id = 'descriptionCropper';
 							document.getElementById('ocrDescriptionCropWrapper').appendChild(image);
 							self.ocr_DescriptionCropperObject = new Cropper(document.getElementById('descriptionCropper'));
-						}
+						};
 						reader.readAsDataURL(file);
 					},
 
@@ -1347,7 +1224,7 @@
 					oncancel: () => {},
 
 					onclose: () => {}
-				}
+				};
 
 				this.ocr_IngredientsPondEditor = {
 					open: (file, instructions) => {
@@ -1360,10 +1237,10 @@
 							self.ocr_IngredientsEditMode = true;
 							var image = new Image();
 							image.src = reader.result;
-							image.id = 'ingredientsCropper';
+							image.id = 'IngredientsCropper';
 							document.getElementById('ocrIngredientsCropWrapper').appendChild(image);
 							self.ocr_IngredientsCropperObject = new Cropper(document.getElementById('ingredientsCropper'));
-						}
+						};
 						reader.readAsDataURL(file);
 					},
 
@@ -1372,8 +1249,10 @@
 					oncancel: () => {},
 
 					onclose: () => {}
-				}
-
+				};
+				
+				this.$refs.ocrIngredientsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createIngredientsOCR_DOM());
+				
 				this.ocr_StepsPondEditor = {
 					open: (file, instructions) => {
 						//If the user already clicked the crop button, don't let another instance be called
@@ -1385,10 +1264,10 @@
 							self.ocr_StepsEditMode = true;
 							var image = new Image();
 							image.src = reader.result;
-							image.id = 'stepsCropper';
+							image.id = 'StepsCropper';
 							document.getElementById('ocrStepsCropWrapper').appendChild(image);
-							self.ocr_StepsCropperObject = new Cropper(document.getElementById('stepsCropper'));
-						}
+							self.ocr_StepsCropperObject = new Cropper(document.getElementById('StepsCropper'));
+						};
 						reader.readAsDataURL(file);
 					},
 
@@ -1397,24 +1276,40 @@
 					oncancel: () => {},
 
 					onclose: () => {}
-				}
-				
-				//FilePond does not render unless browser 'sees' it. Click listener is to dynamically load FilePond instance
-				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhoto_DOM);
-				this.$refs.ocr_IngredientsFilePond.addEventListener('shown.bs.collapse', this.createIngredientsOCR_DOM);
-				this.$refs.ocr_StepsFilePond.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM);
+				};
 
-				this.recipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeView);
-				this.deleteRecipeOffcanvas = new bootstrap.Offcanvas(this.$refs.recipeDeleteOffcanvas);
-
-				this.$refs.manageRecipeView.addEventListener('hidden.bs.offcanvas', this.checkForCancelRecipe);
-
-				*/
+				this.$refs.ocrStepsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM());
 
 				//Load settings
-				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
+				this.is12HourFormatSet = (utils.getLocalStorage(utils.TWELVE_HOUR_FORMAT_SET) === 'true') ? true : false;
+				
+				this.isTagsChecked = (utils.getLocalStorage(utils.TAGS_CHECKED) === 'true') ? true : false;
+				this.isTimeChecked = (utils.getLocalStorage(utils.TIME_CHECKED) === 'true') ? true : false;
+				this.isIngredientsChecked = (utils.getLocalStorage(utils.INGREDIENTS_CHECKED) === 'true') ? true : false;
+				
+				this.isDarkModeSet = (utils.getLocalStorage(utils.DARK_MODE_SET) === 'true') ? true : false;
+				var q = 0;
+				switch (utils.getLocalStorage(utils.LEVEL_FONT_SET)) {
+					case '1':
+						q = 1;
+						break;
+					case '2':
+						q = 2;
+						break;
+					case '3':
+						q = 3;
+						break;
+					case '4':
+						q = 4;
+						break;
+					default:
+						q = 1;
+				}
+				this.levelFontSize = q;
+				this.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
+				this.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
 
-				/*
+
 				//Add smart button listeners for ManageRecipe
 				var smartButtonListeners = [
 					this.$refs.manageOverviewAccordionButton,
@@ -1431,25 +1326,20 @@
 				var smartTabListeners = [
 					this.$refs.manageIngredientsTab,
 					this.$refs.manageStepsTab,
-					this.$refs.manageNutritionTab
+					//this.$refs.manageNutritionTab
 				];
 				smartTabListeners.forEach(element => {
 					element.addEventListener('shown.bs.tab', function () {
 						self.updateSmartButtonText();
 					});
 				});
-				*/
-
-				//this.initRecipeViewQuill();
 
 				this.toastInstance = new bootstrap.Toast(this.$refs.toastNotification);
 				this.$refs.toastNotification.addEventListener('hidden.bs.toast', function() {
 					self.toastHeader = '';
 					self.toastBody = '';
 				});
-			},
-			beforeDestroy() {
-				this.quillInstance.off('text-change');
+
 			},
 			watch: {
 				searchQuery: function(b, a) {
@@ -1507,62 +1397,6 @@
 					}
 					this.updateFilteredIngredients(b);
 				},
-				nCalories: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nFat: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nCholesterol: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nSodium: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nCarbohydrate: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nFiber: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nSugars: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				nProtein: function (b, a) {
-					this.checkNutritionInfo(b, a);
-				},
-				quillValue: function (newVal) {
-					// Only update the content if it's changed from an external source
-					// or else it'll act weird when you try to type anything
-					if (newVal !== this.quillContent) {
-						this.quillInstance.pasteHTML(newVal);
-					}
-				},
-				manage_recipeTagInput: function (b, a) {
-					if (b.length >= (2 + a.length)) {
-						this.pasteFromClipboard('tags');
-						this.manage_recipeTagInput = '';
-					}
-				},
-				manage_recipeBlockIngredientValue: function (b, a) {
-					if (b.length >= (2 + a.length)) {
-						this.pasteFromClipboard('ingredients');
-						this.manage_recipeBlockIngredientValue = '';
-					}
-				},
-				manage_recipeBlockStepValue: function (b, a) {
-					if (!utils.isEmpty(b)) {
-						this.$refs.addStepToBlockButton.classList.remove('button-no-outline');
-						this.$refs.addStepToBlockButton.classList.add('btn-outline-success');
-					} else {
-						this.$refs.addStepToBlockButton.classList.remove('btn-outline-success');
-						this.$refs.addStepToBlockButton.classList.add('button-no-outline');
-					}
-					if (b.length >= (2 + a.length)) {
-						this.pasteFromClipboard('steps');
-						this.manage_recipeBlockStepValue = '';
-					}
-				},
 				/*
 				isDyslexicFontSet: function (b, a) {
 					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
@@ -1576,6 +1410,124 @@
 					});
 				}
 				*/
+				addIngredientModel: {
+					handler: function (after, before) {
+						if (utils.isEmptyArray(after)) {
+							this.ingredientModelA = [];
+							return;
+						}
+						var self = this;
+						var pasteDetected = false;
+						var k = 0;
+						if (utils.isEmptyArray(this.ingredientModelA)) {
+							for (var i = 0; i < after.length; i++) {
+								if (typeof after[i] == 'undefined') {
+									continue;
+								}
+								if (after[i].length >= 2) {
+									pasteDetected = true;
+									k = i;
+								}
+							}
+						} else {
+							for (var j = 0; j < this.ingredientModelA.length; j++) {
+								if (typeof after[j] == 'undefined') {
+									continue;
+								}
+								if (after[j].length >= (this.ingredientModelA[j].length + 2)) {
+									pasteDetected = true;
+									k = j;
+								}
+							}
+						}
+						if (pasteDetected) {
+							//Do NLP stuff here
+							navigator.clipboard.readText()
+								.then(text => {
+									//Split by newline character
+									var lines = text.split('\n');
+									lines.forEach(line => {
+										if (!utils.isEmpty(line)) {
+											var s = nlp.parseIngredient(line);
+											self.manage_recipeSections[k].ingredients.push({
+												amount: s.amount,
+												value: s.ingredient,
+												isDeleted: false
+											});
+										}
+									});
+								})
+								.catch(err => {
+									console.error('Failed to read clipboard contents: ', err);
+								});
+							this.ingredientModelA = utils.deepClone(after);
+							this.addIngredientModel = [];
+						} else {
+							this.ingredientModelA = utils.deepClone(after);
+						}
+					},
+					deep: true
+				},
+				addStepModel: {
+					handler: function (after, before) {
+						if (utils.isEmptyArray(after)) {
+							this.stepModelA = [];
+							return;
+						}
+						var self = this;
+						var pasteDetected = false;
+						var k = 0;
+						if (utils.isEmptyArray(this.stepModelA)) {
+							for (var i = 0; i < after.length; i++) {
+								if (typeof after[i] == 'undefined') {
+									continue;
+								}
+								if (after[i].length >= 2) {
+									pasteDetected = true;
+									k = i;
+								}
+							}
+						} else {
+							for (var j = 0; j < this.stepModelA.length; j++) {
+								if (typeof after[j] == 'undefined') {
+									continue;
+								}
+								if (after[j].length >= (this.stepModelA[j].length + 2)) {
+									pasteDetected = true;
+									k = j;
+								}
+							}
+						}
+						if (pasteDetected) {
+							//Do NLP stuff here
+							navigator.clipboard.readText()
+								.then(text => {
+									//Split by newline character
+									var lines = text.split('\n');
+									lines.forEach(line => {
+										if (!utils.isEmpty(line)) {
+											try {
+												self.manage_recipeSections[k].steps.push({
+													value: utils.capitalizeFirstLetter(line.trim()),
+													isDeleted: false
+												});
+											} catch (e) {
+												console.log(e);
+											}
+										}
+									});
+								})
+								.catch(err => {
+									console.error('Failed to read clipboard contents: ', err);
+								});
+							this.stepModelA = utils.deepClone(after);
+							this.addStepModel = [];
+						} else {
+							this.stepModelA = utils.deepClone(after);
+						}
+					},
+					deep: true
+				}
 			},
 			methods: {
 				/**** Button Helpers ****/
@@ -1663,62 +1615,67 @@
                 },
                 clickedCloseSearch: function() {
 					var self = this;
-                    var timeline = anime.timeline({});
-                    timeline
-						.add({
-							targets: this.$refs.searchResultsContainer,
-							opacity: [1, 0],
-							duration: 150,
-							translateY: ['0rem', '-0.5rem'],
-							easing: 'easeInOutQuad',
-							complete: function (anim) {
-								self.$refs.searchResultsContainer.classList.add('d-none');
-							}
-						})
-						.add({
-                            targets: this.ViewStack[this.ViewStack.length - 1],
-                            opacity: [0, 1],
-                            translateY: ['0%', '-1rem'],
-                            duration: 150,
-                            easing: 'easeInOutQuad',
-							begin: function(anim) {
-								self.ViewStack[self.ViewStack.length - 1].classList.remove('d-none');
-								self.ViewStack[self.ViewStack.length - 1].classList.add('d-block');
-							}
-                        }, '-=5')
-						.add({
-							targets: this.$refs.searchBoxInput,
-							opacity: [1, 0],
-							duration: 100,
-							easing: 'easeInOutQuad',
-							complete: function(anim) {
-								self.$refs.searchBoxInput.classList.remove('d-flex');
-								self.$refs.searchBoxInput.classList.add('d-none');
-							}
-						}, '-=150')
-                        .add({
-                            targets: document.getElementById('innerSearchButtonText'),
-                            translateY: ['50%', '0%'],
-                            opacity: [0, 1],
-                            duration: 200,
-                            easing: 'easeInOutQuad',
-                        }, '-=100')
-						.add({
-                            targets: document.getElementById('innerSearchButtonImg2'),
-                            translateX: ['-175%', '0%'],
-                            opacity: [1, 0],
-                            duration: 200,
-                            easing: 'easeInOutQuad'
-                        }, '-=300')
-						.add({
-                            targets: document.getElementById('innerSearchButtonImg1'),
-                            translateX: ['-175%', '0%'],
-                            opacity: [0, 1],
-                            duration: 200,
-                            easing: 'easeInOutQuad'
-                        }, '-=200');
-					self.searchBarExpanded = false;
-					this.searchQuery = '';
+					return new Promise((resolve, reject) => {
+						var timeline = anime.timeline({});
+						timeline
+							.add({
+								targets: this.$refs.searchResultsContainer,
+								opacity: [1, 0],
+								duration: 150,
+								translateY: ['0rem', '-0.5rem'],
+								easing: 'easeInOutQuad',
+								complete: function (anim) {
+									self.$refs.searchResultsContainer.classList.add('d-none');
+								}
+							})
+							.add({
+								targets: this.ViewStack[this.ViewStack.length - 1],
+								opacity: [0, 1],
+								translateY: ['0%', '-1rem'],
+								duration: 150,
+								easing: 'easeInOutQuad',
+								begin: function(anim) {
+									self.ViewStack[self.ViewStack.length - 1].classList.remove('d-none');
+									self.ViewStack[self.ViewStack.length - 1].classList.add('d-block');
+								}
+							}, '-=5')
+							.add({
+								targets: this.$refs.searchBoxInput,
+								opacity: [1, 0],
+								duration: 100,
+								easing: 'easeInOutQuad',
+								complete: function(anim) {
+									self.$refs.searchBoxInput.classList.remove('d-flex');
+									self.$refs.searchBoxInput.classList.add('d-none');
+								}
+							}, '-=150')
+							.add({
+								targets: document.getElementById('innerSearchButtonText'),
+								translateY: ['50%', '0%'],
+								opacity: [0, 1],
+								duration: 200,
+								easing: 'easeInOutQuad',
+							}, '-=100')
+							.add({
+								targets: document.getElementById('innerSearchButtonImg2'),
+								translateX: ['-175%', '0%'],
+								opacity: [1, 0],
+								duration: 200,
+								easing: 'easeInOutQuad'
+							}, '-=300')
+							.add({
+								targets: document.getElementById('innerSearchButtonImg1'),
+								translateX: ['-175%', '0%'],
+								opacity: [0, 1],
+								duration: 200,
+								easing: 'easeInOutQuad',
+								complete: function() {
+									self.searchBarExpanded = false;
+									self.searchQuery = '';
+									resolve();
+								}
+							}, '-=200');
+					});
                 },             
                 clickedBrowse: function () {
                     this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
@@ -1727,8 +1684,12 @@
                     console.log('Clicked meal plan');
                 },
 				clickedAddRecipe: function() {
-					//this.updateSmartButtonText();
-					this.navigateForward(this.$refs.addRecipeView, null, null);
+					var self = this;
+					this.navigateForward(this.$refs.addRecipeView, null, null).then(() => {
+						if (self.quillAddRecipeViewInstance === null) {
+							self.initAddRecipeViewQuill();
+						}
+					});
 				},
 				clickedClearTagFilters: function() {
 					this.checkedTagsArray = [];
@@ -1805,13 +1766,111 @@
                         }, '-=250');
                 },
                 navigateForward: function (navigateTo, backButtonImg, backButtonText) {
-                    var timeline = anime.timeline({});
-					var currentView = this.ViewStack[this.ViewStack.length - 1];
-					if (backButtonImg === null) {
+					var self = this;
+					
+					var forward = new Promise((resolve, reject) => {
+						var timeline = anime.timeline({});
+						var currentView = self.ViewStack[self.ViewStack.length - 1];
+						if (backButtonImg === null) {
+							timeline
+								.add({
+									targets: currentView,
+									translateX: ['0%', '-50%'],
+									opacity: [1, 0],
+									duration: utils.ViewStackExitAnimationDuration,
+									easing: 'easeInOutQuad',
+									complete: function (anim) {
+										currentView.classList.add('d-none');
+									}
+								})
+								.add({
+									targets: navigateTo,
+									translateX: ['50%', '0%'],
+									opacity: [0, 1],
+									duration: utils.ViewStackEnterAnimationDuration,
+									easing: 'easeInOutQuad',
+									begin: function (anim) {
+										navigateTo.classList.remove('d-none');
+										navigateTo.classList.add('d-block');
+									},
+									complete: function() {
+										resolve();
+									}
+								}, '+=' + utils.ViewStackAnimationDelayDuration);
+						} else {
+							timeline
+								.add({
+									targets: currentView,
+									translateX: ['0%', '-50%'],
+									opacity: [1, 0],
+									duration: 200,
+									easing: 'easeInOutQuad',
+									complete: function (anim) {
+										currentView.classList.add('d-none');
+									}
+								})
+								.add({
+									targets: navigateTo,
+									translateX: ['50%', '0%'],
+									opacity: [0, 1],
+									duration: 200,
+									easing: 'easeInOutQuad',
+									begin: function (anim) {
+										navigateTo.classList.remove('d-none');
+										navigateTo.classList.add('d-block');
+									}
+								}, '+=5')
+								.add({
+									targets: backButtonText,
+									translateX: ['-0.5rem', '0rem'],
+									opacity: [0, 1],
+									duration: 200,
+									easing: 'easeInOutQuad',
+									delay: 50
+								})
+								.add({
+									targets: backButtonImg,
+									opacity: [0, 1],
+									duration: 200,
+									easing: 'easeInOutQuad',
+									delay: 200,
+									complete: function() {
+										resolve();
+									}
+								}, '-=250');
+						}
+
+						self.hideHeader();
+
+						self.ViewStack.push(navigateTo);
+					});
+
+					if (this.searchBarExpanded) {
+						this.clickedCloseSearch().then(() => {
+							return forward;
+						});
+					} else {
+						return forward;
+					}
+                },
+                navigateBackward: function () {
+					var self = this;
+					return new Promise((resolve, reject) => {
+						if (!self.isRecipeViewInEditMode()) {
+							return;
+						}
+	
+						if (self.ViewStack.length < 2) {
+							return;
+						}
+	
+						var currentView = self.ViewStack.pop();
+						var previousView = self.ViewStack[self.ViewStack.length - 1];
+						var timeline = anime.timeline({});
 						timeline
 							.add({
 								targets: currentView,
-								translateX: ['0%', '-50%'],
+								translateX: ['0%', '50%'],
 								opacity: [1, 0],
 								duration: utils.ViewStackExitAnimationDuration,
 								easing: 'easeInOutQuad',
@@ -1820,97 +1879,23 @@
 								}
 							})
 							.add({
-								targets: navigateTo,
-								translateX: ['50%', '0%'],
+								targets: previousView,
+								translateX: ['-50%', '0%'],
 								opacity: [0, 1],
 								duration: utils.ViewStackEnterAnimationDuration,
 								easing: 'easeInOutQuad',
 								begin: function (anim) {
-									navigateTo.classList.remove('d-none');
-									navigateTo.classList.add('d-block');
+									previousView.classList.remove('d-none');
+									previousView.classList.add('d-block');
+								},
+								complete: function() {
+									resolve();
 								}
 							}, '+=' + utils.ViewStackAnimationDelayDuration);
-					} else {
-						timeline
-							.add({
-								targets: currentView,
-								translateX: ['0%', '-50%'],
-								opacity: [1, 0],
-								duration: 200,
-								easing: 'easeInOutQuad',
-								complete: function (anim) {
-									currentView.classList.add('d-none');
-								}
-							})
-							.add({
-								targets: navigateTo,
-								translateX: ['50%', '0%'],
-								opacity: [0, 1],
-								duration: 200,
-								easing: 'easeInOutQuad',
-								begin: function (anim) {
-									navigateTo.classList.remove('d-none');
-									navigateTo.classList.add('d-block');
-								}
-							}, '+=5')
-							.add({
-								targets: backButtonText,
-								translateX: ['-0.5rem', '0rem'],
-								opacity: [0, 1],
-								duration: 200,
-								easing: 'easeInOutQuad',
-								delay: 50
-							})
-							.add({
-								targets: backButtonImg,
-								opacity: [0, 1],
-								duration: 200,
-								easing: 'easeInOutQuad',
-								delay: 200
-							}, '-=250');
-					}
-
-                    this.hideHeader();
-
-					this.ViewStack.push(navigateTo);
-                },
-                navigateBackward: function () {
-					if (!this.isRecipeViewInEditMode()) {
-						return;
-					}
-
-					if (this.ViewStack.length < 2) {
-						return;
-					}
-
-					var currentView = this.ViewStack.pop();
-					var previousView = this.ViewStack[this.ViewStack.length - 1];
-                    var timeline = anime.timeline({});
-                    timeline
-                        .add({
-                            targets: currentView,
-                            translateX: ['0%', '50%'],
-                            opacity: [1, 0],
-                            duration: utils.ViewStackExitAnimationDuration,
-                            easing: 'easeInOutQuad',
-                            complete: function (anim) {
-                                currentView.classList.add('d-none');
-                            }
-                        })
-                        .add({
-                            targets: previousView,
-                            translateX: ['-50%', '0%'],
-                            opacity: [0, 1],
-                            duration: utils.ViewStackEnterAnimationDuration,
-                            easing: 'easeInOutQuad',
-                            begin: function (anim) {
-                                previousView.classList.remove('d-none');
-                                previousView.classList.add('d-block');
-                            }
-                        }, '+=' + utils.ViewStackAnimationDelayDuration);
-
-					//Remove entrance animation for RecipeView
-					this.$refs.recipeDetails.classList.remove('show-finished-viewstack');
+	
+						//Remove entrance animation for RecipeView
+						self.$refs.recipeDetails.classList.remove('show-finished-viewstack');
+					});
                 },
 				editRecipeTitleOnFinishedAnimation: function() {
 					//If the app isn't editing
@@ -2033,64 +2018,6 @@
 							filterIDs = _.union(filterIDs, result);
 						}
 					}
-					/*
-					if (this.nCalories != '' && parseInt(this.nCalories) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_calories.search(parseInt(this.nCalories)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nFat != '' && parseInt(this.nFat) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_fat.search(parseInt(this.nFat)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nCholesterol != '' && parseInt(this.nCholesterol) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_cholesterol.search(parseInt(this.nCholesterol)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nSodium != '' && parseInt(this.nSodium) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_sodium.search(parseInt(this.nSodium)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nCarbohydrate != '' && parseInt(this.nCarbohydrate) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_carbohydrate.search(parseInt(this.nCarbohydrate)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nFiber != '' && parseInt(this.nFiber) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_fiber.search(parseInt(this.nFiber)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nSugars != '' && parseInt(this.nSugars) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_sugars.search(parseInt(this.nSugars)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					if (this.nProtein != '' && parseInt(this.nProtein) !== 0) {
-						filtersApplied = true;
-						var result = utils.queryAndParseFlexSearchResults(this.flexSearch, this.index_protein.search(parseInt(this.nProtein)));
-						if (result != null) {
-							filterIDs = _.union(filterIDs, result);
-						}
-					}
-					*/
 
 					//Exact matching parameters
 					if (this.checkedTagsArray.length > 0) {
@@ -2468,17 +2395,17 @@
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
 				},
 				addRecipeIngredientsRecipeView: function(sectionIndex) {
-					if (!utils.isString(this.ingredientsAddModel)) {
+					if (!utils.isString(this.$refs.recipeViewIngredientsInputs[sectionIndex].value)) {
 						return false;
 					}
 
-					var ingredientObject = nlp.parseIngredient(this.ingredientsAddModel);
+					var ingredientObject = nlp.parseIngredient(this.$refs.recipeViewIngredientsInputs[sectionIndex].value);
 					this.selectedRecipe.sections[sectionIndex].ingredients.push({
 						amount: ingredientObject.amount,
 						isDeleted: false,
 						value: ingredientObject.ingredient
 					});
-					this.ingredientsAddModel = '';
+					this.$refs.recipeViewIngredientsInputs[sectionIndex].value = '';
 				},
 				editRecipeStepsRecipeView: function() {
 					if (this.stepsDisplayState === utils.DISPLAY_STATES.VIEW) {
@@ -2582,7 +2509,7 @@
 					
 					doc.head.append(this.makeHeaderLink('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap'));
 					doc.head.append(this.makeHeaderLink('https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css'));
-					doc.head.append(this.makeHeaderLink('https://project-pastro-c95b1.web.app/css/app.css'));
+					doc.head.append(this.makeHeaderLink('https://pantryrecipes.app/css/app.css'));
 					
 					//Body
 					var b = this.$refs.recipeView.cloneNode(true);
@@ -2636,6 +2563,183 @@
 					}
 					return true;
 				},
+
+				/**** AddRecipeView Methods ****/
+				autofillActiveTime: function () {
+					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
+				},
+				addTagAddRecipeView: function () {
+					if (utils.isString(this.manage_recipeTagInput)) {
+						this.manage_recipeTagHolder.push({
+							value: this.manage_recipeTagInput.trim(),
+							isDeleted: false
+						});
+						this.manage_recipeTagInput = '';
+					}
+				},
+				deleteTagAddRecipeView: function (index) {
+					this.manage_recipeTagHolder[index].isDeleted = true;
+				},
+				undoTagAddRecipeView: function (index) {
+					this.manage_recipeTagHolder[index].isDeleted = false;
+				},
+				addSpecialEquipmentAddRecipeView: function() {
+					if (utils.isString(this.manage_specialEquipmentInput)) {
+						this.manage_specialEquipmentHolder.push({
+							value: this.manage_specialEquipmentInput.trim(),
+							isDeleted: false
+						});
+						this.manage_specialEquipmentInput = '';
+					}
+				},
+				deleteSpecialEquipmentAddRecipeView: function (index) {
+					this.manage_specialEquipmentHolder[index].isDeleted = true;
+				},
+				undoDeleteSpecialEquipmentAddRecipeView: function(index) {
+					this.manage_specialEquipmentHolder[index].isDeleted = false;
+				},
+				addNotesAddRecipeView: function() {
+					if (utils.isString(this.manage_recipeNotesInput)) {
+						this.manage_recipeNotesHolder.push({
+							value: this.manage_recipeNotesInput.trim(),
+							isDeleted: false
+						});
+						this.manage_recipeNotesInput = '';
+					}
+				},
+				deleteNotesAddRecipeView: function (index) {
+					this.manage_recipeNotesHolder[index].isDeleted = true;
+				},
+				undoDeleteNotesAddRecipeView: function(index) {
+					this.manage_recipeNotesHolder[index].isDeleted = false;
+				},
+				addRecipeSectionAddRecipeView: function() {
+					this.manage_recipeSections.push({
+						"title": "",
+						"ingredients": [],
+						"steps": [],
+						"calories": 0,
+						"fat": 0,
+						"cholesterol": 0,
+						"sodium": 0,
+						"totalCarbs": 0,
+						"fiber": 0,
+						"sugar": 0,
+						"protein": 0 
+					});
+				},
+				addIngredientsAddRecipeView: function(sectionIndex) {
+					if (sectionIndex === -1) {
+						let ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView.value);
+						let x = {
+							amount: ingredient.amount,
+							value: ingredient.ingredient,
+							isDeleted: false
+						};
+						this.manage_recipeSections[0].ingredients.push(x);
+						this.addIngredientModel[0] = '';
+					} else {
+						let ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView[sectionIndex].value);
+						let x = {
+							amount: ingredient.amount,
+							value: ingredient.ingredient,
+							isDeleted: false
+						};
+						this.manage_recipeSections[sectionIndex].ingredients.push(x);
+						this.addIngredientModel[sectionIndex] = '';
+					}
+					
+				},
+				deleteIngredientsAddRecipeView: function (sectionIndex, index) {
+					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = true;
+				},
+				undoDeleteIngredientsAddRecipeView: function(sectionIndex, index) {
+					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = false;
+				},
+				addStepsAddRecipeView: function (sectionIndex) {
+					if (sectionIndex === -1) {
+						if ((this.$refs.manageStepRef.value.trim() === '' || this.$refs.manageStepRef.value.trim() === null) && this.$refs.manageStepRef.value.length === 0) {
+							this.$refs.manageStepRef.classList.add('is-invalid');
+							return;
+						}
+						let x = {
+							value: this.$refs.manageStepRef.value.trim(),
+							coverPhotoURL: '',
+							isDeleted: false
+						};
+						this.manage_recipeSections[0].steps.push(x);
+						this.addStepModel[0] = '';
+					} else {
+						if ((this.$refs.manageStepRef[sectionIndex].value.trim() === '' || this.$refs.manageStepRef[sectionIndex].value.trim() === null) && this.$refs.manageStepRef[sectionIndex].value.length === 0) {
+							this.$refs.manageStepRef.classList.add('is-invalid');
+							return;
+						}
+						let x = {
+							value: this.$refs.manageStepRef[sectionIndex].value.trim(),
+							coverPhotoURL: '',
+							isDeleted: false
+						};
+						this.manage_recipeSections[sectionIndex].steps.push(x);
+						this.addStepModel[sectionIndex] = '';
+					}
+					
+					
+				},
+				deleteStepsAddRecipeView: function (sectionIndex, index) {
+					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = true;
+				},
+				undoDeleteStepsAddRecipeView: function(sectionIndex, index) {
+					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = false;
+				},
+				updateSmartButtonText: function () {
+					//Check text to set for smart button
+					if (this.$refs.manageOverviewAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Cover Photo »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.overview;
+					}
+					if (this.$refs.manageCoverPhotoAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Time & Servings »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.coverPhoto;
+					}
+					if (this.$refs.manageTimeServingsAccordionButton.classList.contains('show')) {
+						if (!this.showStickySubmit) {
+							this.manage_smartButtonText = 'Recipe Ingredients »';
+						}
+						this.manage_activePane = this.manage_smartButtonProgress.timeServings;
+					}
+					if (this.$refs.manageSectionsAccordionButton.classList.contains('show')) {
+						//Bootstrap 5 has a bug related to nav tabs inside an accordion -
+						// if the user expands other sections of the accordion, the "show" class of the active (hidden)
+						// tab is removed automatically. We need to overcome this by finding the "active" class
+						// and adding the "show" class to the corresponding nav tab content
+						if (this.$refs.manageIngredientsTab.classList.contains('active')) {
+							if (!this.$refs.manageIngredientsSectionButton.classList.contains('show')) {
+								this.$refs.manageIngredientsSectionButton.classList.add('active');
+								this.$refs.manageIngredientsSectionButton.classList.add('show');
+							}
+							if (!this.showStickySubmit) {
+								this.manage_smartButtonText = 'Recipe Steps »';
+							}
+							this.manage_activePane = this.manage_smartButtonProgress.ingredients;
+						}
+						if (this.$refs.manageStepsTab.classList.contains('active')) {
+							if (!this.$refs.manageStepsSectionButton.classList.contains('show')) {
+								this.$refs.manageStepsSectionButton.classList.add('active');
+								this.$refs.manageStepsSectionButton.classList.add('show');
+							}
+							this.manage_smartButtonText = 'Submit Recipe';
+							this.manage_activePane = this.manage_smartButtonProgress.steps;
+							this.showStickySubmit = true;
+						}
+					}
+				},
+
+				/**** OptionsView Methods ****/
+
 
 				/**** Utilities ****/
 				//used for displaying the ETA of the recipe
@@ -2693,11 +2797,9 @@
 					script.src = link;
 					return script;
 				},
-				cleanAndPrepareForUpload: function(recipe) {
-					//
-				},
 
 				/**** 3rd Party Methods & APIs ****/
+				//RecipeView
 				initRecipeViewQuill: function () {
 					this.quillRecipeViewInstance = new Quill('#recipeViewEditor', {
 						modules: {
@@ -2743,89 +2845,40 @@
 						/* jshint ignore:end */
 					}
 				},
-
-
-
-
-
-
-
-
-
-				//Explore pane
-				checkNutritionInfo: function (b, a) {
-					if ((utils.isBlank(this.nCalories)) &&
-						(utils.isBlank(this.nFat)) &&
-						(utils.isBlank(this.nCholesterol)) &&
-						(utils.isBlank(this.nSodium)) &&
-						(utils.isBlank(this.nCarbohydrate)) &&
-						(utils.isBlank(this.nFiber)) &&
-						(utils.isBlank(this.nSugars)) &&
-						(utils.isBlank(this.nProtein))) {
-						this.displayNutrition = 'has any nutritional value';
-					} else {
-						var t = '';
-						//Update display text
-						if (!utils.isBlank(this.nCalories)) {
-							t += this.nCalories + ' calories;';
-						}
-						if (!utils.isBlank(this.nFat)) {
-							t += this.nFat + 'g fat;';
-						}
-						if (!utils.isBlank(this.nCholesterol)) {
-							t += this.nCholesterol + 'mg cholesterol;';
-						}
-						if (!utils.isBlank(this.nSodium)) {
-							t += this.nSodium + 'mg sodium;';
-						}
-						if (!utils.isBlank(this.nCarbohydrate)) {
-							t += this.nCarbohydrate + 'g carbs;';
-						}
-						if (!utils.isBlank(this.nFiber)) {
-							t += this.nFiber + 'g fibers;';
-						}
-						if (!utils.isBlank(this.nSugars)) {
-							t += this.nSugars + 'g sugars;';
-						}
-						if (!utils.isBlank(this.nProtein)) {
-							t += this.nProtein + 'g proteins;';
-						}
-						var u = '';
-						t.split(';').forEach(element => {
-							if (element !== '') {
-								u += element + ', ';
-							}
-						});
-						u = u.replace(/,\s*$/, '');
-						this.displayNutrition = 'has ' + u + ' or less';
-					}
-					this.updateFilters();
-				},
-				/*
-				initQuill: function () {
-					this.quillInstance = new Quill('#editor', {
+				//AddRecipeView
+				initAddRecipeViewQuill: function () {
+					var self = this;
+					this.quillAddRecipeViewInstance = new Quill('#addRecipeViewEditor', {
 						modules: {
 							toolbar: this.toolbarOptions
 						},
 						theme: 'snow'
 					});
-					this.quillInstance.on('text-change', this.onQuillContentChange);
+					this.quillAddRecipeViewInstance.on('text-change', this.onAddRecipeViewQuillContentChange);
 					//Apply GKeyboard fix
-					this.quillInstance.on('editor-change', this.applyGoogleKeyboardFix);
-					this.setQuillContent();
+					this.quillAddRecipeViewInstance.on('editor-change', this.applyGoogleKeyboardFixToAddRecipeView);
+					this.setAddRecipeViewQuillContent();
+					var ocrDescriptionButton = new QuillToolbarButton({
+						icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="999999" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/></svg>`
+					});
+					ocrDescriptionButton.onClick = function (quill) {
+						new bootstrap.Collapse(self.$refs.ocrDescriptionCollapse);
+						self.$refs.ocrDescriptionCollapse.addEventListener('shown.bs.collapse', self.createDescriptionOCR_DOM());
+					};
+					ocrDescriptionButton.attach(this.quillAddRecipeViewInstance);
 				},
-				onQuillContentChange: function () {
-					this.setQuillContent();
-					this.$emit('input', this.quillContent);
+				onAddRecipeViewQuillContentChange: function () {
+					this.setAddRecipeViewQuillContent();
+					this.$emit('input', this.quillAddRecipeViewContent);
 				},
-				setQuillContent: function () {
-					this.quillContent = this.quillInstance.getText().trim() ? this.quillInstance.root.innerHTML : '';
+				setAddRecipeViewQuillContent: function () {
+					this.quillAddRecipeViewContent = this.quillAddRecipeViewInstance.getText().trim() ? this.quillAddRecipeViewInstance.root.innerHTML : '';
 				},
-				applyGoogleKeyboardFix: function (eventName, ...args) {
-					var self = this;
+				applyGoogleKeyboardFixToAddRecipeView: function (eventName, ...args) {
 					if (eventName === 'text-change') {
+						/* jshint ignore:start */
 						var ops = args[0]['ops'];
-						var oldSelection = self.quillInstance.getSelection();
+						var oldSelection = this.quillAddRecipeViewInstance.getSelection();
 						//Fix for #3
 						if (oldSelection === null || typeof oldSelection === 'undefined') {
 							return;
@@ -2837,155 +2890,66 @@
 							return;
 						}
 
+						var self = this;
 						setTimeout(function () {
-							var newPosition = self.quillInstance.getSelection().index;
+							var newPosition = self.quillAddRecipeViewInstance.getSelection().index;
 							if (newPosition === oldPosition) {
-								self.quillInstance.setSelection(self.quillInstance.getSelection().index + 1, 0);
+								self.quillAddRecipeViewInstance.setSelection(self.quillAddRecipeViewInstance.getSelection().index + 1, 0);
 							}
 						}, 15);
+						/* jshint ignore:end */
 					}
-				},
-				*/
-
-
-				toggleExplorePaneOffcanvas: function (toggleType) {
-					//Set v-if value
-					if (typeof toggleType === 'string') {
-						this.explorePaneOffcanvasType = toggleType;
-					}
-					//Create new offcanvas object if not already created
-					if (this.exploreOffcanvas === null || typeof this.exploreOffcanvas === 'undefined') {
-						this.exploreOffcanvas = new bootstrap.Offcanvas(document.getElementById('explore-pane-filter-offcanvas'));
-					}
-					this.exploreOffcanvas.toggle();
-				},
-				toggleRecipeOffcanvas: function (index) {
-				},
-				
-				//Clear filters
-				clearFilters: function () {
-					var self = this;
-					switch (this.explorePaneOffcanvasType) {
-						case 'tag':
-							self.checkedTagsArray = [];
-							break;
-						case 'time':
-							self.totalRecipeTimeInput = '';
-							self.finishByTimeInput = '';
-							self.finishByTimeInputInMinutes = '';
-							break;
-						case 'ingredient':
-							self.checkedIngredientsArray = [];
-							break;
-						case 'nutrition':
-							self.nCalories = '';
-							self.nFat = '';
-							self.nCholesterol = '';
-							self.nSodium = '';
-							self.nCarbohydrate = '';
-							self.nFiber = '';
-							self.nSugars = '';
-							self.nProtein = '';
-							break;
-						default:
-							//
-					}
-				},
-				editRecipe: function () {
-					//Populate Manage Recipe fields
-					this.manage_recipeName = this.filteredCookbook[this.proto_index].title;
-					this.manage_recipePrepTime = this.filteredCookbook[this.proto_index].prepTime;
-					this.manage_recipeCookTime = this.filteredCookbook[this.proto_index].cookTime;
-					this.manage_recipeTotalTime = this.filteredCookbook[this.proto_index].totalTime;
-					this.manage_recipeActiveTime = this.filteredCookbook[this.proto_index].activeTime;
-					this.manage_recipeYield = this.filteredCookbook[this.proto_index].yield;
-
-					this.manage_coverPhotoURL = this.filteredCookbook[this.proto_index].coverPhotoURL;
-
-					this.filteredCookbook[this.proto_index].blocks.forEach(block => {
-						var o = {};
-						o.header = block.header;
-						o.nCalories = block.nCalories;
-						o.nCarbohydrate = block.nCarbohydrate;
-						o.nCholesterol = block.nCholesterol;
-						o.nFat = block.nFat;
-						o.nFiber = block.nFiber;
-						o.nProtein = block.nProtein;
-						o.nSodium = block.nSodium;
-						o.nSugars = block.nSugars;
-						o.ingredients = [];
-						o.steps = [];
-						block.ingredients.forEach(ingredient => {
-							o.ingredients.push({
-								amount: ingredient.amount,
-								editMode: false,
-								editModeButtonText: 'Edit',
-								value: ingredient.value
-							});
-						});
-						block.steps.forEach(step => {
-							o.steps.push({
-								editMode: false,
-								editModeButtonText: 'Edit',
-								value: step.value
-							});
-						});
-						this.manage_recipeBlocks.push(o);
-					});
-					this.filteredCookbook[this.proto_index].tags.forEach(tag => {
-						this.manage_recipeTagHolder.push({
-							editMode: false,
-							editModeButtonText: 'Edit',
-							value: tag
-						});
-					});
-
-					this.quillContent = this.filteredCookbook[this.proto_index].description;
-					this.quillInstance.clipboard.dangerouslyPasteHTML(1, this.filteredCookbook[this.proto_index].description);
-					//Remove newline character that shows up
-					this.quillInstance.deleteText(0, 1);
-
-					//Change DOM from Add to Edit
-					this.$refs.addRecipeButton.dataset.psButtonType = 'manage';
-
-					//Add listener
-					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.recipeViewListener);
-
-					this.recipeOffcanvas.hide();
-				},
-				checkForCancelRecipe: function () {
-					//Check if the user closed out of an edit screen
-					if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
-						this.cleanupManageRecipe();
-					}
-				},
-				/*
-				deleteRecipe: function () {
-					//Add listener
-					this.$refs.recipeView.addEventListener('hidden.bs.offcanvas', this.deleteRecipeViewListener);
-					this.recipeOffcanvas.hide();
-				},
-				*/
-				deleteRecipeViewListener: function () {
-					//Remove recipeView listener
-					this.$refs.recipeView.removeEventListener('hidden.bs.offcanvas', this.deleteRecipeViewListener);
-					this.deleteRecipeOffcanvas.show();
-				},
-				deleteRecipeHelper: function () {
-					/*
-					//Remove all references to this recipe from indices
-					//this.index_times.remove(docIDToDelete, this.filteredCookbook[this.proto_index].totalTime);
-
-					//Delete old recipe in cookbook
-					this.cookbook.splice(this.proto_index, 1);
-
-					//Rebuild tags and ingredients array by doing the thing I'm avoiding
-
-					//Execute cloud variables
-					*/
 				},
 				//Manage recipe methods
 				//TODO: when the user clicks on the X button for FilePond, destroy CropperJS instance (if it exists)
+				createCoverPhoto_DOM: function () {
+					var self = this;
+					if (this.manage_filePondCoverPhoto !== null) {
+						return;
+					}
+					this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
+					this.manage_filePondCoverPhoto.setOptions({
+						labelIdle: 'Drag & drop your file or <span class="filepond--label-action"> Browse </span>',
+						imageResizeMode: 'contain',
+						imageCropAspectRatio: 1,
+						imageResizeTargetWidth: 96,
+						imageTransformVariantsIncludeOriginal: true,
+						onpreparefile: (fileItem, outputFiles) => {
+							var u = uuidv4().toString();
+							outputFiles.forEach(output => {
+								var fileName = u;
+								var isThumbnail = false;
+								
+								const img = new Image();
+								img.onload = function() {
+									if (img.width == 96) {
+										fileName += '_thumb';
+										isThumbnail = true;
+									}
+									var fileEndingRegex = /(?:\.([^.]+))?$/;
+									var fileType = fileEndingRegex.exec(output.file.name)[1];
+									fileName += '.';
+									fileName += fileType;
+									var metadata = {
+										contentType: output.file.type,
+									};
+									
+									uploadCoverPhoto({file: output.file, name: fileName, meta: metadata}).then(function(downloadURL) {
+										console.log(downloadURL);
+										if (isThumbnail) {
+											self.manage_coverPhotoThumbnail = downloadURL;
+										} else {
+											self.manage_coverPhotoURL = downloadURL;
+										}
+									});
+									
+								};
+								img.src = URL.createObjectURL(output.file);
+								
+							});
+						}
+					});
+				},
 				createDescriptionOCR_DOM: function () {
 					var self = this;
 					if (this.ocr_DescriptionFilePond !== null) {
@@ -3008,7 +2972,7 @@
 								let meta = {
 									contentType: file.type,
 								};
-
+								
 								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, meta);
 
 								uploadTask.on('state_changed', (snapshot) => {
@@ -3018,7 +2982,7 @@
 									error('Error uploading file: ' + e);
 								}, () => {
 									//Give user some sort of indications that something is going on behind the scenes
-									self.quillInstance.setText('Loading...');
+									self.quillAddRecipeViewInstance.setText('Loading...');
 
 									//Perform upload to Firebase storage
 									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
@@ -3036,7 +3000,7 @@
 											//Instance may not exist yet 
 										}
 
-										self.quillInstance.setText(res.data.recognizedText);
+										self.quillAddRecipeViewInstance.setText(res.data.recognizedText);
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
 									}).catch(err => {
 										//console.log(err.response.data.message);
@@ -3053,7 +3017,14 @@
 						}
 					});
 				},
-				createIngredientsOCR_DOM: function() {
+				handleDescriptionOCRCrop: function() {
+					this.ocr_DescriptionPondEditor.onconfirm(utils.getCropData(this.ocr_DescriptionCropperObject.getData(), this.ocr_DescriptionCropperObject.getCanvasData()));
+					this.ocr_DescriptionEditMode = false;
+					this.ocr_DescriptionCropperObject.destroy();
+					this.ocr_DescriptionCropperObject = null;
+					document.getElementById('ocrDescriptionCropWrapper').innerHTML = "";
+				},
+				createIngredientsOCR_DOM: function () {
 					var self = this;
 					if (this.ocr_IngredientsFilePond !== null) {
 						return;
@@ -3072,12 +3043,12 @@
 								var fileEndingRegex = /(?:\.([^.]+))?$/;
 								var fileType = fileEndingRegex.exec(file.name)[1];
 								var fileName = uuidv4() + '.' + fileType;
-								var meta = {
+								let meta = {
 									contentType: file.type,
 								};
-					
+								
 								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, meta);
-					
+
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
@@ -3093,34 +3064,28 @@
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
 											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
 										});
-					
+
 										try {
 											self.ocr_IngredientsCropperObject.destroy();
 										} catch (e) {
 											//Instance may not exist yet 
 										}
 
-										//Clear the currently logged ingredients because the user has most likely done a crop
-										// and we don't want duplicates
-										self.manage_recipeBlockIngredients = [];
 										res.data.recognizedText.forEach(ingredient => {
-											self.$refs.manage_ing_amount.classList.remove('is-invalid');
 											var s = nlp.parseIngredient(ingredient);
-											self.manage_recipeBlockIngredients.push({
+											self.manage_recipeSections[0].ingredients.push({
 												amount: s.amount,
 												value: s.ingredient,
-												editMode: false,
-												editModeButtonText: 'Edit'
+												isDeleted: false
 											});
 										});
-					
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
 									}).catch(err => {
-										//console.log(err.response.data.message);
-										utils.reportError('Error', err.toString(), 'Functions error reported. Doc ID: ' + err.response.data.message.toString());
+										utils.reportError('Error', err.toString(), 'Functions error reported.');
+										console.log(err.toString());
 									});
 								});
-					
+
 								return {
 									abort: () => {
 										abort();
@@ -3129,6 +3094,13 @@
 							}
 						}
 					});
+				},
+				handleIngredientsOCRCrop: function() {
+					this.ocr_IngredientsPondEditor.onconfirm(utils.getCropData(this.ocr_IngredientsCropperObject.getData(), this.ocr_IngredientsCropperObject.getCanvasData()));
+					this.ocr_IngredientsEditMode = false;
+					this.ocr_IngredientsCropperObject.destroy();
+					this.ocr_IngredientsCropperObject = null;
+					document.getElementById('ocrIngredientsCropWrapper').innerHTML = "";
 				},
 				createStepsOCR_DOM: function() {
 					var self = this;
@@ -3177,22 +3149,19 @@
 											//Instance may not exist yet 
 										}
 
-										//Clear the currently logged steps because the user has most likely done a crop
-										// and we don't want duplicates
-										self.manage_recipeBlockSteps = [];
 										var s = res.data.recognizedText.split('\n');
 										s.forEach(step => {
-											self.manage_recipeBlockSteps.push({
+											self.manage_recipeSections[0].steps.push({
 												value: step,
-												editMode: false,
-												editModeButtonText: 'Edit'
+												isDeleted: false
 											});
 										});
 					
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
 									}).catch(err => {
 										console.log(err.response.data);
-										utils.reportError('Error', err.toString(), 'Functions error reported. Doc ID: ' + err.response.data.message.toString());
+										utils.reportError('Error', err.toString(), 'Functions error reported.');
+										console.log(err.toString());
 									});
 								});
 					
@@ -3205,485 +3174,16 @@
 						}
 					});
 				},
-				createCoverPhoto_DOM: function () {
-					var self = this;
-					if (this.manage_filePondCoverPhoto !== null) {
-						return;
-					}
-					this.manage_filePondCoverPhoto = FilePond.create(document.getElementById('coverPhotoURLInput'));
-					this.manage_filePondCoverPhoto.setOptions({
-						labelIdle: 'Drag & drop your file or <span class="filepond--label-action"> Browse </span>',
-						imageResizeMode: 'contain',
-						imageCropAspectRatio: 1,
-						imageResizeTargetWidth: 96,
-						imageTransformVariantsIncludeOriginal: true,
-						onpreparefile: (fileItem, outputFiles) => {
-							var u = uuidv4();
-							outputFiles.forEach(output => {
-								var fileName = u;
-								var isThumbnail = false;
-								const img = new Image();
-								img.onload = function() {
-									if (img.width == 96) {
-										fileName += '_thumb';
-										isThumbnail = true;
-									}
-									var fileEndingRegex = /(?:\.([^.]+))?$/;
-									var fileType = fileEndingRegex.exec(output.file.name)[1];
-									fileName += '.';
-									fileName += fileType;
-									var metadata = {
-										contentType: output.file.type,
-									};
-									uploadCoverPhoto({file: output.file, name: fileName, meta: metadata}).then(function(downloadURL) {
-										console.log(downloadURL);
-										if (isThumbnail) {
-											self.manage_coverPhotoThumbnail = downloadURL;
-										} else {
-											self.manage_coverPhotoURL = downloadURL;
-										}
-									});
-								};
-								img.src = URL.createObjectURL(output.file);
-							});
-						}
-					});
-				},
-				updateSmartButtonText: function () {
-					//Check text to set for smart button
-					if (this.$refs.manageOverviewAccordionButton.classList.contains('show')) {
-						if (!this.showStickySubmit) {
-							this.manage_smartButtonText = 'Cover Photo »';
-						}
-						this.manage_activePane = this.manage_smartButtonProgress.overview;
-					}
-					if (this.$refs.manageCoverPhotoAccordionButton.classList.contains('show')) {
-						if (!this.showStickySubmit) {
-							this.manage_smartButtonText = 'Time & Servings »';
-						}
-						this.manage_activePane = this.manage_smartButtonProgress.coverPhoto;
-					}
-					if (this.$refs.manageTimeServingsAccordionButton.classList.contains('show')) {
-						if (!this.showStickySubmit) {
-							this.manage_smartButtonText = 'Recipe Ingredients »';
-						}
-						this.manage_activePane = this.manage_smartButtonProgress.timeServings;
-					}
-					if (this.$refs.manageSectionsAccordionButton.classList.contains('show')) {
-						//Bootstrap 5 has a bug related to nav tabs inside an accordion -
-						// if the user expands other sections of the accordion, the "show" class of the active (hidden)
-						// tab is removed automatically. We need to overcome this by finding the "active" class
-						// and adding the "show" class to the corresponding nav tab content
-						if (this.$refs.manageIngredientsTab.classList.contains('active')) {
-							if (!this.$refs.manageIngredientsSectionButton.classList.contains('show')) {
-								this.$refs.manageIngredientsSectionButton.classList.add('active');
-								this.$refs.manageIngredientsSectionButton.classList.add('show');
-							}
-							if (!this.showStickySubmit) {
-								this.manage_smartButtonText = 'Recipe Steps »';
-							}
-							this.manage_activePane = this.manage_smartButtonProgress.ingredients;
-						}
-						if (this.$refs.manageStepsTab.classList.contains('active')) {
-							if (!this.$refs.manageStepsSectionButton.classList.contains('show')) {
-								this.$refs.manageStepsSectionButton.classList.add('active');
-								this.$refs.manageStepsSectionButton.classList.add('show');
-							}
-							if (!this.showStickySubmit) {
-								this.manage_smartButtonText = 'Recipe Nutrition »';
-							}
-							this.manage_activePane = this.manage_smartButtonProgress.steps;
-						}
-						if (this.$refs.manageNutritionTab.classList.contains('active')) {
-							if (!this.$refs.manageNutritionSectionButton.classList.contains('show')) {
-								this.$refs.manageNutritionSectionButton.classList.add('active');
-								this.$refs.manageNutritionSectionButton.classList.add('show');
-							}
-							this.manage_smartButtonText = 'Submit Recipe';
-							this.manage_activePane = this.manage_smartButtonProgress.nutrition;
-							this.showStickySubmit = true;
-						}
-					}
-				},
-				undoDeleteClicked: function () {
-					this.undoObject.f(this);
-					clearTimeout(this.undoTimeOut);
-				},
-				undoDeleteTimeOut: function () {
-					if (!this.$refs.undoContainer.classList.contains('undo-collapsed')) {
-						this.$refs.undoContainer.classList.add('undo-collapsed');
-						this.undoObject = null;
-
-					}
-				},
-				addTag: function () {
-					if (utils.isString(this.manage_recipeTagInput)) {
-						this.manage_recipeTagHolder.push({
-							value: this.manage_recipeTagInput.trim(),
-							editMode: false,
-							editModeButtonText: 'Edit'
-						});
-						this.manage_recipeTagInput = '';
-					}
-				},
-				handleCrop: function (type) {
-					var self = this;
-					var cropData = null;
-					var canvasData = null;
-					switch (type) {
-						case 'description':
-							cropData = this.ocr_DescriptionCropperObject.getData();
-							canvasData = this.ocr_DescriptionCropperObject.getCanvasData();
-							break;
-						case 'ingredients':
-							cropData = this.ocr_IngredientsCropperObject.getData();
-							canvasData = this.ocr_IngredientsCropperObject.getCanvasData();
-							break;
-						case 'steps':
-							cropData = this.ocr_StepsCropperObject.getData();
-							canvasData = this.ocr_StepsCropperObject.getCanvasData();
-							break;
-						default:
-							break;
-					}
-
-					//Ratio of selected crop area
-					var cropAreaRatio = cropData.height / cropData.width;
-
-					//Center point of crop area in percent
-					var percentX = (cropData.x + cropData.width / 2) / canvasData.naturalWidth;
-					var percentY = (cropData.y + cropData.height / 2) / canvasData.naturalHeight;
-
-					//Calculate available space round image center position
-					var cx = percentX > 0.5 ? 1 - percentX : percentX;
-					var cy = percentY > 0.5 ? 1 - percentY : percentY;
-
-					//Calculate image rectangle respecting space round image from crop area
-					var width = canvasData.naturalWidth;
-					var height = width * cropAreaRatio;
-
-					if (height > canvasData.naturalHeight) {
-						height = canvasData.naturalHeight;
-						width = height / cropAreaRatio;
-					}
-					var rectWidth = cx * 2 * width;
-					var rectHeight = cy * 2 * height;
-
-					//Calculate zoom
-					//If the crop rectangle is TALLER than wider, use Math.min
-					//If the crop rectangle is WIDER than taller, use Math.max
-					var zoom = 0.0;
-					if (rectHeight / cropData.height > rectWidth / cropData.width) {
-						zoom = Math.min(rectWidth / cropData.width, rectHeight / cropData.height);
-					} else {
-						zoom = Math.max(rectWidth / cropData.width, rectHeight / cropData.height);
-					}
-					//TODO: Cropper does not quite nail edges. If a taller crop rectangle shares a border
-					// with the image, it seems to include superfluous detail.
-					//Use https://github.com/pqina/filepond-plugin-image-edit/issues/1 as reference
-
-					var payload = {
-						data: {
-							crop: {
-								center: {
-									x: percentX,
-									y: percentY
-								},
-								flip: {
-									horizontal: cropData.scaleX < 0,
-									vertical: cropData.scaleY < 0
-								},
-								zoom: zoom,
-								//There were some rotation issues with certain types of photos. Switched to 0 rotation
-								rotation: 0,
-								aspectRatio: cropAreaRatio
-							}
-						}
-					};
-
-					switch (type) {
-						case 'description':
-							self.ocr_DescriptionPondEditor.onconfirm(payload);
-							self.ocr_DescriptionEditMode = false;
-							self.ocr_DescriptionCropperObject.destroy();
-							self.ocr_DescriptionCropperObject = null;
-							document.getElementById('ocrDescriptionCropWrapper').innerHTML = "";
-							break;
-						case 'ingredients':
-							self.ocr_IngredientsPondEditor.onconfirm(payload);
-							self.ocr_IngredientsEditMode = false;
-							self.ocr_IngredientsCropperObject.destroy();
-							self.ocr_IngredientsCropperObject = null;
-							document.getElementById('ocrIngredientsCropWrapper').innerHTML = "";
-							break;
-						case 'steps':
-							self.ocr_StepsPondEditor.onconfirm(payload);
-							self.ocr_StepsEditMode = false;
-							self.ocr_StepsCropperObject.destroy();
-							self.ocr_StepsCropperObject = null;
-							document.getElementById('ocrStepsCropWrapper').innerHTML = "";
-							break;
-						default:
-							break;
-					}
-				},
-				pasteFromClipboard: function (pasteDestination) {
-					var self = this;
-					navigator.clipboard.readText()
-						.then(text => {
-							//Split by newline character
-							var lines = text.split('\n');
-							switch (pasteDestination) {
-								case 'tags':
-									lines.forEach(line => {
-										if (!utils.isEmpty(line)) {
-											try {
-												self.manage_recipeTagHolder.push({
-													value: utils.capitalizeFirstLetter(line.trim()),
-													editMode: false,
-													editModeButtonText: 'Edit'
-												});
-											} catch (e) {
-												console.log(e);
-											}
-										}
-									});
-									break;
-								case 'ingredients':
-									lines.forEach(line => {
-										if (!utils.isEmpty(line)) {
-											var s = nlp.parseIngredient(line);
-											self.manage_recipeBlockIngredients.push({
-												amount: s.amount,
-												value: s.ingredient,
-												editMode: false,
-												editModeButtonText: 'Edit'
-											});
-										}
-									});
-									break;
-								case 'steps':
-									lines.forEach(line => {
-										if (!utils.isEmpty(line)) {
-											try {
-												self.manage_recipeBlockSteps.push({
-													value: utils.capitalizeFirstLetter(line.trim()),
-													editMode: false,
-													editModeButtonText: 'Edit'
-												});
-											} catch (e) {
-												console.log(e);
-											}
-										}
-									});
-									break;
-								default:
-									break;
-							}
-						})
-						.catch(err => {
-							console.error('Failed to read clipboard contents: ', err);
-						});
-				},
-				editTag: function (index) {
-					if (!this.manage_recipeTagHolder[index].editMode) {
-						this.manage_recipeTagHolder[index].editMode = true;
-						this.manage_recipeTagHolder[index].editModeButtonText = 'Update';
-						//If update button is being clicked
-					} else {
-						if (this.manage_recipeTagHolder[index].value.trim() === '' || this.manage_recipeTagHolder[index].value.trim() === null) {
-							return;
-						}
-						this.manage_recipeTagHolder[index].editMode = false;
-						this.manage_recipeTagHolder[index].editModeButtonText = 'Edit';
-					}
-				},
-				deleteTag: function (index) {
-					this.undoObject = {
-						o: this.manage_recipeTagHolder[index],
-						i: index,
-						f: function (self) {
-							self.manage_recipeTagHolder.splice(self.undoObject.i, 0, self.undoObject.o);
-							self.$refs.undoContainer.classList.add('undo-collapsed');
-						}
-					};
-					this.manage_recipeTagHolder.splice(index, 1);
-					this.undoText = 'Tag deleted';
-
-					this.$refs.undoContainer.classList.remove('undo-collapsed');
-
-					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
-				},
-				autofillActiveTime: function () {
-					this.manage_recipeActiveTime = (utils.isNumber(this.manage_recipePrepTime) && utils.isNumber(this.manage_recipeCookTime)) ? (parseInt(this.manage_recipePrepTime) + parseInt(this.manage_recipeCookTime)).toString() : 0;
-				},
-				addIngredient: function () {
-					this.$refs.manage_ing_amount.classList.remove('is-invalid');
-					if (!utils.isString(this.manage_recipeBlockIngredientValue)) return;
-					var s = nlp.parseIngredient(this.manage_recipeBlockIngredientValue);
-					this.manage_recipeBlockIngredients.push({
-						amount: s.amount,
-						value: s.ingredient,
-						editMode: false,
-						editModeButtonText: 'Edit'
-					});
-
-					this.manage_recipeBlockIngredientValue = '';
-				},
-				editIngredient: function (index) {
-					//If edit button is being clicked
-					if (!this.manage_recipeBlockIngredients[index].editMode) {
-						this.manage_recipeBlockIngredients[index].editMode = true;
-						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Update';
-						//If update button is being clicked
-					} else {
-						if (this.manage_recipeBlockIngredients[index].value.trim() === '' || this.manage_recipeBlockIngredients[index].value.trim() === null) {
-							return;
-						}
-						this.manage_recipeBlockIngredients[index].editMode = false;
-						this.manage_recipeBlockIngredients[index].editModeButtonText = 'Edit';
-					}
-				},
-				deleteIngredient: function (index) {
-					this.undoObject = {
-						o: this.manage_recipeBlockIngredients[index],
-						i: index,
-						f: function (self) {
-							self.manage_recipeBlockIngredients.splice(self.undoObject.i, 0, self.undoObject.o);
-							self.$refs.undoContainer.classList.add('undo-collapsed');
-						}
-					};
-					this.manage_recipeBlockIngredients.splice(index, 1);
-					this.undoText = 'Ingredient deleted';
-
-					this.$refs.undoContainer.classList.remove('undo-collapsed');
-
-					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
-				},
-				addStep: function () {
-					this.$refs.manageStepRef.classList.remove('is-invalid');
-					if ((this.manage_recipeBlockStepValue.trim() === '' || this.manage_recipeBlockStepValue.trim() === null) && this.manage_recipeBlockSteps.length === 0) {
-						this.$refs.manageStepRef.classList.add('is-invalid');
-						return;
-					}
-					this.manage_recipeBlockSteps.push({
-						value: this.manage_recipeBlockStepValue.trim(),
-						editMode: false,
-						editModeButtonText: 'Edit'
-					});
-					this.manage_recipeBlockStepValue = '';
-				},
-				editStep: function (index) {
-					//If edit button is being clicked
-					if (!this.manage_recipeBlockSteps[index].editMode) {
-						this.manage_recipeBlockSteps[index].editMode = true;
-						this.manage_recipeBlockSteps[index].editModeButtonText = 'Update';
-						//If update button is being clicked
-					} else {
-						if (this.manage_recipeBlockSteps[index].value.trim() === '' || this.manage_recipeBlockSteps[index].value.trim() === null) {
-							return;
-						}
-						this.manage_recipeBlockSteps[index].editMode = false;
-						this.manage_recipeBlockSteps[index].editModeButtonText = 'Edit';
-					}
-				},
-				deleteStep: function (index) {
-					this.undoObject = {
-						o: this.manage_recipeBlockSteps[index],
-						i: index,
-						f: function (self) {
-							self.manage_recipeBlockSteps.splice(self.undoObject.i, 0, self.undoObject.o);
-							self.$refs.undoContainer.classList.add('undo-collapsed');
-						}
-					};
-					this.manage_recipeBlockSteps.splice(index, 1);
-					this.undoText = 'Step deleted';
-
-					this.$refs.undoContainer.classList.remove('undo-collapsed');
-
-					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
-				},
-				addBlock: function () {
-					this.$refs.manageStepRef.classList.remove('is-invalid');
-					if (this.manage_recipeBlockSteps.length < 1) {
-						this.$refs.manageStepRef.classList.add('is-invalid');
-						return;
-					}
-					this.manage_recipeBlocks.push({
-						header: {
-							value: 'Recipe',
-							editMode: false
-						},
-						ingredients: this.manage_recipeBlockIngredients,
-						steps: this.manage_recipeBlockSteps,
-						nCalories: utils.isNumber(this.manage_nCalories) ? parseInt(this.manage_nCalories) : 0,
-						nCarbohydrate: utils.isNumber(this.manage_nCarbohydrate) ? parseInt(this.manage_nCarbohydrate) : 0,
-						nCholesterol: utils.isNumber(this.manage_nCholesterol) ? parseInt(this.manage_nCholesterol) : 0,
-						nFat: utils.isNumber(this.manage_nFat) ? parseInt(this.manage_nFat) : 0,
-						nFiber: utils.isNumber(this.manage_nFiber) ? parseInt(this.manage_nFiber) : 0,
-						nProtein: utils.isNumber(this.manage_nProtein) ? parseInt(this.manage_nProtein) : 0,
-						nSodium: utils.isNumber(this.manage_nSodium) ? parseInt(this.manage_nSodium) : 0,
-						nSugars: utils.isNumber(this.manage_nSugars) ? parseInt(this.manage_nSugars) : 0
-					});
-					this.manage_recipeBlockHeader = '';
-					this.manage_recipeBlockIngredients = [];
-					this.manage_recipeBlockSteps = [];
-					this.manage_nCalories = '';
-					this.manage_nCarbohydrate = '';
-					this.manage_nCholesterol = '';
-					this.manage_nFat = '';
-					this.manage_nFiber = '';
-					this.manage_nProtein = '';
-					this.manage_nSodium = '';
-					this.manage_nSugars = '';
-				},
-				editHeader: function (index) {
-					//If edit button is being clicked
-					if (!this.manage_recipeBlocks[index].header.editMode) {
-						this.manage_recipeBlocks[index].header.editMode = true;
-						//If update button is being clicked
-					} else {
-						if (this.manage_recipeBlocks[index].header.value.trim() === '' || this.manage_recipeBlocks[index].header.value.trim() === null) {
-							return;
-						}
-						this.manage_recipeBlocks[index].header.editMode = false;
-					}
-				},
-				editBlock: function (index) {
-					this.manage_recipeBlockHeader = this.manage_recipeBlocks[index].header;
-					this.manage_recipeBlockIngredients = this.manage_recipeBlocks[index].ingredients;
-					this.manage_recipeBlockSteps = this.manage_recipeBlocks[index].steps;
-
-					this.manage_nCalories = this.manage_recipeBlocks[index].nCalories;
-					this.manage_nCarbohydrate = this.manage_recipeBlocks[index].nCarbohydrate;
-					this.manage_nCholesterol = this.manage_recipeBlocks[index].nCholesterol;
-					this.manage_nFat = this.manage_recipeBlocks[index].nFat;
-					this.manage_nFiber = this.manage_recipeBlocks[index].nFiber;
-					this.manage_nProtein = this.manage_recipeBlocks[index].nProtein;
-					this.manage_nSodium = this.manage_recipeBlocks[index].nSodium;
-					this.manage_nSugars = this.manage_recipeBlocks[index].nSugars;
-
-					this.deleteBlock(index);
-				},
-				deleteBlock: function (index) {
-					this.undoObject = {
-						o: this.manage_recipeBlocks[index],
-						i: index,
-						f: function (self) {
-							self.manage_recipeBlocks.splice(self.undoObject.i, 0, self.undoObject.o);
-							self.$refs.undoContainer.classList.add('undo-collapsed');
-						}
-					};
-					this.manage_recipeBlocks.splice(index, 1);
-					this.undoText = 'Section deleted';
-
-					this.$refs.undoContainer.classList.remove('undo-collapsed');
-
-					this.undoTimeOut = setTimeout(this.undoDeleteTimeOut, this.undo_length_long);
+				handleStepsOCRCrop: function() {
+					this.ocr_StepsPondEditor.onconfirm(utils.getCropData(this.ocr_StepsCropperObject.getData(), this.ocr_StepsCropperObject.getCanvasData()));
+					this.ocr_StepsEditMode = false;
+					this.ocr_StepsCropperObject.destroy();
+					this.ocr_StepsCropperObject = null;
+					document.getElementById('ocrStepsCropWrapper').innerHTML = "";
 				},
 				submitManagedRecipe: function () {
 					var self = this;
-					if (this.manage_smartButtonText !== 'Submit Recipe') {
+					if (!this.showStickySubmit) {
 						//Activate smart button
 						var el = null;
 						var bs = null;
@@ -3734,16 +3234,26 @@
 					}
 
 					//Check description
-					if (utils.isBigString(this.quillContent)) {
-						serializedRecipe.description = this.quillContent;
+					if (utils.isBigString(this.quillAddRecipeViewContent)) {
+						serializedRecipe.description = this.quillAddRecipeViewContent;
 					} else {
-						this.$refs.recipeDescriptionRef.classList.add('is-invalid');
+						this.$refs.addRecipeViewEditor.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
 					//Serialize tag array
 					if (this.manage_recipeTagHolder.length > 0) {
 						serializedRecipe.tags = _.uniq(_.pluck(this.manage_recipeTagHolder, 'value'), false);
+					}
+
+					//Check special equipment
+					if (this.manage_specialEquipmentHolder.length > 0) {
+						serializedRecipe.specialEquipment = _.uniq(_.pluck(this.manage_specialEquipmentHolder, 'value'), false);
+					}
+
+					//Check notes
+					if (this.manage_recipeNotesHolder.length > 0) {
+						serializedRecipe.notes = _.uniq(_.pluck(this.manage_recipeNotesHolder, 'value'), false);
 					}
 
 					//Check prep time
@@ -3778,188 +3288,87 @@
 						anyInvalid = true;
 					}
 
-					if (utils.isString(this.manage_recipeYield.toString().trim())) {
+					if (utils.isString(this.manage_recipeYield.toString())) {
 						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
 					} else {
 						this.$refs.recipeYieldRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
 
-					//Check if any blocks have been added
-					if (this.manage_recipeBlocks.length < 1) {
-						//The user probably didn't add a section. Check if there's any steps
-						if (this.manage_recipeBlockSteps < 1) {
-							this.$refs.manageStepRef.classList.add('is-invalid');
-							anyInvalid = true;
-						} else {
-							//TODO: Package steps & ingredients to a section
-						}
-					}
-
-					//Serialize recipe block for push to Firebase
-					if (this.manage_recipeBlocks.length > 0) {
-						serializedRecipe.blocks = [];
-						/* jshint ignore:start */
-						for (var i = 0; i < this.manage_recipeBlocks.length; i++) {
+					//Serialize recipe sections
+					if (this.manage_recipeSections.steps.length > 0) {
+						serializedRecipe.sections = [];
+						for (var i = 0; i < this.manage_recipeSections.length; i++) {
 							let o = {};
-							o.header = this.manage_recipeBlocks[i].header;
-							o.ingredients = _.map(this.manage_recipeBlocks[i].ingredients, function (row) {
-								return _.omit(row, ['editMode', 'editModeButtonText']);
+							
+							if (typeof this.manage_recipeSections.title === 'undefined') {
+								o.title = 'Recipe';
+							} else {
+								o.title = this.manage_recipeSections.title;
+							}
+							
+							o.calories = 0;
+							o.fat = 0;
+							o.cholesterol = 0;
+							o.sodium = 0;
+							o.totalCarbs = 0;
+							o.fiber = 0;
+							o.sugar = 0;
+							o.protein = 0;
+
+							o.ingredients = _.map(this.manage_recipeSections[i].ingredients, function (row) {
+								return _.omit(row, ['isDeleted']);
 							});
 
-							o.steps = _.map(this.manage_recipeBlocks[i].steps, function (row) {
-								return _.omit(row, ['editMode', 'editModeButtonText']);
+							o.steps = _.map(this.manage_recipeSections[i].steps, function (row) {
+								return _.omit(row, ['isDeleted']);
 							});
 
-							//Serialize nutrition facts
-							o.nCalories = this.manage_recipeBlocks[i].nCalories;
-							o.nCarbohydrate = this.manage_recipeBlocks[i].nCarbohydrate;
-							o.nCholesterol = this.manage_recipeBlocks[i].nCholesterol;
-							o.nFat = this.manage_recipeBlocks[i].nFat;
-							o.nFiber = this.manage_recipeBlocks[i].nFiber;
-							o.nProtein = this.manage_recipeBlocks[i].nProtein;
-							o.nSodium = this.manage_recipeBlocks[i].nSodium;
-							o.nSugars = this.manage_recipeBlocks[i].nSugars;
-
-							serializedRecipe.blocks.push(o);
+							serializedRecipe.sections.push(o);
 						}
-						/* jshint ignore:end */
 					} else {
+						this.$refs.manageStepRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
-
-					return;
-
-					/* jshint ignore:start */
+					
 					if (anyInvalid) return;
 
 					this.isRecipeSubmitDisabled = true;
 
-					serializedRecipe.docID = uuidv4();
-					serializedRecipe.addDate = Date.now();
-
-					if (this.$refs.addRecipeButton.dataset.psButtonType == 'add') {
-						this.manage_coverPhotoURL !== '' ? serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL : serializedRecipe.coverPhotoURL = '';
-						//Add runtime-injected ID for index
-						serializedRecipe.id = this.injectedSearchIndexID;
-						//Increase for next time
-						this.injectedSearchIndexID++;
-						//Push serialized recipe into sorted position to cookbook
-						this.cookbook.push(serializedRecipe);
-					} else if (this.$refs.addRecipeButton.dataset.psButtonType == 'manage') {
+					serializedRecipe.docID = uuidv4().toString();
+					let now = Date.now();
+					serializedRecipe.dateAdded = now;
+					serializedRecipe.dateModified = now;
+					serializedRecipe.favorite = false;
+					
+					if (this.manage_coverPhotoURL === '') {
+						serializedRecipe.coverPhotoURL = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash.jpg?alt=media&token=ef21ab61-5730-47b8-8ed8-3b9b5b6fa757';
+					} else {
 						serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL;
-
-						var docIDToUpdate = this.filteredCookbook[this.proto_index].docID;
-						serializedRecipe.docID = docIDToUpdate;
-
-						//Inherit same runtime ID
-						serializedRecipe.id = this.filteredCookbook[this.proto_index].id;
-
-						//Remove all references to this recipe from indices
-						//this.index_times.remove(docIDToUpdate, this.filteredCookbook[this.proto_index].totalTime);
-
-						//Remove document from FlexSearch
-						this.flexSearch.remove(this.filteredCookbook[this.proto_index]);
-
-						this.filteredCookbook[this.proto_index].blocks.forEach(block => {
-							this.index_calories.remove(docIDToUpdate, block.nCalories);
-							this.index_carbohydrate.remove(docIDToUpdate, block.nCarbohydrate);
-							this.index_cholesterol.remove(docIDToUpdate, block.nCholesterol);
-							this.index_fat.remove(docIDToUpdate, block.nFat);
-							this.index_fiber.remove(docIDToUpdate, block.nFiber);
-							this.index_protein.remove(docIDToUpdate, block.nProtein);
-							this.index_sodium.remove(docIDToUpdate, block.nSodium);
-							this.index_sugars.remove(docIDToUpdate, block.nSugars);
-						});
-						//Replace old recipe in cookbook 
-						if (this.cookbook.length > 0) {
-							this.cookbook.splice(this.proto_index, 1, serializedRecipe);
-						} else {
-							this.cookbook.push(serializedRecipe);
-						}
-
-						//Rebuild tags and ingredients array by doing the thing I'm avoiding
-						this.cookbook.forEach(recipe => {
-							recipe.tags.forEach(tag => {
-								self.tagsArray = _.union(self.tagsArray, recipe.tags);
-							});
-							recipe.blocks.forEach(block => {
-								//Ingredients
-								block.ingredients.forEach(ingredient => {
-									self.ingredientsArray = _.union(self.ingredientsArray, [utils.capitalizeFirstLetter(ingredient.value)]);
-								});
-							});
-						});
 					}
 
-					//Merge tags to Explore pane
-					this.tagsArray = _.union(Array.from(this.tagsArray), Array.from(_.pluck(this.manage_recipeTagHolder, 'value')));
+					if (this.manage_coverPhotoThumbnail === '') {
+						serializedRecipe.thumbnail = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash_thumbnail.png?alt=media&token=a3e0019c-f553-4c85-97b7-f405ab31609c';
+					} else {
+						serializedRecipe.thumbnail = this.manage_coverPhotoThumbnail;
+					}
 
-					//Insert into index
-					this.flexSearch.add(serializedRecipe);
+					console.log(serializedRecipe);
 
-					//Insert time
-					this.index_times.add(serializedRecipe.docID, serializedRecipe.totalTime);
+					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
+						//Update flex index
+						serializedRecipe.id = self.injectedFlexIndex;
+						self.injectedFlexIndex = self.injectedFlexIndex + 1;
 
-					serializedRecipe.blocks.forEach(block => {
-						//Merge ingredients to Explore pane
-						self.ingredientsArray = _.union(Array.from(self.ingredientsArray), block.ingredients.map(f => {
-							return utils.capitalizeFirstLetter(f.value);
-						}));
-						//Insert nutrition facts
-						this.index_calories.add(serializedRecipe.docID, parseInt(block.nCalories));
-						this.index_carbohydrate.add(serializedRecipe.docID, parseInt(block.nCarbohydrate));
-						this.index_cholesterol.add(serializedRecipe.docID, parseInt(block.nCholesterol));
-						this.index_fat.add(serializedRecipe.docID, parseInt(block.nFat));
-						this.index_fiber.add(serializedRecipe.docID, parseInt(block.nFiber));
-						this.index_protein.add(serializedRecipe.docID, parseInt(block.nProtein));
-						this.index_sodium.add(serializedRecipe.docID, parseInt(block.nSodium));
-						this.index_sugars.add(serializedRecipe.docID, parseInt(block.nSugars));
-					});
+						//Push to cookbook array
+						//Update tags & ingredients filters array
 
-					this.updateFilters();
+						self.isRecipeSubmitDisabled = false;
 
-					//Destructure object before submitting to Firebase
-					//delete keyword seems to modify object in RAM
-					var {
-						id,
-						...sR
-					} = serializedRecipe;
-
-					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(sR).then(function () {
-						self.cleanupManageRecipe();
-						//Toggle offcanvas
-						self.manageOffcanvas.hide();
 					}).catch(function (error) {
 						console.error(error);
 					});
-					/* jshint ignore:end */
-				},
-				cleanupManageRecipe: function () {
-					//Reset DOM
-					this.$refs.addRecipeButton.dataset.psButtonType = 'add';
-
-					//Reset manage recipe values
-					this.manage_recipeName = '';
-					this.manage_recipeTagInput = '';
-					this.manage_recipeTagHolder = [];
-					this.manage_recipePrepTime = '';
-					this.manage_recipeCookTime = '';
-					this.manage_recipeTotalTime = '';
-					this.manage_recipeActiveTime = '';
-					this.manage_recipeYield = '';
-					this.manage_recipeBlocks = [];
-					this.manage_recipeBlockIngredients = [];
-					this.manage_recipeBlockSteps = [];
-					this.manage_recipeBlockHeader = '';
-					this.manage_recipeBlockIngredientValue = '';
-					this.manage_recipeBlockStepValue = '';
-					this.quillInstance.setText('\n');
-
-					//Re-enable submit button
-					this.isRecipeSubmitDisabled = false;
-				},
-				
+				}
 			}
 		});
 

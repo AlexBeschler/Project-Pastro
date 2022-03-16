@@ -6,12 +6,22 @@ var ProjectPastroUtils = function () {
     this._isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/g.test(navigator.userAgent || navigator.vendor || window.opera);
     this._PRICE = 'price_1Im2dgCwcvKw4V4OHGN954pX';
     this._TAX_RATES = ['txr_1Im2egCwcvKw4V4O7Cf3wN4g'];
-    //this._SUCCESS_URL = 'https://project-pastro-c95b1.web.app/app.html';
-    //this._CANCEL_URL = 'https://project-pastro-c95b1.web.app';
+    //this._SUCCESS_URL = 'https://pantryrecipes.app/app.html';
+    //this._CANCEL_URL = 'https://pantryrecipes.app/';
     this._SUCCESS_URL = 'http://localhost:5000/app.html';
     this._CANCEL_URL = 'http://localhost:5000/';
     this._STRIPE_CODE = 'pk_test_51IinkiCwcvKw4V4OGf5Yv6eCKrA3tSXGgUUvF6tPmdlpRmgoX4yq8NApouvHn5Q0BkVre82I9qKDECymsTct3MNx00ekEDzexj';
+    
+    //OptionsView variables
+    this.TWELVE_HOUR_FORMAT_SET = 'is12HourFormatSet';
+    this.TAGS_CHECKED = 'isTagsChecked';
+    this.TIME_CHECKED = 'isTimeChecked';
+    this.INGREDIENTS_CHECKED = 'isIngredientsChecked';
+    this.DARK_MODE_SET = 'isDarkModeSet';
+    this.LEVEL_FONT_SET = 'levelFontSize';
     this.DYSLEXIC_FONT_SET = 'isDyslexicFontSet';
+    this.HIGH_CONTRAST_SET = 'isHighContrastModeSet';
+    
     this.DISPLAY_STATES = {
         VIEW: "view",
         EDIT: "edit",
@@ -47,6 +57,20 @@ var ProjectPastroUtils = function () {
             }
         }
         return result;
+    };
+    this.isEmptyArray = function(array) {
+        if (array.length === 0) {
+            return true;
+        }
+        //Start with the assumption that array is completely empty
+        var isEmpty = true;
+        for (var i = 0; i < array.length; i++) {
+            if (array[i] !== '') {
+                isEmpty = false;
+                break;
+            }
+        }
+        return isEmpty;
     };
 
     this.getRegExpFlags = function (regExp) {
@@ -208,6 +232,62 @@ var ProjectPastroUtils = function () {
             filterIDs = _.union(filterIDs, o);
         });
         return filterIDs;
+    };
+    //Crop data utilities
+    this.getCropData = function(cropData, canvasData) {
+        //Ratio of selected crop area
+        var cropAreaRatio = cropData.height / cropData.width;
+
+        //Center point of crop area in percent
+        var percentX = (cropData.x + cropData.width / 2) / canvasData.naturalWidth;
+        var percentY = (cropData.y + cropData.height / 2) / canvasData.naturalHeight;
+
+        //Calculate available space round image center position
+        var cx = percentX > 0.5 ? 1 - percentX : percentX;
+        var cy = percentY > 0.5 ? 1 - percentY : percentY;
+
+        //Calculate image rectangle respecting space round image from crop area
+        var width = canvasData.naturalWidth;
+        var height = width * cropAreaRatio;
+
+        if (height > canvasData.naturalHeight) {
+            height = canvasData.naturalHeight;
+            width = height / cropAreaRatio;
+        }
+        var rectWidth = cx * 2 * width;
+        var rectHeight = cy * 2 * height;
+
+        //Calculate zoom
+        //If the crop rectangle is TALLER than wider, use Math.min
+        //If the crop rectangle is WIDER than taller, use Math.max
+        var zoom = 0.0;
+        if (rectHeight / cropData.height > rectWidth / cropData.width) {
+            zoom = Math.min(rectWidth / cropData.width, rectHeight / cropData.height);
+        } else {
+            zoom = Math.max(rectWidth / cropData.width, rectHeight / cropData.height);
+        }
+        //TODO: Cropper does not quite nail edges. If a taller crop rectangle shares a border
+        // with the image, it seems to include superfluous detail.
+        //Use https://github.com/pqina/filepond-plugin-image-edit/issues/1 as reference
+
+        return {
+            data: {
+                crop: {
+                    center: {
+                        x: percentX,
+                        y: percentY
+                    },
+                    flip: {
+                        horizontal: cropData.scaleX < 0,
+                        vertical: cropData.scaleY < 0
+                    },
+                    zoom: zoom,
+                    //There were some rotation issues with certain types of photos. Switched to 0 rotation
+                    rotation: 0,
+                    aspectRatio: cropAreaRatio
+                }
+            }
+        };
     };
     //Error Reporting
     /*

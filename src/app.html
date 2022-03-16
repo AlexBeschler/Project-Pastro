@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cookbook | Project Pastro</title>
+    <title>My Cookbook | Pantry</title>
 
     <!-- Custom font for fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
@@ -20,8 +20,8 @@
     <link href="vendor/filepond/css/filepond-plugin-image-preview.min.css" rel="stylesheet">
     <link href="vendor/filepond/css/filepond-plugin-image-edit.min.css" rel="stylesheet">
 
-    <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
+    <script src="vendor/filepond/js/filepond-plugin-image-resize.js"></script>
+    <script src="vendor/filepond/js/filepond-plugin-image-crop.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-transform.min.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-preview.min.js"></script>
     <script src="vendor/filepond/js/filepond-plugin-image-edit.min.js"></script>
@@ -226,7 +226,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterNutrition">
+                <!--div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterNutrition">
                     <div class="col-1">
                         <img src="assets/icons/info-circle.svg">
                     </div>
@@ -234,7 +234,7 @@
                         <h5>Nutrition</h5>
                         <small>None applied</small>
                     </div>
-                </div>
+                </div-->
                 <hr>
                 <ul class="list-group list-group-flush cookbook-list-group">
                     <li class="row d-flex list-group-item recipe-list-group-item"
@@ -568,7 +568,6 @@
                                 </recipe-ingredients-draggable-list>
                                 <div class="d-flex align-items-end">
                                     <input class="form-control mt-2" type="text" placeholder="Add ingredient"
-                                        v-model="ingredientsAddModel"
                                         v-on:keyup.enter="addRecipeIngredientsRecipeView(sectionIndex)"
                                         ref="recipeViewIngredientsInputs">
                                 </div>
@@ -629,7 +628,7 @@
                         <hr>
                     </div>
                     <!-- Nutrition -->
-                    <div class="container mb-4">
+                    <!--div class="container mb-4">
                         <h5 class="lead heading">Nutrition</h5>
                         <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
                             <div class="accordion accordion-flush" :id="'accordionNutrition' + sectionIndex">
@@ -699,7 +698,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div-->
                     <!-- Action buttons -->
                     <div class="container mt-4 py-0 d-flex" style="justify-content: space-around;">
                         <button class="btn btn-large w-100 btn-outline-danger remove-from-sharing"
@@ -716,8 +715,9 @@
                     <img class="right-margin" src="assets/icons/arrow-left-short.svg">
                     <h5>Back</h5>
                 </button>
-                <div class="container">
-                    <!--div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4">
+                <div>
+                    <div id="manageRecipeAccordion" class="accordion accordion-flush manage-accordion-flush mt-4"
+                        ref="manageOverviewAccordionButton">
                         <div class="accordion-item manage-accordion-item accordion-border">
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button pe-1" type="button"
@@ -726,7 +726,7 @@
                                 </button>
                             </h2>
                             <div id="flush-overview" class="accordion-collapse manage-recipe-section collapse show"
-                                data-bs-parent="#manageRecipeAccordion" ref="manageOverviewAccordionButton">
+                                data-bs-parent="#manageRecipeAccordion" ref="addRecipeViewOverviewAccordionItem">
                                 <div class="accordion-body pe-1">
                                     <div class="mb-3">
                                         <div class="form-floating">
@@ -740,18 +740,18 @@
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="editor" class="form-label">Description</label>
-                                        <div id="editor" ref="recipeDescriptionRef"></div>
+                                        <label for="addRecipeViewEditor" class="form-label">Description</label>
+                                        <div id="addRecipeViewEditor" ref="addRecipeViewEditor"></div>
                                         <div class="invalid-feedback">
                                             Please enter a description
                                         </div>
-                                        <div class="mt-2 mb-4 collapse" ref="ocr_DescriptionFilePond">
+                                        <div class="mt-2 mb-4 collapse" ref="ocrDescriptionCollapse">
                                             <input id="ocrDescriptionFilePond" type="file" data-max-file-size="12MB"
                                                 accept="image/jpeg, image/png" />
                                             <div id="ocrDescriptionCropWrapper" class="cropperImg"
                                                 v-show="ocr_DescriptionEditMode"></div>
                                             <button class="btn btn-success" v-show="ocr_DescriptionEditMode"
-                                                @click="handleCrop('description')">Crop</button>
+                                                @click="handleDescriptionOCRCrop">Crop</button>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -759,7 +759,7 @@
                                             <div class="form-floating">
                                                 <input type="text" class="form-control manage-recipe-input me-3"
                                                     id="manage_form_tags" v-model="manage_recipeTagInput"
-                                                    v-on:keyup.enter="addTag" placeholder="Tags" required>
+                                                    v-on:keyup.enter="addTagAddRecipeView" placeholder="Tags" required>
                                                 <label for="manage_form_tags">Tags</label>
                                             </div>
                                         </div>
@@ -767,16 +767,16 @@
                                     <div class="mt-3">
                                         <div class="col-lg-12">
                                             <div v-if="manage_recipeTagHolder.length">
-                                                <sortable-list :lock-axis="'y'" :press-delay.number=100
-                                                    v-model="manage_recipeTagHolder">
-                                                    <sortable-item v-for="(tag, index) in manage_recipeTagHolder"
-                                                        :index="index" :key="index" :tag="tag" :value="tag.value"
-                                                        :edit-mode="tag.editMode"
-                                                        :edit-mode-button-text="tag.editModeButtonText"
-                                                        v-on:edit-tag="editTag(index)"
-                                                        v-on:delete-tag="deleteTag(index)"
+                                                <addrecipeview-tag-draggable-list :lock-axis="'y'"
+                                                    :press-delay.number=100 v-model="manage_recipeTagHolder">
+                                                    <addrecipeview-tag-draggable-item
+                                                        v-for="(tag, index) in manage_recipeTagHolder" :index="index"
+                                                        :key="index" :tag="tag" :value="tag.value"
+                                                        :is-deleted="tag.isDeleted"
+                                                        v-on:delete-tag="deleteTagAddRecipeView(index)"
+                                                        v-on:undo-delete-tag="undoTagAddRecipeView(index)"
                                                         @touchstart.native="scrollStop" @touchend.native="scrollMove" />
-                                                </sortable-list>
+                                                </addrecipeview-tag-draggable-list>
                                             </div>
                                         </div>
                                     </div>
@@ -787,7 +787,7 @@
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button collapsed pe-1" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#flush-cover-photo">
-                                    <span>2</span><span style="margin-left: 1rem;">Cover Photo</span>
+                                    <span>2</span><span style="margin-left: 1rem;">Cover Photo & Notes</span>
                                 </button>
                             </h2>
                             <div id="flush-cover-photo" class="accordion-collapse manage-recipe-section collapse"
@@ -795,6 +795,58 @@
                                 <div class="accordion-body pe-1">
                                     <input id="coverPhotoURLInput" type="file" type="file" data-max-file-size="12MB"
                                         accept="image/jpeg, image/png" />
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input id="manage_form_special_equipment" class="form-control mt-2"
+                                                    type="text" placeholder="Add special equipment"
+                                                    v-model="manage_specialEquipmentInput"
+                                                    v-on:keyup.enter="addSpecialEquipmentAddRecipeView">
+                                                <label for="manage_form_special_equipment">Special Equipment</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="col-lg-12">
+                                            <div v-if="manage_specialEquipmentHolder.length">
+                                                <recipeview-special-equipment-list :lock-axis="'y'"
+                                                    :press-delay.number=100 v-model="manage_specialEquipmentHolder">
+                                                    <recipeview-special-equipment-item
+                                                        v-for="(equipment, index) in manage_specialEquipmentHolder"
+                                                        :index="index" :key="index" :equipment="equipment"
+                                                        :value="equipment.value" @touchstart.native="scrollStop"
+                                                        @touchend.native="scrollMove"
+                                                        v-on:delete-equipment="deleteSpecialEquipmentAddRecipeView(index)"
+                                                        v-on:undo-delete-equipment="undoDeleteSpecialEquipmentAddRecipeView(index)" />
+                                                </recipeview-special-equipment-list>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <div class="form-floating">
+                                                <input id="manage_form_notes" class="form-control mt-2" type="text"
+                                                    placeholder="Add recipe notes" v-model="manage_recipeNotesInput"
+                                                    v-on:keyup.enter="addNotesAddRecipeView">
+                                                <label for="manage_form_notes">Recipe Notes</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="col-lg-12">
+                                            <div v-if="manage_recipeNotesHolder.length">
+                                                <recipe-notes-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                                    v-model="manage_recipeNotesHolder">
+                                                    <recipe-notes-draggable-item
+                                                        v-for="(note, index) in manage_recipeNotesHolder" :index="index"
+                                                        :key="index" :note="note" :value="note.value"
+                                                        @touchstart.native="scrollStop" @touchend.native="scrollMove"
+                                                        v-on:delete-note="deleteNotesAddRecipeView(index)"
+                                                        v-on:undo-delete-note="undoDeleteNotesAddRecipeView(index)" />
+                                                </recipe-notes-draggable-list>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -871,24 +923,19 @@
                             <h2 class="accordion-header">
                                 <button class="accordion-button manage-accordion-button pe-1 collapsed" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#flush-blocks">
-                                    <span>4</span><span style="margin-left: 1rem;">Recipe Sections</span>
+                                    <span>4</span><span style="margin-left: 1rem;">Ingredients & Steps</span>
                                 </button>
                             </h2>
                             <div id="flush-blocks" class="accordion-collapse manage-recipe-section collapse"
                                 data-bs-parent="#manageRecipeAccordion" ref="manageSectionsAccordionButton">
-                                <div class="accordion-body pe-1 pt-1">
-                                    <div class="mb-3">
+                                <div class="accordion-body py-1">
+                                    <div class="mb-0">
                                         <ul class="nav nav-pills manage-recipe-blocks-pills-nav" role="tablist">
                                             <li class="nav-item" role="presentation">
                                                 <button
-                                                    class="nav-link active position-relative manage-recipe-blocks-pills-tab"
+                                                    class="nav-link active position-relative manage-recipe-blocks-pills-tab me-2"
                                                     data-bs-toggle="pill" data-bs-target="#pills-manage-ingredients"
                                                     type="button" role="tab" ref="manageIngredientsTab">Ingredients
-                                                    <span
-                                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                                                        v-if="manage_recipeBlockIngredients.length > 0">
-                                                        {{ manage_recipeBlockIngredients.length }}
-                                                    </span>
                                                 </button>
                                             </li>
                                             <li class="nav-item" role="presentation">
@@ -896,141 +943,208 @@
                                                     class="nav-link position-relative manage-recipe-blocks-pills-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-manage-steps"
                                                     type="button" role="tab" ref="manageStepsTab">Steps
-                                                    <span
-                                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                                                        v-if="manage_recipeBlockSteps.length > 0">
-                                                        {{ manage_recipeBlockSteps.length }}
-                                                    </span>
                                                 </button>
                                             </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button
-                                                    class="nav-link position-relative manage-recipe-blocks-pills-tab"
-                                                    data-bs-toggle="pill" data-bs-target="#pills-manage-nutrition"
-                                                    type="button" role="tab" ref="manageNutritionTab">Nutrition</button>
-                                            </li>
+                                            <!--li class="nav-item" role="presentation">
+                                                <button class="nav-link position-relative manage-recipe-blocks-pills-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-manage-nutrition" type="button" role="tab"
+                                                    ref="manageNutritionTab">Nutrition</button>
+                                            </li-->
                                         </ul>
                                         <div class="tab-content">
-                                            <div class="tab-pane fade active show" id="pills-manage-ingredients"
+                                            <div class="fade collapse active show" id="pills-manage-ingredients"
                                                 role="tabpanel" ref="manageIngredientsSectionButton">
-                                                <div class="my-3">
-                                                    <div class="input-group">
-                                                        <input id="manage_ing_amount"
-                                                            class="form-control manage-recipe-input me-3" type="text"
-                                                            placeholder="Ingredient"
-                                                            v-model="manage_recipeBlockIngredientValue"
-                                                            v-on:keyup.enter="addIngredient" ref="manage_ing_amount">
-                                                        <div id="ingredient-invalid-feedback" class="invalid-feedback">
-                                                        </div>
-                                                        <button class="btn" type="button" data-bs-toggle="collapse"
-                                                            data-bs-target="#ocrIngredientsFilePondWrapper">
-                                                            <img src="assets/icons/camera-fill.svg">
-                                                        </button>
-                                                    </div>
-                                                    <label for="manage_ing_amount" class="form-label mt-1 mb-3">Paste
-                                                        multiple ingredients</label>
-                                                    <div id="ocrIngredientsFilePondWrapper" class="mt-2 mb-4 collapse"
-                                                        ref="ocr_IngredientsFilePond">
+                                                <div class="mb-3">
+                                                    <button class="btn btn-outline-primary w-100 my-4" type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#ocrIngredientsFilePondWrapper">
+                                                        <img src="assets/icons/camera-fill.svg">
+                                                    </button>
+                                                    <div id="ocrIngredientsFilePondWrapper" class="mb-4 collapse"
+                                                        ref="ocrIngredientsFilePondWrapperRef">
                                                         <input id="ocrIngredientsFilePond" type="file"
                                                             data-max-file-size="12MB" accept="image/jpeg, image/png" />
                                                         <div id="ocrIngredientsCropWrapper" class="cropperImg"
                                                             v-show="ocr_IngredientsEditMode"></div>
                                                         <button class="btn btn-success" v-show="ocr_IngredientsEditMode"
-                                                            @click="handleCrop('ingredients')">Crop</button>
+                                                            @click="handleIngredientsOCRCrop">Crop</button>
                                                     </div>
-                                                </div>
-                                                <hr class="margin-top-2"
-                                                    v-if="manage_recipeBlockIngredients.length > 0">
-                                                <div class="mb-3">
-                                                    <div v-if="manage_recipeBlockIngredients.length">
-                                                        <ingredients-draggable-list :lock-axis="'y'"
-                                                            :press-delay.number=100
-                                                            v-model="manage_recipeBlockIngredients">
-                                                            <ingredients-draggable-item
-                                                                v-for="(ingredient, index) in manage_recipeBlockIngredients"
-                                                                :index="index" :key="index" :ingredient="ingredient"
-                                                                :amount="ingredient.amount" :value="ingredient.value"
-                                                                :edit-mode="ingredient.editMode"
-                                                                :edit-mode-button-text="ingredient.editModeButtonText"
-                                                                v-on:edit-ingredient="editIngredient(index)"
-                                                                v-on:delete-ingredient="deleteIngredient(index)"
-                                                                v-on:update-focus="updateIngredientFocus($event)"
-                                                                @touchstart.native="scrollStop"
-                                                                @touchend.native="scrollMove"
-                                                                :ref="'ingredient' + index">
-                                                            </ingredients-draggable-item>
-                                                        </ingredients-draggable-list>
+                                                    <!-- View if only 1 section is added -->
+                                                    <div v-if="manage_recipeSections.length <= 1">
+                                                        <div class="input-group my-3">
+                                                            <input id="manage_ing_amount"
+                                                                class="form-control manage-recipe-input me-3"
+                                                                type="text" placeholder="Ingredient"
+                                                                v-on:keyup.enter="addIngredientsAddRecipeView(-1)"
+                                                                v-model="addIngredientModel[0]"
+                                                                ref="ingredientInputAddRecipeView">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div v-for="(section, index) in manage_recipeSections"
+                                                                    :index="index" :key="index">
+                                                                    <recipe-ingredients-draggable-list :lock-axis="'y'"
+                                                                        :press-delay.number=100
+                                                                        v-model="section.ingredients">
+                                                                        <recipe-ingredients-draggable-item
+                                                                            v-for="(ingredient, i) in section.ingredients"
+                                                                            :index="i" :key="i" :ingredient="ingredient"
+                                                                            :amount="ingredient.amount"
+                                                                            :value="ingredient.value"
+                                                                            :sectionindex="index"
+                                                                            @touchstart.native="scrollStop"
+                                                                            @touchend.native="scrollMove"
+                                                                            v-on:delete-ingredient="deleteIngredientsAddRecipeView(index, i)"
+                                                                            v-on:undo-delete-ingredient="undoDeleteIngredientsAddRecipeView(index, i)" />
+                                                                    </recipe-ingredients-draggable-list>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- View if 2 sections or more are added -->
+                                                    <div v-else>
+                                                        <div v-for="(section, index) in manage_recipeSections"
+                                                            :index="index" :key="index">
+                                                            <input class="form-control manage-recipe-input mb-2"
+                                                                type="text" placeholder="Section Title"
+                                                                v-model="section.title">
+                                                            <div class="row mb-2">
+                                                                <div class="col-1"></div>
+                                                                <div class="col-11">
+                                                                    <input class="form-control manage-recipe-input"
+                                                                        type="text" placeholder="Add ingredient"
+                                                                        v-model="addIngredientModel[index]"
+                                                                        v-on:keyup.enter="addIngredientsAddRecipeView(index)"
+                                                                        ref="ingredientInputAddRecipeView">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <recipe-ingredients-draggable-list :lock-axis="'y'"
+                                                                        :press-delay.number=100
+                                                                        v-model="section.ingredients">
+                                                                        <recipe-ingredients-draggable-item
+                                                                            v-for="(ingredient, i) in section.ingredients"
+                                                                            :index="i" :key="i" :ingredient="ingredient"
+                                                                            :amount="ingredient.amount"
+                                                                            :value="ingredient.value"
+                                                                            :sectionindex="index"
+                                                                            @touchstart.native="scrollStop"
+                                                                            @touchend.native="scrollMove"
+                                                                            v-on:delete-ingredient="deleteIngredientsAddRecipeView(index, i)"
+                                                                            v-on:undo-delete-ingredient="undoDeleteIngredientsAddRecipeView(index, i)" />
+                                                                    </recipe-ingredients-draggable-list>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="tab-pane fade" id="pills-manage-steps" role="tabpanel"
                                                 ref="manageStepsSectionButton">
-                                                <div class="my-3">
-                                                    <div class="row">
-                                                        <div class="steps-textarea-holder">
-                                                            <textarea id="manage_step_value" class="form-control"
-                                                                v-bind:placeholder="'Step ' + (manage_recipeBlockSteps.length + 1)"
-                                                                v-model="manage_recipeBlockStepValue"
-                                                                ref="manageStepRef"></textarea>
-                                                        </div>
-                                                        <div id="step-invalid-feedback" class="invalid-feedback">
-                                                            Please enter at least one step
-                                                        </div>
-                                                        <label for="manage_step_value"
-                                                            class="form-label mt-1 mb-2 px-3">Paste multiple
-                                                            steps</label>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col px-1">
-                                                            <button class="btn text-primary button-no-outline"
-                                                                @click="addStep" ref="addStepToBlockButton">Add</button>
-                                                            <button class="btn text-primary button-no-outline"
-                                                                type="button" data-bs-toggle="collapse"
-                                                                data-bs-target="#ocrStepsFilePondWrapper">
-                                                                <img src="assets/icons/camera-fill.svg">
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div id="ocrStepsFilePondWrapper" class="mt-2 mb-4 collapse"
-                                                            ref="ocr_StepsFilePond">
-                                                            <input id="ocrStepsFilePond" type="file"
-                                                                data-max-file-size="12MB"
-                                                                accept="image/jpeg, image/png" />
-                                                            <div id="ocrStepsCropWrapper" class="cropperImg"
-                                                                v-show="ocr_StepsEditMode"></div>
-                                                            <button class="btn btn-success" v-show="ocr_StepsEditMode"
-                                                                @click="handleCrop('steps')">Crop</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <hr class="margin-top-2" v-if="manage_recipeBlockSteps.length">
                                                 <div class="mb-3">
-                                                    <div class="list-group" v-if="manage_recipeBlockSteps.length">
-                                                        <steps-draggable-list :lock-axis="'y'" :press-delay.number=100
-                                                            v-model="manage_recipeBlockSteps">
-                                                            <steps-draggable-item
-                                                                v-for="(step, index) in manage_recipeBlockSteps"
-                                                                :index="index" :key="index" :step="step"
-                                                                :value="step.value" :edit-mode="step.editMode"
-                                                                :edit-mode-button-text="step.editModeButtonText"
-                                                                v-on:edit-step="editStep(index)"
-                                                                v-on:delete-step="deleteStep(index)"
-                                                                @touchstart.native="scrollStop"
-                                                                @touchend.native="scrollMove">
-                                                            </steps-draggable-item>
-                                                        </steps-draggable-list>
+                                                    <button class="btn btn-outline-primary w-100 my-4"
+                                                        type="button" data-bs-toggle="collapse"
+                                                        data-bs-target="#ocrStepsFilePondWrapper">
+                                                        <img src="assets/icons/camera-fill.svg">
+                                                    </button>
+                                                    <div id="ocrStepsFilePondWrapper" class="mb-4 collapse"
+                                                        ref="ocrStepsFilePondWrapperRef">
+                                                        <input id="ocrStepsFilePond" type="file"
+                                                            data-max-file-size="12MB" accept="image/jpeg, image/png" />
+                                                        <div id="ocrStepsCropWrapper" class="cropperImg"
+                                                            v-show="ocr_StepsEditMode"></div>
+                                                        <button class="btn btn-success" v-show="ocr_StepsEditMode"
+                                                            @click="handleStepsOCRCrop">Crop</button>
+                                                    </div>
+                                                    <!-- View if only 1 section is added -->
+                                                    <div v-if="manage_recipeSections.length <= 1">
+                                                        <div class="my-3">
+                                                            <textarea id="manage_step_value" class="form-control mb-2"
+                                                                placeholder="Add step" ref="manageStepRef"
+                                                                v-model="addStepModel[0]"></textarea>
+                                                            <div class="invalid-feedback">
+                                                                Please add at least 1 step
+                                                            </div>
+                                                            <button
+                                                                class="btn text-primary button-no-outline"
+                                                                @click="addStepsAddRecipeView(-1)">Add</button>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div v-for="(section, index) in manage_recipeSections"
+                                                                    :index="index" :key="index">
+                                                                    <recipe-steps-draggable-list :lock-axis="'y'"
+                                                                        :press-delay.number=100 v-model="section.steps">
+                                                                        <recipe-steps-draggable-item
+                                                                            v-for="(step, i) in section.steps"
+                                                                            :index="i" :key="i" :step="step"
+                                                                            :value="step.value" :sectionindex="index"
+                                                                            v-on:delete-step="deleteStepsAddRecipeView(index, i)"
+                                                                            v-on:undo-delete-step="undoDeleteStepsAddRecipeView(index, i)"
+                                                                            @touchstart.native="scrollStop"
+                                                                            @touchend.native="scrollMove" />
+                                                                    </recipe-steps-draggable-list>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- View if 2 sections or more are added -->
+                                                    <div v-else>
+                                                        <div class="my-3">
+                                                            <div v-for="(section, index) in manage_recipeSections"
+                                                                :index="index" :key="index">
+                                                                <input class="form-control manage-recipe-input mb-2"
+                                                                    type="text" placeholder="Section Title"
+                                                                    v-model="section.title">
+                                                                <div class="row mb-2">
+                                                                    <div class="col-1"></div>
+                                                                    <div class="col-11">
+                                                                        <textarea id="manage_step_value"
+                                                                            class="form-control mb-2"
+                                                                            placeholder="Add step" ref="manageStepRef"
+                                                                            v-model="addStepModel[index]">
+                                                                    </textarea>
+                                                                    <div class="invalid-feedback">
+                                                                        Please add at least 1 step
+                                                                    </div>
+                                                                    </div>
+                                                                    <div class="col-1"></div>
+                                                                    <div class="col-11">
+                                                                        <button
+                                                                            class="btn text-primary button-no-outline"
+                                                                            @click="addStepsAddRecipeView(index)">Add</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <recipe-steps-draggable-list :lock-axis="'y'"
+                                                                            :press-delay.number=100
+                                                                            v-model="section.steps">
+                                                                            <recipe-steps-draggable-item
+                                                                                v-for="(step, i) in section.steps"
+                                                                                :index="i" :key="i" :step="step"
+                                                                                :value="step.value"
+                                                                                :sectionindex="index"
+                                                                                v-on:delete-step="deleteStepsAddRecipeView(index, i)"
+                                                                                v-on:undo-delete-step="undoDeleteStepsAddRecipeView(index, i)"
+                                                                                @touchstart.native="scrollStop"
+                                                                                @touchend.native="scrollMove" />
+                                                                        </recipe-steps-draggable-list>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel"
+                                            <!--div class="tab-pane fade" id="pills-manage-nutrition" role="tabpanel"
                                                 ref="manageNutritionSectionButton">
                                                 <div class="row mt-3 mb-2">
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nCalories" placeholder="Calories"
-                                                                required>
+                                                                v-model="manage_nCalories" placeholder="Calories" required>
                                                             <label>Calories</label>
                                                         </div>
                                                     </div>
@@ -1054,8 +1168,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nCholesterol" placeholder="Cholesterol"
-                                                                required>
+                                                                v-model="manage_nCholesterol" placeholder="Cholesterol" required>
                                                             <label>Cholesterol</label>
                                                         </div>
                                                     </div>
@@ -1079,8 +1192,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nCarbohydrate"
-                                                                placeholder="Carbohydrate" required>
+                                                                v-model="manage_nCarbohydrate" placeholder="Carbohydrate" required>
                                                             <label>Carbohydrate</label>
                                                         </div>
                                                     </div>
@@ -1116,8 +1228,7 @@
                                                     <div class="col-10">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control manage-recipe-input"
-                                                                v-model="manage_nProtein" placeholder="Protein"
-                                                                required>
+                                                                v-model="manage_nProtein" placeholder="Protein" required>
                                                             <label>Protein</label>
                                                         </div>
                                                     </div>
@@ -1125,34 +1236,18 @@
                                                         <span>g</span>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div-->
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <button class="btn d-flex mb-3" style="margin: 0 auto;" @click="addBlock"
-                                            v-if="manage_recipeBlockSteps.length">+ Add Section</button>
-                                        <div class="list-group" v-if="manage_recipeBlocks.length">
-                                            <blocks-draggable-list :lock-axis="'y'" :press-delay.number=100
-                                                v-model="manage_recipeBlocks">
-                                                <blocks-draggable-item class="list-group-item"
-                                                    v-for="(block, index) in manage_recipeBlocks" :key="index"
-                                                    :index="index" :block="block" :header="block.header"
-                                                    :edit-mode="block.header.editMode" :ingredient="block.ingredient"
-                                                    :step="block.step" v-on:edit-header="editHeader(index)"
-                                                    v-on:edit-block="editBlock(index)"
-                                                    v-on:delete-block="deleteBlock(index)"
-                                                    @touchstart.native="scrollStop" @touchend.native="scrollMove">
-                                                </blocks-draggable-item>
-                                            </blocks-draggable-list>
-                                        </div>
-                                    </div>
+                                    <button class="btn w-100" type="button" @click="addRecipeSectionAddRecipeView">
+                                        + Recipe Section
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div-->
-                    <button id="submitRecipeButton" type="button" class="btn btn-success fancy-button mb-5"
-                        @click="submitManagedRecipe" style="width: 100%;"
-                        :disabled="isRecipeSubmitDisabled">{{ manage_smartButtonText }}</button>
+                    </div>
+                    <button type="button" class="btn btn-success fancy-button my-5 w-100"
+                        @click="submitManagedRecipe" :disabled="isRecipeSubmitDisabled">{{ manage_smartButtonText }}</button>
                     <div id="mobile-padding"></div>
                 </div>
             </div>
@@ -1203,12 +1298,12 @@
                                     </label>
                                     <input class="form-check-input" type="checkbox" value="" id="ingredientsCheck">
                                 </div>
-                                <div class="form-check">
+                                <!--div class="form-check">
                                     <label class="form-check-label" for="nutritionCheck">
                                         Nutrition
                                     </label>
                                     <input class="form-check-input" type="checkbox" value="" id="nutritionCheck">
-                                </div>
+                                </div-->
                             </div>
                         </li>
                     </ul>
@@ -1431,214 +1526,19 @@
 
 
     <!--
-    <div id="appContent" class="container-fluid my-4 main-wrap">
-
-        <div class="offcanvas offcanvas-bottom pb-5" tabindex="-1" id="explore-pane-filter-offcanvas"
-            aria-labelledby="exploreOffcanvasLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="exploreOffcanvasLabel">Filter</h5>
-                <button type="button" class="btn btn-outline-secondary btn-sm"
-                    @click.prevent="clearFilters">Clear</button>
-            </div>
-            <div class="offcanvas-body px-3">
-                <div v-if="explorePaneOffcanvasType === 'tag'">
-                    <div v-for="(tag, $index) in tagsArray" :key="$index">
-                        <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray"
-                            :value="tag">
-                        <label class="form-check-label">
-                            {{ tag }}
-                        </label>
-                    </div>
-                </div>
-                <div v-else-if="explorePaneOffcanvasType === 'time'">
-                    <h4>Total recipe time</h4>
-                    <div class="mb-3">
-                        <input type="number" class="form-control" id="totalTimeInput" v-model="totalRecipeTimeInput"
-                            placeholder="i.e. 25">
-                    </div>
-                    <h4>Or pick a time to be finished by</h4>
-                    <div class="form-floating mb-3">
-                        <input type="time" class="form-control" id="totalTimeInput" placeholder="10"
-                            v-model="finishByTimeInput">
-                        <label for="totalTimeInput">Finish by</label>
-                    </div>
-                </div>
-                <div v-else-if="explorePaneOffcanvasType === 'ingredient'">
-                    <div v-for="(ingredient, $index) in ingredientsArray" :key="$index">
-                        <input class="form-check-input" type="checkbox" value="" v-model="checkedIngredientsArray"
-                            :value="ingredient">
-                        <label class="form-check-label">
-                            {{ ingredient }}
-                        </label>
-                    </div>
-                </div>
-                <div v-else-if="explorePaneOffcanvasType === 'nutrition'">
-                    <div class="input-group my-3">
-                        <label class="input-group-text">Calories</label>
-                        <input type="number" class="form-control" v-model="nCalories">
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Total Fat</label>
-                        <input type="number" class="form-control" v-model="nFat">
-                        <span class="input-group-text">g</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Cholesterol</label>
-                        <input type="number" class="form-control" v-model="nCholesterol">
-                        <span class="input-group-text">mg</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Sodium</label>
-                        <input type="number" class="form-control" v-model="nSodium">
-                        <span class="input-group-text">mg</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Carbohydrate</label>
-                        <input type="number" class="form-control" v-model="nCarbohydrate">
-                        <span class="input-group-text">g</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Fiber</label>
-                        <input type="number" class="form-control" v-model="nFiber">
-                        <span class="input-group-text">g</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Sugars</label>
-                        <input type="number" class="form-control" v-model="nSugars">
-                        <span class="input-group-text">g</span>
-                    </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text">Protein</label>
-                        <input type="number" class="form-control" v-model="nProtein">
-                        <span class="input-group-text">g</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="offcanvas offcanvas-end recipe-offcanvas" tabindex="-1" id="recipeOffcanvas" ref="recipeView">
-            <div class="offcanvas-body">
-                <div class="recipeview-nav">
-                    <div class="px-3 lead">{{ proto_title }}</div>
-                    <button type="button" class="btn recipe-close-button text-reset" data-bs-dismiss="offcanvas"
-                        aria-label="Close">
-                        <img class="recipe-close-img" src="assets/icons/recipe-close.svg">
-                    </button>
-                </div>
-                <img v-if="proto_coverPhotoURL" v-bind:src="proto_coverPhotoURL" class="img-fluid recipe-cover-photo">
-                <img v-else src="img/lily-banse--stock-photo.jpg" class="img-fluid recipe-cover-photo">
-                <div class="container py-0">
-                    <div class="card d-flex align-items-center recipe-title shadow-sm">
-                        <div class="card-body display-6">{{ proto_title }}</div>
-                    </div>
-                    <div class="container mt-0 py-0 d-flex"
-                        style="justify-content: space-around;transform: translateY(-50%)">
-                        <button class="btn btn-outline-warning" @click="editRecipe">
-                            <img src="assets/icons/edit.svg">
-                        </button>
-                        <button class="btn btn-outline-success">
-                            <img src="assets/icons/share.svg">
-                        </button>
-                        <button class="btn btn-outline-danger" @click="deleteRecipe">
-                            <img src="assets/icons/trash.svg">
-                        </button>
-                    </div>
-                </div>
-                <div class="container">
-                    <div v-html="proto_description" class="mb-4"></div>
-                    <div class="row">
-                        <div class="col-12 d-flex justify-content-between mb-2">
-                            <span>Active Time</span>
-                            <span><b>{{ proto_activetime }} min</b></span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Prep Time</span>
-                            <span><b>{{ proto_preptime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_preptime) }})</span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Cook Time</span>
-                            <span><b>{{ proto_cooktime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_cooktime) }})</span>
-                        </div>
-                        <div class="col-12 d-flex justify-content-between">
-                            <span>Total Time</span>
-                            <span><b>{{ proto_totaltime }} min</b>
-                                ({{ getTimeFromNowUsingMinutes(proto_totaltime) }})</span>
-                        </div>
-                        <div class="col-12">
-                            Yields {{ proto_yield }}
-                        </div>
-                    </div>
-                </div>
-                <div class="container">
-                    <hr>
-                </div>
-                <div class="container">
-                    <h5 class="lead">Ingredients</h5>
-                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
-                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="(ingredient, ingredientIndex) in block.ingredients" :key="ingredientIndex"
-                                class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="">
-                                <label class="strikeable">
-                                    <span class="ingredient-amount-badge" v-if="ingredient.amount"
-                                        style="margin-left: .5rem;">{{ ingredient.amount }}</span>
-                                    <span style="margin-left: .5rem;">{{ ingredient.value }}</span>
-                                </label>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="container">
-                    <hr>
-                </div>
-                <div class="container">
-                    <h5 class="lead">Steps</h5>
-                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
-                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="(step, stepIndex) in block.steps" :key="stepIndex" class="list-group-item">
-                                <input class="form-check-input" type="checkbox" value="">
-                                <label class="strikeable">
-                                    <span
-                                        class="ingredient-amount-badge mx-2">{{ stepIndex + 1 }}</span>{{ step.value }}
-                                </label>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="container">
-                    <hr>
-                </div>
-                <div class="container">
-                    <h5 class="lead">Nutrition</h5>
-                    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
-                        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
-                        <ul class="list-group list-group-flush mb-4">
-                            <li class="list-group-item">Calories: {{ block.nCalories }} g</li>
-                            <li class="list-group-item">Total Fat: {{ block.nFat }} g</li>
-                            <li class="list-group-item">Cholesterol: {{ block.nCholesterol }} mg</li>
-                            <li class="list-group-item">Sodium: {{ block.nSodium }} mg</li>
-                            <li class="list-group-item">Carbohydrate: {{ block.nCarbohydrate }} g</li>
-                            <li class="list-group-item">Fiber: {{ block.nFiber }} g</li>
-                            <li class="list-group-item">Sugar: {{ block.nSugars }} g</li>
-                            <li class="list-group-item">Protein: {{ block.nProtein }} g</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        
-
-
-
-        <div class="container undo-container undo-collapsed py-1" ref="undoContainer" @click="undoDeleteClicked"
-            style="display: none!important;">
-            <p class="mb-0 px-2">{{ undoText }}</p>
-            <button class="btn stronger" ref="undoButton">Undo</button>
-        </div>
+    <h5 class="lead">Nutrition</h5>
+    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
+        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
+        <ul class="list-group list-group-flush mb-4">
+            <li class="list-group-item">Calories: {{ block.nCalories }} g</li>
+            <li class="list-group-item">Total Fat: {{ block.nFat }} g</li>
+            <li class="list-group-item">Cholesterol: {{ block.nCholesterol }} mg</li>
+            <li class="list-group-item">Sodium: {{ block.nSodium }} mg</li>
+            <li class="list-group-item">Carbohydrate: {{ block.nCarbohydrate }} g</li>
+            <li class="list-group-item">Fiber: {{ block.nFiber }} g</li>
+            <li class="list-group-item">Sugar: {{ block.nSugars }} g</li>
+            <li class="list-group-item">Protein: {{ block.nProtein }} g</li>
+        </ul>
     </div>
     -->
 
@@ -1707,15 +1607,21 @@
     </template>
     <template id="recipe-ingredients-draggable-item-template">
         <li v-if="!ingredient.isDeleted" class="list-group-item">
-            <div class="d-flex align-items-end">
-                <div class="btn ps-0 pe-2">
-                    <img src="assets/icons/chevron-bar-expand.svg">
+            <div class="row">
+                <div class="col-1 d-flex align-items-center justify-content-center">
+                    <div class="btn">
+                        <img src="assets/icons/chevron-bar-expand.svg">
+                    </div>
                 </div>
-                <input class="form-control" type="text" v-model="ingredient.amount">
-                <input class="form-control" type="text" v-model="ingredient.value">
-                <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
-                    <img src="assets/icons/trash.svg">
-                </button>
+                <div class="col-10">
+                    <input type="text" class="form-control mb-1" v-model="ingredient.amount">
+                    <input type="text" class="form-control" v-model="ingredient.value">
+                </div>
+                <div class="col-1 d-flex align-items-center justify-content-center">
+                    <button class="btn" @click="$emit('delete-ingredient', index)">
+                        <img src="assets/icons/trash.svg">
+                    </button>
+                </div>
             </div>
         </li>
         <li v-else class="list-group-item">
@@ -1757,175 +1663,39 @@
             </div>
         </li>
     </template>
-
-
-
-
-
-
-
-
-
-    <template id="tag-draggable-list-template">
+    <!-- AddRecipeView tags draggables -->
+    <template id="addrecipeview-tag-draggable-list-template">
         <ul class="list-group">
             <slot />
         </ul>
     </template>
-    <template id="tag-draggable-item-template">
-        <li class="list-group-item manage-tag-list-group-item d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-end" v-if="!tag.editMode">
-                <div class="btn ps-0 pe-2 py-0">
+    <template id="addrecipeview-tag-draggable-item-template">
+        <li v-if="!tag.isDeleted" class="list-group-item">
+            <div class="d-flex align-items-end">
+                <div class="btn ps-0 pe-2">
                     <img src="assets/icons/chevron-bar-expand.svg">
                 </div>
-                {{ tag.value }}
-                <button class="btn ps-2 pe-0 py-0" v-if="!tag.editMode" @click="$emit('edit-tag', index)">
-                    <img src="assets/icons/edit.svg">
-                </button>
-            </div>
-            <div v-else>
-                <input class="form-control" type="text" v-model="tag.value" v-on:keyup.enter="$emit('edit-tag', index)"
-                    @blur="$emit('edit-tag', index)">
-            </div>
-            <span>
+                <input class="form-control" type="text" v-model="tag.value">
                 <button class="btn pe-0" @click="$emit('delete-tag', index)">
                     <img src="assets/icons/trash.svg">
                 </button>
-            </span>
+            </div>
         </li>
-    </template>
-
-    <template id="ingredients-draggable-list-template">
-        <ul class="list-group">
-            <slot />
-        </ul>
-    </template>
-    <template id="ingredients-draggable-item-template">
-        <li
-            class="list-group-item manage-ingredients-list-group-item d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-end" v-if="!ingredient.editMode">
-                <div class="btn ps-0 pe-2 py-0">
+        <li v-else class="list-group-item">
+            <div class="d-flex align-items-center" style="justify-content: space-between;">
+                <div class="btn ps-0 pe-2">
                     <img src="assets/icons/chevron-bar-expand.svg">
                 </div>
-                {{ ingredient.amount }} {{ ingredient.value }}
-                <button class="btn ps-2 pe-0 py-0" @click="$emit('edit-ingredient', index)">
-                    <img v-if="!ingredient.editMode" src="assets/icons/edit.svg">
-                    <img v-else src="assets/icons/check-lg.svg">
-                </button>
-            </div>
-            <div v-else>
-                <input class="form-control" type="text" v-model="ingredient.amount"
-                    v-on:keyup.enter="$emit('edit-ingredient', index)">
-                <input class="form-control" type="text" v-model="ingredient.value"
-                    v-on:keyup.enter="$emit('edit-ingredient', index)">
-            </div>
-            <span>
-                <button v-if="ingredient.editMode" class="btn pe-0" @click="$emit('edit-ingredient', index)">
-                    <img src="assets/icons/check-lg.svg">
-                </button>
-                <button class="btn pe-0" @click="$emit('delete-ingredient', index)">
-                    <img src="assets/icons/trash.svg">
-                </button>
-            </span>
-        </li>
-    </template>
-
-    <template id="steps-draggable-list-template">
-        <ul class="list-group">
-            <slot />
-        </ul>
-    </template>
-    <template id="steps-draggable-item-template">
-        <li class="list-group-item manage-steps-list-group-item">
-            <div class="my-2" v-if="!step.editMode">
-                <div class="btn ps-0 pe-2 py-0">
-                    <img src="assets/icons/chevron-bar-expand.svg">
-                </div>
-                {{ step.value }}
-            </div>
-            <div class="mb-2" v-else>
-                <textarea class="form-control" v-model="step.value" @blur="$emit('edit-step', index)"
-                    v-on:keyup.enter="$emit('edit-step', index)"></textarea>
-            </div>
-            <span>
-                <button class="btn ps-0" v-if="!step.editMode" @click="$emit('edit-step', index)">
-                    <img src="assets/icons/edit.svg">
-                </button>
-                <button class="btn" @click="$emit('delete-step', index)">
-                    <img src="assets/icons/trash.svg">
-                </button>
-            </span>
-        </li>
-    </template>
-
-    <template id="blocks-draggable-list-template">
-        <ul class="list-group">
-            <slot />
-        </ul>
-    </template>
-    <template id="blocks-draggable-item-template">
-        <li class="list-group-item manage-blocks-list-group-item">
-            <div class="w-100">
-                <h5 class="lead mb-0 d-flex align-items-center justify-content-between">
-                    <b class="strong" v-if="!block.header.editMode">{{ block.header.value }}</b>
-                    <div v-else>
-                        <input class="form-control" type="text" v-model="block.header.value"
-                            v-on:keyup.enter="$emit('edit-header', index)" @blur="$emit('edit-header', index)">
-                    </div>
-                    <span>
-                        <button class="btn ps-2 pe-0 py-0" v-if="!block.header.editMode"
-                            @click="$emit('edit-header', index)">
-                            <img src="assets/icons/edit.svg">
-                        </button>
-                    </span>
-                </h5>
-                <hr class="my-1">
-            </div>
-            <div class="recipe-block-list-header d-flex align-items-start">
-                <button class="btn recipe-block-more-info-button d-flex ps-0 collapsed" type="button"
-                    data-bs-toggle="collapse" :data-bs-target="'#blockIngredients' + index">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#000000"
-                        class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                        <path
-                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                    </svg>
-                    <h6 class="mb-0 ms-3" v-if="block.ingredients.length === 1">1 ingredient</h6>
-                    <h6 class="mb-0 ms-3" v-else>{{ block.ingredients.length }} ingredients</h6>
-                </button>
-            </div>
-            <div class="collapse" :id="'blockIngredients' + index">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item" v-for="(ingredient, j) in block.ingredients" :key="j">
-                        {{ ingredient.amount }} {{ ingredient.value }}</li>
-                </ul>
-            </div>
-            <div class="recipe-block-list-header d-flex align-items-start">
-                <button class="btn recipe-block-more-info-button d-flex ps-0 collapsed" type="button"
-                    data-bs-toggle="collapse" :data-bs-target="'#blockSteps' + index">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#000000"
-                        class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                        <path
-                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                    </svg>
-                    <h6 class="mb-0 ms-3" v-if="block.steps.length === 1">1 step</h6>
-                    <h6 class="mb-0 ms-3" v-else>{{ block.steps.length }} steps</h6>
-                </button>
-            </div>
-            <div class="collapse" :id="'blockSteps' + index">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item" v-for="(step, k) in block.steps" :key="k">{{ step.value }}</li>
-                </ul>
-            </div>
-            <div class="card-footer d-flex justify-content-end mt-2">
-                <button class="btn py-0" @click="$emit('edit-block', index)">Edit</button>
-                <button class="btn py-0 pe-0" @click="$emit('delete-block', index)">Delete</button>
+                <small>Deleted</small>
+                <button class="btn btn-sm btn-outline-secondary" @click="$emit('undo-delete-tag', index)">Undo</button>
             </div>
         </li>
     </template>
-
+    <!-- Admin templates -->
     <template id="sign-in-layout-template">
         <form class="login-form">
-            <img class="mb-4" src="assets/logo/pastro.svg" alt="" width="72" height="57">
-            <h2>Sign into Pastro</h2>
+            <img class="mb-4" src="assets/logo/pantry.png" alt="" width="72" height="57">
+            <h2>Sign into Pantry</h2>
 
             <p>Sign in with your Google Account</p>
             <button id="sign-in-button" class="btn btn-success" role="button" @click.prevent="signIn">Sign
@@ -2006,9 +1776,7 @@
     <script src="vendor/T-vK/DynamicQuillTools.min.js"></script>
     <script src="vendor/cropperjs/js/cropper.min.js"></script>
     <script src="vendor/axios/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
-        integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="vendor/animejs/lib/animejs-3.2.1.min.js"></script>
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/nlp.js"></script>
