@@ -939,7 +939,11 @@
 				finishByTimeInput: '',
 				finishByTimeInputInMinutes: '',
 
-				/** Recipe View data **/
+				//All tags and ingredients in cookbook
+				tagsArray: listOfTags,
+				ingredientsArray: listOfIngredients,
+
+				/** RecipeView data **/
 				selectedRecipe: {},
 				detailsDisplayState: 'view',
 				tagDisplayState: 'view',
@@ -976,6 +980,9 @@
 				ocr_DescriptionPondEditor: null,
 				ocr_DescriptionEditMode: false,
 				//Step 2
+				manage_filePondCoverPhoto: null,
+				manage_coverPhotoURL: '',
+				manage_coverPhotoThumbnail: '',
 				manage_specialEquipmentInput: '',
 				manage_specialEquipmentHolder: [],
 				manage_recipeNotesInput: '',
@@ -1020,6 +1027,23 @@
 
 				injectedFlexIndex: injectedFlexIndex,
 
+				isRecipeSubmitDisabled: false,
+
+				/** OptionsView data **/
+				//General
+				is12HourFormatSet: false,
+				//Explore
+				isTagsChecked: false,
+				isTimeChecked: false,
+				isIngredientsChecked: false,
+				//Accessibility
+				isDarkModeSet: false,
+				levelFontSize: 1,
+				isDyslexicFontSet: false,
+				isHighContrastModeSet: false,
+				userID: utils._UID,
+				browserUtil: '',
+
 				/** Utility data **/
 				toastInstance: null,
 				toastHeader: '',
@@ -1046,54 +1070,6 @@
 					}],
 					['clean']
 				],
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-				
-
-				//All tags and ingredients in cookbook
-				tagsArray: listOfTags,
-				ingredientsArray: listOfIngredients,
-
-				//Indices
-
-				//For use in search queries
-
-				//For use with manage recipes
-				isRecipeSubmitDisabled: false,
-				
-
-				//Step 1
-				manage_filePondCoverPhoto: null,
-				manage_coverPhotoURL: '',
-				manage_coverPhotoThumbnail: '',
-
-				//Step 4
-				manage_recipeBlocks: [],
-				manage_recipeBlockSteps: [],
-
-				//Used for settings menu
-				isDyslexicFontSet: '',
-				userID: utils._UID,
-				browserUtil: ''
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -1305,7 +1281,11 @@
 				this.$refs.ocrStepsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM());
 
 				//Load settings
-				this.isDyslexicFontSet = utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true';
+				if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
+					this.isDyslexicFontSet = true;
+				} else {
+					this.isDyslexicFontSet = false;
+				}
 
 				//Add smart button listeners for ManageRecipe
 				var smartButtonListeners = [
@@ -2734,6 +2714,9 @@
 						}
 					}
 				},
+
+				/**** OptionsView Methods ****/
+
 
 				/**** Utilities ****/
 				//used for displaying the ETA of the recipe
