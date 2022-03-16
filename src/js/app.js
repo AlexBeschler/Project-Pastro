@@ -124,7 +124,7 @@
 								dys_font.load().then(function (loaded_face) {
 									document.fonts.add(loaded_face);
 									dyslexicFont = loaded_face;
-									//Get cloud settings for default font
+									//Get cloud settings
 									firebase.firestore().collection('users').doc(utils._UID).get().then((doc) => {
 										if (doc.data().dyslexicFontSet === 'true') {
 											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
@@ -1339,7 +1339,6 @@
 					self.toastHeader = '';
 					self.toastBody = '';
 				});
-
 			},
 			watch: {
 				searchQuery: function(b, a) {
