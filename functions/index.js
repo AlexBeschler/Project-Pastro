@@ -335,7 +335,14 @@ exports.createAccount = functions.auth.user().onCreate((user) => {
 
 async function createAccount(uid) {
 	db.collection('users').doc(uid).set({
-		dyslexicFontSet: 'false'
+		is12HourFormatSet: true,
+		isTagsChecked: true,
+		isTimeChecked: true,
+		isIngredientsChecked: true,
+		isDarkModeSet: false,
+		levelFontSize: 1,
+		isDyslexicFontSet: false,
+		isHighContrastModeSet: false
 	}).then(function () {
 		var helloWorldRecipe = db.collection('users/' + uid + '/recipes').doc('helloworld_recipe');
 		helloWorldRecipe.set({

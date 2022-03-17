@@ -119,28 +119,74 @@
 								utils.showLoginContainer();
 							} else {
 								//Customer is actively subscribed
-								//Get dyslexic font
-								var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
-								dys_font.load().then(function (loaded_face) {
-									document.fonts.add(loaded_face);
-									dyslexicFont = loaded_face;
-									//Get cloud settings
-									firebase.firestore().collection('users').doc(utils._UID).get().then((doc) => {
-										if (doc.data().dyslexicFontSet === 'true') {
-											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-											//Set local storage which will be read by Vue instance being mounted
-											utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
-										}
-									}).catch((error) => {
-										//Couldn't get default font set, rely on local storage
-										if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
-											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-										}
-									});
-								}).catch(function (error) {
-									console.log(error);
+								//Get cloud settings
+								firebase.firestore().collection('users').doc(utils._UID).get().then((doc) => {
+									if (doc.data().is12HourFormatSet) {
+										utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, 'true');
+									} else {
+										utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, 'false');
+									}
+									if (doc.data().isTagsChecked) {
+										utils.setLocalStorage(utils.TAGS_CHECKED, 'true');
+									} else {
+										utils.setLocalStorage(utils.TAGS_CHECKED, 'false');
+									}
+									if (doc.data().isTimeChecked) {
+										utils.setLocalStorage(utils.TIME_CHECKED, 'true');
+									} else {
+										utils.setLocalStorage(utils.TIME_CHECKED, 'false');
+									}
+									if (doc.data().isIngredientsChecked) {
+										utils.setLocalStorage(utils.INGREDIENTS_CHECKED, 'true');
+									} else {
+										utils.setLocalStorage(utils.INGREDIENTS_CHECKED, 'false');
+									}
+									if (doc.data().isDarkModeSet) {
+										utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
+									} else {
+										utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
+									}
+									switch (doc.data().levelFontSize) {
+										case 1:
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, 1);
+											break;
+										case 2:
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, 2);
+											break;
+										case 3:
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, 3);
+											break;
+										case 4:
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, 4);
+											break;
+										default:
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, 1);
+									}
+									if (doc.data().isDyslexicFontSet) {
+										//Set local storage which will be read by Vue instance being mounted
+										utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
+										var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
+										dys_font.load().then(function (loaded_face) {
+											document.fonts.add(loaded_face);
+											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';	
+										}).catch(function (error) {
+											console.log(error);
+										});
+									} else {
+										utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
+									}
+									if (doc.data().isHighContrastModeSet) {
+										utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'true');
+									} else {
+										utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'false');
+									}
+									getCookbook();
+								}).catch((error) => {
+									//Couldn't get default font set, rely on local storage
+									if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
+										document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
+									}
 								});
-								getCookbook();
 							}
 						});
 					} else { //User is not signed in 
@@ -1288,24 +1334,7 @@
 				this.isIngredientsChecked = (utils.getLocalStorage(utils.INGREDIENTS_CHECKED) === 'true') ? true : false;
 				
 				this.isDarkModeSet = (utils.getLocalStorage(utils.DARK_MODE_SET) === 'true') ? true : false;
-				var q = 0;
-				switch (utils.getLocalStorage(utils.LEVEL_FONT_SET)) {
-					case '1':
-						q = 1;
-						break;
-					case '2':
-						q = 2;
-						break;
-					case '3':
-						q = 3;
-						break;
-					case '4':
-						q = 4;
-						break;
-					default:
-						q = 1;
-				}
-				this.levelFontSize = q;
+				this.levelFontSize = utils.getLocalStorage(utils.LEVEL_FONT_SET);
 				this.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
 				this.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
 
