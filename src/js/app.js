@@ -1424,19 +1424,6 @@
 					}
 					this.updateFilteredIngredients(b);
 				},
-				/*
-				isDyslexicFontSet: function (b, a) {
-					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
-					//Write to local storage
-					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
-					//Write to cloud
-					this.db.collection('users').doc(utils._UID).set({
-						dyslexicFontSet: this.isDyslexicFontSet.toString()
-					}).catch((error) => {
-						console.error('Error writing cloud font preference: ', error);
-					});
-				}
-				*/
 				addIngredientModel: {
 					handler: function (after, before) {
 						if (utils.isEmptyArray(after)) {
@@ -1562,6 +1549,50 @@
 					utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, this.is12HourFormatSet.toString());
 					//Update cloud settings
 					this.updateSetting({'is12HourFormatSet': this.is12HourFormatSet});
+				},
+				isTagsChecked: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.TAGS_CHECKED, this.isTagsChecked.toString());
+					//Update cloud settings
+					this.updateSetting({'isTagsChecked': this.isTagsChecked});
+				},
+				isTimeChecked: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.TIME_CHECKED, this.isTimeChecked.toString());
+					//Update cloud settings
+					this.updateSetting({'isTimeChecked': this.isTimeChecked});
+				},
+				isIngredientsChecked: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.INGREDIENTS_CHECKED, this.isIngredientsChecked.toString());
+					//Update cloud settings
+					this.updateSetting({'isIngredientsChecked': this.isIngredientsChecked});
+				},
+				isDarkModeSet: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.DARK_MODE_SET, this.isDarkModeSet.toString());
+					//Update cloud settings
+					this.updateSetting({'isDarkModeSet': this.isDarkModeSet});
+				},
+				levelFontSize: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.LEVEL_FONT_SET, this.levelFontSize);
+					//Update cloud settings
+					this.updateSetting({'levelFontSize': this.levelFontSize});
+				},
+				isDyslexicFontSet: function(b, a) {
+					//Change setting
+					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
+					//Write to local storage
+					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet.toString());
+					//Update cloud settings
+					this.updateSetting({'isDyslexicFontSet': this.isDyslexicFontSet});
+				},
+				isHighContrastModeSet: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.HIGH_CONTRAST_SET, this.isHighContrastModeSet.toString());
+					//Update cloud settings
+					this.updateSetting({'isHighContrastModeSet': this.isHighContrastModeSet});
 				},
 			},
 			methods: {
