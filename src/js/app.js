@@ -144,7 +144,7 @@
 									if (doc.data().isDarkModeSet) {
 										utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
 									} else {
-										utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
+										utils.setLocalStorage(utils.DARK_MODE_SET, 'false');
 									}
 									switch (doc.data().levelFontSize) {
 										case 1:
@@ -182,10 +182,7 @@
 									}
 									getCookbook();
 								}).catch((error) => {
-									//Couldn't get default font set, rely on local storage
-									if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
-										document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-									}
+									console.log(error);
 								});
 							}
 						});
@@ -1116,6 +1113,9 @@
 					}],
 					['clean']
 				],
+
+				/** App Version **/
+				version: 'Pantry Beta 3.0_01'
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -1338,7 +1338,6 @@
 				this.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
 				this.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
 
-
 				//Add smart button listeners for ManageRecipe
 				var smartButtonListeners = [
 					this.$refs.manageOverviewAccordionButton,
@@ -1555,7 +1554,15 @@
 						}
 					},
 					deep: true
-				}
+				},
+				
+				/** OptionsView **/
+				is12HourFormatSet: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, this.is12HourFormatSet.toString());
+					//Update cloud settings
+					this.updateSetting({'is12HourFormatSet': this.is12HourFormatSet});
+				},
 			},
 			methods: {
 				/**** Button Helpers ****/
@@ -2767,7 +2774,12 @@
 				},
 
 				/**** OptionsView Methods ****/
-
+				updateSetting: function(update) {
+					this.db.collection('users').doc(utils._UID).update(update)
+					.catch((error) => {
+						console.error(error);
+					});
+				},
 
 				/**** Utilities ****/
 				//used for displaying the ETA of the recipe
