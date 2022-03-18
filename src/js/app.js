@@ -2828,9 +2828,37 @@
 					if (futureMinutes > 59) {
 						hours += Math.floor(futureMinutes / 60);
 						futureMinutes = futureMinutes % 60;
-						return zeroPad((nowHours + hours) % 24).toString() + ':' + zeroPad(futureMinutes).toString();
+						let h = (nowHours + hours) % 24;
+						let m = futureMinutes;
+
+						if (this.is12HourFormatSet) {
+							let z = (h >= 13) ? h - 12 : h;
+							let rString = z.toString() + ':' + zeroPad(m).toString();
+							if (h >= 13) {
+								rString += ' pm';
+							} else {
+								rString += ' am';
+							}
+							return rString;
+						} else {
+							return zeroPad(h).toString() + ':' + zeroPad(m).toString();
+						}
 					} else {
-						return zeroPad(nowHours % 24).toString() + ':' + zeroPad(futureMinutes).toString();
+						let h = nowHours % 24;
+						let m = futureMinutes;
+						
+						if (this.is12HourFormatSet) {
+							let z = (h >= 13) ? h - 12 : h;
+							let rString = z.toString() + ':' + zeroPad(m).toString();
+							if (h >= 13) {
+								rString += ' pm';
+							} else {
+								rString += ' am';
+							}
+							return rString;
+						} else {
+							return zeroPad(h).toString() + ':' + zeroPad(m).toString();
+						}
 					}
 				},
 				//When user clicks the button to open their personal billing portal
