@@ -184,7 +184,7 @@
                         ref="fromFilterToHomeBackButtonImg">
                     <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
                 </button>
-                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags">
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags" v-if="isTagsChecked">
                     <div class="col-1">
                         <img src="assets/icons/tags.svg">
                     </div>
@@ -198,7 +198,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTime">
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTime" v-if="isTimeChecked">
                     <div class="col-1">
                         <img src="assets/icons/stopwatch.svg">
                     </div>
@@ -212,7 +212,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterIngredients">
+                <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterIngredients" v-if="isIngredientsChecked">
                     <div class="col-1">
                         <img src="assets/icons/egg.svg">
                     </div>
