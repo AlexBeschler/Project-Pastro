@@ -646,7 +646,7 @@ span.ingredient-amount-badge.strike-list-item {
     padding: 1rem 0;
 }
 
-.manage-accordion-item > h2 > button {
+.manage-accordion-item>h2>button {
     -webkit-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
@@ -764,6 +764,51 @@ span.ingredient-amount-badge.strike-list-item {
 
 .heart-emoji {
     font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #eee !important;
+        background: rgb(42 48 56) !important;
+    }
+
+    body h1,
+    body h2,
+    body h3,
+    body h4,
+    body h5,
+    body h6,
+    body small {
+        color: #eee !important;
+    }
+
+    body a {
+        color: #809fff;
+    }
+}
+
+
+
+
+
+
+body.dark-theme {
+    color: #eee !important;
+    background: rgb(42 48 56) !important;
+}
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6,
+body.dark-theme small {
+    color: #eee !important;
+}
+
+body.dark-theme a {
+    color: #809fff;
 }
 
 /* For desktops */

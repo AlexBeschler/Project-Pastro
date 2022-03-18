@@ -142,6 +142,7 @@
 										utils.setLocalStorage(utils.INGREDIENTS_CHECKED, 'false');
 									}
 									if (doc.data().isDarkModeSet) {
+										//Turn night mode on
 										utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
 									} else {
 										utils.setLocalStorage(utils.DARK_MODE_SET, 'false');
@@ -162,19 +163,19 @@
 										default:
 											utils.setLocalStorage(utils.LEVEL_FONT_SET, 1);
 									}
-									if (doc.data().isDyslexicFontSet) {
-										//Set local storage which will be read by Vue instance being mounted
-										utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
-										var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
+									var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
 										dys_font.load().then(function (loaded_face) {
 											document.fonts.add(loaded_face);
-											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';	
+											if (doc.data().isDyslexicFontSet) {
+												//Set local storage which will be read by Vue instance being mounted
+												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
+												document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
+											} else {
+												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
+											}
 										}).catch(function (error) {
 											console.log(error);
 										});
-									} else {
-										utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
-									}
 									if (doc.data().isHighContrastModeSet) {
 										utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'true');
 									} else {
@@ -1569,6 +1570,7 @@
 					this.updateSetting({'isIngredientsChecked': this.isIngredientsChecked});
 				},
 				isDarkModeSet: function(b, a) {
+					document.body.classList.toggle('dark-theme');
 					//Write to local storage
 					utils.setLocalStorage(utils.DARK_MODE_SET, this.isDarkModeSet.toString());
 					//Update cloud settings
@@ -3084,7 +3086,7 @@
 									self.quillAddRecipeViewInstance.setText('Loading...');
 
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
+									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: true
 									}).then(res => {
@@ -3155,7 +3157,7 @@
 									error('Error uploading file: ' + e);
 								}, () => {
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
+									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: false
 									}).then(res => {
@@ -3233,7 +3235,7 @@
 									error('Error uploading file: ' + e);
 								}, () => {
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
+									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: true
 									}).then(res => {
