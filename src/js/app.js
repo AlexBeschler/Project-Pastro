@@ -931,6 +931,70 @@
 			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
+		Vue.component('reactive-svg', {
+			props: ['iconColor'],
+			template: '#reactive-svg-template'
+		});
+
+		//SVG Icons
+		Vue.component('arrow-left-short', {
+			template: '#arrow-left-short-template'
+		});
+		Vue.component('arrow-up-right', {
+			template: '#arrow-up-right-template'
+		});
+		Vue.component('calendar-range', {
+			template: '#calendar-range-template'
+		});
+		Vue.component('camera-fill', {
+			template: '#camera-fill-template'
+		});
+		Vue.component('check-lg', {
+			template: '#check-lg-template'
+		});
+		Vue.component('chevron-bar-expand', {
+			template: '#chevron-bar-expand-template'
+		});
+		Vue.component('edit', {
+			template: '#edit-template'
+		});
+		Vue.component('egg', {
+			template: '#egg-template'
+		});
+		Vue.component('gear', {
+			template: '#gear-template'
+		});
+		Vue.component('info-circle', {
+			template: '#info-circle-template'
+		});
+		Vue.component('journal-richtext', {
+			template: '#journal-richtext-template'
+		});
+		Vue.component('lightning', {
+			template: '#lightning-template'
+		});
+		Vue.component('plus', {
+			template: '#plus-template'
+		});
+		Vue.component('search', {
+			template: '#search-template'
+		});
+		Vue.component('share-fill', {
+			template: '#share-fill-template'
+		});
+		Vue.component('stopwatch', {
+			template: '#stopwatch-template'
+		});
+		Vue.component('tags', {
+			template: '#tags-template'
+		});
+		Vue.component('trash', {
+			template: '#trash-template'
+		});
+		Vue.component('x-lg', {
+			template: '#x-lg-template'
+		});
+
 		new Vue({
 			el: '#appContent',
 			data: {
@@ -1087,6 +1151,8 @@
 				isHighContrastModeSet: false,
 				userID: utils._UID,
 				browserUtil: '',
+
+				iconColor: '#000000',
 
 				/** Utility data **/
 				toastInstance: null,
@@ -1571,6 +1637,7 @@
 				},
 				isDarkModeSet: function(b, a) {
 					document.body.classList.toggle('dark-theme');
+					this.iconColor = (this.isDarkModeSet) ? '#eeeeee' : '#000000';
 					//Write to local storage
 					utils.setLocalStorage(utils.DARK_MODE_SET, this.isDarkModeSet.toString());
 					//Update cloud settings
@@ -2862,6 +2929,9 @@
 							return zeroPad(h).toString() + ':' + zeroPad(m).toString();
 						}
 					}
+				},
+				calcButtonDimensions: function(rem, vw) {
+					return utils.remToPixels(rem) + utils.vwToPixels(vw);
 				},
 				//When user clicks the button to open their personal billing portal
 				stripeBillingPortal: function (event) {

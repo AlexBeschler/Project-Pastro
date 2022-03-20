@@ -346,38 +346,54 @@ async function createAccount(uid) {
 	}).then(function () {
 		var helloWorldRecipe = db.collection('users/' + uid + '/recipes').doc('helloworld_recipe');
 		helloWorldRecipe.set({
-			'activeTime': 12,
-			'addDate': Date.now(),
-			'blocks': [{
-				'header': 'Header 1',
-				'nCalories': '0',
-				'nCarbohydrate': '0',
-				'nCholesterol': '0',
-				'nFat': '0',
-				'nFiber': '0',
-				'nProtein': '0',
-				'nSodium': '0',
-				'nSugars': '0',
-				'ingredients': [{
-					'amount': 'amount 1',
-					'value': 'value 1'
-				}],
-				'steps': [{
-					'value': 'step 1'
-				}]
-			}],
-			'cookTime': 12,
-			'coverPhotoURL': null,
-			'description': '<p>Hello World</p>',
-			'docID': 'helloworld_recipe',
-			'prepTime': 12,
-			'tags': [
-				'Hello World Tag 1',
-				'Hello World Tag 2'
+			"docID": 'helloworld_recipe',
+			"dateAdded": Date.now(),
+			"dateModified": Date.now(),
+			"favorite": false,
+			"title": "Hello World Recipe",
+			"description": "<p>Hello World</p>",
+			"tags": [
+				"Hello",
+				"World"
 			],
-			'title': 'Hello World Recipe',
-			'totalTime': 12,
-			'yield': '2 servings'
+			"prepTime": 1,
+			"cookTime": 2,
+			"totalTime": 3,
+			"activeTime": 3,
+			"yield": "4 servings",
+			"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
+			"thumbnail": "https://via.placeholder.com/64x64.png",
+			"specialEquipment": [
+				"Rice cooker"
+			],
+			"notes": [
+				"Make sure to mix well"
+			],
+			"sections": [
+				{
+					"title": "Hello World",
+					"ingredients": [
+						{
+							"amount": "1 tbps",
+							"value": "butter"
+						}
+					],
+					"steps": [
+						{
+							"value": "Preheat the oven to 350°F.",
+							"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+						}
+					],
+					"calories": 0,
+					"fat": 0,
+					"cholesterol": 0,
+					"sodium": 0,
+					"totalCarbs": 0,
+					"fiber": 0,
+					"sugar": 0,
+					"protein": 0
+				}
+			]
 		}).then(function () {
 			//Send onboard email?
 			console.log('Wrote hello world recipe to user ' + uid);

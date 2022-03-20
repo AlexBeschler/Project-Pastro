@@ -811,6 +811,15 @@ body.dark-theme a {
     color: #809fff;
 }
 
+body.dark-theme #searchBar {
+    background-color: #22272e!important;
+    border: 1px solid #444c56;
+}
+
+body.dark-theme #innerSearchButtonText {
+    color: #eee!important;
+}
+
 /* For desktops */
 @media (min-width: 992px) {
     .login-form {
