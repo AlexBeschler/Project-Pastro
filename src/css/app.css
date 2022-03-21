@@ -792,9 +792,12 @@ span.ingredient-amount-badge.strike-list-item {
 
 
 
-body.dark-theme {
-    color: #eee !important;
-    background: rgb(42 48 56) !important;
+body.dark-theme,
+body.dark-theme .recipe-title,
+body.dark-theme .card-body,
+body.dark-theme .accordion-item {
+    color: #eeeeee !important;
+    background: #2d333b!important;
 }
 
 body.dark-theme h1,
@@ -803,21 +806,74 @@ body.dark-theme h3,
 body.dark-theme h4,
 body.dark-theme h5,
 body.dark-theme h6,
-body.dark-theme small {
-    color: #eee !important;
+body.dark-theme small,
+body.dark-theme span,
+body.dark-theme .display-1,
+body.dark-theme .display-2,
+body.dark-theme .display-3,
+body.dark-theme .display-4,
+body.dark-theme .display-5,
+body.dark-theme .display-6,
+body.dark-theme li,
+body.dark-theme .btn {
+    color: #eeeeee !important;
 }
 
 body.dark-theme a {
     color: #809fff;
 }
 
-body.dark-theme #searchBar {
+body.dark-theme #searchBar,
+body.dark-theme input[type=text],
+body.dark-theme .form-check-input[type=checkbox],
+body.dark-theme .ql-container,
+body.dark-theme .ql-editor:focus,
+body.dark-theme .form-floating>.form-control,
+body.dark-theme textarea {
     background-color: #22272e!important;
     border: 1px solid #444c56;
+    color: #ccc!important;
+    box-shadow: none;
 }
 
 body.dark-theme #innerSearchButtonText {
     color: #eee!important;
+}
+
+body.dark-theme .search-box-input {
+    background-color: #22272e!important;
+    color: #ccc!important;
+}
+
+body.dark-theme .chip {
+    background-color: #2d333b;
+    border: 2px solid #ffc34b;
+}
+
+body.dark-theme .offcanvas {
+    background-color: #2d333b!important;
+}
+
+body.dark-theme .recipeView * hr {
+    border: 1px solid var(--ps-accent-color);
+}
+
+body.dark-theme .list-group-item {
+    background-color: inherit;
+    border-bottom: 1px solid rgba(127,127,127,1)
+}
+
+body.dark-theme span.ingredient-amount-badge,
+body.dark-theme .accordion-button {
+    background-color: inherit;
+}
+
+body.dark-theme .ql-toolbar.ql-snow {
+    background-color: #cccccc;
+}
+
+body.dark-theme .manage-recipe-blocks-pills-tab.active {
+    background-color: inherit!important;
 }
 
 /* For desktops */
