@@ -9,6 +9,10 @@
     --ps-btn-outline-color: #43894B;
     --ps-light-grey-color: #ededed;
     --ps-favorite-color: #f9058c;
+    --font-size-1: 100%;
+    --font-size-2: 117%;
+    --font-size-3: 134%;
+    --font-size-4: 150%;
 }
 
 body {
@@ -766,32 +770,6 @@ span.ingredient-amount-badge.strike-list-item {
     font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-@media (prefers-color-scheme: dark) {
-    body {
-        color: #eee !important;
-        background: rgb(42 48 56) !important;
-    }
-
-    body h1,
-    body h2,
-    body h3,
-    body h4,
-    body h5,
-    body h6,
-    body small {
-        color: #eee !important;
-    }
-
-    body a {
-        color: #809fff;
-    }
-}
-
-
-
-
-
-
 body.dark-theme,
 body.dark-theme .recipe-title,
 body.dark-theme .card-body,
@@ -875,6 +853,23 @@ body.dark-theme .ql-toolbar.ql-snow {
 body.dark-theme .manage-recipe-blocks-pills-tab.active {
     background-color: inherit!important;
 }
+
+body.font-increase-1 {
+    font-size: var(--font-size-1);
+}
+
+body.font-increase-2 {
+    font-size: var(--font-size-2);
+}
+
+body.font-increase-3 {
+    font-size: var(--font-size-3);
+}
+
+body.font-increase-4 {
+    font-size: var(--font-size-4);
+}
+
 
 /* For desktops */
 @media (min-width: 992px) {

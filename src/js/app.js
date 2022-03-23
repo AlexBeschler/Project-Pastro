@@ -148,20 +148,20 @@
 										utils.setLocalStorage(utils.DARK_MODE_SET, 'false');
 									}
 									switch (doc.data().levelFontSize) {
-										case 1:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 1);
+										case '1':
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '1');
 											break;
-										case 2:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 2);
+										case '2':
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '2');
 											break;
-										case 3:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 3);
+										case '3':
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '3');
 											break;
-										case 4:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 4);
+										case '4':
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '4');
 											break;
 										default:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 1);
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '1');
 									}
 									var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
 										dys_font.load().then(function (loaded_face) {
@@ -1146,10 +1146,9 @@
 				isIngredientsChecked: false,
 				//Accessibility
 				isDarkModeSet: false,
-				levelFontSize: 1,
+				levelFontSize: '1',
 				isDyslexicFontSet: false,
 				isHighContrastModeSet: false,
-				userID: utils._UID,
 				browserUtil: '',
 
 				iconColor: '#000000',
@@ -1644,6 +1643,26 @@
 					this.updateSetting({'isDarkModeSet': this.isDarkModeSet});
 				},
 				levelFontSize: function(b, a) {
+					document.body.classList.remove('font-increase-1');
+					document.body.classList.remove('font-increase-2');
+					document.body.classList.remove('font-increase-3');
+					document.body.classList.remove('font-increase-4');
+					switch (this.levelFontSize) {
+						case '1':
+							document.body.classList.add('font-increase-1');
+							break;
+						case '2':
+							document.body.classList.add('font-increase-2');
+							break;
+						case '3':
+							document.body.classList.add('font-increase-3');
+							break;
+						case '4':
+							document.body.classList.add('font-increase-4');
+							break;
+						default:
+							document.body.classList.add('font-increase-1');
+					}
 					//Write to local storage
 					utils.setLocalStorage(utils.LEVEL_FONT_SET, this.levelFontSize);
 					//Update cloud settings

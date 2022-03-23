@@ -340,7 +340,7 @@ async function createAccount(uid) {
 		isTimeChecked: true,
 		isIngredientsChecked: true,
 		isDarkModeSet: false,
-		levelFontSize: 1,
+		levelFontSize: '1',
 		isDyslexicFontSet: false,
 		isHighContrastModeSet: false
 	}).then(function () {
