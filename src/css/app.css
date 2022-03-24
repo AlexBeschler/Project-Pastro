@@ -21,6 +21,10 @@ body {
     color: var(--ps-secondary-color);
 }
 
+#appContent {
+    overflow-x: hidden;
+}
+
 #appContent h1,
 #appContent h2,
 #appContent h3,
@@ -28,6 +32,21 @@ body {
 #appContent h5,
 #appContent h6 {
     color: var(--ps-secondary-color);
+}
+
+.navbar-button {
+    z-index: 1;
+}
+
+.navbar-button:focus {
+    box-shadow: none;
+}
+
+.navbar-button-icon {
+    height: calc(1.575rem + 1.5vw);
+    width: calc(1.575rem + 1.5vw);
+    max-width: 42px;
+    max-height: 42px;
 }
 
 .form-check-input {
@@ -240,10 +259,7 @@ body {
     background-color: var(--ps-bg-color);
 }
 
-.gear-icon {
-    height: calc(1.575rem + 1.5vw);
-    width: calc(1.575rem + 1.5vw);
-}
+
 
 #headerText {
     font-size: calc(1.475rem + 1.5vw);

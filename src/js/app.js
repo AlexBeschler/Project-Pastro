@@ -1264,9 +1264,9 @@
 				.add({
 					targets: this.$refs.addRecipeButton,
 					translateX: function(el, i, l) {
-						var padding = utils.remToPixels(0.75);
-						var rem = utils.remToPixels(1.575);
-						var vw = utils.vwToPixels(1.5);
+						var padding = utils.remToPixels(0);
+						var rem = utils.remToPixels(0.5);
+						var vw = utils.vwToPixels(0.25);
 						var animationWidth = -(rem + vw + padding);
 						return ['0', animationWidth];
 					},
