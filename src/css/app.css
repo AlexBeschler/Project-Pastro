@@ -9,6 +9,10 @@
     --ps-btn-outline-color: #43894B;
     --ps-light-grey-color: #ededed;
     --ps-favorite-color: #f9058c;
+    --font-size-1: 100%;
+    --font-size-2: 117%;
+    --font-size-3: 134%;
+    --font-size-4: 150%;
 }
 
 body {
@@ -114,7 +118,7 @@ body {
 }
 
 .chip.border-dark {
-    border-color: #e89b00 !important;
+    border-color: #e89b005c !important;
 }
 
 .btn-primary {
@@ -646,7 +650,7 @@ span.ingredient-amount-badge.strike-list-item {
     padding: 1rem 0;
 }
 
-.manage-accordion-item > h2 > button {
+.manage-accordion-item>h2>button {
     -webkit-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
@@ -765,6 +769,107 @@ span.ingredient-amount-badge.strike-list-item {
 .heart-emoji {
     font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+
+body.dark-theme,
+body.dark-theme .recipe-title,
+body.dark-theme .card-body,
+body.dark-theme .accordion-item {
+    color: #eeeeee !important;
+    background: #2d333b!important;
+}
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6,
+body.dark-theme small,
+body.dark-theme span,
+body.dark-theme .display-1,
+body.dark-theme .display-2,
+body.dark-theme .display-3,
+body.dark-theme .display-4,
+body.dark-theme .display-5,
+body.dark-theme .display-6,
+body.dark-theme li,
+body.dark-theme .btn {
+    color: #eeeeee !important;
+}
+
+body.dark-theme a {
+    color: #809fff;
+}
+
+body.dark-theme #searchBar,
+body.dark-theme input[type=text],
+body.dark-theme .form-check-input[type=checkbox],
+body.dark-theme .ql-container,
+body.dark-theme .ql-editor:focus,
+body.dark-theme .form-floating>.form-control,
+body.dark-theme textarea {
+    background-color: #22272e!important;
+    border: 1px solid #444c56;
+    color: #ccc!important;
+    box-shadow: none;
+}
+
+body.dark-theme #innerSearchButtonText {
+    color: #eee!important;
+}
+
+body.dark-theme .search-box-input {
+    background-color: #22272e!important;
+    color: #ccc!important;
+}
+
+body.dark-theme .chip {
+    background-color: #2d333b;
+    border: 2px solid #ffc34b;
+}
+
+body.dark-theme .offcanvas {
+    background-color: #2d333b!important;
+}
+
+body.dark-theme .recipeView * hr {
+    border: 1px solid var(--ps-accent-color);
+}
+
+body.dark-theme .list-group-item {
+    background-color: inherit;
+    border-bottom: 1px solid rgba(127,127,127,1)
+}
+
+body.dark-theme span.ingredient-amount-badge,
+body.dark-theme .accordion-button {
+    background-color: inherit;
+}
+
+body.dark-theme .ql-toolbar.ql-snow {
+    background-color: #cccccc;
+}
+
+body.dark-theme .manage-recipe-blocks-pills-tab.active {
+    background-color: inherit!important;
+}
+
+body.font-increase-1 {
+    font-size: var(--font-size-1);
+}
+
+body.font-increase-2 {
+    font-size: var(--font-size-2);
+}
+
+body.font-increase-3 {
+    font-size: var(--font-size-3);
+}
+
+body.font-increase-4 {
+    font-size: var(--font-size-4);
+}
+
 
 /* For desktops */
 @media (min-width: 992px) {

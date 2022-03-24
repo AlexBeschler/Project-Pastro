@@ -142,39 +142,40 @@
 										utils.setLocalStorage(utils.INGREDIENTS_CHECKED, 'false');
 									}
 									if (doc.data().isDarkModeSet) {
+										//Turn night mode on
 										utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
 									} else {
-										utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
+										utils.setLocalStorage(utils.DARK_MODE_SET, 'false');
 									}
 									switch (doc.data().levelFontSize) {
-										case 1:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 1);
+										case '1':
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '1');
 											break;
-										case 2:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 2);
+										case '2':
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '2');
 											break;
-										case 3:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 3);
+										case '3':
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '3');
 											break;
-										case 4:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 4);
+										case '4':
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '4');
 											break;
 										default:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, 1);
+											utils.setLocalStorage(utils.LEVEL_FONT_SET, '1');
 									}
-									if (doc.data().isDyslexicFontSet) {
-										//Set local storage which will be read by Vue instance being mounted
-										utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
-										var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
+									var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
 										dys_font.load().then(function (loaded_face) {
 											document.fonts.add(loaded_face);
-											document.body.style.fontFamily = '"OpenDyslexic", sans-serif';	
+											if (doc.data().isDyslexicFontSet) {
+												//Set local storage which will be read by Vue instance being mounted
+												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
+												document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
+											} else {
+												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
+											}
 										}).catch(function (error) {
 											console.log(error);
 										});
-									} else {
-										utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
-									}
 									if (doc.data().isHighContrastModeSet) {
 										utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'true');
 									} else {
@@ -182,10 +183,7 @@
 									}
 									getCookbook();
 								}).catch((error) => {
-									//Couldn't get default font set, rely on local storage
-									if (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') {
-										document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-									}
+									console.log(error);
 								});
 							}
 						});
@@ -933,6 +931,70 @@
 			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
+		Vue.component('reactive-svg', {
+			props: ['iconColor'],
+			template: '#reactive-svg-template'
+		});
+
+		//SVG Icons
+		Vue.component('arrow-left-short', {
+			template: '#arrow-left-short-template'
+		});
+		Vue.component('arrow-up-right', {
+			template: '#arrow-up-right-template'
+		});
+		Vue.component('calendar-range', {
+			template: '#calendar-range-template'
+		});
+		Vue.component('camera-fill', {
+			template: '#camera-fill-template'
+		});
+		Vue.component('check-lg', {
+			template: '#check-lg-template'
+		});
+		Vue.component('chevron-bar-expand', {
+			template: '#chevron-bar-expand-template'
+		});
+		Vue.component('edit', {
+			template: '#edit-template'
+		});
+		Vue.component('egg', {
+			template: '#egg-template'
+		});
+		Vue.component('gear', {
+			template: '#gear-template'
+		});
+		Vue.component('info-circle', {
+			template: '#info-circle-template'
+		});
+		Vue.component('journal-richtext', {
+			template: '#journal-richtext-template'
+		});
+		Vue.component('lightning', {
+			template: '#lightning-template'
+		});
+		Vue.component('plus', {
+			template: '#plus-template'
+		});
+		Vue.component('search', {
+			template: '#search-template'
+		});
+		Vue.component('share-fill', {
+			template: '#share-fill-template'
+		});
+		Vue.component('stopwatch', {
+			template: '#stopwatch-template'
+		});
+		Vue.component('tags', {
+			template: '#tags-template'
+		});
+		Vue.component('trash', {
+			template: '#trash-template'
+		});
+		Vue.component('x-lg', {
+			template: '#x-lg-template'
+		});
+
 		new Vue({
 			el: '#appContent',
 			data: {
@@ -1084,11 +1146,12 @@
 				isIngredientsChecked: false,
 				//Accessibility
 				isDarkModeSet: false,
-				levelFontSize: 1,
+				levelFontSize: '1',
 				isDyslexicFontSet: false,
 				isHighContrastModeSet: false,
-				userID: utils._UID,
 				browserUtil: '',
+
+				iconColor: '#000000',
 
 				/** Utility data **/
 				toastInstance: null,
@@ -1116,6 +1179,9 @@
 					}],
 					['clean']
 				],
+
+				/** App Version **/
+				version: 'Pantry Beta 3.0_01'
 			},
 			created() {
 				this.db = firebase.firestore();
@@ -1338,7 +1404,6 @@
 				this.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
 				this.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
 
-
 				//Add smart button listeners for ManageRecipe
 				var smartButtonListeners = [
 					this.$refs.manageOverviewAccordionButton,
@@ -1425,19 +1490,6 @@
 					}
 					this.updateFilteredIngredients(b);
 				},
-				/*
-				isDyslexicFontSet: function (b, a) {
-					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
-					//Write to local storage
-					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet);
-					//Write to cloud
-					this.db.collection('users').doc(utils._UID).set({
-						dyslexicFontSet: this.isDyslexicFontSet.toString()
-					}).catch((error) => {
-						console.error('Error writing cloud font preference: ', error);
-					});
-				}
-				*/
 				addIngredientModel: {
 					handler: function (after, before) {
 						if (utils.isEmptyArray(after)) {
@@ -1555,7 +1607,81 @@
 						}
 					},
 					deep: true
-				}
+				},
+				
+				/** OptionsView **/
+				is12HourFormatSet: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, this.is12HourFormatSet.toString());
+					//Update cloud settings
+					this.updateSetting({'is12HourFormatSet': this.is12HourFormatSet});
+				},
+				isTagsChecked: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.TAGS_CHECKED, this.isTagsChecked.toString());
+					//Update cloud settings
+					this.updateSetting({'isTagsChecked': this.isTagsChecked});
+				},
+				isTimeChecked: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.TIME_CHECKED, this.isTimeChecked.toString());
+					//Update cloud settings
+					this.updateSetting({'isTimeChecked': this.isTimeChecked});
+				},
+				isIngredientsChecked: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.INGREDIENTS_CHECKED, this.isIngredientsChecked.toString());
+					//Update cloud settings
+					this.updateSetting({'isIngredientsChecked': this.isIngredientsChecked});
+				},
+				isDarkModeSet: function(b, a) {
+					document.body.classList.toggle('dark-theme');
+					this.iconColor = (this.isDarkModeSet) ? '#eeeeee' : '#000000';
+					//Write to local storage
+					utils.setLocalStorage(utils.DARK_MODE_SET, this.isDarkModeSet.toString());
+					//Update cloud settings
+					this.updateSetting({'isDarkModeSet': this.isDarkModeSet});
+				},
+				levelFontSize: function(b, a) {
+					document.body.classList.remove('font-increase-1');
+					document.body.classList.remove('font-increase-2');
+					document.body.classList.remove('font-increase-3');
+					document.body.classList.remove('font-increase-4');
+					switch (this.levelFontSize) {
+						case '1':
+							document.body.classList.add('font-increase-1');
+							break;
+						case '2':
+							document.body.classList.add('font-increase-2');
+							break;
+						case '3':
+							document.body.classList.add('font-increase-3');
+							break;
+						case '4':
+							document.body.classList.add('font-increase-4');
+							break;
+						default:
+							document.body.classList.add('font-increase-1');
+					}
+					//Write to local storage
+					utils.setLocalStorage(utils.LEVEL_FONT_SET, this.levelFontSize);
+					//Update cloud settings
+					this.updateSetting({'levelFontSize': this.levelFontSize});
+				},
+				isDyslexicFontSet: function(b, a) {
+					//Change setting
+					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
+					//Write to local storage
+					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet.toString());
+					//Update cloud settings
+					this.updateSetting({'isDyslexicFontSet': this.isDyslexicFontSet});
+				},
+				isHighContrastModeSet: function(b, a) {
+					//Write to local storage
+					utils.setLocalStorage(utils.HIGH_CONTRAST_SET, this.isHighContrastModeSet.toString());
+					//Update cloud settings
+					this.updateSetting({'isHighContrastModeSet': this.isHighContrastModeSet});
+				},
 			},
 			methods: {
 				/**** Button Helpers ****/
@@ -2767,7 +2893,12 @@
 				},
 
 				/**** OptionsView Methods ****/
-
+				updateSetting: function(update) {
+					this.db.collection('users').doc(utils._UID).update(update)
+					.catch((error) => {
+						console.error(error);
+					});
+				},
 
 				/**** Utilities ****/
 				//used for displaying the ETA of the recipe
@@ -2785,10 +2916,41 @@
 					if (futureMinutes > 59) {
 						hours += Math.floor(futureMinutes / 60);
 						futureMinutes = futureMinutes % 60;
-						return zeroPad((nowHours + hours) % 24).toString() + ':' + zeroPad(futureMinutes).toString();
+						let h = (nowHours + hours) % 24;
+						let m = futureMinutes;
+
+						if (this.is12HourFormatSet) {
+							let z = (h >= 13) ? h - 12 : h;
+							let rString = z.toString() + ':' + zeroPad(m).toString();
+							if (h >= 13) {
+								rString += ' pm';
+							} else {
+								rString += ' am';
+							}
+							return rString;
+						} else {
+							return zeroPad(h).toString() + ':' + zeroPad(m).toString();
+						}
 					} else {
-						return zeroPad(nowHours % 24).toString() + ':' + zeroPad(futureMinutes).toString();
+						let h = nowHours % 24;
+						let m = futureMinutes;
+						
+						if (this.is12HourFormatSet) {
+							let z = (h >= 13) ? h - 12 : h;
+							let rString = z.toString() + ':' + zeroPad(m).toString();
+							if (h >= 13) {
+								rString += ' pm';
+							} else {
+								rString += ' am';
+							}
+							return rString;
+						} else {
+							return zeroPad(h).toString() + ':' + zeroPad(m).toString();
+						}
 					}
+				},
+				calcButtonDimensions: function(rem, vw) {
+					return utils.remToPixels(rem) + utils.vwToPixels(vw);
 				},
 				//When user clicks the button to open their personal billing portal
 				stripeBillingPortal: function (event) {
@@ -3013,7 +3175,7 @@
 									self.quillAddRecipeViewInstance.setText('Loading...');
 
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
+									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: true
 									}).then(res => {
@@ -3084,7 +3246,7 @@
 									error('Error uploading file: ' + e);
 								}, () => {
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
+									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: false
 									}).then(res => {
@@ -3162,7 +3324,7 @@
 									error('Error uploading file: ' + e);
 								}, () => {
 									//Perform upload to Firebase storage
-									axios.post('http://localhost:5001/project-pastro-c95b1/us-central1/shadowspear', {
+									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
 										fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName,
 										compressParagraphs: true
 									}).then(res => {

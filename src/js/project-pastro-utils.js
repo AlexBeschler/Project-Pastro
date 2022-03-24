@@ -6,10 +6,10 @@ var ProjectPastroUtils = function () {
     this._isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/g.test(navigator.userAgent || navigator.vendor || window.opera);
     this._PRICE = 'price_1Im2dgCwcvKw4V4OHGN954pX';
     this._TAX_RATES = ['txr_1Im2egCwcvKw4V4O7Cf3wN4g'];
-    //this._SUCCESS_URL = 'https://pantryrecipes.app/app.html';
-    //this._CANCEL_URL = 'https://pantryrecipes.app/';
-    this._SUCCESS_URL = 'http://localhost:5000/app.html';
-    this._CANCEL_URL = 'http://localhost:5000/';
+    this._SUCCESS_URL = 'https://pantryrecipes.app/app.html';
+    this._CANCEL_URL = 'https://pantryrecipes.app/';
+    //this._SUCCESS_URL = 'http://localhost:5000/app.html';
+    //this._CANCEL_URL = 'http://localhost:5000/';
     this._STRIPE_CODE = 'pk_test_51IinkiCwcvKw4V4OGf5Yv6eCKrA3tSXGgUUvF6tPmdlpRmgoX4yq8NApouvHn5Q0BkVre82I9qKDECymsTct3MNx00ekEDzexj';
     
     //OptionsView variables
