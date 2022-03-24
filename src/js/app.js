@@ -1834,9 +1834,6 @@
                 clickedBrowse: function () {
                     this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
                 },
-				clickedMealPlan: function () {
-                    console.log('Clicked meal plan');
-                },
 				clickedAddRecipe: function() {
 					var self = this;
 					this.navigateForward(this.$refs.addRecipeView, null, null).then(() => {

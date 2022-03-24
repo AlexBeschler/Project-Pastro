@@ -132,30 +132,14 @@
 
             <!-- Explore Menu Container -->
             <div class="exploreMenu px-1 my-2" ref="exploreMenuContainer">
-                <button class="exploreMenuButton btn my-3" @click="clickedBrowse">
+                <button class="btn home-button my-3" @click="clickedBrowse">
                     <div class="row">
-                        <div class="col-2">
-                            <reactive-svg width="24" height="24" :fill="iconColor">
-                                <journal-richtext></journal-richtext>
-                            </reactive-svg>
-                        </div>
-                        <div class="col-10">
-                            <h3>Explore</h3>
-                        </div>
+                        <reactive-svg class="home-icon me-3" width="24" height="24" :fill="iconColor">
+                            <journal-richtext></journal-richtext>
+                        </reactive-svg>
+                        <h3 class="mb-0">Explore</h3>
                     </div>
                 </button>
-
-                <!--button class="exploreMenuButton btn mb-3" @click="clickedMealPlan">
-                    <div class="row">
-                        <div class="col-2">
-                            <img src="assets/icons/calendar-range.svg" width="24" height="24">
-                        </div>
-                        <div class="col-10">
-                            <h3>Meal Plan</h3>
-                        </div>
-                    </div>
-                </button-->
-
                 <div class="container mt-2">
                     <div class="row">
                         <div class="col-6 col-sm-3" v-for="filterPreset in filterPresetsList">

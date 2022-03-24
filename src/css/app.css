@@ -56,6 +56,25 @@ body {
     margin-right: 0.15rem;
 }
 
+.home-button {
+    width: 100%;
+    text-align: start;
+}
+
+.home-button:focus {
+    outline: 0;
+    box-shadow: none !important;
+}
+
+.home-button > .row {
+    flex-wrap: nowrap;
+}
+
+.home-icon {
+    width: fit-content;
+    align-self: center;
+}
+
 .offcanvas {
     width: 100vw;
 }
@@ -341,16 +360,6 @@ body {
     box-shadow: none !important;
     font-size: calc(1.3rem + .4vw);
     width: 85%;
-}
-
-.exploreMenuButton {
-    width: 100%;
-    text-align: start;
-}
-
-.exploreMenuButton:focus {
-    outline: 0;
-    box-shadow: none !important;
 }
 
 .box {
