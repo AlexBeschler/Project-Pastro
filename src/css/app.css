@@ -327,7 +327,15 @@ body {
 }
 
 .recipe-list-group-item {
+    flex-direction: row;
+    flex-wrap: nowrap;
     cursor: pointer;
+}
+
+.recipe-list-group-thumbnail {
+    width: 48px;
+    height: 48px;
+    padding: 0;
 }
 
 .searchImgContainer {
@@ -446,6 +454,11 @@ body {
     padding: 0.6rem 1rem;
 }
 
+.recipe-ingredient-list-item,
+.recipe-step-list-item {
+    cursor: pointer;
+}
+
 .recipeView * hr {
     opacity: 0.75;
     border: 1px solid var(--ps-secondary-color);
@@ -464,7 +477,6 @@ body {
     width: 100%;
     height: 24rem;
     object-fit: cover;
-    /* transform: translate3d(0px, -147px, 0px) scale(2); */
     will-change: transform;
 }
 
@@ -905,6 +917,7 @@ body.font-increase-4 {
 
     .offcanvas {
         max-width: 50vw;
+        max-height: 50%;
         margin-left: auto;
         margin-right: auto;
     }

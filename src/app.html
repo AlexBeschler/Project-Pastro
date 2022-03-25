@@ -226,10 +226,8 @@
                     <li class="row d-flex list-group-item recipe-list-group-item"
                         v-for="(recipe, index) in filteredCookbook" :key="index" :index="index"
                         @click="clickedRecipeFromExplorePane(index)">
-                        <div class="col-3">
-                            <img src="https://via.placeholder.com/48">
-                        </div>
-                        <div class="col-9 recipe-thumbnail-description">
+                        <img src="https://via.placeholder.com/48" class="recipe-list-group-thumbnail me-3">
+                        <div class="recipe-thumbnail-description">
                             <span>{{ recipe.title }}</span>
                             <span>{{ recipe.totalTime }} min • Finished by
                                 {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
@@ -243,7 +241,7 @@
                 <div class="d-flex w-100 mt-3 remove-from-sharing"
                     style="justify-content: space-between; position: absolute;">
                     <button class="btn chip border-dark shadow" :disabled="searchBarExpanded" @click="navigateBackward">
-                        <reactive-svg class="right-margin" :fill="iconColor">
+                        <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
                             <arrow-left-short></arrow-left-short>
                         </reactive-svg>
                         <h5>Back</h5>
@@ -556,7 +554,7 @@
                                 </span>
                             </small>
                             <ul v-if="ingredientsDisplayState === 'view'" class="list-group list-group-flush">
-                                <li v-for="(ingredient, index) in section.ingredients" class="list-group-item"
+                                <li v-for="(ingredient, index) in section.ingredients" class="list-group-item recipe-ingredient-list-item"
                                     @click="e => clickedStrikeListItem(e)">
                                     <span class="ingredient-amount-badge"
                                         v-if="ingredient.amount">{{ ingredient.amount }}</span>
@@ -724,7 +722,7 @@
             <!-- AddRecipeView -->
             <div class="addRecipeView" ref="addRecipeView">
                 <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
-                    <reactive-svg class="right-margin" :fill="iconColor">
+                    <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
                         <arrow-left-short></arrow-left-short>
                     </reactive-svg>
                     <h5>Back</h5>
@@ -1276,7 +1274,7 @@
                 <div>
                     <div class="container">
                         <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
-                            <reactive-svg class="right-margin" :fill="iconColor">
+                            <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
                                 <arrow-left-short></arrow-left-short>
                             </reactive-svg>
                             <h5>Back</h5>
@@ -1695,7 +1693,7 @@
         </ul>
     </template>
     <template id="recipe-steps-draggable-item-template">
-        <li v-if="!step.isDeleted" class="list-group-item recipe-step-list-item">
+        <li v-if="!step.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
                     <reactive-svg :fill="iconColor">
@@ -1710,7 +1708,7 @@
                 </button>
             </div>
         </li>
-        <li v-else class="list-group-item recipe-step-list-item">
+        <li v-else class="list-group-item">
             <div class="d-flex align-items-center" style="justify-content: space-between;">
                 <div class="btn ps-0 pe-2">
                     <reactive-svg :fill="iconColor">
