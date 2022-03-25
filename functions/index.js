@@ -582,27 +582,6 @@ function allDescendants(node, textToSearch) {
 	return false;
 }
 
-exports.getAdminMetrics = functions.https.onRequest((req, res) => {
-	cors(req, res, () => {
-		getMetrics(req, res);
-	});
-});
-
-async function getMetrics(req, res) {
-	var stripeBalance = await getStripeBalance();
-	return res.status(200).send({
-		stripeBalance: stripeBalance
-	});
-}
-
-async function getStripeBalance() {
-	return new Promise((resolve, reject) => {
-		stripe.balance.retrieve(function (error, balance) {
-			resolve(balance);
-		});
-	});
-}
-
 //Notify admin of any Pastro errors
 exports.notifyLoggedError = functions.firestore.document('errors/{docId}').onCreate((snap, context) => {
 	const o = snap.data();
