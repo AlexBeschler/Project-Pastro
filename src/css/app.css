@@ -21,6 +21,10 @@ body {
     color: var(--ps-secondary-color);
 }
 
+#appContent {
+    overflow-x: hidden;
+}
+
 #appContent h1,
 #appContent h2,
 #appContent h3,
@@ -30,11 +34,45 @@ body {
     color: var(--ps-secondary-color);
 }
 
+.navbar-button {
+    z-index: 1;
+}
+
+.navbar-button:focus {
+    box-shadow: none;
+}
+
+.navbar-button-icon {
+    height: calc(1.575rem + 1.5vw);
+    width: calc(1.575rem + 1.5vw);
+    max-width: 42px;
+    max-height: 42px;
+}
+
 .form-check-input {
     width: 1.2em;
     height: 1.2em;
     margin-top: 0.15em;
     margin-right: 0.15rem;
+}
+
+.home-button {
+    width: 100%;
+    text-align: start;
+}
+
+.home-button:focus {
+    outline: 0;
+    box-shadow: none !important;
+}
+
+.home-button > .row {
+    flex-wrap: nowrap;
+}
+
+.home-icon {
+    width: fit-content;
+    align-self: center;
 }
 
 .offcanvas {
@@ -240,10 +278,7 @@ body {
     background-color: var(--ps-bg-color);
 }
 
-.gear-icon {
-    height: calc(1.575rem + 1.5vw);
-    width: calc(1.575rem + 1.5vw);
-}
+
 
 #headerText {
     font-size: calc(1.475rem + 1.5vw);
@@ -292,7 +327,15 @@ body {
 }
 
 .recipe-list-group-item {
+    flex-direction: row;
+    flex-wrap: nowrap;
     cursor: pointer;
+}
+
+.recipe-list-group-thumbnail {
+    width: 48px;
+    height: 48px;
+    padding: 0;
 }
 
 .searchImgContainer {
@@ -325,16 +368,6 @@ body {
     box-shadow: none !important;
     font-size: calc(1.3rem + .4vw);
     width: 85%;
-}
-
-.exploreMenuButton {
-    width: 100%;
-    text-align: start;
-}
-
-.exploreMenuButton:focus {
-    outline: 0;
-    box-shadow: none !important;
 }
 
 .box {
@@ -421,6 +454,11 @@ body {
     padding: 0.6rem 1rem;
 }
 
+.recipe-ingredient-list-item,
+.recipe-step-list-item {
+    cursor: pointer;
+}
+
 .recipeView * hr {
     opacity: 0.75;
     border: 1px solid var(--ps-secondary-color);
@@ -439,7 +477,6 @@ body {
     width: 100%;
     height: 24rem;
     object-fit: cover;
-    /* transform: translate3d(0px, -147px, 0px) scale(2); */
     will-change: transform;
 }
 
@@ -876,5 +913,12 @@ body.font-increase-4 {
 
     .signup-form {
         min-width: 500px;
+    }
+
+    .offcanvas {
+        max-width: 50vw;
+        max-height: 50%;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
