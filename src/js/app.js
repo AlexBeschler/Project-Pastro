@@ -729,25 +729,13 @@
 
 		var firebaseTestFilterPresets = [
 			{
-				name: 'Dinner in 10 minutes',
-				tags: '',
-				time: '',
-				ingredients: '',
-				nutrition: ''
-			},
-			{
-				name: 'Sweet Tooth!',
-				tags: '',
-				time: '',
-				ingredients: '',
-				nutrition: ''
-			},
-			{
-				name: 'Healthy Lunch',
-				tags: '',
-				time: '',
-				ingredients: '',
-				nutrition: ''
+				name: 'Drinks!',
+				tags: [
+					'Drink'
+				],
+				totalRecipeTime: '',
+				finishByTime: '',
+				ingredients: []
 			}
 		];
 
@@ -812,28 +800,6 @@
 
 		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex, flexIndex);
 		/*
-		var payload = [];
-
-		var listOfIngredients = [];
-		var listOfTags = [];
-
-		const indexedRecipes = new FlexSearch.Document({
-			document: {
-				id: "id",
-				index: ["docID", "title", "tags", "blocks[]:ingredients[]:value"]
-			},
-			tokenize: 'full'
-		});
-		var flexIndex = 0;
-
-		firebase.firestore().collection("users/" + utils._UID + "/recipes").onSnapshot({
-			includeMetadataChanges: true
-		}, function (snapshot) {
-			snapshot.docChanges().forEach(function (change) {
-				var source = snapshot.metadata.fromCache ? "local cache" : "server";
-				console.log("recipe came from " + source);
-			})
-		});
 		firebase.firestore().collection("users/" + utils._UID + "/recipes").get().then(function (querySnapshot) {
 			querySnapshot.forEach(function (doc) {
 				var recipe = doc.data();
@@ -1028,7 +994,7 @@
 				searchQuery: '',
 				searchResults_title: [],
 				searchResults_sectionTitle: [],
-				filterPresetsList: [],
+				filterPresetsList: filterPresets,
 				
 				//Tag helpers
 				tagModel: '',
@@ -1305,8 +1271,6 @@
                     delay: 250,
                     easing: 'easeOutQuad'
                 });
-
-				this.filterPresetsList = filterPresets;
 
 				//FilePond for cover photo
 				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhoto_DOM);
@@ -1873,6 +1837,42 @@
 					} else {
 						element.srcElement.parentNode.classList.toggle('strike-list-item');
 					}
+				},
+				clickedFilterPreset: function(index) {
+					this.checkedTagsArray = [];
+					this.totalRecipeTimeInput = '';
+					this.finishByTimeInput = '';
+					this.checkedIngredientsArray = [];
+					
+					//Load tags
+					this.filterPresetsList[index].tags.forEach(tag => {
+						//Check if tag exists
+						let i = _.find(this.tagsArray, function(a) {
+							return a === tag;
+						});
+						if (typeof i !== "undefined") {
+							this.checkedTagsArray.push(tag);
+						}
+					});
+					//Load times
+					if (this.filterPresetsList[index].totalRecipeTime !== '') {
+						this.totalRecipeTimeInput = this.filterPresetsList[index].totalRecipeTime;
+					}
+					if (this.filterPresetsList[index].finishByTime !== '') {
+						this.finishByTimeInput = this.filterPresetsList[index].finishByTime;
+					}
+					//Load ingredients
+					this.filterPresetsList[index].ingredients.forEach(ingredient => {
+						//Check if tag exists
+						let i = _.find(this.ingredientsArray, function(a) {
+							return a === ingredient;
+						});
+						if (typeof i !== "undefined") {
+							this.checkedIngredientsArray.push(ingredient);
+						}
+					});
+					//Navigate forward
+					this.clickedBrowse();
 				},
 
 				/**** Animation utilities ****/

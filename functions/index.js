@@ -334,6 +334,7 @@ exports.createAccount = functions.auth.user().onCreate((user) => {
 });
 
 async function createAccount(uid) {
+	//Make app settings
 	db.collection('users').doc(uid).set({
 		is12HourFormatSet: true,
 		isTagsChecked: true,
@@ -343,66 +344,162 @@ async function createAccount(uid) {
 		levelFontSize: '1',
 		isDyslexicFontSet: false,
 		isHighContrastModeSet: false
-	}).then(function () {
-		var helloWorldRecipe = db.collection('users/' + uid + '/recipes').doc('helloworld_recipe');
-		helloWorldRecipe.set({
-			"docID": 'helloworld_recipe',
-			"dateAdded": Date.now(),
-			"dateModified": Date.now(),
-			"favorite": false,
-			"title": "Hello World Recipe",
-			"description": "<p>Hello World</p>",
-			"tags": [
-				"Hello",
-				"World"
-			],
-			"prepTime": 1,
-			"cookTime": 2,
-			"totalTime": 3,
-			"activeTime": 3,
-			"yield": "4 servings",
-			"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
-			"thumbnail": "https://via.placeholder.com/64x64.png",
-			"specialEquipment": [
-				"Rice cooker"
-			],
-			"notes": [
-				"Make sure to mix well"
-			],
-			"sections": [
-				{
-					"title": "Hello World",
-					"ingredients": [
-						{
-							"amount": "1 tbps",
-							"value": "butter"
-						}
-					],
-					"steps": [
-						{
-							"value": "Preheat the oven to 350°F.",
-							"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-						}
-					],
-					"calories": 0,
-					"fat": 0,
-					"cholesterol": 0,
-					"sodium": 0,
-					"totalCarbs": 0,
-					"fiber": 0,
-					"sugar": 0,
-					"protein": 0
-				}
-			]
-		}).then(function () {
-			//Send onboard email?
-			console.log('Wrote hello world recipe to user ' + uid);
-		}).catch(function (error) {
-			//Notify admins
-			console.error('Error writing hello world recipe: ', error);
-		});
+	}).catch(function(error) {
+		console.error('Error writing hello world recipe: ', error);
+	});
+	var helloWorldRecipe = db.collection('users/' + uid + '/recipes').doc('helloworld_recipe');
+	helloWorldRecipe.set({
+		"docID": "thai_tea_hello_world",
+		"dateAdded": Date.now(),
+		"dateModified": Date.now(),
+		"favorite": false,
+		"title": "Thai Tea",
+		"description": "<p>While it&apos;s easy to simply buy Thai tea mix and add milk or half-and-half, it&apos;s not nearly as satisfying. This recipe is one of the <em>best from-scratch</em> Thai teas you could ever have!</p>",
+		"tags": [
+			"Drink",
+			"Cold",
+			"Easy",
+			"Snack"
+		],
+		"prepTime": 2,
+		"cookTime": 6,
+		"totalTime": 15,
+		"activeTime": 10,
+		"yield": "3 cups of Thai tea",
+		"coverPhotoURL": "https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fthai-tea.png?alt=media&token=668863fa-56df-4577-b91a-c365c235808c",
+		"thumbnail": "https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fthai-tea_thumb.png?alt=media&token=1b0070e8-a8c7-470f-8012-f46b4e5786a0",
+		"specialEquipment": [
+			"Cheesecloth",
+			"2x 4 cup beakers (or 2 containers with an easy-pour spout)",
+			"Old towel that can get stained",
+			"Scissors (if the tea bags have strings)"
+		],
+		"notes": [
+			"The old towel is placed under the easy-pour beakers when pouring the liquid from the saucepan",
+			"Be warned that tumeric powder will stain any cloth it comes into contact with."
+		],
+		"sections": [{
+				"title": "Thai Tea",
+				"ingredients": [{
+						"amount": "5 cups",
+						"value": "water, filtered"
+					},
+					{
+						"amount": "10",
+						"value": "black tea bags"
+					},
+					{
+						"amount": "4",
+						"value": "star anise"
+					},
+					{
+						"amount": "1 tsp",
+						"value": "green cardamon seeds"
+					},
+					{
+						"amount": "4",
+						"value": "cinnamon sticks"
+					},
+					{
+						"amount": "4 tsp",
+						"value": "tumeric powder"
+					},
+					{
+						"amount": "4 tsp",
+						"value": "vanilla extract (not imitation flavoring)"
+					},
+					{
+						"amount": "2",
+						"value": "fresh mint leaves (optional)"
+					}
+				],
+				"steps": [{
+						"value": "Put filtered water into a medium saucepan (~6 cups capacity or more) and bring to a boil.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "While waiting, snip off the black tea bag strings with a pair of scissors and combine these with the star anise, cardamon seeds, cinnamon sticks, and tumeric powder into a separate container and set aside.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "When water is boiling bring water to lo simmer and put dry ingredients in all at once. Quickly add the vanilla extract. Stir until ingredients are combined, roughly 8 stirs.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "Let sit for 6 minutes uncovered (the black tea bags could burst if saucepan is covered).",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "Afterwards, stir once again, about 8 stirs. Turn stove off.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "Place a sieve over one of the kitchen beakers and the old towel underneath; the cloth is used for catching any spills that will occur. Pour the tea blend into the sieve and let it catch the large ingredients.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "We must now filter the tumeric powder out of the tea - filtering twice will ensure almost all is removed. Fold the cheesecloth in half, then in half again (4 layers of cloth should be sufficient). Cover the top of the other empty beaker with one side of the cloth and pour the tea from the first beaker into the second, cheesecloth-covered beaker.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "Clean the now-empty beaker of residual tumeric powder and cover with the cheesecloth. Repeat the filtering process with the other side of the cheesecloth.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "After filtering twice, the tea should yield 3 cups.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "Create and whisk in the Thai tea sweetener blend, detailed below.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "Let sit in the refrigerator until chilled. Serve with 3 ice cubes and 2 fresh mint leaves. Enjoy!",
+						"coverPhotoURL": ""
+					}
+				],
+				"calories": 0,
+				"fat": 0,
+				"cholesterol": 0,
+				"sodium": 0,
+				"totalCarbs": 0,
+				"fiber": 0,
+				"sugar": 0,
+				"protein": 0
+			},
+			{
+				"title": "Sweetener Blend",
+				"ingredients": [{
+						"amount": "6 tbps",
+						"value": "sweetened condensed milk"
+					},
+					{
+						"amount": "3 tbps",
+						"value": "evaporated milk"
+					}
+				],
+				"steps": [{
+						"value": "Pour ingredients into a cup. Using a fork whisk together ingredients until thoroughly blended, resembling a thick, sticky cream.",
+						"coverPhotoURL": ""
+					},
+					{
+						"value": "If your Thai tea recipe yielded an amount other than 3 cups, combine the condensed milk and evaporated milk using a 2:1 blend per cup of tea, 2 parts condensed milk, 1 part evaporated milk, using tbps as the measurement.",
+						"coverPhotoURL": ""
+					}
+				],
+				"calories": 0,
+				"fat": 0,
+				"cholesterol": 0,
+				"sodium": 0,
+				"totalCarbs": 0,
+				"fiber": 0,
+				"sugar": 0,
+				"protein": 0
+			}
+		]
 	}).catch(function (error) {
-		console.error('Error writing default font set: ', error);
+		//Notify admins
+		console.error('Error writing hello world recipe: ', error);
 	});
 }
 

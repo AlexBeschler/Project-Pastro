@@ -381,6 +381,7 @@ body {
     margin-bottom: 0.5rem;
     padding: 0.25rem;
     word-break: break-word;
+    cursor: pointer;
 }
 
 .box:before {
