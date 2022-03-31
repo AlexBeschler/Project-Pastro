@@ -995,6 +995,7 @@
 				searchResults_title: [],
 				searchResults_sectionTitle: [],
 				filterPresetsList: filterPresets,
+				showCreateFilterPresetButton: false,
 				
 				//Tag helpers
 				tagModel: '',
@@ -1816,6 +1817,9 @@
 				clickedClearIngredientFilters: function() {
 					this.checkedIngredientsArray = [];
 				},
+				clickedSaveFilterPreset: function() {
+					console.log('Clicked save filter preset');
+				},
 				clickedRecipeFromExplorePane: function(index) {
 					this.selectRecipe(this.filteredCookbook[index]);
 					this.navigateForward(this.$refs.recipeView, null, null);
@@ -2224,10 +2228,12 @@
 					}
 
 					if (!filtersApplied) {
+						this.showCreateFilterPresetButton = false;
 						this.filteredCookbook = [];
 						return;
 					}
-					
+
+					this.showCreateFilterPresetButton = true;
 					this.filteredCookbook = [];
 					filterIDs.forEach(id => {
 						this.filteredCookbook.push(this.cookbook[id]);

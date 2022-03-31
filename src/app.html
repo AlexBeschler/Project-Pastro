@@ -142,7 +142,8 @@
                 </button>
                 <div class="container mt-2">
                     <div class="row">
-                        <div class="col-6 col-sm-3" v-for="(filterPreset, index) in filterPresetsList" :key="index" :index="index">
+                        <div class="col-6 col-sm-3" v-for="(filterPreset, index) in filterPresetsList" :key="index"
+                            :index="index">
                             <div class="box" @click="clickedFilterPreset(index)">
                                 <div class="box-content">
                                     {{ filterPreset.name }}
@@ -155,12 +156,24 @@
 
             <!-- Filter recipe content -->
             <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
-                <button class="btn chip mb-4" @click="navigateBackward" :disabled="searchBarExpanded">
-                    <reactive-svg class="me-2" :fill="iconColor" ref="fromFilterToHomeBackButtonImg" height="24" width="24">
-                        <arrow-left-short></arrow-left-short>
-                    </reactive-svg>
-                    <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
-                </button>
+                <div class="d-flex justify-content-between mb-4">
+                    <button class="btn chip" @click="navigateBackward" :disabled="searchBarExpanded">
+                        <reactive-svg class="me-2" :fill="iconColor" ref="fromFilterToHomeBackButtonImg" height="24"
+                            width="24">
+                            <arrow-left-short></arrow-left-short>
+                        </reactive-svg>
+                        <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
+                    </button>
+                    <transition name="showButton">
+                        <button class="btn chip-outline" @click="clickedSaveFilterPreset"
+                            v-if="showCreateFilterPresetButton" :disabled="searchBarExpanded">
+                            <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
+                                <plus></plus>
+                            </reactive-svg>
+                            <h5>Save filter</h5>
+                        </button>
+                    </transition>
+                </div>
                 <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags"
                     v-if="isTagsChecked">
                     <div class="col-1">
@@ -554,7 +567,8 @@
                                 </span>
                             </small>
                             <ul v-if="ingredientsDisplayState === 'view'" class="list-group list-group-flush">
-                                <li v-for="(ingredient, index) in section.ingredients" class="list-group-item recipe-ingredient-list-item"
+                                <li v-for="(ingredient, index) in section.ingredients"
+                                    class="list-group-item recipe-ingredient-list-item"
                                     @click="e => clickedStrikeListItem(e)">
                                     <span class="ingredient-amount-badge"
                                         v-if="ingredient.amount">{{ ingredient.amount }}</span>
