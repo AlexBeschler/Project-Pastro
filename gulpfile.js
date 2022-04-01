@@ -16,7 +16,6 @@ const extend = require('gulp-extend');
 const minify = require('gulp-minify');
 const cleanCSS = require('gulp-clean-css');
 
-
 /**** Tasks ****/
 
 task('minifyJS', function () {
@@ -68,8 +67,6 @@ task('copyFiles', function (done) {
 
     done();
 });
-
-
 
 const minifyJS = task('minifyJS');
 const minifyCSS = task('minifyCSS');
