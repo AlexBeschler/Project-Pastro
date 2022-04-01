@@ -18,20 +18,10 @@
 body {
     background-color: var(--ps-bg-color) !important;
     font-family: 'Montserrat', sans-serif;
-    color: var(--ps-secondary-color);
 }
 
 #appContent {
     overflow-x: hidden;
-}
-
-#appContent h1,
-#appContent h2,
-#appContent h3,
-#appContent h4,
-#appContent h5,
-#appContent h6 {
-    color: var(--ps-secondary-color);
 }
 
 .navbar-button {
@@ -43,10 +33,21 @@ body {
 }
 
 .navbar-button-icon {
-    height: calc(1.575rem + 1.5vw);
-    width: calc(1.575rem + 1.5vw);
-    max-width: 42px;
-    max-height: 42px;
+    height: 32px;
+    width: 32px;
+}
+
+.navbar-profile-icon {
+    -webkit-background-size: 32px 32px;
+    background-size: 32px 32px;
+    border: 0;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    display: block;
+    margin: 0px;
+    position: relative;
+    height: 32px;
+    width: 32px;
 }
 
 .form-check-input {
@@ -297,22 +298,6 @@ body {
     font-weight: 500;
 }
 
-.top-nav-bar-pill-item>button {
-    border-radius: 1.5rem !important;
-    background-color: transparent !important;
-    color: var(--ps-secondary-color);
-    font-weight: bold;
-    margin: 2px 0;
-    border: 2px solid transparent !important;
-}
-
-.top-nav-bar-pill-item>button.active {
-    border: 2px solid var(--ps-primary-color) !important;
-    margin: 0;
-    color: #ffffff !important;
-    background-color: var(--ps-primary-color) !important;
-}
-
 #explorePane,
 #recipePane {
     position: absolute;
@@ -358,13 +343,17 @@ body {
     display: flex;
     justify-content: center !important;
     align-items: center !important;
-    padding: 0 0.175rem 0.1em 0.175rem;
+    padding: 0;
     border: none;
     background-color: var(--ps-light-grey-color) !important;
     border-radius: 24px;
     box-shadow: none !important;
     font-size: calc(1.3rem + .4vw);
     width: 100%;
+}
+
+.search-box-button h4 {
+    margin: 0;
 }
 
 .search-box-input {
@@ -400,6 +389,10 @@ body {
     content: '';
     float: left;
     padding-top: 75%;
+}
+
+.box-content {
+    margin: 0;
 }
 
 .filter-recipes-container * h5 {
@@ -614,7 +607,6 @@ span.ingredient-amount-badge {
     padding: 0.35em;
     font-size: 85%;
     border-radius: 0.4rem;
-    color: var(--ps-secondary-color);
     background-color: var(--ps-bg-color);
     border: 2px solid #ffaa00;
 }
@@ -695,12 +687,14 @@ span.ingredient-amount-badge.strike-list-item {
     -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     padding: 1rem 0;
+    background-color: inherit;
 }
 
 .manage-accordion-item>h2>button {
     -webkit-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     -moz-box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
     box-shadow: inset 6px 0px 0px -1px var(--ps-accent-color);
+    background-color: inherit;
 }
 
 .manage-accordion-flush .manage-accordion-item .manage-accordion-button {

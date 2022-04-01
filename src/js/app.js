@@ -107,10 +107,12 @@
 					if (user) { //user is signed in
 						utils._USER = user;
 						utils._UID = user.uid;
+						utils.setProfilePhotoURL(user.photoURL);
 						//Fix for when people's Google account name is all caps
 						utils._FIRSTNAME = utils.capitalizeFirstLetter(utils._USER.displayName.substr(0, utils._USER.displayName.indexOf(' ')).toLowerCase());
 						document.getElementById('loading-text').textContent = 'Hi ' + utils._FIRSTNAME;
 						document.getElementById('loading-subtext').textContent = 'Loading your cookbook...';
+						
 						//Check if user is paying customer
 						firebase.firestore().collection('customers').doc(user.uid).collection('subscriptions').where('status', '==', 'active').get().then(function (snapshot) {
 							if (snapshot.empty) { //Customer is not actively subscribed
@@ -970,6 +972,7 @@
 				storage: null,
 				//Main app cookbook array
 				cookbook: payload,
+				userPhotoURL: utils._PHOTO_URL,
 
 				/** App screen management **/
 				//Views are added to this stack to help manage user navigation throughout the lifecycle of the app.
@@ -1017,6 +1020,10 @@
 				//All tags and ingredients in cookbook
 				tagsArray: listOfTags,
 				ingredientsArray: listOfIngredients,
+
+				filterPresetNameModel: '',
+				filterPresetNameIsInvalid: false,
+				filterPresetNameFeedback: '',
 
 				/** RecipeView data **/
 				selectedRecipe: {},
@@ -1231,11 +1238,7 @@
 				.add({
 					targets: this.$refs.addRecipeButton,
 					translateX: function(el, i, l) {
-						var padding = utils.remToPixels(0);
-						var rem = utils.remToPixels(0.5);
-						var vw = utils.vwToPixels(0.25);
-						var animationWidth = -(rem + vw + padding);
-						return ['0', animationWidth];
+						return ['32px', '0px'];
 					},
 					opacity: {
 						value: 1,
@@ -1817,9 +1820,6 @@
 				clickedClearIngredientFilters: function() {
 					this.checkedIngredientsArray = [];
 				},
-				clickedSaveFilterPreset: function() {
-					console.log('Clicked save filter preset');
-				},
 				clickedRecipeFromExplorePane: function(index) {
 					this.selectRecipe(this.filteredCookbook[index]);
 					this.navigateForward(this.$refs.recipeView, null, null);
@@ -2283,6 +2283,29 @@
 					setTimeout(function() {
 						self.$refs.recipeDetails.classList.add('show-finished-viewstack');
 					}, timeout);
+				},
+
+				/**** FilterView Methods ****/
+				saveFilterPreset: function() {
+					this.filterPresetNameIsInvalid = false;
+					if (this.filterPresetNameModel.length < 1) {
+						this.filterPresetNameFeedback = 'Your preset name is too short';
+						this.filterPresetNameIsInvalid = true;
+					}
+					if (this.filterPresetNameModel.length > 12) {
+						this.filterPresetNameFeedback = 'Your preset name is too long';
+						this.filterPresetNameIsInvalid = true;
+					}
+					if (this.filterPresetNameIsInvalid) return;
+					
+					this.filterPresetsList.push({
+						name: this.filterPresetNameModel,
+						tags: this.checkedTagsArray,
+						totalRecipeTime: this.totalRecipeTimeInput,
+						finishByTime: this.finishByTimeInput,
+						ingredients: this.checkedIngredientsArray
+					});
+					this.navigateBackward();
 				},
 
 				/**** RecipeView Methods ****/

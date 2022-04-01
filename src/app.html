@@ -62,9 +62,7 @@
                         </reactive-svg>
                     </button>
                     <button class="btn navbar-button" @click="clickedSettings" ref="settingsButton">
-                        <reactive-svg class="navbar-button-icon" :fill="iconColor">
-                            <gear></gear>
-                        </reactive-svg>
+                        <img class="navbar-profile-icon" v-bind:src="userPhotoURL">
                     </button>
                 </div>
             </div>
@@ -86,7 +84,7 @@
                             </reactive-svg>
                         </div>
                     </div>
-                    <span id="innerSearchButtonText">Search recipes</span>
+                    <h4 id="innerSearchButtonText">Search recipes</h4>
                 </button>
                 <input class="form-control search-box-input d-none"
                     v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput"
@@ -140,14 +138,15 @@
                         <h3 class="mb-0">Explore</h3>
                     </div>
                 </button>
-                <div class="container mt-2">
+                <hr>
+                <div class="container mt-4">
                     <div class="row">
-                        <div class="col-6 col-sm-3" v-for="(filterPreset, index) in filterPresetsList" :key="index"
+                        <div class="col-6 col-md-4 col-lg-3 col-xl-2" v-for="(filterPreset, index) in filterPresetsList" :key="index"
                             :index="index">
                             <div class="box" @click="clickedFilterPreset(index)">
-                                <div class="box-content">
+                                <h6 class="box-content">
                                     {{ filterPreset.name }}
-                                </div>
+                                </h6>
                             </div>
                         </div>
                     </div>
@@ -165,8 +164,7 @@
                         <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
                     </button>
                     <transition name="showButton">
-                        <button class="btn chip-outline" @click="clickedSaveFilterPreset"
-                            v-if="showCreateFilterPresetButton" :disabled="searchBarExpanded">
+                        <button class="btn chip-outline" v-if="showCreateFilterPresetButton" :disabled="searchBarExpanded" data-bs-toggle="modal" data-bs-target="#filterPresetNameModal">
                             <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
                                 <plus></plus>
                             </reactive-svg>
@@ -1568,6 +1566,28 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <!-- Vertically centered modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="filterPresetNameModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Filter Preset Name</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input class="form-control" type="text" placeholder="Preset name" v-model="filterPresetNameModel" :class="{ 'is-invalid': filterPresetNameIsInvalid }">
+                        <div class="invalid-feedback" ref="filterPresetNameFeedbackRef">
+                            {{ filterPresetNameFeedback }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="saveFilterPreset">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         </div>
     </div>
 
