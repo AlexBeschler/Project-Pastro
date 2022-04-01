@@ -17,7 +17,10 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-pwa": "^4.5.13",
-    "gulp": "^4.0.2"
+    "gulp": "^4.0.2",
+    "gulp-replace-task": "^2.0.1",
+    "gulp-rev": "^9.0.0",
+    "gulp-rev-rewrite": "^5.0.0"
   },
   "license": "SEE LICENSE IN LICENSE"
 }
