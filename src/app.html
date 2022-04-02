@@ -139,8 +139,13 @@
                     </div>
                 </button>
                 <hr>
-                <div class="container mt-4">
+                <div class="container mt-2">
                     <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary btn-sm" @click="clickedEditFilterPreset">Edit Presets</button>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
                         <div class="col-6 col-md-4 col-lg-3 col-xl-2" v-for="(filterPreset, index) in filterPresetsList" :key="index"
                             :index="index">
                             <div class="box" @click="clickedFilterPreset(index)">

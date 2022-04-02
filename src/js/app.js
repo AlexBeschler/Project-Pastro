@@ -1878,6 +1878,9 @@
 					//Navigate forward
 					this.clickedBrowse();
 				},
+				clickedEditFilterPreset: function() {
+					console.log('Clicked edit filter presets');
+				},
 
 				/**** Animation utilities ****/
                 getAbsoluteHeight: function (el) {
