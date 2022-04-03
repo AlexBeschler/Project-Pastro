@@ -107,10 +107,12 @@
 					if (user) { //user is signed in
 						utils._USER = user;
 						utils._UID = user.uid;
+						utils.setProfilePhotoURL(user.photoURL);
 						//Fix for when people's Google account name is all caps
 						utils._FIRSTNAME = utils.capitalizeFirstLetter(utils._USER.displayName.substr(0, utils._USER.displayName.indexOf(' ')).toLowerCase());
 						document.getElementById('loading-text').textContent = 'Hi ' + utils._FIRSTNAME;
 						document.getElementById('loading-subtext').textContent = 'Loading your cookbook...';
+						
 						//Check if user is paying customer
 						firebase.firestore().collection('customers').doc(user.uid).collection('subscriptions').where('status', '==', 'active').get().then(function (snapshot) {
 							if (snapshot.empty) { //Customer is not actively subscribed
@@ -729,25 +731,13 @@
 
 		var firebaseTestFilterPresets = [
 			{
-				name: 'Dinner in 10 minutes',
-				tags: '',
-				time: '',
-				ingredients: '',
-				nutrition: ''
-			},
-			{
-				name: 'Sweet Tooth!',
-				tags: '',
-				time: '',
-				ingredients: '',
-				nutrition: ''
-			},
-			{
-				name: 'Healthy Lunch',
-				tags: '',
-				time: '',
-				ingredients: '',
-				nutrition: ''
+				name: 'Drinks!',
+				tags: [
+					'Drink'
+				],
+				totalRecipeTime: '',
+				finishByTime: '',
+				ingredients: []
 			}
 		];
 
@@ -812,28 +802,6 @@
 
 		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex, flexIndex);
 		/*
-		var payload = [];
-
-		var listOfIngredients = [];
-		var listOfTags = [];
-
-		const indexedRecipes = new FlexSearch.Document({
-			document: {
-				id: "id",
-				index: ["docID", "title", "tags", "blocks[]:ingredients[]:value"]
-			},
-			tokenize: 'full'
-		});
-		var flexIndex = 0;
-
-		firebase.firestore().collection("users/" + utils._UID + "/recipes").onSnapshot({
-			includeMetadataChanges: true
-		}, function (snapshot) {
-			snapshot.docChanges().forEach(function (change) {
-				var source = snapshot.metadata.fromCache ? "local cache" : "server";
-				console.log("recipe came from " + source);
-			})
-		});
 		firebase.firestore().collection("users/" + utils._UID + "/recipes").get().then(function (querySnapshot) {
 			querySnapshot.forEach(function (doc) {
 				var recipe = doc.data();
@@ -1004,6 +972,7 @@
 				storage: null,
 				//Main app cookbook array
 				cookbook: payload,
+				userPhotoURL: utils._PHOTO_URL,
 
 				/** App screen management **/
 				//Views are added to this stack to help manage user navigation throughout the lifecycle of the app.
@@ -1028,7 +997,10 @@
 				searchQuery: '',
 				searchResults_title: [],
 				searchResults_sectionTitle: [],
-				filterPresetsList: [],
+				filterPresetsList: filterPresets,
+				showCreateFilterPresetButton: false,
+				editFilterPresetButtonText: 'Edit Presets',
+				isEditingFilterPresets: false,
 				
 				//Tag helpers
 				tagModel: '',
@@ -1050,6 +1022,10 @@
 				//All tags and ingredients in cookbook
 				tagsArray: listOfTags,
 				ingredientsArray: listOfIngredients,
+
+				filterPresetNameModel: '',
+				filterPresetNameIsInvalid: false,
+				filterPresetNameFeedback: '',
 
 				/** RecipeView data **/
 				selectedRecipe: {},
@@ -1264,11 +1240,7 @@
 				.add({
 					targets: this.$refs.addRecipeButton,
 					translateX: function(el, i, l) {
-						var padding = utils.remToPixels(0);
-						var rem = utils.remToPixels(0.5);
-						var vw = utils.vwToPixels(0.25);
-						var animationWidth = -(rem + vw + padding);
-						return ['0', animationWidth];
+						return ['32px', '0px'];
 					},
 					opacity: {
 						value: 1,
@@ -1305,8 +1277,6 @@
                     delay: 250,
                     easing: 'easeOutQuad'
                 });
-
-				this.filterPresetsList = filterPresets;
 
 				//FilePond for cover photo
 				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhoto_DOM);
@@ -1874,6 +1844,56 @@
 						element.srcElement.parentNode.classList.toggle('strike-list-item');
 					}
 				},
+				clickedFilterPreset: function(index) {
+					//Allow the user to delete a preset
+					// instead of clicking the filter
+					if (this.isEditingFilterPresets) {
+						return;
+					}
+					this.checkedTagsArray = [];
+					this.totalRecipeTimeInput = '';
+					this.finishByTimeInput = '';
+					this.checkedIngredientsArray = [];
+					
+					//Load tags
+					this.filterPresetsList[index].tags.forEach(tag => {
+						//Check if tag exists
+						let i = _.find(this.tagsArray, function(a) {
+							return a === tag;
+						});
+						if (typeof i !== "undefined") {
+							this.checkedTagsArray.push(tag);
+						}
+					});
+					//Load times
+					if (this.filterPresetsList[index].totalRecipeTime !== '') {
+						this.totalRecipeTimeInput = this.filterPresetsList[index].totalRecipeTime;
+					}
+					if (this.filterPresetsList[index].finishByTime !== '') {
+						this.finishByTimeInput = this.filterPresetsList[index].finishByTime;
+					}
+					//Load ingredients
+					this.filterPresetsList[index].ingredients.forEach(ingredient => {
+						//Check if tag exists
+						let i = _.find(this.ingredientsArray, function(a) {
+							return a === ingredient;
+						});
+						if (typeof i !== "undefined") {
+							this.checkedIngredientsArray.push(ingredient);
+						}
+					});
+					//Navigate forward
+					this.clickedBrowse();
+				},
+				clickedEditFilterPreset: function() {
+					if (this.isEditingFilterPresets) {
+						this.isEditingFilterPresets = false;
+						this.editFilterPresetButtonText = 'Edit Presets';
+					} else {
+						this.isEditingFilterPresets = true;
+						this.editFilterPresetButtonText = 'Save';
+					}
+				},
 
 				/**** Animation utilities ****/
                 getAbsoluteHeight: function (el) {
@@ -2224,10 +2244,12 @@
 					}
 
 					if (!filtersApplied) {
+						this.showCreateFilterPresetButton = false;
 						this.filteredCookbook = [];
 						return;
 					}
-					
+
+					this.showCreateFilterPresetButton = true;
 					this.filteredCookbook = [];
 					filterIDs.forEach(id => {
 						this.filteredCookbook.push(this.cookbook[id]);
@@ -2277,6 +2299,32 @@
 					setTimeout(function() {
 						self.$refs.recipeDetails.classList.add('show-finished-viewstack');
 					}, timeout);
+				},
+
+				/**** FilterView Methods ****/
+				saveFilterPreset: function() {
+					this.filterPresetNameIsInvalid = false;
+					if (this.filterPresetNameModel.length < 1) {
+						this.filterPresetNameFeedback = 'Your preset name is too short';
+						this.filterPresetNameIsInvalid = true;
+					}
+					if (this.filterPresetNameModel.length > 12) {
+						this.filterPresetNameFeedback = 'Your preset name is too long';
+						this.filterPresetNameIsInvalid = true;
+					}
+					if (this.filterPresetNameIsInvalid) return;
+					
+					this.filterPresetsList.push({
+						name: this.filterPresetNameModel,
+						tags: this.checkedTagsArray,
+						totalRecipeTime: this.totalRecipeTimeInput,
+						finishByTime: this.finishByTimeInput,
+						ingredients: this.checkedIngredientsArray
+					});
+					this.navigateBackward();
+				},
+				deleteFilterPreset: function(index) {
+					this.filterPresetsList.splice(index, 1);
 				},
 
 				/**** RecipeView Methods ****/

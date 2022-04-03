@@ -1,16 +1,60 @@
 /*jshint esversion: 8 */
-const { src, dest, task } = require('gulp');
-const { series } = require('gulp');
+const {
+    readFileSync
+} = require('fs');
+const {
+    src,
+    dest,
+    task
+} = require('gulp');
+const {
+    series
+} = require('gulp');
+const rev = require('gulp-rev');
+const revRewrite = require('gulp-rev-rewrite');
+const extend = require('gulp-extend');
 const minify = require('gulp-minify');
 const cleanCSS = require('gulp-clean-css');
 
-task('minifyJS', function (done) {
-    src('src/js/*.js').pipe(minify({noSource: true, ext:{min:'.js'}})).pipe(dest('public/js'));
-    done();
+/**** Tasks ****/
+
+task('minifyJS', function () {
+    return src('src/js/*.js')
+        .pipe(minify({
+            noSource: true,
+            ext: {
+                min: '.js'
+            }
+        }))
+        .pipe(rev())
+        .pipe(dest('public/js'))
+        .pipe(rev.manifest())
+        .pipe(dest('public/js'));
 });
 
-task('minifyCSS', function (done) {
-    src('src/css/*.css').pipe(cleanCSS()).pipe(dest('public/css'));
+task('minifyCSS', function () {
+    return src('src/css/*.css')
+        .pipe(cleanCSS())
+        .pipe(rev())
+        .pipe(dest('public/css'))
+        .pipe(rev.manifest())
+        .pipe(dest('public/css'));
+});
+
+task('manifest', function () {
+    return src(['public/js/*.json', 'public/css/*.json'])
+        .pipe(extend('rev-manifest.json'))
+        .pipe(dest('public'));
+});
+
+task('rewrite', function (done) {
+    const manifest = readFileSync('public/rev-manifest.json');
+
+    src('src/**/*.html')
+        .pipe(revRewrite({
+            manifest
+        }))
+        .pipe(dest('public'));
     done();
 });
 
@@ -19,13 +63,15 @@ task('copyFiles', function (done) {
     src('src/img/**/*').pipe(dest('public/img'));
     src('src/vendor/**/*').pipe(dest('public/vendor'));
 
-    src(['src/*.html', 'src/*.ico', 'src/*.json', 'src/*.js', 'src/*.txt']).pipe(dest('public'));
+    src(['src/*.png', 'src/*.json', 'src/*.js', 'src/*.txt']).pipe(dest('public'));
 
     done();
 });
 
 const minifyJS = task('minifyJS');
 const minifyCSS = task('minifyCSS');
+const manifest = task('manifest');
 const copyFiles = task('copyFiles');
+const rewrite = task('rewrite');
 
-exports.default = series(minifyJS, minifyCSS, copyFiles);
+exports.default = series(minifyJS, minifyCSS, manifest, rewrite, copyFiles);

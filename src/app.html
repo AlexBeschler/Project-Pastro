@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cookbook | Pantry</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="favicon.png">
 
     <!-- Custom font for fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
@@ -62,9 +62,7 @@
                         </reactive-svg>
                     </button>
                     <button class="btn navbar-button" @click="clickedSettings" ref="settingsButton">
-                        <reactive-svg class="navbar-button-icon" :fill="iconColor">
-                            <gear></gear>
-                        </reactive-svg>
+                        <img class="navbar-profile-icon" v-bind:src="userPhotoURL">
                     </button>
                 </div>
             </div>
@@ -86,7 +84,7 @@
                             </reactive-svg>
                         </div>
                     </div>
-                    <span id="innerSearchButtonText">Search recipes</span>
+                    <h4 id="innerSearchButtonText">Search recipes</h4>
                 </button>
                 <input class="form-control search-box-input d-none"
                     v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput"
@@ -140,13 +138,25 @@
                         <h3 class="mb-0">Explore</h3>
                     </div>
                 </button>
+                <hr>
                 <div class="container mt-2">
                     <div class="row">
-                        <div class="col-6 col-sm-3" v-for="filterPreset in filterPresetsList">
-                            <div class="box">
-                                <div class="box-content">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary btn-sm" @click="clickedEditFilterPreset">{{ editFilterPresetButtonText }}</button>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6 col-md-4 col-lg-3 col-xl-2" v-for="(filterPreset, index) in filterPresetsList"
+                            :key="index" :index="index">
+                            <div class="box" @click="clickedFilterPreset(index)">
+                                <span 
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                    v-if="isEditingFilterPresets" @click="deleteFilterPreset(index)">
+                                    <button type="button" class="btn-close btn-close-white"></button>
+                                </span>
+                                <h6 class="box-content">
                                     {{ filterPreset.name }}
-                                </div>
+                                </h6>
                             </div>
                         </div>
                     </div>
@@ -155,12 +165,25 @@
 
             <!-- Filter recipe content -->
             <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
-                <button class="btn chip mb-4" @click="navigateBackward" :disabled="searchBarExpanded">
-                    <reactive-svg class="me-2" :fill="iconColor" ref="fromFilterToHomeBackButtonImg" height="24" width="24">
-                        <arrow-left-short></arrow-left-short>
-                    </reactive-svg>
-                    <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
-                </button>
+                <div class="d-flex justify-content-between mb-4">
+                    <button class="btn chip" @click="navigateBackward" :disabled="searchBarExpanded">
+                        <reactive-svg class="me-2" :fill="iconColor" ref="fromFilterToHomeBackButtonImg" height="24"
+                            width="24">
+                            <arrow-left-short></arrow-left-short>
+                        </reactive-svg>
+                        <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
+                    </button>
+                    <transition name="showButton">
+                        <button class="btn chip-outline" v-if="showCreateFilterPresetButton"
+                            :disabled="searchBarExpanded" data-bs-toggle="modal"
+                            data-bs-target="#filterPresetNameModal">
+                            <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
+                                <plus></plus>
+                            </reactive-svg>
+                            <h5>Save filter</h5>
+                        </button>
+                    </transition>
+                </div>
                 <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags"
                     v-if="isTagsChecked">
                     <div class="col-1">
@@ -554,7 +577,8 @@
                                 </span>
                             </small>
                             <ul v-if="ingredientsDisplayState === 'view'" class="list-group list-group-flush">
-                                <li v-for="(ingredient, index) in section.ingredients" class="list-group-item recipe-ingredient-list-item"
+                                <li v-for="(ingredient, index) in section.ingredients"
+                                    class="list-group-item recipe-ingredient-list-item"
                                     @click="e => clickedStrikeListItem(e)">
                                     <span class="ingredient-amount-badge"
                                         v-if="ingredient.amount">{{ ingredient.amount }}</span>
@@ -1410,7 +1434,7 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-start">
                             <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
-                                href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
+                                href="terms.html" target="_blank" rel="noopener noreferrer">
                                 Terms of Service
                             </a>
                             <span class="form-check form-switch align-self-center">
@@ -1421,7 +1445,7 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-start">
                             <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
-                                href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
+                                href="privacy.html" target="_blank" rel="noopener noreferrer">
                                 Privacy Policy
                             </a>
                             <span class="form-check form-switch align-self-center">
@@ -1551,6 +1575,27 @@
                             data-bs-dismiss="modal">Delete</button>
                         <button type="button" class="btn btn-lg btn-primary w-100 mx-0"
                             data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Vertically centered modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="filterPresetNameModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Filter Preset Name</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input class="form-control" type="text" placeholder="Preset name"
+                            v-model="filterPresetNameModel" :class="{ 'is-invalid': filterPresetNameIsInvalid }">
+                        <div class="invalid-feedback" ref="filterPresetNameFeedbackRef">
+                            {{ filterPresetNameFeedback }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="saveFilterPreset">Save</button>
                     </div>
                 </div>
             </div>
@@ -1757,12 +1802,14 @@
     <!-- Admin templates -->
     <template id="sign-in-layout-template">
         <form class="login-form">
-            <img class="mb-4" src="assets/logo/pantry.png" alt="" width="72" height="57">
+            <img class="logo mb-4" src="assets/logo/pantry.svg" alt="">
             <h2>Sign into Pantry</h2>
 
             <p>Sign in with your Google Account</p>
-            <button id="sign-in-button" class="btn btn-success" role="button" @click.prevent="signIn">Sign
-                In</button>
+            <button id="sign-in-button" class="btn" role="button" @click.prevent="signIn">
+                <img class="google-logo me-3" src="assets/google-auth/btn_google_light_normal.png">
+                Sign in with Google
+            </button>
             <p class="mt-5 mb-3 text-muted">© 2022</p>
         </form>
     </template>

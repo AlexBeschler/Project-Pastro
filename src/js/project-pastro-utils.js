@@ -1,6 +1,7 @@
 var ProjectPastroUtils = function () {
     this.errorCollection = null;
     this._FIRSTNAME = '';
+    this._PHOTO_URL = '';
     this._USER = null;
     this._UID = null;
     this._isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/g.test(navigator.userAgent || navigator.vendor || window.opera);
@@ -33,6 +34,11 @@ var ProjectPastroUtils = function () {
 
     this.init = function () {
         this.errorCollection = firebase.firestore().collection('errors');
+    };
+
+    //Firebase utils
+    this.setProfilePhotoURL = function(str) {
+        this._PHOTO_URL = str.replace('s96-c', 's492-c');
     };
 
     //JS utils
