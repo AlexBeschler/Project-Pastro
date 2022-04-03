@@ -8,7 +8,8 @@ a {
 
 .logo,
 .navbar-brand {
-    width: inherit;
+    width: auto;
+    height: 2.5rem;
 }
 
 .price {
