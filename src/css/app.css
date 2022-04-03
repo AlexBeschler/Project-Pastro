@@ -20,8 +20,25 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
+#sign-in-button {
+    background-color: #ffffff;
+    box-shadow: 1px 2px 0rem rgb(0 0 0 / 15%);
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+.google-logo {
+    width: auto;
+    height: 2rem;
+}
+
 #appContent {
     overflow-x: hidden;
+}
+
+.logo {
+    width: auto;
+    height: 6rem;
 }
 
 .navbar-button {
@@ -207,6 +224,10 @@ body {
 .form-control:focus {
     border-color: var(--ps-primary-color);
     box-shadow: 0 0 0 .25rem rgba(var(--ps-primary-rgb), 0.25);
+}
+
+.btn-close-white {
+    opacity: 1;
 }
 
 /* ==== Change Quill Styles ==== */

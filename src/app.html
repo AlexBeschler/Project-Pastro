@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cookbook | Pantry</title>
-	<link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/png" href="favicon.png">
 
     <!-- Custom font for fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
@@ -142,13 +142,18 @@
                 <div class="container mt-2">
                     <div class="row">
                         <div class="col d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary btn-sm" @click="clickedEditFilterPreset">Edit Presets</button>
+                            <button type="button" class="btn btn-secondary btn-sm" @click="clickedEditFilterPreset">{{ editFilterPresetButtonText }}</button>
                         </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-6 col-md-4 col-lg-3 col-xl-2" v-for="(filterPreset, index) in filterPresetsList" :key="index"
-                            :index="index">
+                        <div class="col-6 col-md-4 col-lg-3 col-xl-2" v-for="(filterPreset, index) in filterPresetsList"
+                            :key="index" :index="index">
                             <div class="box" @click="clickedFilterPreset(index)">
+                                <span 
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                    v-if="isEditingFilterPresets" @click="deleteFilterPreset(index)">
+                                    <button type="button" class="btn-close btn-close-white"></button>
+                                </span>
                                 <h6 class="box-content">
                                     {{ filterPreset.name }}
                                 </h6>
@@ -169,7 +174,9 @@
                         <h5 ref="fromFilterToHomeBackButtonText">Back</h5>
                     </button>
                     <transition name="showButton">
-                        <button class="btn chip-outline" v-if="showCreateFilterPresetButton" :disabled="searchBarExpanded" data-bs-toggle="modal" data-bs-target="#filterPresetNameModal">
+                        <button class="btn chip-outline" v-if="showCreateFilterPresetButton"
+                            :disabled="searchBarExpanded" data-bs-toggle="modal"
+                            data-bs-target="#filterPresetNameModal">
                             <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
                                 <plus></plus>
                             </reactive-svg>
@@ -1427,7 +1434,7 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-start">
                             <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
-                                href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
+                                href="terms.html" target="_blank" rel="noopener noreferrer">
                                 Terms of Service
                             </a>
                             <span class="form-check form-switch align-self-center">
@@ -1438,7 +1445,7 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-start">
                             <a class="ms-2 me-auto" style="color: inherit; text-decoration: inherit;"
-                                href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
+                                href="privacy.html" target="_blank" rel="noopener noreferrer">
                                 Privacy Policy
                             </a>
                             <span class="form-check form-switch align-self-center">
@@ -1581,7 +1588,8 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <input class="form-control" type="text" placeholder="Preset name" v-model="filterPresetNameModel" :class="{ 'is-invalid': filterPresetNameIsInvalid }">
+                        <input class="form-control" type="text" placeholder="Preset name"
+                            v-model="filterPresetNameModel" :class="{ 'is-invalid': filterPresetNameIsInvalid }">
                         <div class="invalid-feedback" ref="filterPresetNameFeedbackRef">
                             {{ filterPresetNameFeedback }}
                         </div>
@@ -1591,8 +1599,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
         </div>
     </div>
 
@@ -1800,8 +1806,10 @@
             <h2>Sign into Pantry</h2>
 
             <p>Sign in with your Google Account</p>
-            <button id="sign-in-button" class="btn btn-success" role="button" @click.prevent="signIn">Sign
-                In</button>
+            <button id="sign-in-button" class="btn" role="button" @click.prevent="signIn">
+                <img class="google-logo me-3" src="assets/google-auth/btn_google_light_normal.png">
+                Sign in with Google
+            </button>
             <p class="mt-5 mb-3 text-muted">© 2022</p>
         </form>
     </template>

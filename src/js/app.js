@@ -999,6 +999,8 @@
 				searchResults_sectionTitle: [],
 				filterPresetsList: filterPresets,
 				showCreateFilterPresetButton: false,
+				editFilterPresetButtonText: 'Edit Presets',
+				isEditingFilterPresets: false,
 				
 				//Tag helpers
 				tagModel: '',
@@ -1843,6 +1845,11 @@
 					}
 				},
 				clickedFilterPreset: function(index) {
+					//Allow the user to delete a preset
+					// instead of clicking the filter
+					if (this.isEditingFilterPresets) {
+						return;
+					}
 					this.checkedTagsArray = [];
 					this.totalRecipeTimeInput = '';
 					this.finishByTimeInput = '';
@@ -1879,7 +1886,13 @@
 					this.clickedBrowse();
 				},
 				clickedEditFilterPreset: function() {
-					console.log('Clicked edit filter presets');
+					if (this.isEditingFilterPresets) {
+						this.isEditingFilterPresets = false;
+						this.editFilterPresetButtonText = 'Edit Presets';
+					} else {
+						this.isEditingFilterPresets = true;
+						this.editFilterPresetButtonText = 'Save';
+					}
 				},
 
 				/**** Animation utilities ****/
@@ -2309,6 +2322,9 @@
 						ingredients: this.checkedIngredientsArray
 					});
 					this.navigateBackward();
+				},
+				deleteFilterPreset: function(index) {
+					this.filterPresetsList.splice(index, 1);
 				},
 
 				/**** RecipeView Methods ****/

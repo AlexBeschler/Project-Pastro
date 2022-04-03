@@ -63,7 +63,7 @@ task('copyFiles', function (done) {
     src('src/img/**/*').pipe(dest('public/img'));
     src('src/vendor/**/*').pipe(dest('public/vendor'));
 
-    src(['src/*.ico', 'src/*.json', 'src/*.js', 'src/*.txt']).pipe(dest('public'));
+    src(['src/*.png', 'src/*.json', 'src/*.js', 'src/*.txt']).pipe(dest('public'));
 
     done();
 });
