@@ -80,7 +80,7 @@
 		});
 
 		Vue.component('reactive-svg', {
-			props: ['iconColor'],
+			props: ['iconcolor'],
 			template: '#reactive-svg-template'
 		});
 
@@ -1788,9 +1788,21 @@
 						ingredients: this.checkedIngredientsArray
 					});
 					this.navigateBackward();
+					//Add to Firebase
+					this.db.collection('users').doc(utils._UID).update({
+						filterPresets: this.filterPresetsList
+					}).catch((error) => {
+						console.error(error);
+					});
 				},
 				deleteFilterPreset: function (index) {
 					this.filterPresetsList.splice(index, 1);
+					//Update Firebase
+					this.db.collection('users').doc(utils._UID).update({
+						filterPresets: this.filterPresetsList
+					}).catch((error) => {
+						console.error(error);
+					});
 				},
 
 				/**** RecipeView Methods ****/
