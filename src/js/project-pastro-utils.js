@@ -1,8 +1,6 @@
 var ProjectPastroUtils = function () {
     this.errorCollection = null;
     this._FIRSTNAME = '';
-    this._PHOTO_URL = '';
-    this._USER = null;
     this._UID = null;
     this._isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/g.test(navigator.userAgent || navigator.vendor || window.opera);
     this._PRICE = 'price_1Im2dgCwcvKw4V4OHGN954pX';
@@ -28,6 +26,7 @@ var ProjectPastroUtils = function () {
         EDIT: "edit",
         LOADING: "loading"
     };
+    this.SplashScreenAnimationDuration = 2000; //2 seconds in milliseconds
     this.ViewStackEnterAnimationDuration = 200;
     this.ViewStackExitAnimationDuration = 200;
     this.ViewStackAnimationDelayDuration = 5;
@@ -37,8 +36,8 @@ var ProjectPastroUtils = function () {
     };
 
     //Firebase utils
-    this.setProfilePhotoURL = function(str) {
-        this._PHOTO_URL = str.replace('s96-c', 's492-c');
+    this.getProfilePhotoURL = function(str) {
+        return str.replace('s96-c', 's492-c');
     };
 
     //JS utils
@@ -127,20 +126,6 @@ var ProjectPastroUtils = function () {
     };
 
     //DOM utils
-    this.showLoading = function () {
-        document.getElementById('login-container').style.visibility = 'hidden';
-        document.getElementById('loading').style.visibility = 'visible';
-        document.getElementById('appContent').style.visibility = 'hidden';
-    };
-    this.showLoginContainer = function () {
-        document.getElementById('login-container').style.visibility = 'visible';
-        document.getElementById('loading').style.visibility = 'hidden';
-    };
-    this.showCookbook = function () {
-        document.getElementById('login-container').remove(); //No need for this anymore
-        document.getElementById('loading').style.visibility = 'hidden';
-        document.getElementById('appContent').style.visibility = 'visible';
-    };
     this.remToPixels = function (rem) {
         return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     };

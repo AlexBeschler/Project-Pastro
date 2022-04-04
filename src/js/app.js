@@ -4,844 +4,45 @@
 	var nlp = new ProjectPastroNLP();
 	nlp.init();
 
-	window.addEventListener("load", function (event) {
+	window.addEventListener('load', function() {
 		//Progressive web app dependency
 		if ("serviceWorker" in navigator) {
 			navigator.serviceWorker.register("registerServiceWorker.js");
 		}
 		utils.init();
 
-		function toggleSignIn() {
-			if (!firebase.auth().currentUser) {
-				var provider = new firebase.auth.GoogleAuthProvider();
-				firebase.auth().signInWithRedirect(provider);
-			} else {
-				firebase.auth().signOut().then(function () {
-					window.location.replace('../index.html');
-				});
-			}
-		}
-		var paywallVM = new Vue({
-			el: '#login-container',
-			data: {
-				signin: true,
-				paysubscription: false
-			},
-			components: {
-				'sign-in-layout': {
-					template: '#sign-in-layout-template',
-					methods: {
-						signIn: function () {
-							toggleSignIn();
-						}
-					}
-				},
-				'purchase-subscription-layout': {
-					template: '#purchase-subscription-layout-template',
-					data() {
-						return {
-							firstname: utils._FIRSTNAME
-						};
-					},
-					methods: {
-						paySubscription: function () {
-							console.log('User clicked make payment');
-							//Disable button
-							var button = document.getElementById('paySubscriptionButton');
-							button.disabled = true;
-							button.textContent = 'Loading...';
-							firebase.firestore().collection('customers').doc(utils._UID).collection('checkout_sessions').add({
-								price: utils._PRICE,
-								allow_promotion_codes: false,
-								tax_rates: utils._TAX_RATES,
-								success_url: utils._SUCCESS_URL,
-								cancel_url: utils._CANCEL_URL
-							}).then(function (docRef) {
-								// Wait for the CheckoutSession to get attached by the extension
-								docRef.onSnapshot((snap) => {
-									const {
-										error,
-										sessionId
-									} = snap.data();
-									if (error) {
-										alert(`An error occurred: ${error.message}`);
-									}
-									if (sessionId) {
-										const stripe = Stripe(utils._STRIPE_CODE);
-										stripe.redirectToCheckout({
-											sessionId
-										});
-									}
-								});
-							});
-						},
-						logOut: function () {
-							toggleSignIn();
-						}
-					}
-				}
-			}
-		});
-
-		function initApp() {
-			firebase.firestore().enablePersistence().then(function () {
-				//Get user auth
-				firebase.auth().getRedirectResult().then(function (result) {
-					if (result.credential) {
-						var token = result.credential.accessToken;
-					}
-				}).catch(function (error) {
-					var errorCode = error.code;
-					var errorMessage = error.message;
-					var email = error.email;
-					var credential = error.credential;
-					if (errorCode === 'auth/account-exists-with-different-credential') {
-						alert('You have already signed up with a different auth provider for that email.');
-					} else {
-						console.error(error);
-					}
-				});
-
-				//When authstate changes
-				firebase.auth().onAuthStateChanged(function (user) {
-					if (user) { //user is signed in
-						utils._USER = user;
-						utils._UID = user.uid;
-						utils.setProfilePhotoURL(user.photoURL);
-						//Fix for when people's Google account name is all caps
-						utils._FIRSTNAME = utils.capitalizeFirstLetter(utils._USER.displayName.substr(0, utils._USER.displayName.indexOf(' ')).toLowerCase());
-						document.getElementById('loading-text').textContent = 'Hi ' + utils._FIRSTNAME;
-						document.getElementById('loading-subtext').textContent = 'Loading your cookbook...';
-						
-						//Check if user is paying customer
-						firebase.firestore().collection('customers').doc(user.uid).collection('subscriptions').where('status', '==', 'active').get().then(function (snapshot) {
-							if (snapshot.empty) { //Customer is not actively subscribed
-								paywallVM.signin = false;
-								paywallVM.paysubscription = true;
-								utils.showLoginContainer();
-							} else {
-								//Customer is actively subscribed
-								//Get cloud settings
-								firebase.firestore().collection('users').doc(utils._UID).get().then((doc) => {
-									if (doc.data().is12HourFormatSet) {
-										utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, 'true');
-									} else {
-										utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, 'false');
-									}
-									if (doc.data().isTagsChecked) {
-										utils.setLocalStorage(utils.TAGS_CHECKED, 'true');
-									} else {
-										utils.setLocalStorage(utils.TAGS_CHECKED, 'false');
-									}
-									if (doc.data().isTimeChecked) {
-										utils.setLocalStorage(utils.TIME_CHECKED, 'true');
-									} else {
-										utils.setLocalStorage(utils.TIME_CHECKED, 'false');
-									}
-									if (doc.data().isIngredientsChecked) {
-										utils.setLocalStorage(utils.INGREDIENTS_CHECKED, 'true');
-									} else {
-										utils.setLocalStorage(utils.INGREDIENTS_CHECKED, 'false');
-									}
-									if (doc.data().isDarkModeSet) {
-										//Turn night mode on
-										utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
-									} else {
-										utils.setLocalStorage(utils.DARK_MODE_SET, 'false');
-									}
-									switch (doc.data().levelFontSize) {
-										case '1':
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, '1');
-											break;
-										case '2':
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, '2');
-											break;
-										case '3':
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, '3');
-											break;
-										case '4':
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, '4');
-											break;
-										default:
-											utils.setLocalStorage(utils.LEVEL_FONT_SET, '1');
-									}
-									var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
-										dys_font.load().then(function (loaded_face) {
-											document.fonts.add(loaded_face);
-											if (doc.data().isDyslexicFontSet) {
-												//Set local storage which will be read by Vue instance being mounted
-												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
-												document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
-											} else {
-												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
-											}
-										}).catch(function (error) {
-											console.log(error);
-										});
-									if (doc.data().isHighContrastModeSet) {
-										utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'true');
-									} else {
-										utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'false');
-									}
-									getCookbook();
-								}).catch((error) => {
-									console.log(error);
-								});
-							}
-						});
-					} else { //User is not signed in 
-						utils.showLoginContainer();
-					}
-				});
-			}).catch((error) => {
-				if (error.code == 'failed-precondition') {
-					//Multiple tabs open
-				} else if (error.code == 'unimplemented') {
-					//Current browser doesn't support offline
-				}
+		async function goToPortal() {
+			const functionRef = firebase
+				.app()
+				.functions('us-central1')
+				.httpsCallable('ext-firestore-stripe-subscriptions-createPortalLink');
+			const {
+				data
+			} = await functionRef({
+				returnUrl: window.location.origin
 			});
+			window.location.assign(data.url);
 		}
 
-		initApp();
-	});
-
-	function getCookbook() {
-		var payload = [];
-		var listOfTags = [];
-		var listOfIngredients = [];
-		var firebaseTestUnit = [
-			{
-				"docID": "563ca5fb-1997-484e-b343-cec6c9d21251",
-				"dateAdded": "1637381364589",
-				"dateModified": "1637381387807",
-				"favorite": false,
-				"title": "Chocolate Cake",
-				"description": "<p>What an easy chocolate cake! No mixer required for the batter, simply whisk the dry ingredients in one bowl and the wet ingredients in another bowl. Pour the wet ingredients into the dry ingredients (or vice versa, it doesn’t make any difference), add the hot coffee, then whisk everything together. The cake batter is thin. Divide between 2 9-inch cake pans. You can easily stretch it to 3 or 4 8-inch or 9-inch cakes if needed. Or make a quarter sheet cake using a 9×13 inch cake pan. See my recipe notes for details.</p>",
-				"tags": [
-					"Dessert",
-					"Intermediate"
-				],
-				"prepTime": 15,
-				"cookTime": 30,
-				"totalTime": 120,
-				"activeTime": 25,
-				"yield": "24 slices",
-				"coverPhotoURL": "https://via.placeholder.com/2048x2048.png",
-				"thumbnail": "https://via.placeholder.com/64x64.png",
-				"specialEquipment": [
-					"Stand mixer",
-					"Cake pans"
-				],
-				"notes": [
-					"The cake batter will be very thin after adding the boiling water.",
-					"Let the baked cake layers cool completely. Wrap them well with plastic wrap and then with foil. Put each layer into a freezer bag and freeze up to 2 months. To serve, thaw in the refrigerator overnight with wrapping intact. The next day, the layers are ready to fill and frost."
-				],
-				"sections": [
-					{
-						"title": "Cake",
-						"ingredients": [
-							{
-								"amount": "2 cups",
-								"value": "all-purpose flour"
-							},
-							{
-								"amount": "2 cups",
-								"value": "sugar"
-							},
-							{
-								"amount": "3/4 cup",
-								"value": "unsweetened cocoa powder"
-							},
-							{
-								"amount": "2 teaspoons",
-								"value": "baking powder"
-							},
-							{
-								"amount": "1 1/2 teaspoons",
-								"value": "baking soda"
-							},
-							{
-								"amount": "1 teaspoon",
-								"value": "salt"
-							},
-							{
-								"amount": "1 teaspoon",
-								"value": "espresso powder homemade or store-bought"
-							},
-							{
-								"amount": "1 cup",
-								"value": "buttermilk"
-							},
-							{
-								"amount": "1/2 cup",
-								"value": "canola oil"
-							},
-							{
-								"amount": "2",
-								"value": "large eggs"
-							},
-							{
-								"amount": "2 teaspoons",
-								"value": "vanilla extract"
-							},
-							{
-								"amount": "1 cup",
-								"value": "boiling water"
-							}
-						],
-						"steps": [
-							{
-								"value": "Preheat oven to 350º F. Prepare two 9-inch cake pans by spraying with baking spray or buttering and lightly flouring.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Add flour, sugar, cocoa, baking powder, baking soda, salt and espresso powder to a large bowl or the bowl of a stand mixer. Whisk through to combine or, using your paddle attachment, stir through flour mixture until combined well.",
-								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
-							},
-							{
-								"value": "Add milk, vegetable oil, eggs, and vanilla to flour mixture and mix together on medium speed until well combined. Reduce speed and carefully add boiling water to the cake batter until well combined.",
-								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
-							},
-							{
-								"value": "Distribute cake batter evenly between the two prepared cake pans. Bake for 30-35 minutes, until a toothpick or cake tester inserted in the center of the chocolate cake comes out clean.",
-								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
-							},
-							{
-								"value": "Remove from the oven and allow to cool for about 10 minutes, remove from the pan and cool completely.",
-								"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
-							}
-						],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					},
-					{
-						"title": "Buttercream Frosting",
-						"ingredients": [
-							{
-								"amount": "1½ cups",
-								"value": "butter softened"
-							},
-							{
-								"amount": "1 cup",
-								"value": "unsweetened cocoa"
-							},
-							{
-								"amount": "5 cups",
-								"value": "confectioner’s sugar"
-							},
-							{
-								"amount": "½ cup",
-								"value": "milk"
-							},
-							{
-								"amount": "2 teaspoons",
-								"value": "vanilla extract"
-							},
-							{
-								"amount": "½ teaspoon",
-								"value": "espresso powder"
-							}
-						],
-						"steps": [
-							{
-								"value": "Add cocoa to a large bowl or bowl of stand mixer. Whisk through to remove any lumps.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Cream together butter and cocoa powder until well-combined.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Add sugar and milk to cocoa mixture by adding 1 cup of sugar followed by about a tablespoon of milk. After each addition has been combined, turn mixer onto a high speed for about a minute. Repeat until all sugar and milk have been added.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Add vanilla extract and espresso powder and combine well.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "If frosting appears too dry, add more milk, a tablespoon at a time until it reaches the right consistency. If it appears to wet and does not hold its form, add more confectioner’s sugar, a tablespoon at a time until it reaches the right consistency.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							}
-						],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					}
-				]
-			},
-			{
-				"docID": "d43cd4d1-45f7-4a97-a572-3e119c67afa6",
-				"dateAdded": "1637381406764",
-				"dateModified": "1637381414039",
-				"favorite": false,
-				"title": "Thai Tea",
-				"description": "<p>While it&apos;s easy to simply buy Thai tea mix and add milk or half-and-half, it&apos;s not nearly as satisfying. This recipe is one of the <em>best from-scratch</em> Thai teas you could ever have!</p>",
-				"tags": [
-					"Drink",
-					"Thai",
-					"Cold",
-					"Easy"
-				],
-				"prepTime": 2,
-				"cookTime": 6,
-				"totalTime": 15,
-				"activeTime": 10,
-				"yield": "3 cups of Thai tea",
-				"coverPhotoURL": "https://simpleparallax.b-cdn.net/images/paint_1.jpg",
-				"thumbnail": "https://via.placeholder.com/64x64.png",
-				"specialEquipment": [
-					"Cheesecloth",
-					"2x 4 cup beakers (or 2 containers with an easy-pour spout)",
-					"Old towel that can get stained",
-					"Scissors (if the tea bags have strings)"
-				],
-				"notes": [
-					"The old towel is placed under the easy-pour beakers when pouring the liquid from the saucepan",
-					"Vanilla bean is expensive but worth it! The final product is dependent on the ingredients being boiled with the water.",
-					"Be warned that tumeric powder will stain any cloth it comes into contact with."
-				],
-				"sections": [
-					{
-						"title": "Thai Tea",
-						"ingredients": [
-							{
-								"amount": "5 cups",
-								"value": "water, filtered"
-							},
-							{
-								"amount": "10",
-								"value": "black tea bags"
-							},
-							{
-								"amount": "4",
-								"value": "star anise"
-							},
-							{
-								"amount": "1 tsp",
-								"value": "green cardamon seeds"
-							},
-							{
-								"amount": "4",
-								"value": "cinnamon sticks"
-							},
-							{
-								"amount": "4 tsp",
-								"value": "tumeric powder"
-							},
-							{
-								"amount": "2",
-								"value": "vanilla beans"
-							},
-							{
-								"amount": "4 tsp",
-								"value": "vanilla extract (not imitation flavoring)"
-							},
-							{
-								"amount": "3 tbps",
-								"value": "granulated white sugar"
-							},
-							{
-								"amount": "2",
-								"value": "fresh mint leaves (optional)"
-							}
-						],
-						"steps": [
-							{
-								"value": "Put filtered water into a medium saucepan (~6 cups capacity or more) and bring to a boil.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "While waiting, snip off the black tea bag strings with a pair of scissors and combine these with the star anise, cardamon seeds, cinnamon sticks, tumeric powder, and vanilla beans into a separate container and set aside.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "When water is boiling bring water to lo simmer and put dry ingredients in all at once. Quickly add the vanilla extract. Stir until ingredients are combined, roughly 8 stirs.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Let sit for 6 minutes uncovered (the black tea bags could burst if saucepan is covered).",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Afterwards, stir once again, about 8 stirs. Turn stove off.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Place a sieve over one of the kitchen beakers and the old towel underneath; the cloth is used for catching any spills that will occur. Pour the tea blend into the sieve and let it catch the large ingredients.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "We must now filter the tumeric powder out of the tea - filtering twice will ensure almost all is removed. Fold the cheesecloth in half, then in half again (4 layers of cloth should be sufficient). Cover the top of the other empty beaker with one side of the cloth and pour the tea from the first beaker into the second, cheesecloth-covered beaker.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Clean the now-empty beaker of residual tumeric powder and cover with the cheesecloth. Repeat the filtering process with the other side of the cheesecloth.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "After filtering twice, the tea should yield 3 cups.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Whisk the 3 tbps of granulated sugar into the tea (1 tbps per cup of tea)",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Create and whisk in the Thai tea sweetener blend, detailed below.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Let sit in the refrigerator until chilled. Serve with 3 ice cubes and 2 fresh mint leaves. Enjoy!",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							}
-						],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					},
-					{
-						"title": "Thai Tea Sweetener Blend",
-						"ingredients": [
-							{
-								"amount": "6 tbps",
-								"value": "sweetened condensed milk"
-							},
-							{
-								"amount": "3 tbps",
-								"value": "evaporated milk"
-							}
-						],
-						"steps": [
-							{
-								"value": "Pour ingredients into a cup. Using a fork whisk together ingredients until thoroughly blended, resembling a thick, sticky cream.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "If your Thai tea recipe yielded an amount other than 3 cups, combine the condensed milk and evaporated milk using a 2:1 blend per cup of tea, 2 parts condensed milk, 1 part evaporated milk, using tbps as the measurement.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},	
-						],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					}
-				]
-			},
-			{
-				"docID": "8f182252-9135-4c21-917e-4945bddd9a0e",
-				"dateAdded": "1637381426228",
-				"dateModified": "1637381430447",
-				"favorite": false,
-				"title": "Hello World Recipe",
-				"description": "<p>Hello World</p>",
-				"tags": [
-					"Dinner",
-					"Quick"
-				],
-				"prepTime": 1,
-				"cookTime": 3,
-				"totalTime": 1,
-				"activeTime": 5,
-				"yield": "2 servings",
-				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
-				"thumbnail": "https://via.placeholder.com/64x64.png",
-				"specialEquipment": [
-					"Rice cooker"
-				],
-				"notes": [
-					"Make sure to mix well"
-				],
-				"sections": [
-					{
-						"title": "Hello World",
-						"ingredients": [
-							{
-								"amount": "1 tbps",
-								"value": "butter"
-							},
-							{
-								"amount": "1 tsp",
-								"value": "salt"
-							}
-						],
-						"steps": [
-							{
-								"value": "Preheat the oven to 350°F.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							}
-						],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					},
-					{
-						"title": "Another hello world",
-						"ingredients": [
-							{
-								"amount": "1 tub",
-								"value": "frosting"
-							},
-							{
-								"amount": "3 tsp",
-								"value": "sugar"
-							}
-						],
-						"steps": [
-							{
-								"value": "Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							}
-						],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					}
-				]
-			},
-			{
-				"docID": "8a2a771f-3777-47b1-9cf6-8630e28c99db",
-				"dateAdded": "1639627414",
-				"dateModified": "1639627614",
-				"favorite": false,
-				"title": "Hello World Recipe",
-				"description": "<p>Hello World</p>",
-				"tags": [
-					"Dinner",
-					"Quick"
-				],
-				"prepTime": 1,
-				"cookTime": 3,
-				"totalTime": 1,
-				"activeTime": 5,
-				"yield": "2 servings",
-				"coverPhotoURL": "https://via.placeholder.com/1024x1024.png",
-				"thumbnail": "https://via.placeholder.com/64x64.png",
-				"specialEquipment": [
-					"Rice cooker"
-				],
-				"notes": [
-					"Make sure to mix well"
-				],
-				"sections": [
-					{
-						"title": "Hello World",
-						"ingredients": [
-							{
-								"amount": "1 tbps",
-								"value": "butter"
-							},
-							{
-								"amount": "1 tsp",
-								"value": "salt"
-							}
-						],
-						"steps": [
-							{
-								"value": "Preheat the oven to 350°F.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Beat together the butter, sugar, and salt, first until combined, then until fluffy and lightened in color. For a visual of what this should look like, see our video, how to cream butter and sugar.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							}
-						],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					},
-					{
-						"title": "Another hello world",
-						"ingredients": [
-							{
-								"amount": "1 tub",
-								"value": "frosting"
-							},
-							{
-								"amount": "3 tsp",
-								"value": "sugar"
-							}
-						],
-						"steps": [
-							{
-								"value": "Add the eggs one at a time, beating well after each addition. Scrape the sides and bottom of the bowl once all the eggs have been added, and beat briefly to re-combine any residue.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							},
-							{
-								"value": "Measure the flour by gently spooning it into a cup, then sweeping off any excess. Whisk the baking powder into the flour. Add the flour mixture to the batter in three parts alternately with the milk, starting and ending with the flour. The batter may look slightly curdled when you add the milk. That's OK; it'll smooth out as you add the flour. Mix until everything is well combined; the batter will look a bit rough, but shouldn't have any large lumps. Stir in the zest or lemon oil.",
-								"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
-							}
-						],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					}
-				]
-			}
-		];
-
-		var firebaseTestFilterPresets = [
-			{
-				name: 'Drinks!',
-				tags: [
-					'Drink'
-				],
-				totalRecipeTime: '',
-				finishByTime: '',
-				ingredients: []
-			}
-		];
-
-		//Init cookbook meta index
-		var metaIndex = new FlexSearch.Document({
-			document: {
-				id: "id",
-				index: [
-					"docID", 
-					"title", 
-					"tags", 
-					"sections[]:ingredients[]:value",
-					"sections[]:title"
-				]
-			},
-			tokenize: 'full'
-		});
-		//Init cookbook number meta index
-		//Data structure:
-		//  {
-		//    docID: xx
-		//    value: yy
-		//  }
-		var numberMetaIndex = {
-			totalTime: [],
-			calories: [],
-			carbohydrate: [],
-			cholesterol: [],
-			fat: [],
-			fiber: [],
-			protein: [],
-			sodium: [],
-			sugars: []
-		};
-		var flexIndex = 0;
-
-		firebaseTestUnit.forEach(recipe => {
-			//Inject id for FlexSearch during runtime
-			recipe.id = flexIndex;
-			
-			//Adds recipe and indexes it
-			payload.push(recipe);
-			metaIndex.add(recipe);
-
-			//Index numeric metadata
-			numberMetaIndex.totalTime.push({
-				id: flexIndex,
-				value: recipe.totalTime
-			});
-
-			listOfTags = _.union(listOfTags, recipe.tags);
-
-			recipe.sections.forEach(section => {
-				//Ingredients
-				section.ingredients.forEach(ingredient => {
-					listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
-				});
-			});
-
-			flexIndex++;
-		});
-
-		appFunctionality(payload, firebaseTestFilterPresets, listOfIngredients, listOfTags, metaIndex, numberMetaIndex, flexIndex);
-		/*
-		firebase.firestore().collection("users/" + utils._UID + "/recipes").get().then(function (querySnapshot) {
-			querySnapshot.forEach(function (doc) {
-				var recipe = doc.data();
-				var docID = recipe.docID;
-
-				//Inject id for FlexSearch during runtime
-				recipe.id = flexIndex;
-				flexIndex++;
-
-				//Adds recipe to sorted position
-				payload.push(recipe);
-
-				//Index recipe titles
-				indexedRecipes.add(recipe);
-
-				///Build sorted indices and list of ingredients/tags
-				//Tags
-				listOfTags = _.union(listOfTags, recipe.tags);
-
-				//Time
-				sortedTimeIndex.add(docID, parseInt(recipe.totalTime));
-
-				recipe.blocks.forEach(block => {
-					//Ingredients
-					block.ingredients.forEach(ingredient => {
-						listOfIngredients = _.union(listOfIngredients, [utils.capitalizeFirstLetter(ingredient.value)]);
+		async function uploadCoverPhoto(a) {
+			return new Promise((resolve, reject) => {
+				var task = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + a.name).put(a.file, a.meta);
+				task.on('state_changed', (snapshot) => {
+					//progress(snapshot.bytesTransferred / snapshot.totalBytes);
+				}, (error) => {
+					reject(error);
+				}, () => {
+					task.snapshot.ref.getDownloadURL().then((downloadURL) => {
+						resolve(downloadURL);
+					}).catch(error => {
+						reject(error);
 					});
 				});
 			});
-		}).then(function () {
-			appFunctionality(payload, sortedTimeIndex, listOfIngredients, listOfTags, indexedRecipes, flexIndex);
-		});
-		*/
-	}
+		}
 
-	function appFunctionality(payload, filterPresets, listOfIngredients, listOfTags, indexedRecipes, numberMetaIndex, injectedFlexIndex) {
 		//Load vue dependencies
 		Vue.use('vue-slicksort');
-
-		utils.showCookbook();
 
 		//** RecipeView component mixins **//
 
@@ -970,9 +171,10 @@
 				//Firebase db utils
 				db: null,
 				storage: null,
+				firstname: '',
 				//Main app cookbook array
-				cookbook: payload,
-				userPhotoURL: utils._PHOTO_URL,
+				cookbook: [],
+				userPhotoURL: '',
 
 				/** App screen management **/
 				//Views are added to this stack to help manage user navigation throughout the lifecycle of the app.
@@ -981,47 +183,52 @@
 				//   of the browser. When this happens, the app will pop the ViewStack and move backwards,
 				//   providing a seamless UX
 				ViewStack: [],
-				
+				signin: true,
+				paysubscription: false,
+				showLoadingContainer: true,
+				showLogInContainer: false,
+				showAppContainer: false,
+
 				/** Home screen data **/
 				headerText: '',
 				headerTextAnimeObject: null,
-                isHeaderTextHidden: false,
-                searchButtonHeight: 1,
-                searchBarExpanded: false,
-				
+				isHeaderTextHidden: false,
+				searchButtonHeight: 1,
+				searchBarExpanded: false,
+
 				///Used for 'Explore' pane
 				//Used for FilterView
 				filteredCookbook: [],
-				flexSearch: indexedRecipes,
-				numericIndex: numberMetaIndex,
+				flexSearch: null,
+				numericIndex: [],
 				searchQuery: '',
 				searchResults_title: [],
 				searchResults_sectionTitle: [],
-				filterPresetsList: filterPresets,
+				filterPresetsList: [],
 				showCreateFilterPresetButton: false,
 				editFilterPresetButtonText: 'Edit Presets',
 				isEditingFilterPresets: false,
-				
+
 				//Tag helpers
 				tagModel: '',
-				tagList: listOfTags,
-				filteredTagList: listOfTags,
+				tagList: [],
+				filteredTagList: [],
 				checkedTagsArray: [],
-				
+
 				//Ingredient helpers
 				ingredientModel: '',
-				ingredientList: listOfIngredients,
-				filteredIngredientList: listOfIngredients,
+				ingredientList: [],
+				filteredIngredientList: [],
 				checkedIngredientsArray: [],
-				
+
 				//Time helpers
 				totalRecipeTimeInput: '',
 				finishByTimeInput: '',
 				finishByTimeInputInMinutes: '',
 
 				//All tags and ingredients in cookbook
-				tagsArray: listOfTags,
-				ingredientsArray: listOfIngredients,
+				tagsArray: [],
+				ingredientsArray: [],
 
 				filterPresetNameModel: '',
 				filterPresetNameIsInvalid: false,
@@ -1078,38 +285,36 @@
 				manage_recipeActiveTime: '',
 				manage_recipeYield: '',
 				//Step 4
-				manage_recipeSections: [
-					{
-						"title": "",
-						"ingredients": [],
-						"steps": [],
-						"calories": 0,
-						"fat": 0,
-						"cholesterol": 0,
-						"sodium": 0,
-						"totalCarbs": 0,
-						"fiber": 0,
-						"sugar": 0,
-						"protein": 0 
-					}
-				],
-				
+				manage_recipeSections: [{
+					"title": "",
+					"ingredients": [],
+					"steps": [],
+					"calories": 0,
+					"fat": 0,
+					"cholesterol": 0,
+					"sodium": 0,
+					"totalCarbs": 0,
+					"fiber": 0,
+					"sugar": 0,
+					"protein": 0
+				}],
+
 				addIngredientModel: [],
 				ingredientModelA: [],
 				addStepModel: [],
 				stepModelA: [],
-				
+
 				ocr_IngredientsFilePond: null,
 				ocr_IngredientsCropperObject: null,
 				ocr_IngredientsPondEditor: null,
 				ocr_IngredientsEditMode: false,
-				
+
 				ocr_StepsFilePond: null,
 				ocr_StepsCropperObject: null,
 				ocr_StepsPondEditor: null,
 				ocr_StepsEditMode: false,
 
-				injectedFlexIndex: injectedFlexIndex,
+				injectedFlexIndex: 0,
 
 				isRecipeSubmitDisabled: false,
 
@@ -1159,253 +364,291 @@
 				/** App Version **/
 				version: 'Pantry Beta 3.0_01'
 			},
-			created() {
-				this.db = firebase.firestore();
+			components: {
+				'sign-in-layout': {
+					template: '#sign-in-layout-template',
+					methods: {
+						signIn: function () {
+							if (!firebase.auth().currentUser) {
+								var provider = new firebase.auth.GoogleAuthProvider();
+								firebase.auth().signInWithRedirect(provider);
+							} else {
+								firebase.auth().signOut().then(function () {
+									window.location.replace('../index.html');
+								});
+							}
+						}
+					}
+				},
+				'purchase-subscription-layout': {
+					template: '#purchase-subscription-layout-template',
+					props: {
+						firstname: String,
+						db: Object
+					},
+					methods: {
+						paySubscription: function () {
+							//Disable button
+							var button = document.getElementById('paySubscriptionButton');
+							button.disabled = true;
+							button.textContent = 'Loading...';
+							this.db.collection('customers').doc(utils._UID).collection('checkout_sessions').add({
+								price: utils._PRICE,
+								allow_promotion_codes: false,
+								tax_rates: utils._TAX_RATES,
+								success_url: utils._SUCCESS_URL,
+								cancel_url: utils._CANCEL_URL
+							}).then(function (docRef) {
+								// Wait for the CheckoutSession to get attached by the extension
+								docRef.onSnapshot((snap) => {
+									const {
+										error,
+										sessionId
+									} = snap.data();
+									if (error) {
+										alert(`An error occurred: ${error.message}`);
+									}
+									if (sessionId) {
+										const stripe = Stripe(utils._STRIPE_CODE);
+										stripe.redirectToCheckout({
+											sessionId
+										});
+									}
+								});
+							});
+						},
+						logOut: function () {
+							if (!firebase.auth().currentUser) {
+								var provider = new firebase.auth.GoogleAuthProvider();
+								firebase.auth().signInWithRedirect(provider);
+							} else {
+								firebase.auth().signOut().then(function () {
+									window.location.replace('../index.html');
+								});
+							}
+						}
+					}
+				}
 			},
 			mounted() {
 				var self = this;
-				/* Disable back button from closing PWA */
-				//Bug - when user reloads page it completely breaks this code
-				window.history.pushState(null, null, document.URL);
-
-				window.addEventListener('popstate', function () {
-					self.navigateBackward();
-					history.pushState(null, null, document.URL);
-				});
-
-				this.storage = firebase.storage().ref();
-
-				FilePond.registerPlugin(FilePondPluginImageTransform, FilePondPluginImageCrop, FilePondPluginImagePreview, FilePondPluginImageResize, FilePondPluginImageTransform, FilePondPluginImageEdit, FilePondPluginFileValidateType);				
-
-				//On mobile, chrome/safari address bar is 60px and takes up part of the 100vh
-				//Meaning if the UA is mobile we need to add an additional 60px to the height of offcanvas
-				// to compensate. This is a broad check for mobile, instead of honing in on mobile
-				// Safari and Chrome; I simply don't care.
-				if (utils._isMobile) {
-					//document.getElementById('mobile-padding').style.height = '60px';
-					this.browserUtil = 'Mobile browser';
-				} else {
-					this.browserUtil = 'Desktop browser';
-				}
-
-				//Set height of search text box
-                this.searchButtonHeight = this.getAbsoluteHeight(this.$refs.searchBoxButton);
-
-				//Add the main menu to the view stack
-				this.ViewStack.push(this.$refs.exploreMenuContainer);
-
-                var greeting = 'Good ';
-                var mHour = new Date().getHours();
-                switch (mHour) {
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                        greeting += 'evening';
-                        break;
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 8:
-                    case 9:
-                    case 10:
-                    case 11:
-                        greeting += 'morning';
-                        break;
-                    case 12:
-                    case 13:
-                    case 14:
-                    case 15:
-                    case 16:
-                        greeting += 'afternoon';
-                        break;
-                    case 17:
-                    case 18:
-                    case 19:
-                    case 20:
-                    case 21:
-                    case 22:
-                    case 23:
-                        greeting += 'evening';
-                        break;
-                }
-                greeting += ' ';
-                greeting += utils._FIRSTNAME;
-                this.headerText = greeting;
-
-				this.headerTextAnimeObject = anime.timeline({});
-
-				this.headerTextAnimeObject
-				.add({
-					targets: this.$refs.addRecipeButton,
-					translateX: function(el, i, l) {
-						return ['32px', '0px'];
-					},
-					opacity: {
-						value: 1,
-						duration: 250
-					},
-					rotate: [45, 0],
-					delay: 250,
-					duration: 450,
-					easing: 'easeOutBack'
-				})
-				.add({
-                    targets: this.$refs.headerText,
-                    translateY: ['0%', '50%'],
-                    opacity: [1, 0],
-                    duration: 200,
-                    easing: 'easeInOutQuad',
-                    complete: function (anim) {
-                        self.headerText = 'Let\'s get started';
-                    }
-                }, '+=575')
-				.add({
-                    targets: this.$refs.headerText,
-                    translateY: ['-50%', '0%'],
-                    opacity: [0, 1],
-                    duration: 200,
-                    easing: 'easeInOutQuad'
-                }, '+=30');
-
-                anime({
-                    targets: this.$refs.explorePaneContent,
-                    translateY: ['5%', '0%'],
-                    opacity: [0, 1],
-                    duration: 250,
-                    delay: 250,
-                    easing: 'easeOutQuad'
-                });
-
-				//FilePond for cover photo
-				this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhoto_DOM);
-
-				//Create OCR objects
-
-				this.ocr_DescriptionPondEditor = {
-					open: (file, instructions) => {
-						//If the user already clicked the crop button, don't let another instance be called
-						if (self.ocr_DescriptionCropperObject !== null) {
-							return;
+				this.db = firebase.firestore();
+				this.db.enablePersistence().then(function () {
+					//Get user auth
+					firebase.auth().getRedirectResult().then(function (result) {
+						if (result.credential) {
+							var token = result.credential.accessToken;
 						}
-						var reader = new FileReader();
-						reader.onloadend = function () {
-							self.ocr_DescriptionEditMode = true;
-							var image = new Image();
-							image.src = reader.result;
-							image.id = 'descriptionCropper';
-							document.getElementById('ocrDescriptionCropWrapper').appendChild(image);
-							self.ocr_DescriptionCropperObject = new Cropper(document.getElementById('descriptionCropper'));
-						};
-						reader.readAsDataURL(file);
-					},
-
-					onconfirm: (output, item) => {},
-
-					oncancel: () => {},
-
-					onclose: () => {}
-				};
-
-				this.ocr_IngredientsPondEditor = {
-					open: (file, instructions) => {
-						//If the user already clicked the crop button, don't let another instance be called
-						if (self.ocr_IngredientsCropperObject !== null) {
-							return;
+					}).catch(function (error) {
+						var errorCode = error.code;
+						var errorMessage = error.message;
+						var email = error.email;
+						var credential = error.credential;
+						if (errorCode === 'auth/account-exists-with-different-credential') {
+							alert('You have already signed up with a different auth provider for that email.');
+						} else {
+							console.error(error);
 						}
-						var reader = new FileReader();
-						reader.onloadend = function () {
-							self.ocr_IngredientsEditMode = true;
-							var image = new Image();
-							image.src = reader.result;
-							image.id = 'IngredientsCropper';
-							document.getElementById('ocrIngredientsCropWrapper').appendChild(image);
-							self.ocr_IngredientsCropperObject = new Cropper(document.getElementById('ingredientsCropper'));
-						};
-						reader.readAsDataURL(file);
-					},
-
-					onconfirm: (output, item) => {},
-
-					oncancel: () => {},
-
-					onclose: () => {}
-				};
-				
-				this.$refs.ocrIngredientsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createIngredientsOCR_DOM());
-				
-				this.ocr_StepsPondEditor = {
-					open: (file, instructions) => {
-						//If the user already clicked the crop button, don't let another instance be called
-						if (self.ocr_StepsCropperObject !== null) {
-							return;
-						}
-						var reader = new FileReader();
-						reader.onloadend = function () {
-							self.ocr_StepsEditMode = true;
-							var image = new Image();
-							image.src = reader.result;
-							image.id = 'StepsCropper';
-							document.getElementById('ocrStepsCropWrapper').appendChild(image);
-							self.ocr_StepsCropperObject = new Cropper(document.getElementById('StepsCropper'));
-						};
-						reader.readAsDataURL(file);
-					},
-
-					onconfirm: (output, item) => {},
-
-					oncancel: () => {},
-
-					onclose: () => {}
-				};
-
-				this.$refs.ocrStepsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM());
-
-				//Load settings
-				this.is12HourFormatSet = (utils.getLocalStorage(utils.TWELVE_HOUR_FORMAT_SET) === 'true') ? true : false;
-				
-				this.isTagsChecked = (utils.getLocalStorage(utils.TAGS_CHECKED) === 'true') ? true : false;
-				this.isTimeChecked = (utils.getLocalStorage(utils.TIME_CHECKED) === 'true') ? true : false;
-				this.isIngredientsChecked = (utils.getLocalStorage(utils.INGREDIENTS_CHECKED) === 'true') ? true : false;
-				
-				this.isDarkModeSet = (utils.getLocalStorage(utils.DARK_MODE_SET) === 'true') ? true : false;
-				this.levelFontSize = utils.getLocalStorage(utils.LEVEL_FONT_SET);
-				this.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
-				this.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
-
-				//Add smart button listeners for ManageRecipe
-				var smartButtonListeners = [
-					this.$refs.manageOverviewAccordionButton,
-					this.$refs.manageCoverPhotoAccordionButton,
-					this.$refs.manageTimeServingsAccordionButton,
-					this.$refs.manageSectionsAccordionButton,
-				];
-				smartButtonListeners.forEach(element => {
-					element.addEventListener('shown.bs.collapse', function () {
-						self.updateSmartButtonText();
 					});
-				});
 
-				var smartTabListeners = [
-					this.$refs.manageIngredientsTab,
-					this.$refs.manageStepsTab,
-					//this.$refs.manageNutritionTab
-				];
-				smartTabListeners.forEach(element => {
-					element.addEventListener('shown.bs.tab', function () {
-						self.updateSmartButtonText();
+					//When authstate changes
+					firebase.auth().onAuthStateChanged(function (user) {
+						if (user) { //user is signed in
+							utils._UID = user.uid;
+							self.userPhotoURL = utils.getProfilePhotoURL(user.photoURL);
+							//Fix for when people's Google account name is all caps
+							self.firstname = utils.capitalizeFirstLetter(user.displayName.substr(0, user.displayName.indexOf(' ')).toLowerCase());
+							//Check if user is paying customer
+							self.db.collection('customers').doc(user.uid).collection('subscriptions').where('status', '==', 'active').get().then(function (snapshot) {
+								if (snapshot.empty) { //Customer is not actively subscribed
+									self.signin = false;
+									self.paysubscription = true;
+									self.showLoadingContainer = false;
+									self.showLogInContainer = true;
+								} else {
+									//Customer is actively subscribed
+									self.db.collection('users').doc(utils._UID).get().then((doc) => {
+										if (doc.data().is12HourFormatSet) {
+											utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, 'true');
+										} else {
+											utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, 'false');
+										}
+										if (doc.data().isTagsChecked) {
+											utils.setLocalStorage(utils.TAGS_CHECKED, 'true');
+										} else {
+											utils.setLocalStorage(utils.TAGS_CHECKED, 'false');
+										}
+										if (doc.data().isTimeChecked) {
+											utils.setLocalStorage(utils.TIME_CHECKED, 'true');
+										} else {
+											utils.setLocalStorage(utils.TIME_CHECKED, 'false');
+										}
+										if (doc.data().isIngredientsChecked) {
+											utils.setLocalStorage(utils.INGREDIENTS_CHECKED, 'true');
+										} else {
+											utils.setLocalStorage(utils.INGREDIENTS_CHECKED, 'false');
+										}
+										if (doc.data().isDarkModeSet) {
+											//Turn night mode on
+											utils.setLocalStorage(utils.DARK_MODE_SET, 'true');
+										} else {
+											utils.setLocalStorage(utils.DARK_MODE_SET, 'false');
+										}
+										switch (doc.data().levelFontSize) {
+											case '1':
+												utils.setLocalStorage(utils.LEVEL_FONT_SET, '1');
+												break;
+											case '2':
+												utils.setLocalStorage(utils.LEVEL_FONT_SET, '2');
+												break;
+											case '3':
+												utils.setLocalStorage(utils.LEVEL_FONT_SET, '3');
+												break;
+											case '4':
+												utils.setLocalStorage(utils.LEVEL_FONT_SET, '4');
+												break;
+											default:
+												utils.setLocalStorage(utils.LEVEL_FONT_SET, '1');
+										}
+										var dys_font = new FontFace('OpenDyslexic', 'url(../assets/fonts/OpenDyslexic-Regular.woff)');
+										dys_font.load().then(function (loaded_face) {
+											document.fonts.add(loaded_face);
+											if (doc.data().isDyslexicFontSet) {
+												//Set local storage which will be read by Vue instance being mounted
+												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'true');
+												document.body.style.fontFamily = '"OpenDyslexic", sans-serif';
+											} else {
+												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
+											}
+										}).catch(function (error) {
+											console.log(error);
+											utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
+										});
+										if (doc.data().isHighContrastModeSet) {
+											utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'true');
+										} else {
+											utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'false');
+										}
+				
+										//Load settings
+										self.is12HourFormatSet = (utils.getLocalStorage(utils.TWELVE_HOUR_FORMAT_SET) === 'true') ? true : false;
+				
+										self.isTagsChecked = (utils.getLocalStorage(utils.TAGS_CHECKED) === 'true') ? true : false;
+										self.isTimeChecked = (utils.getLocalStorage(utils.TIME_CHECKED) === 'true') ? true : false;
+										self.isIngredientsChecked = (utils.getLocalStorage(utils.INGREDIENTS_CHECKED) === 'true') ? true : false;
+				
+										self.isDarkModeSet = (utils.getLocalStorage(utils.DARK_MODE_SET) === 'true') ? true : false;
+										self.levelFontSize = utils.getLocalStorage(utils.LEVEL_FONT_SET);
+										self.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
+										self.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
+				
+										//Filter presets
+										self.filterPresetsList = doc.data().filterPresets;
+									}).then(() => {
+										var flexIndex = 0;
+										var cookbook = [], tags = [], ingredients = [];
+										//Init cookbook meta index
+										var metaIndex = new FlexSearch.Document({
+											document: {
+												id: "id",
+												index: [
+													"docID",
+													"title",
+													"tags",
+													"sections[]:ingredients[]:value",
+													"sections[]:title"
+												]
+											},
+											tokenize: 'full'
+										});
+										//Init cookbook number meta index
+										//Data structure:
+										//  {
+										//    docID: xx
+										//    value: yy
+										//  }
+										var numberMetaIndex = {
+											totalTime: [],
+											calories: [],
+											carbohydrate: [],
+											cholesterol: [],
+											fat: [],
+											fiber: [],
+											protein: [],
+											sodium: [],
+											sugars: []
+										};
+										self.db.collection("users/" + utils._UID + "/recipes").get().then(function (querySnapshot) {
+											querySnapshot.forEach(function (doc) {
+												var recipe = doc.data();
+
+												//Inject id for FlexSearch during runtime
+												recipe.id = flexIndex;
+												
+												//Adds recipe to sorted position
+												cookbook.push(recipe);
+
+												//Index recipe titles
+												metaIndex.add(recipe);
+
+												///Build sorted indices and list of ingredients/tags
+												//Tags
+												tags = _.union(tags, recipe.tags);
+
+												//Time
+												numberMetaIndex.totalTime.push({
+													id: flexIndex,
+													value: recipe.totalTime
+												});
+
+												recipe.sections.forEach(section => {
+													//Ingredients
+													section.ingredients.forEach(ingredient => {
+														ingredients = _.union(ingredients, [utils.capitalizeFirstLetter(ingredient.value)]);
+													});
+												});
+
+												flexIndex++;
+											});
+										}).then(function () {
+											self.cookbook = cookbook;
+
+											self.tagList = tags;
+											self.filteredTagList = tags;
+											self.tagsArray = tags;
+											self.ingredientList = ingredients;
+											self.filteredIngredientList = ingredients;
+											self.ingredientsArray = ingredients;
+											
+											self.flexSearch = metaIndex;
+											self.numericIndex = numberMetaIndex;
+											self.injectedFlexIndex = flexIndex;
+											self.initApp();
+											self.showLoadingContainer = false;
+											self.showAppContainer = true;
+										}).catch((error) => {
+											console.error(error);
+										});
+									}).catch((error) => {
+										console.error(error);
+									});
+								}
+							});
+						} else { //User is not signed in 
+							self.showLoadingContainer = false;
+							self.showLogInContainer = true;
+						}
 					});
-				});
-
-				this.toastInstance = new bootstrap.Toast(this.$refs.toastNotification);
-				this.$refs.toastNotification.addEventListener('hidden.bs.toast', function() {
-					self.toastHeader = '';
-					self.toastBody = '';
+				}).catch((error) => {
+					if (error.code == 'failed-precondition') {
+						//Multiple tabs open
+					} else if (error.code == 'unimplemented') {
+						//Current browser doesn't support offline
+					}
 				});
 			},
 			watch: {
-				searchQuery: function(b, a) {
+				searchQuery: function (b, a) {
 					if (b.length > 1 && b.trim() !== '') {
 						this.updateSearchQuery(b);
 					} else {
@@ -1452,7 +695,7 @@
 				checkedIngredientsArray: function (b, a) {
 					this.updateFilters();
 				},
-				ingredientModel: function(b, a) {
+				ingredientModel: function (b, a) {
 					if (b === '') {
 						this.filteredIngredientList = []; //Clear the list
 						this.filteredIngredientList = this.ingredientList; //Clone
@@ -1578,41 +821,51 @@
 					},
 					deep: true
 				},
-				
+
 				/** OptionsView **/
-				is12HourFormatSet: function(b, a) {
+				is12HourFormatSet: function (b, a) {
 					//Write to local storage
 					utils.setLocalStorage(utils.TWELVE_HOUR_FORMAT_SET, this.is12HourFormatSet.toString());
 					//Update cloud settings
-					this.updateSetting({'is12HourFormatSet': this.is12HourFormatSet});
+					this.updateSetting({
+						'is12HourFormatSet': this.is12HourFormatSet
+					});
 				},
-				isTagsChecked: function(b, a) {
+				isTagsChecked: function (b, a) {
 					//Write to local storage
 					utils.setLocalStorage(utils.TAGS_CHECKED, this.isTagsChecked.toString());
 					//Update cloud settings
-					this.updateSetting({'isTagsChecked': this.isTagsChecked});
+					this.updateSetting({
+						'isTagsChecked': this.isTagsChecked
+					});
 				},
-				isTimeChecked: function(b, a) {
+				isTimeChecked: function (b, a) {
 					//Write to local storage
 					utils.setLocalStorage(utils.TIME_CHECKED, this.isTimeChecked.toString());
 					//Update cloud settings
-					this.updateSetting({'isTimeChecked': this.isTimeChecked});
+					this.updateSetting({
+						'isTimeChecked': this.isTimeChecked
+					});
 				},
-				isIngredientsChecked: function(b, a) {
+				isIngredientsChecked: function (b, a) {
 					//Write to local storage
 					utils.setLocalStorage(utils.INGREDIENTS_CHECKED, this.isIngredientsChecked.toString());
 					//Update cloud settings
-					this.updateSetting({'isIngredientsChecked': this.isIngredientsChecked});
+					this.updateSetting({
+						'isIngredientsChecked': this.isIngredientsChecked
+					});
 				},
-				isDarkModeSet: function(b, a) {
+				isDarkModeSet: function (b, a) {
 					document.body.classList.toggle('dark-theme');
 					this.iconColor = (this.isDarkModeSet) ? '#eeeeee' : '#000000';
 					//Write to local storage
 					utils.setLocalStorage(utils.DARK_MODE_SET, this.isDarkModeSet.toString());
 					//Update cloud settings
-					this.updateSetting({'isDarkModeSet': this.isDarkModeSet});
+					this.updateSetting({
+						'isDarkModeSet': this.isDarkModeSet
+					});
 				},
-				levelFontSize: function(b, a) {
+				levelFontSize: function (b, a) {
 					document.body.classList.remove('font-increase-1');
 					document.body.classList.remove('font-increase-2');
 					document.body.classList.remove('font-increase-3');
@@ -1636,34 +889,272 @@
 					//Write to local storage
 					utils.setLocalStorage(utils.LEVEL_FONT_SET, this.levelFontSize);
 					//Update cloud settings
-					this.updateSetting({'levelFontSize': this.levelFontSize});
+					this.updateSetting({
+						'levelFontSize': this.levelFontSize
+					});
 				},
-				isDyslexicFontSet: function(b, a) {
+				isDyslexicFontSet: function (b, a) {
 					//Change setting
 					this.isDyslexicFontSet ? document.body.style.fontFamily = '"OpenDyslexic", sans-serif' : document.body.style.fontFamily = '"Montserrat", sans-serif';
 					//Write to local storage
 					utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, this.isDyslexicFontSet.toString());
 					//Update cloud settings
-					this.updateSetting({'isDyslexicFontSet': this.isDyslexicFontSet});
+					this.updateSetting({
+						'isDyslexicFontSet': this.isDyslexicFontSet
+					});
 				},
-				isHighContrastModeSet: function(b, a) {
+				isHighContrastModeSet: function (b, a) {
 					//Write to local storage
 					utils.setLocalStorage(utils.HIGH_CONTRAST_SET, this.isHighContrastModeSet.toString());
 					//Update cloud settings
-					this.updateSetting({'isHighContrastModeSet': this.isHighContrastModeSet});
+					this.updateSetting({
+						'isHighContrastModeSet': this.isHighContrastModeSet
+					});
 				},
 			},
 			methods: {
+				/**** Init App ****/
+				initApp: function () {
+					var self = this;
+					/* Disable back button from closing PWA */
+					//Bug - when user reloads page it completely breaks this code
+					window.history.pushState(null, null, document.URL);
+
+					window.addEventListener('popstate', function () {
+						self.navigateBackward();
+						history.pushState(null, null, document.URL);
+					});
+
+					this.storage = firebase.storage().ref();
+
+					FilePond.registerPlugin(FilePondPluginImageTransform, FilePondPluginImageCrop, FilePondPluginImagePreview, FilePondPluginImageResize, FilePondPluginImageTransform, FilePondPluginImageEdit, FilePondPluginFileValidateType);
+
+					//On mobile, chrome/safari address bar is 60px and takes up part of the 100vh
+					//Meaning if the UA is mobile we need to add an additional 60px to the height of offcanvas
+					// to compensate. This is a broad check for mobile, instead of honing in on mobile
+					// Safari and Chrome; I simply don't care.
+					if (utils._isMobile) {
+						//document.getElementById('mobile-padding').style.height = '60px';
+						this.browserUtil = 'Mobile browser';
+					} else {
+						this.browserUtil = 'Desktop browser';
+					}
+
+					//Set height of search text box
+					this.searchButtonHeight = this.getAbsoluteHeight(this.$refs.searchBoxButton);
+
+					//Add the main menu to the view stack
+					this.ViewStack.push(this.$refs.exploreMenuContainer);
+
+					var greeting = 'Good ';
+					var mHour = new Date().getHours();
+					switch (mHour) {
+						case 0:
+						case 1:
+						case 2:
+						case 3:
+						case 4:
+							greeting += 'evening';
+							break;
+						case 5:
+						case 6:
+						case 7:
+						case 8:
+						case 9:
+						case 10:
+						case 11:
+							greeting += 'morning';
+							break;
+						case 12:
+						case 13:
+						case 14:
+						case 15:
+						case 16:
+							greeting += 'afternoon';
+							break;
+						case 17:
+						case 18:
+						case 19:
+						case 20:
+						case 21:
+						case 22:
+						case 23:
+							greeting += 'evening';
+							break;
+					}
+					greeting += ' ';
+					greeting += this.firstname;
+					this.headerText = greeting;
+
+					this.headerTextAnimeObject = anime.timeline({});
+
+					this.headerTextAnimeObject
+						.add({
+							targets: this.$refs.addRecipeButton,
+							translateX: function (el, i, l) {
+								return ['32px', '0px'];
+							},
+							opacity: {
+								value: 1,
+								duration: 250
+							},
+							rotate: [45, 0],
+							delay: 250,
+							duration: 450,
+							easing: 'easeOutBack'
+						})
+						.add({
+							targets: this.$refs.headerText,
+							translateY: ['0%', '50%'],
+							opacity: [1, 0],
+							duration: 200,
+							easing: 'easeInOutQuad',
+							complete: function (anim) {
+								self.headerText = 'Let\'s get started';
+							}
+						}, '+=575')
+						.add({
+							targets: this.$refs.headerText,
+							translateY: ['-50%', '0%'],
+							opacity: [0, 1],
+							duration: 200,
+							easing: 'easeInOutQuad'
+						}, '+=30');
+
+					anime({
+						targets: this.$refs.explorePaneContent,
+						translateY: ['5%', '0%'],
+						opacity: [0, 1],
+						duration: 250,
+						delay: 250,
+						easing: 'easeOutQuad'
+					});
+
+					//FilePond for cover photo
+					this.$refs.manageCoverPhotoAccordionButton.addEventListener('shown.bs.collapse', this.createCoverPhoto_DOM);
+
+					//Create OCR objects
+
+					this.ocr_DescriptionPondEditor = {
+						open: (file, instructions) => {
+							//If the user already clicked the crop button, don't let another instance be called
+							if (self.ocr_DescriptionCropperObject !== null) {
+								return;
+							}
+							var reader = new FileReader();
+							reader.onloadend = function () {
+								self.ocr_DescriptionEditMode = true;
+								var image = new Image();
+								image.src = reader.result;
+								image.id = 'descriptionCropper';
+								document.getElementById('ocrDescriptionCropWrapper').appendChild(image);
+								self.ocr_DescriptionCropperObject = new Cropper(document.getElementById('descriptionCropper'));
+							};
+							reader.readAsDataURL(file);
+						},
+
+						onconfirm: (output, item) => {},
+
+						oncancel: () => {},
+
+						onclose: () => {}
+					};
+
+					this.ocr_IngredientsPondEditor = {
+						open: (file, instructions) => {
+							//If the user already clicked the crop button, don't let another instance be called
+							if (self.ocr_IngredientsCropperObject !== null) {
+								return;
+							}
+							var reader = new FileReader();
+							reader.onloadend = function () {
+								self.ocr_IngredientsEditMode = true;
+								var image = new Image();
+								image.src = reader.result;
+								image.id = 'IngredientsCropper';
+								document.getElementById('ocrIngredientsCropWrapper').appendChild(image);
+								self.ocr_IngredientsCropperObject = new Cropper(document.getElementById('ingredientsCropper'));
+							};
+							reader.readAsDataURL(file);
+						},
+
+						onconfirm: (output, item) => {},
+
+						oncancel: () => {},
+
+						onclose: () => {}
+					};
+
+					this.$refs.ocrIngredientsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createIngredientsOCR_DOM());
+
+					this.ocr_StepsPondEditor = {
+						open: (file, instructions) => {
+							//If the user already clicked the crop button, don't let another instance be called
+							if (self.ocr_StepsCropperObject !== null) {
+								return;
+							}
+							var reader = new FileReader();
+							reader.onloadend = function () {
+								self.ocr_StepsEditMode = true;
+								var image = new Image();
+								image.src = reader.result;
+								image.id = 'StepsCropper';
+								document.getElementById('ocrStepsCropWrapper').appendChild(image);
+								self.ocr_StepsCropperObject = new Cropper(document.getElementById('StepsCropper'));
+							};
+							reader.readAsDataURL(file);
+						},
+
+						onconfirm: (output, item) => {},
+
+						oncancel: () => {},
+
+						onclose: () => {}
+					};
+
+					this.$refs.ocrStepsFilePondWrapperRef.addEventListener('shown.bs.collapse', this.createStepsOCR_DOM());
+
+					//Add smart button listeners for ManageRecipe
+					var smartButtonListeners = [
+						this.$refs.manageOverviewAccordionButton,
+						this.$refs.manageCoverPhotoAccordionButton,
+						this.$refs.manageTimeServingsAccordionButton,
+						this.$refs.manageSectionsAccordionButton,
+					];
+					smartButtonListeners.forEach(element => {
+						element.addEventListener('shown.bs.collapse', function () {
+							self.updateSmartButtonText();
+						});
+					});
+
+					var smartTabListeners = [
+						this.$refs.manageIngredientsTab,
+						this.$refs.manageStepsTab,
+						//this.$refs.manageNutritionTab
+					];
+					smartTabListeners.forEach(element => {
+						element.addEventListener('shown.bs.tab', function () {
+							self.updateSmartButtonText();
+						});
+					});
+
+					this.toastInstance = new bootstrap.Toast(this.$refs.toastNotification);
+					this.$refs.toastNotification.addEventListener('hidden.bs.toast', function () {
+						self.toastHeader = '';
+						self.toastBody = '';
+					});
+				},
+
 				/**** Button Helpers ****/
-				clickedSettings: function() {
-                    this.navigateForward(this.$refs.optionsView, null, null);
-                },
-				clickedSearchBar: function() {
-                    if (this.searchBarExpanded) {
+				clickedSettings: function () {
+					this.navigateForward(this.$refs.optionsView, null, null);
+				},
+				clickedSearchBar: function () {
+					if (this.searchBarExpanded) {
 						this.clickedCloseSearch();
-                        return;
-                    }
-                    var self = this;
+						return;
+					}
+					var self = this;
 
 					//For Close Search 'X' icon - measure distance between current position and parent container left side
 					const selectedEl = this.$refs.closeSearchButton;
@@ -1672,72 +1163,72 @@
 					let actualSelectedElLeft = selectedEl.getBoundingClientRect().left;
 					let selectedElPosition = (actualSelectedElLeft - initialSearchBoxLeft - utils.remToPixels(1.5));
 
-                    var timeline = anime.timeline({});
-                    timeline
-                        .add({
-                            targets: this.$refs.searchBoxButton,
-                            duration: 100,
-                            easing: 'easeInOutQuad',
-                        })
-                        .add({
-                            targets: document.getElementById('innerSearchButtonText'),
-                            translateY: ['0%', '-50%'],
-                            opacity: [1, 0],
-                            duration: 200,
-                            easing: 'easeInOutQuad',
-                        }, '-=100')
-                        .add({
-                            targets: document.getElementById('innerSearchButtonImg1'),
-                            translateX: ['0px', '-' + selectedElPosition + 'px'],
-                            opacity: [1, 0],
-                            duration: 200,
-                            easing: 'easeInOutQuad'
-                        }, '-=100')
-                        .add({
-                            targets: this.$refs.closeSearchButton,
-                            translateX: ['0px', '-' + selectedElPosition + 'px'],
-                            opacity: [0, 1],
-                            duration: 200,
-                            easing: 'easeInOutQuad'
-                        }, '-=200')
-                        .add({
-                            targets: this.ViewStack[this.ViewStack.length - 1],
-                            opacity: [1, 0],
-                            translateY: ['0rem', '-1rem'],
-                            duration: 100,
-                            easing: 'easeInOutQuad',
-                            complete: function(anim) {
-                                self.ViewStack[self.ViewStack.length - 1].classList.add('d-none');
-                            }
-                        }, '-=300')
-                        .add({
-                            targets: this.$refs.searchBoxInput,
-                            opacity: [0, 1],
-                            duration: 100,
-                            easing: 'easeInOutQuad',
-                            begin: function (anim) {
-                                self.$refs.searchBoxInput.classList.remove('d-none');
-                                self.$refs.searchBoxInput.classList.add('d-flex');
-                            },
-                            complete: function(anim) {
-                                self.$refs.searchBoxInput.focus();
-                            }
-                        }, '-=5')
+					var timeline = anime.timeline({});
+					timeline
+						.add({
+							targets: this.$refs.searchBoxButton,
+							duration: 100,
+							easing: 'easeInOutQuad',
+						})
+						.add({
+							targets: document.getElementById('innerSearchButtonText'),
+							translateY: ['0%', '-50%'],
+							opacity: [1, 0],
+							duration: 200,
+							easing: 'easeInOutQuad',
+						}, '-=100')
+						.add({
+							targets: document.getElementById('innerSearchButtonImg1'),
+							translateX: ['0px', '-' + selectedElPosition + 'px'],
+							opacity: [1, 0],
+							duration: 200,
+							easing: 'easeInOutQuad'
+						}, '-=100')
+						.add({
+							targets: this.$refs.closeSearchButton,
+							translateX: ['0px', '-' + selectedElPosition + 'px'],
+							opacity: [0, 1],
+							duration: 200,
+							easing: 'easeInOutQuad'
+						}, '-=200')
+						.add({
+							targets: this.ViewStack[this.ViewStack.length - 1],
+							opacity: [1, 0],
+							translateY: ['0rem', '-1rem'],
+							duration: 100,
+							easing: 'easeInOutQuad',
+							complete: function (anim) {
+								self.ViewStack[self.ViewStack.length - 1].classList.add('d-none');
+							}
+						}, '-=300')
+						.add({
+							targets: this.$refs.searchBoxInput,
+							opacity: [0, 1],
+							duration: 100,
+							easing: 'easeInOutQuad',
+							begin: function (anim) {
+								self.$refs.searchBoxInput.classList.remove('d-none');
+								self.$refs.searchBoxInput.classList.add('d-flex');
+							},
+							complete: function (anim) {
+								self.$refs.searchBoxInput.focus();
+							}
+						}, '-=5')
 						.add({
 							targets: this.$refs.searchResultsContainer,
 							opacity: [0, 1],
 							duration: 150,
 							translateY: ['0.5rem', '0rem'],
-                            easing: 'easeInOutQuad',
+							easing: 'easeInOutQuad',
 							begin: function (anim) {
-                                self.$refs.searchResultsContainer.classList.remove('d-none');
-                            },
+								self.$refs.searchResultsContainer.classList.remove('d-none');
+							},
 						}, '-=5');
 
-                    this.hideHeader();
-                    this.searchBarExpanded = true;
-                },
-                clickedCloseSearch: function() {
+					this.hideHeader();
+					this.searchBarExpanded = true;
+				},
+				clickedCloseSearch: function () {
 					var self = this;
 					return new Promise((resolve, reject) => {
 						var timeline = anime.timeline({});
@@ -1758,7 +1249,7 @@
 								translateY: ['0%', '-1rem'],
 								duration: 150,
 								easing: 'easeInOutQuad',
-								begin: function(anim) {
+								begin: function (anim) {
 									self.ViewStack[self.ViewStack.length - 1].classList.remove('d-none');
 									self.ViewStack[self.ViewStack.length - 1].classList.add('d-block');
 								}
@@ -1768,7 +1259,7 @@
 								opacity: [1, 0],
 								duration: 100,
 								easing: 'easeInOutQuad',
-								complete: function(anim) {
+								complete: function (anim) {
 									self.$refs.searchBoxInput.classList.remove('d-flex');
 									self.$refs.searchBoxInput.classList.add('d-none');
 								}
@@ -1793,18 +1284,18 @@
 								opacity: [0, 1],
 								duration: 200,
 								easing: 'easeInOutQuad',
-								complete: function() {
+								complete: function () {
 									self.searchBarExpanded = false;
 									self.searchQuery = '';
 									resolve();
 								}
 							}, '-=200');
 					});
-                },             
-                clickedBrowse: function () {
-                    this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
-                },
-				clickedAddRecipe: function() {
+				},
+				clickedBrowse: function () {
+					this.navigateForward(this.$refs.filterRecipesContainer, this.$refs.fromFilterToHomeBackButtonImg, this.$refs.fromFilterToHomeBackButtonText);
+				},
+				clickedAddRecipe: function () {
 					var self = this;
 					this.navigateForward(this.$refs.addRecipeView, null, null).then(() => {
 						if (self.quillAddRecipeViewInstance === null) {
@@ -1812,31 +1303,31 @@
 						}
 					});
 				},
-				clickedClearTagFilters: function() {
+				clickedClearTagFilters: function () {
 					this.checkedTagsArray = [];
 				},
-				clickedClearTimeFilters: function() {
+				clickedClearTimeFilters: function () {
 					this.totalRecipeTimeInput = '';
 					this.finishByTimeInput = '';
 				},
-				clickedClearIngredientFilters: function() {
+				clickedClearIngredientFilters: function () {
 					this.checkedIngredientsArray = [];
 				},
-				clickedRecipeFromExplorePane: function(index) {
+				clickedRecipeFromExplorePane: function (index) {
 					this.selectRecipe(this.filteredCookbook[index]);
 					this.navigateForward(this.$refs.recipeView, null, null);
 				},
-				clickedRecipeTitleFromSearch: function(index) {
+				clickedRecipeTitleFromSearch: function (index) {
 					this.clickedCloseSearch();
 					this.selectRecipe(this.searchResults_title[index]);
 					this.navigateForward(this.$refs.recipeView, null, null);
 				},
-				clickedRecipeSectionFromSearch: function(index) {
+				clickedRecipeSectionFromSearch: function (index) {
 					this.clickedCloseSearch();
 					this.selectRecipe(this.searchResults_sectionTitle[index]);
 					this.navigateForward(this.$refs.recipeView, null, null);
 				},
-				clickedStrikeListItem: function(element) {
+				clickedStrikeListItem: function (element) {
 					//Find parent element; consider the <li> the parent
 					if (element.target.classList.contains('list-group-item')) { //We've got the parent
 						element.target.classList.toggle('strike-list-item');
@@ -1844,7 +1335,7 @@
 						element.srcElement.parentNode.classList.toggle('strike-list-item');
 					}
 				},
-				clickedFilterPreset: function(index) {
+				clickedFilterPreset: function (index) {
 					//Allow the user to delete a preset
 					// instead of clicking the filter
 					if (this.isEditingFilterPresets) {
@@ -1854,11 +1345,11 @@
 					this.totalRecipeTimeInput = '';
 					this.finishByTimeInput = '';
 					this.checkedIngredientsArray = [];
-					
+
 					//Load tags
 					this.filterPresetsList[index].tags.forEach(tag => {
 						//Check if tag exists
-						let i = _.find(this.tagsArray, function(a) {
+						let i = _.find(this.tagsArray, function (a) {
 							return a === tag;
 						});
 						if (typeof i !== "undefined") {
@@ -1875,7 +1366,7 @@
 					//Load ingredients
 					this.filterPresetsList[index].ingredients.forEach(ingredient => {
 						//Check if tag exists
-						let i = _.find(this.ingredientsArray, function(a) {
+						let i = _.find(this.ingredientsArray, function (a) {
 							return a === ingredient;
 						});
 						if (typeof i !== "undefined") {
@@ -1885,7 +1376,7 @@
 					//Navigate forward
 					this.clickedBrowse();
 				},
-				clickedEditFilterPreset: function() {
+				clickedEditFilterPreset: function () {
 					if (this.isEditingFilterPresets) {
 						this.isEditingFilterPresets = false;
 						this.editFilterPresetButtonText = 'Edit Presets';
@@ -1896,49 +1387,49 @@
 				},
 
 				/**** Animation utilities ****/
-                getAbsoluteHeight: function (el) {
-                    el = (typeof el === 'string') ? document.querySelector(el) : el;
+				getAbsoluteHeight: function (el) {
+					el = (typeof el === 'string') ? document.querySelector(el) : el;
 
-                    var styles = window.getComputedStyle(el);
-                    var margin = parseFloat(styles['marginTop']) + parseFloat(styles['marginBottom']); // jshint ignore:line
+					var styles = window.getComputedStyle(el);
+					var margin = parseFloat(styles['marginTop']) + parseFloat(styles['marginBottom']); // jshint ignore:line
 
-                    return Math.ceil(el.offsetHeight + margin);
-                },
+					return Math.ceil(el.offsetHeight + margin);
+				},
 
-                /**** Animation methods ****/
-				hideHeader: function() {
-                    if (this.isHeaderTextHidden) {
-                        return;
-                    }
+				/**** Animation methods ****/
+				hideHeader: function () {
+					if (this.isHeaderTextHidden) {
+						return;
+					}
 
 					this.headerTextAnimeObject.pause();
 
-                    var self = this;
-                    var headerTextHeight = this.getAbsoluteHeight(this.$refs.headerText);
-                    var h = '-' + headerTextHeight + 'px';
-                    
-                    var headerTextTimeline = anime.timeline({});
-                    headerTextTimeline
-                        .add({
-                            targets: this.$refs.headerText,
-                            translateY: ['0px', h],
-                            opacity: [1, 0],
-                            duration: 250,
-                            easing: 'easeInOutQuad',
-                            complete: function (anim) {
-                                self.isHeaderTextHidden = true;
-                            }
-                        })
-                        .add({
-                            targets: this.$refs.explorePaneContent,
-                            translateY: ['0px', h],
-                            duration: 250,
-                            easing: 'easeInOutQuad'
-                        }, '-=250');
-                },
-                navigateForward: function (navigateTo, backButtonImg, backButtonText) {
 					var self = this;
-					
+					var headerTextHeight = this.getAbsoluteHeight(this.$refs.headerText);
+					var h = '-' + headerTextHeight + 'px';
+
+					var headerTextTimeline = anime.timeline({});
+					headerTextTimeline
+						.add({
+							targets: this.$refs.headerText,
+							translateY: ['0px', h],
+							opacity: [1, 0],
+							duration: 250,
+							easing: 'easeInOutQuad',
+							complete: function (anim) {
+								self.isHeaderTextHidden = true;
+							}
+						})
+						.add({
+							targets: this.$refs.explorePaneContent,
+							translateY: ['0px', h],
+							duration: 250,
+							easing: 'easeInOutQuad'
+						}, '-=250');
+				},
+				navigateForward: function (navigateTo, backButtonImg, backButtonText) {
+					var self = this;
+
 					var forward = new Promise((resolve, reject) => {
 						var timeline = anime.timeline({});
 						var currentView = self.ViewStack[self.ViewStack.length - 1];
@@ -1964,7 +1455,7 @@
 										navigateTo.classList.remove('d-none');
 										navigateTo.classList.add('d-block');
 									},
-									complete: function() {
+									complete: function () {
 										resolve();
 									}
 								}, '+=' + utils.ViewStackAnimationDelayDuration);
@@ -2005,7 +1496,7 @@
 									duration: 200,
 									easing: 'easeInOutQuad',
 									delay: 200,
-									complete: function() {
+									complete: function () {
 										resolve();
 									}
 								}, '-=250');
@@ -2023,18 +1514,18 @@
 					} else {
 						return forward;
 					}
-                },
-                navigateBackward: function () {
+				},
+				navigateBackward: function () {
 					var self = this;
 					return new Promise((resolve, reject) => {
 						if (!self.isRecipeViewInEditMode()) {
 							return;
 						}
-	
+
 						if (self.ViewStack.length < 2) {
 							return;
 						}
-	
+
 						var currentView = self.ViewStack.pop();
 						var previousView = self.ViewStack[self.ViewStack.length - 1];
 						var timeline = anime.timeline({});
@@ -2059,22 +1550,22 @@
 									previousView.classList.remove('d-none');
 									previousView.classList.add('d-block');
 								},
-								complete: function() {
+								complete: function () {
 									resolve();
 								}
 							}, '+=' + utils.ViewStackAnimationDelayDuration);
-	
+
 						//Remove entrance animation for RecipeView
 						self.$refs.recipeDetails.classList.remove('show-finished-viewstack');
 					});
-                },
-				editRecipeTitleOnFinishedAnimation: function() {
+				},
+				editRecipeTitleOnFinishedAnimation: function () {
 					//If the app isn't editing
 					if (this.detailsDisplayState === 'loading' || this.detailsDisplayState === 'view') return;
 
 					this.$refs.recipeViewTitleInput.focus();
 				},
-				editRecipeDescriptionAfterAnimation: function(el) {
+				editRecipeDescriptionAfterAnimation: function (el) {
 					if (this.quillRecipeViewInstance === null) {
 						this.initRecipeViewQuill();
 						this.quillRecipeViewInstance.clipboard.dangerouslyPasteHTML(this.selectedRecipe.description);
@@ -2084,7 +1575,7 @@
 					}
 				},
 				/**** Methods ****/
-				updateSearchQuery: function(query) {
+				updateSearchQuery: function (query) {
 					var queryResults = this.flexSearch.search(query.toLowerCase());
 					if (queryResults.length === 0) {
 						return;
@@ -2148,7 +1639,7 @@
 					return t;
 				},
 				//Used for when user is typing a query in the Filter By Tag search box 
-				updateFilteredTags: function(query) {
+				updateFilteredTags: function (query) {
 					this.filteredTagList = [];
 					var self = this;
 					this.tagList.forEach(tag => {
@@ -2158,7 +1649,7 @@
 					});
 				},
 				//Used for when user is typing a query in the Filter By Ingredient search box 
-				updateFilteredIngredients: function(query) {
+				updateFilteredIngredients: function (query) {
 					this.filteredIngredientList = [];
 					var self = this;
 					this.ingredientList.forEach(ingredient => {
@@ -2255,9 +1746,9 @@
 						this.filteredCookbook.push(this.cookbook[id]);
 					});
 				},
-				selectRecipe: function(recipe) {
+				selectRecipe: function (recipe) {
 					var r = JSON.parse(JSON.stringify(recipe)); //Create a deep copy so we can make edits
-					
+
 					//Perform data prep
 					r.specialEquipment = [];
 					recipe.specialEquipment.forEach(equipment => {
@@ -2296,13 +1787,13 @@
 
 					var self = this;
 					var timeout = utils.ViewStackEnterAnimationDuration + utils.ViewStackExitAnimationDuration + utils.ViewStackAnimationDelayDuration;
-					setTimeout(function() {
+					setTimeout(function () {
 						self.$refs.recipeDetails.classList.add('show-finished-viewstack');
 					}, timeout);
 				},
 
 				/**** FilterView Methods ****/
-				saveFilterPreset: function() {
+				saveFilterPreset: function () {
 					this.filterPresetNameIsInvalid = false;
 					if (this.filterPresetNameModel.length < 1) {
 						this.filterPresetNameFeedback = 'Your preset name is too short';
@@ -2313,7 +1804,7 @@
 						this.filterPresetNameIsInvalid = true;
 					}
 					if (this.filterPresetNameIsInvalid) return;
-					
+
 					this.filterPresetsList.push({
 						name: this.filterPresetNameModel,
 						tags: this.checkedTagsArray,
@@ -2323,12 +1814,12 @@
 					});
 					this.navigateBackward();
 				},
-				deleteFilterPreset: function(index) {
+				deleteFilterPreset: function (index) {
 					this.filterPresetsList.splice(index, 1);
 				},
 
 				/**** RecipeView Methods ****/
-				editRecipeDetailsRecipeView: function() {
+				editRecipeDetailsRecipeView: function () {
 					if (this.detailsDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.detailsDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
@@ -2367,9 +1858,9 @@
 						this.$refs.recipeViewYield.focus();
 						return false;
 					}
-					
+
 					this.detailsDisplayState = utils.DISPLAY_STATES.LOADING;
-					
+
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
 
@@ -2388,11 +1879,11 @@
 
 					this.detailsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				createRecipeTagRecipeView: function() {
+				createRecipeTagRecipeView: function () {
 					this.tagDisplayState = utils.DISPLAY_STATES.EDIT;
 					//this.$refs.tagInputRecipeView.focus();
 				},
-				addTagRecipeView: function() {
+				addTagRecipeView: function () {
 					if (!utils.isString(this.tagAddModel)) {
 						return;
 					}
@@ -2418,7 +1909,7 @@
 					this.tagDisplayState = utils.DISPLAY_STATES.VIEW;
 					this.tagAddModel = '';
 				},
-				deleteRecipeTagRecipeView: function(index) {
+				deleteRecipeTagRecipeView: function (index) {
 					this.selectedRecipe.tags.splice(index, 1);
 
 					//Clean data
@@ -2437,12 +1928,12 @@
 
 					//TODO: Update to Firebase cloud services
 				},
-				editSpecialEquipmentRecipeView: function() {
+				editSpecialEquipmentRecipeView: function () {
 					if (this.specialEquipmentDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.specialEquipmentDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
-					
+
 					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.LOADING;
 
 					//Remove any deleted items
@@ -2453,7 +1944,7 @@
 						}
 					});
 					this.selectedRecipe.specialEquipment = t;
-					
+
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
 					serializedRecipe.specialEquipment = _.pluck(serializedRecipe.specialEquipment, 'value');
@@ -2470,13 +1961,13 @@
 
 					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteSpecialEquipmentRecipeView: function(index) {
+				deleteSpecialEquipmentRecipeView: function (index) {
 					this.selectedRecipe.specialEquipment[index].isDeleted = true;
 				},
-				undoDeleteSpecialEquipmentRecipeView: function(index) {
+				undoDeleteSpecialEquipmentRecipeView: function (index) {
 					this.selectedRecipe.specialEquipment[index].isDeleted = false;
 				},
-				addSpecialEquipmentRecipeView: function() {
+				addSpecialEquipmentRecipeView: function () {
 					if (!utils.isString(this.specialEquipmentAddModel)) {
 						return false;
 					}
@@ -2487,12 +1978,12 @@
 					});
 					this.specialEquipmentAddModel = '';
 				},
-				editRecipeNotesRecipeView: function() {
+				editRecipeNotesRecipeView: function () {
 					if (this.notesDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.notesDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
-					
+
 					this.notesDisplayState = utils.DISPLAY_STATES.LOADING;
 
 					//Remove any deleted items
@@ -2503,7 +1994,7 @@
 						}
 					});
 					this.selectedRecipe.notes = t;
-					
+
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes
 					serializedRecipe.notes = _.pluck(serializedRecipe.notes, 'value');
@@ -2520,13 +2011,13 @@
 
 					this.notesDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteRecipeNotesRecipeView: function(index) {
+				deleteRecipeNotesRecipeView: function (index) {
 					this.selectedRecipe.notes[index].isDeleted = true;
 				},
-				undoDeleteRecipeNotesRecipeView: function(index) {
+				undoDeleteRecipeNotesRecipeView: function (index) {
 					this.selectedRecipe.notes[index].isDeleted = false;
 				},
-				addRecipeNotesRecipeView: function() {
+				addRecipeNotesRecipeView: function () {
 					if (!utils.isString(this.notesAddModel)) {
 						return false;
 					}
@@ -2537,12 +2028,12 @@
 					});
 					this.notesAddModel = '';
 				},
-				editRecipeIngredientsRecipeView: function() {
+				editRecipeIngredientsRecipeView: function () {
 					if (this.ingredientsDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.ingredientsDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
-					
+
 					this.ingredientsDisplayState = utils.DISPLAY_STATES.LOADING;
 
 					//Remove any deleted items, update interface
@@ -2558,9 +2049,9 @@
 						sections.push(section);
 					}
 					this.selectedRecipe.sections = sections;
-					
+
 					//Clean data, serialize
-					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); 
+					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe));
 					serializedRecipe.sections = utils.deepClone(this.selectedRecipe.sections); //Create deep copy to prevent unwanted changes
 
 					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
@@ -2574,10 +2065,10 @@
 							}
 						}
 					}
-					
+
 					//Overwrite data in cookbook
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
-					
+
 					//Re-index recipe in the indices
 					this.flexSearch.update({
 						data: serializedRecipe
@@ -2587,13 +2078,13 @@
 
 					this.ingredientsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteRecipeIngredientsRecipeView: function(sectionIndex, ingredientIndex) {
+				deleteRecipeIngredientsRecipeView: function (sectionIndex, ingredientIndex) {
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = true;
 				},
-				undoDeleteRecipeIngredientsRecipeView: function(sectionIndex, ingredientIndex) {
+				undoDeleteRecipeIngredientsRecipeView: function (sectionIndex, ingredientIndex) {
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
 				},
-				addRecipeIngredientsRecipeView: function(sectionIndex) {
+				addRecipeIngredientsRecipeView: function (sectionIndex) {
 					if (!utils.isString(this.$refs.recipeViewIngredientsInputs[sectionIndex].value)) {
 						return false;
 					}
@@ -2606,12 +2097,12 @@
 					});
 					this.$refs.recipeViewIngredientsInputs[sectionIndex].value = '';
 				},
-				editRecipeStepsRecipeView: function() {
+				editRecipeStepsRecipeView: function () {
 					if (this.stepsDisplayState === utils.DISPLAY_STATES.VIEW) {
 						this.stepsDisplayState = utils.DISPLAY_STATES.EDIT;
 						return;
 					}
-					
+
 					this.stepsDisplayState = utils.DISPLAY_STATES.LOADING;
 
 					//Remove any deleted items, update interface
@@ -2627,7 +2118,7 @@
 						sections.push(section);
 					}
 					this.selectedRecipe.sections = sections;
-					
+
 					//Clean data, serialize
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe));
 					serializedRecipe.sections = utils.deepClone(this.selectedRecipe.sections); //Create deep copy to prevent unwanted changes
@@ -2650,13 +2141,13 @@
 
 					this.stepsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteRecipeStepsRecipeView: function(sectionIndex, stepIndex) {
+				deleteRecipeStepsRecipeView: function (sectionIndex, stepIndex) {
 					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = true;
 				},
-				undoDeleteRecipeStepsRecipeView: function(sectionIndex, stepIndex) {
+				undoDeleteRecipeStepsRecipeView: function (sectionIndex, stepIndex) {
 					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = false;
 				},
-				addRecipeStepsRecipeView: function(sectionIndex) {
+				addRecipeStepsRecipeView: function (sectionIndex) {
 					//Verify step
 					if (!utils.isString(this.stepsAddModel)) {
 						return false;
@@ -2669,9 +2160,9 @@
 					});
 					this.stepsAddModel = '';
 				},
-				deleteRecipe: function() {
+				deleteRecipe: function () {
 					var id = this.selectedRecipe.id;
-					
+
 					//Update flex index
 					this.flexSearch.remove(id);
 					//Set this recipe to a blank object to effectively remove it from the cookbook
@@ -2683,14 +2174,14 @@
 
 					this.navigateBackward();
 				},
-				shareRecipe: function() {
+				shareRecipe: function () {
 					this.isSharing = true;
 
 					var self = this;
 
 					//Create HTML document of recipe to upload to Firebase
 					var doc = document.implementation.createHTMLDocument();
-					
+
 					//Head
 					var meta1 = document.createElement('meta');
 					meta1.httpEquiv = "X-UA-Compatible";
@@ -2705,11 +2196,11 @@
 					var title = document.createElement('title');
 					title.innerHTML = this.selectedRecipe.title + ' | Project Pastro';
 					doc.head.append(title);
-					
+
 					doc.head.append(this.makeHeaderLink('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap'));
 					doc.head.append(this.makeHeaderLink('https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css'));
 					doc.head.append(this.makeHeaderLink('https://pantryrecipes.app/css/app.css'));
-					
+
 					//Body
 					var b = this.$refs.recipeView.cloneNode(true);
 					doc.body.append(b);
@@ -2738,7 +2229,7 @@
 						});
 					});
 				},
-				isRecipeViewInEditMode: function() {
+				isRecipeViewInEditMode: function () {
 					//Check if anything in RecipeView is still in edit mode or loading
 					if (this.detailsDisplayState !== utils.DISPLAY_STATES.VIEW) {
 						this.$refs.recipeViewTitleInput.focus();
@@ -2782,7 +2273,7 @@
 				undoTagAddRecipeView: function (index) {
 					this.manage_recipeTagHolder[index].isDeleted = false;
 				},
-				addSpecialEquipmentAddRecipeView: function() {
+				addSpecialEquipmentAddRecipeView: function () {
 					if (utils.isString(this.manage_specialEquipmentInput)) {
 						this.manage_specialEquipmentHolder.push({
 							value: this.manage_specialEquipmentInput.trim(),
@@ -2794,10 +2285,10 @@
 				deleteSpecialEquipmentAddRecipeView: function (index) {
 					this.manage_specialEquipmentHolder[index].isDeleted = true;
 				},
-				undoDeleteSpecialEquipmentAddRecipeView: function(index) {
+				undoDeleteSpecialEquipmentAddRecipeView: function (index) {
 					this.manage_specialEquipmentHolder[index].isDeleted = false;
 				},
-				addNotesAddRecipeView: function() {
+				addNotesAddRecipeView: function () {
 					if (utils.isString(this.manage_recipeNotesInput)) {
 						this.manage_recipeNotesHolder.push({
 							value: this.manage_recipeNotesInput.trim(),
@@ -2809,10 +2300,10 @@
 				deleteNotesAddRecipeView: function (index) {
 					this.manage_recipeNotesHolder[index].isDeleted = true;
 				},
-				undoDeleteNotesAddRecipeView: function(index) {
+				undoDeleteNotesAddRecipeView: function (index) {
 					this.manage_recipeNotesHolder[index].isDeleted = false;
 				},
-				addRecipeSectionAddRecipeView: function() {
+				addRecipeSectionAddRecipeView: function () {
 					this.manage_recipeSections.push({
 						"title": "",
 						"ingredients": [],
@@ -2824,10 +2315,10 @@
 						"totalCarbs": 0,
 						"fiber": 0,
 						"sugar": 0,
-						"protein": 0 
+						"protein": 0
 					});
 				},
-				addIngredientsAddRecipeView: function(sectionIndex) {
+				addIngredientsAddRecipeView: function (sectionIndex) {
 					if (sectionIndex === -1) {
 						let ingredient = nlp.parseIngredient(this.$refs.ingredientInputAddRecipeView.value);
 						let x = {
@@ -2847,12 +2338,12 @@
 						this.manage_recipeSections[sectionIndex].ingredients.push(x);
 						this.addIngredientModel[sectionIndex] = '';
 					}
-					
+
 				},
 				deleteIngredientsAddRecipeView: function (sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = true;
 				},
-				undoDeleteIngredientsAddRecipeView: function(sectionIndex, index) {
+				undoDeleteIngredientsAddRecipeView: function (sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = false;
 				},
 				addStepsAddRecipeView: function (sectionIndex) {
@@ -2881,13 +2372,13 @@
 						this.manage_recipeSections[sectionIndex].steps.push(x);
 						this.addStepModel[sectionIndex] = '';
 					}
-					
-					
+
+
 				},
 				deleteStepsAddRecipeView: function (sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = true;
 				},
-				undoDeleteStepsAddRecipeView: function(sectionIndex, index) {
+				undoDeleteStepsAddRecipeView: function (sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = false;
 				},
 				updateSmartButtonText: function () {
@@ -2938,11 +2429,11 @@
 				},
 
 				/**** OptionsView Methods ****/
-				updateSetting: function(update) {
+				updateSetting: function (update) {
 					this.db.collection('users').doc(utils._UID).update(update)
-					.catch((error) => {
-						console.error(error);
-					});
+						.catch((error) => {
+							console.error(error);
+						});
 				},
 
 				/**** Utilities ****/
@@ -2979,7 +2470,7 @@
 					} else {
 						let h = nowHours % 24;
 						let m = futureMinutes;
-						
+
 						if (this.is12HourFormatSet) {
 							let z = (h >= 13) ? h - 12 : h;
 							let rString = z.toString() + ':' + zeroPad(m).toString();
@@ -2994,7 +2485,7 @@
 						}
 					}
 				},
-				calcButtonDimensions: function(rem, vw) {
+				calcButtonDimensions: function (rem, vw) {
 					return utils.remToPixels(rem) + utils.vwToPixels(vw);
 				},
 				//When user clicks the button to open their personal billing portal
@@ -3021,13 +2512,13 @@
 						event.preventDefault();
 					} catch (e) {}
 				},
-				makeHeaderLink: function(link) {
+				makeHeaderLink: function (link) {
 					var header = document.createElement('link');
 					header.rel = 'stylesheet';
 					header.href = link;
 					return header;
 				},
-				makeScriptLink: function(link) {
+				makeScriptLink: function (link) {
 					var script = document.createElement('script');
 					script.src = link;
 					return script;
@@ -3154,9 +2645,9 @@
 							outputFiles.forEach(output => {
 								var fileName = u;
 								var isThumbnail = false;
-								
+
 								const img = new Image();
-								img.onload = function() {
+								img.onload = function () {
 									if (img.width == 96) {
 										fileName += '_thumb';
 										isThumbnail = true;
@@ -3168,8 +2659,12 @@
 									var metadata = {
 										contentType: output.file.type,
 									};
-									
-									uploadCoverPhoto({file: output.file, name: fileName, meta: metadata}).then(function(downloadURL) {
+
+									uploadCoverPhoto({
+										file: output.file,
+										name: fileName,
+										meta: metadata
+									}).then(function (downloadURL) {
 										console.log(downloadURL);
 										if (isThumbnail) {
 											self.manage_coverPhotoThumbnail = downloadURL;
@@ -3177,10 +2672,10 @@
 											self.manage_coverPhotoURL = downloadURL;
 										}
 									});
-									
+
 								};
 								img.src = URL.createObjectURL(output.file);
-								
+
 							});
 						}
 					});
@@ -3207,7 +2702,7 @@
 								let meta = {
 									contentType: file.type,
 								};
-								
+
 								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, meta);
 
 								uploadTask.on('state_changed', (snapshot) => {
@@ -3252,7 +2747,7 @@
 						}
 					});
 				},
-				handleDescriptionOCRCrop: function() {
+				handleDescriptionOCRCrop: function () {
 					this.ocr_DescriptionPondEditor.onconfirm(utils.getCropData(this.ocr_DescriptionCropperObject.getData(), this.ocr_DescriptionCropperObject.getCanvasData()));
 					this.ocr_DescriptionEditMode = false;
 					this.ocr_DescriptionCropperObject.destroy();
@@ -3281,7 +2776,7 @@
 								let meta = {
 									contentType: file.type,
 								};
-								
+
 								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, meta);
 
 								uploadTask.on('state_changed', (snapshot) => {
@@ -3330,14 +2825,14 @@
 						}
 					});
 				},
-				handleIngredientsOCRCrop: function() {
+				handleIngredientsOCRCrop: function () {
 					this.ocr_IngredientsPondEditor.onconfirm(utils.getCropData(this.ocr_IngredientsCropperObject.getData(), this.ocr_IngredientsCropperObject.getCanvasData()));
 					this.ocr_IngredientsEditMode = false;
 					this.ocr_IngredientsCropperObject.destroy();
 					this.ocr_IngredientsCropperObject = null;
 					document.getElementById('ocrIngredientsCropWrapper').innerHTML = "";
 				},
-				createStepsOCR_DOM: function() {
+				createStepsOCR_DOM: function () {
 					var self = this;
 					if (this.ocr_StepsFilePond !== null) {
 						return;
@@ -3359,9 +2854,9 @@
 								var meta = {
 									contentType: file.type,
 								};
-					
+
 								var uploadTask = firebase.storage().ref().child('users/' + utils._UID + '/tempOCR/' + fileName).put(file, meta);
-					
+
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
@@ -3377,7 +2872,7 @@
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
 											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
 										});
-					
+
 										try {
 											self.ocr_StepsCropperObject.destroy();
 										} catch (e) {
@@ -3391,7 +2886,7 @@
 												isDeleted: false
 											});
 										});
-					
+
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
 									}).catch(err => {
 										console.log(err.response.data);
@@ -3399,7 +2894,7 @@
 										console.log(err.toString());
 									});
 								});
-					
+
 								return {
 									abort: () => {
 										abort();
@@ -3409,7 +2904,7 @@
 						}
 					});
 				},
-				handleStepsOCRCrop: function() {
+				handleStepsOCRCrop: function () {
 					this.ocr_StepsPondEditor.onconfirm(utils.getCropData(this.ocr_StepsCropperObject.getData(), this.ocr_StepsCropperObject.getCanvasData()));
 					this.ocr_StepsEditMode = false;
 					this.ocr_StepsCropperObject.destroy();
@@ -3535,13 +3030,13 @@
 						serializedRecipe.sections = [];
 						for (var i = 0; i < this.manage_recipeSections.length; i++) {
 							let o = {};
-							
+
 							if (typeof this.manage_recipeSections.title === 'undefined') {
 								o.title = 'Recipe';
 							} else {
 								o.title = this.manage_recipeSections.title;
 							}
-							
+
 							o.calories = 0;
 							o.fat = 0;
 							o.cholesterol = 0;
@@ -3565,7 +3060,7 @@
 						this.$refs.manageStepRef.classList.add('is-invalid');
 						anyInvalid = true;
 					}
-					
+
 					if (anyInvalid) return;
 
 					this.isRecipeSubmitDisabled = true;
@@ -3575,7 +3070,7 @@
 					serializedRecipe.dateAdded = now;
 					serializedRecipe.dateModified = now;
 					serializedRecipe.favorite = false;
-					
+
 					if (this.manage_coverPhotoURL === '') {
 						serializedRecipe.coverPhotoURL = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash.jpg?alt=media&token=ef21ab61-5730-47b8-8ed8-3b9b5b6fa757';
 					} else {
@@ -3606,35 +3101,5 @@
 				}
 			}
 		});
-
-		async function goToPortal() {
-			const functionRef = firebase
-				.app()
-				.functions('us-central1')
-				.httpsCallable('ext-firestore-stripe-subscriptions-createPortalLink');
-			const {
-				data
-			} = await functionRef({
-				returnUrl: window.location.origin
-			});
-			window.location.assign(data.url);
-		}
-
-		async function uploadCoverPhoto(a) {
-			return new Promise((resolve, reject) => {
-				var task = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + a.name).put(a.file, a.meta);
-				task.on('state_changed', (snapshot) => {
-					//progress(snapshot.bytesTransferred / snapshot.totalBytes);
-				}, (error) => {
-					reject(error);
-				}, () => {
-					task.snapshot.ref.getDownloadURL().then((downloadURL) => {
-						resolve(downloadURL);
-					}).catch(error => {
-						reject(error);
-					});
-				});
-			});
-		}
-	}
+	});
 })();

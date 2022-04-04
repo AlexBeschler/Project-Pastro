@@ -15,6 +15,10 @@
     --font-size-4: 150%;
 }
 
+[v-cloak] {
+    display: none;
+}
+
 body {
     background-color: var(--ps-bg-color) !important;
     font-family: 'Montserrat', sans-serif;
@@ -305,7 +309,7 @@ body {
 .buy-subscription-button {
     border-color: rgb(26, 137, 23);
     padding: 16px;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
 }
 
 .loading-page {

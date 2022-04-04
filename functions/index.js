@@ -345,7 +345,7 @@ async function createAccount(uid) {
 		isDyslexicFontSet: false,
 		isHighContrastModeSet: false
 	}).catch(function(error) {
-		console.error('Error writing hello world recipe: ', error);
+		console.error('Error writing settings: ', error);
 	});
 	var helloWorldRecipe = db.collection('users/' + uid + '/recipes').doc('helloworld_recipe');
 	helloWorldRecipe.set({
