@@ -83,8 +83,7 @@
                         </div>
                         <h4 id="innerSearchButtonText">Search recipes</h4>
                     </button>
-                    <input class="form-control search-box-input d-none"
-                        v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput"
+                    <input class="form-control search-box-input d-none" ref="searchBoxInput"
                         v-model="searchQuery">
                     <div class="container d-none" ref="searchResultsContainer">
                         <div class="mb-4" v-if="searchResults_title.length">
@@ -484,7 +483,7 @@
                                         </li>
                                     </ul>
                                     <div v-else>
-                                        <recipeview-special-equipment-list :lock-axis="'y'" :press-delay.number=100
+                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                             v-model="selectedRecipe.specialEquipment">
                                             <recipeview-special-equipment-item
                                                 v-for="(equipment, index) in selectedRecipe.specialEquipment"
@@ -493,7 +492,7 @@
                                                 @touchend.native="scrollMove"
                                                 v-on:delete-equipment="deleteSpecialEquipmentRecipeView(index)"
                                                 v-on:undo-delete-equipment="undoDeleteSpecialEquipmentRecipeView(index)" />
-                                        </recipeview-special-equipment-list>
+                                        </draggable-list-group>
                                         <div class="d-flex align-items-end">
                                             <input class="form-control mt-2" type="text"
                                                 placeholder="Add special equipment" v-model="specialEquipmentAddModel"
@@ -532,14 +531,14 @@
                                         </li>
                                     </ul>
                                     <div v-else>
-                                        <recipe-notes-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                             v-model="selectedRecipe.notes">
                                             <recipe-notes-draggable-item v-for="(note, index) in selectedRecipe.notes"
                                                 :index="index" :key="index" :note="note" :value="note.value"
                                                 @touchstart.native="scrollStop" @touchend.native="scrollMove"
                                                 v-on:delete-note="deleteRecipeNotesRecipeView(index)"
                                                 v-on:undo-delete-note="undoDeleteRecipeNotesRecipeView(index)" />
-                                        </recipe-notes-draggable-list>
+                                        </draggable-list-group>
                                         <div class="d-flex align-items-end">
                                             <input class="form-control mt-2" type="text" placeholder="Add recipe notes"
                                                 v-model="notesAddModel" v-on:keyup.enter="addRecipeNotesRecipeView"
@@ -588,7 +587,7 @@
                                     </li>
                                 </ul>
                                 <div v-else>
-                                    <recipe-ingredients-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                         v-model="section.ingredients">
                                         <recipe-ingredients-draggable-item
                                             v-for="(ingredient, index) in section.ingredients" :index="index"
@@ -597,7 +596,7 @@
                                             @touchstart.native="scrollStop" @touchend.native="scrollMove"
                                             v-on:delete-ingredient="deleteRecipeIngredientsRecipeView(sectionIndex, index)"
                                             v-on:undo-delete-ingredient="undoDeleteRecipeIngredientsRecipeView(sectionIndex, index)" />
-                                    </recipe-ingredients-draggable-list>
+                                    </draggable-list-group>
                                     <div class="d-flex align-items-end">
                                         <input class="form-control mt-2" type="text" placeholder="Add ingredient"
                                             v-on:keyup.enter="addRecipeIngredientsRecipeView(sectionIndex)"
@@ -645,7 +644,7 @@
                                     </li>
                                 </ul>
                                 <div v-else>
-                                    <recipe-steps-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                         v-model="section.steps">
                                         <recipe-steps-draggable-item v-for="(step, index) in section.steps"
                                             :index="index" :key="index" :step="step" :value="step.value"
@@ -653,7 +652,7 @@
                                             @touchend.native="scrollMove"
                                             v-on:delete-step="deleteRecipeStepsRecipeView(sectionIndex, index)"
                                             v-on:undo-delete-step="undoDeleteRecipeStepsRecipeView(sectionIndex, index)" />
-                                    </recipe-steps-draggable-list>
+                                    </draggable-list-group>
                                     <textarea class="form-control mt-2" type="text" placeholder="Add step"
                                         v-model="stepsAddModel" ref="recipeViewStepInputs"></textarea>
                                     <button class="btn btn-outline-primary mt-2"
@@ -808,7 +807,7 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_recipeTagHolder.length">
-                                                    <addrecipeview-tag-draggable-list :lock-axis="'y'"
+                                                    <draggable-list-group :lock-axis="'y'"
                                                         :press-delay.number=100 v-model="manage_recipeTagHolder">
                                                         <addrecipeview-tag-draggable-item
                                                             v-for="(tag, index) in manage_recipeTagHolder"
@@ -818,7 +817,7 @@
                                                             v-on:undo-delete-tag="undoTagAddRecipeView(index)"
                                                             @touchstart.native="scrollStop"
                                                             @touchend.native="scrollMove" />
-                                                    </addrecipeview-tag-draggable-list>
+                                                    </draggable-list-group>
                                                 </div>
                                             </div>
                                         </div>
@@ -851,7 +850,7 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_specialEquipmentHolder.length">
-                                                    <recipeview-special-equipment-list :lock-axis="'y'"
+                                                    <draggable-list-group :lock-axis="'y'"
                                                         :press-delay.number=100 v-model="manage_specialEquipmentHolder">
                                                         <recipeview-special-equipment-item
                                                             v-for="(equipment, index) in manage_specialEquipmentHolder"
@@ -860,7 +859,7 @@
                                                             @touchend.native="scrollMove"
                                                             v-on:delete-equipment="deleteSpecialEquipmentAddRecipeView(index)"
                                                             v-on:undo-delete-equipment="undoDeleteSpecialEquipmentAddRecipeView(index)" />
-                                                    </recipeview-special-equipment-list>
+                                                    </draggable-list-group>
                                                 </div>
                                             </div>
                                         </div>
@@ -877,7 +876,7 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_recipeNotesHolder.length">
-                                                    <recipe-notes-draggable-list :lock-axis="'y'"
+                                                    <draggable-list-group :lock-axis="'y'"
                                                         :press-delay.number=100 v-model="manage_recipeNotesHolder">
                                                         <recipe-notes-draggable-item
                                                             v-for="(note, index) in manage_recipeNotesHolder"
@@ -886,7 +885,7 @@
                                                             @touchend.native="scrollMove"
                                                             v-on:delete-note="deleteNotesAddRecipeView(index)"
                                                             v-on:undo-delete-note="undoDeleteNotesAddRecipeView(index)" />
-                                                    </recipe-notes-draggable-list>
+                                                    </draggable-list-group>
                                                 </div>
                                             </div>
                                         </div>
@@ -1033,7 +1032,7 @@
                                                                 <div class="col-12">
                                                                     <div v-for="(section, index) in manage_recipeSections"
                                                                         :index="index" :key="index">
-                                                                        <recipe-ingredients-draggable-list
+                                                                        <draggable-list-group
                                                                             :lock-axis="'y'" :press-delay.number=100
                                                                             v-model="section.ingredients">
                                                                             <recipe-ingredients-draggable-item
@@ -1047,7 +1046,7 @@
                                                                                 @touchend.native="scrollMove"
                                                                                 v-on:delete-ingredient="deleteIngredientsAddRecipeView(index, i)"
                                                                                 v-on:undo-delete-ingredient="undoDeleteIngredientsAddRecipeView(index, i)" />
-                                                                        </recipe-ingredients-draggable-list>
+                                                                        </draggable-list-group>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1071,7 +1070,7 @@
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-12">
-                                                                        <recipe-ingredients-draggable-list
+                                                                        <draggable-list-group
                                                                             :lock-axis="'y'" :press-delay.number=100
                                                                             v-model="section.ingredients">
                                                                             <recipe-ingredients-draggable-item
@@ -1085,7 +1084,7 @@
                                                                                 @touchend.native="scrollMove"
                                                                                 v-on:delete-ingredient="deleteIngredientsAddRecipeView(index, i)"
                                                                                 v-on:undo-delete-ingredient="undoDeleteIngredientsAddRecipeView(index, i)" />
-                                                                        </recipe-ingredients-draggable-list>
+                                                                        </draggable-list-group>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1129,7 +1128,7 @@
                                                                 <div class="col-12">
                                                                     <div v-for="(section, index) in manage_recipeSections"
                                                                         :index="index" :key="index">
-                                                                        <recipe-steps-draggable-list :lock-axis="'y'"
+                                                                        <draggable-list-group :lock-axis="'y'"
                                                                             :press-delay.number=100
                                                                             v-model="section.steps">
                                                                             <recipe-steps-draggable-item
@@ -1141,7 +1140,7 @@
                                                                                 v-on:undo-delete-step="undoDeleteStepsAddRecipeView(index, i)"
                                                                                 @touchstart.native="scrollStop"
                                                                                 @touchend.native="scrollMove" />
-                                                                        </recipe-steps-draggable-list>
+                                                                        </draggable-list-group>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1176,7 +1175,7 @@
                                                                     </div>
                                                                     <div class="row">
                                                                         <div class="col-12">
-                                                                            <recipe-steps-draggable-list
+                                                                            <draggable-list-group
                                                                                 :lock-axis="'y'" :press-delay.number=100
                                                                                 v-model="section.steps">
                                                                                 <recipe-steps-draggable-item
@@ -1188,7 +1187,7 @@
                                                                                     v-on:undo-delete-step="undoDeleteStepsAddRecipeView(index, i)"
                                                                                     @touchstart.native="scrollStop"
                                                                                     @touchend.native="scrollMove" />
-                                                                            </recipe-steps-draggable-list>
+                                                                            </draggable-list-group>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1641,7 +1640,7 @@
     -->
 
     <!-- RecipeView Special Equipment draggables -->
-    <template id="special-equipment-draggable-list-template">
+    <template id="draggable-list-group-template">
         <ul class="list-group list-group-flush">
             <slot />
         </ul>
@@ -1675,12 +1674,6 @@
             </div>
         </li>
     </template>
-    <!-- RecipeView recipe notes draggables -->
-    <template id="recipe-notes-draggable-list-template">
-        <ul class="list-group list-group-flush">
-            <slot />
-        </ul>
-    </template>
     <template id="recipe-notes-draggable-item-template">
         <li v-if="!note.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
@@ -1708,12 +1701,6 @@
                 <button class="btn btn-sm btn-outline-secondary" @click="$emit('undo-delete-note', index)">Undo</button>
             </div>
         </li>
-    </template>
-    <!-- RecipeView recipe ingredients draggables -->
-    <template id="recipe-ingredients-draggable-list-template">
-        <ul class="list-group list-group-flush">
-            <slot />
-        </ul>
     </template>
     <template id="recipe-ingredients-draggable-item-template">
         <li v-if="!ingredient.isDeleted" class="list-group-item">
@@ -1751,12 +1738,6 @@
             </div>
         </li>
     </template>
-    <!-- RecipeView recipe steps draggables -->
-    <template id="recipe-steps-draggable-list-template">
-        <ul class="list-group list-group-flush">
-            <slot />
-        </ul>
-    </template>
     <template id="recipe-steps-draggable-item-template">
         <li v-if="!step.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
@@ -1784,12 +1765,6 @@
                 <button class="btn btn-sm btn-outline-secondary" @click="$emit('undo-delete-step', index)">Undo</button>
             </div>
         </li>
-    </template>
-    <!-- AddRecipeView tags draggables -->
-    <template id="addrecipeview-tag-draggable-list-template">
-        <ul class="list-group">
-            <slot />
-        </ul>
     </template>
     <template id="addrecipeview-tag-draggable-item-template">
         <li v-if="!tag.isDeleted" class="list-group-item">
@@ -2039,7 +2014,6 @@
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/nlp.js"></script>
-    <script src="js/range-index.js"></script>
     <script src="js/app.js"></script>
 </body>
 

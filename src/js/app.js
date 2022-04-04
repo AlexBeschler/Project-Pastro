@@ -46,40 +46,25 @@
 
 		//** RecipeView component mixins **//
 
-		//Special equipment
-		Vue.component('recipeview-special-equipment-list', {
+		//List group draggables
+		Vue.component('draggable-list-group', {
 			mixins: [ContainerMixin],
-			template: '#special-equipment-draggable-list-template'
+			template: '#draggable-list-group-template'
 		});
 		Vue.component('recipeview-special-equipment-item', {
 			mixins: [ElementMixin],
 			props: ['equipment'],
 			template: '#special-equipment-draggable-item-template'
 		});
-		//Notes
-		Vue.component('recipe-notes-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#recipe-notes-draggable-list-template'
-		});
 		Vue.component('recipe-notes-draggable-item', {
 			mixins: [ElementMixin],
 			props: ['note'],
 			template: '#recipe-notes-draggable-item-template'
 		});
-		//Ingredients
-		Vue.component('recipe-ingredients-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#recipe-ingredients-draggable-list-template'
-		});
 		Vue.component('recipe-ingredients-draggable-item', {
 			mixins: [ElementMixin],
 			props: ['ingredient'],
 			template: '#recipe-ingredients-draggable-item-template'
-		});
-		//Steps
-		Vue.component('recipe-steps-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#recipe-steps-draggable-list-template'
 		});
 		Vue.component('recipe-steps-draggable-item', {
 			mixins: [ElementMixin],
@@ -88,12 +73,6 @@
 		});
 
 		//** RecipeView component mixins **//
-		//Manage tag component
-		Vue.component('addrecipeview-tag-draggable-list', {
-			mixins: [ContainerMixin],
-			template: '#addrecipeview-tag-draggable-list-template'
-		});
-
 		Vue.component('addrecipeview-tag-draggable-item', {
 			mixins: [ElementMixin],
 			props: ['tag'],
@@ -193,7 +172,6 @@
 				headerText: '',
 				headerTextAnimeObject: null,
 				isHeaderTextHidden: false,
-				searchButtonHeight: 1,
 				searchBarExpanded: false,
 
 				///Used for 'Explore' pane
@@ -939,9 +917,6 @@
 					} else {
 						this.browserUtil = 'Desktop browser';
 					}
-
-					//Set height of search text box
-					this.searchButtonHeight = this.getAbsoluteHeight(this.$refs.searchBoxButton);
 
 					//Add the main menu to the view stack
 					this.ViewStack.push(this.$refs.exploreMenuContainer);
