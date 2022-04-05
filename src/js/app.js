@@ -1862,7 +1862,15 @@
 						data: serializedRecipe
 					});
 
-					//TODO: Update to Firebase cloud services
+					this.updateFirestoreRecipe(serializedRecipe.docID, {
+						title: serializedRecipe.title,
+						description: serializedRecipe.description,
+						activeTime: serializedRecipe.activeTime,
+						prepTime: serializedRecipe.prepTime,
+						cookTime: serializedRecipe.cookTime,
+						totalTime: serializedRecipe.totalTime,
+						yield: serializedRecipe.yield
+					});
 
 					this.detailsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
@@ -1891,7 +1899,9 @@
 						data: serializedRecipe
 					});
 
-					//TODO: Update to Firebase cloud services
+					this.updateFirestoreRecipe(serializedRecipe.docID, {
+						tags: serializedRecipe.tags,
+					});
 
 					this.tagDisplayState = utils.DISPLAY_STATES.VIEW;
 					this.tagAddModel = '';
@@ -1913,7 +1923,9 @@
 						data: serializedRecipe
 					});
 
-					//TODO: Update to Firebase cloud services
+					this.updateFirestoreRecipe(serializedRecipe.docID, {
+						tags: serializedRecipe.tags,
+					});
 				},
 				editSpecialEquipmentRecipeView: function () {
 					if (this.specialEquipmentDisplayState === utils.DISPLAY_STATES.VIEW) {
@@ -1944,7 +1956,9 @@
 						data: serializedRecipe
 					});
 
-					//TODO: Update to Firebase cloud services
+					this.updateFirestoreRecipe(serializedRecipe.docID, {
+						specialEquipment: serializedRecipe.specialEquipment,
+					});
 
 					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
@@ -1994,7 +2008,9 @@
 						data: serializedRecipe
 					});
 
-					//TODO: Update to Firebase cloud services
+					this.updateFirestoreRecipe(serializedRecipe.docID, {
+						notes: serializedRecipe.notes,
+					});
 
 					this.notesDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
@@ -2025,10 +2041,10 @@
 
 					//Remove any deleted items, update interface
 					var sections = [];
-					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
+					for (let i = 0; i < this.selectedRecipe.sections.length; i++) {
 						var section = utils.deepClone(this.selectedRecipe.sections[i]);
 						section.ingredients = [];
-						for (var j = 0; j < this.selectedRecipe.sections[i].ingredients.length; j++) {
+						for (let j = 0; j < this.selectedRecipe.sections[i].ingredients.length; j++) {
 							if (!this.selectedRecipe.sections[i].ingredients[j].isDeleted) {
 								section.ingredients.push(this.selectedRecipe.sections[i].ingredients[j]);
 							}
@@ -2041,9 +2057,9 @@
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe));
 					serializedRecipe.sections = utils.deepClone(this.selectedRecipe.sections); //Create deep copy to prevent unwanted changes
 
-					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
+					for (let i = 0; i < this.selectedRecipe.sections.length; i++) {
 						serializedRecipe.sections[i].ingredients = [];
-						for (var j = 0; j < this.selectedRecipe.sections[i].ingredients.length; j++) {
+						for (let j = 0; j < this.selectedRecipe.sections[i].ingredients.length; j++) {
 							if (!this.selectedRecipe.sections[i].ingredients[j].isDeleted) {
 								serializedRecipe.sections[i].ingredients.push({
 									amount: this.selectedRecipe.sections[i].ingredients[j].amount,
@@ -2061,7 +2077,9 @@
 						data: serializedRecipe
 					});
 
-					//TODO: Update to Firebase cloud services
+					this.updateFirestoreRecipe(serializedRecipe.docID, {
+						sections: serializedRecipe.sections,
+					});
 
 					this.ingredientsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
@@ -2094,10 +2112,10 @@
 
 					//Remove any deleted items, update interface
 					var sections = [];
-					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
+					for (let i = 0; i < this.selectedRecipe.sections.length; i++) {
 						var section = utils.deepClone(this.selectedRecipe.sections[i]);
 						section.steps = [];
-						for (var j = 0; j < this.selectedRecipe.sections[i].steps.length; j++) {
+						for (let j = 0; j < this.selectedRecipe.sections[i].steps.length; j++) {
 							if (!this.selectedRecipe.sections[i].steps[j].isDeleted) {
 								section.steps.push(this.selectedRecipe.sections[i].steps[j]);
 							}
@@ -2109,7 +2127,7 @@
 					//Clean data, serialize
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe));
 					serializedRecipe.sections = utils.deepClone(this.selectedRecipe.sections); //Create deep copy to prevent unwanted changes
-					for (var i = 0; i < this.selectedRecipe.sections.length; i++) {
+					for (let i = 0; i < this.selectedRecipe.sections.length; i++) {
 						serializedRecipe.sections[i].steps = [];
 						this.selectedRecipe.sections[i].steps.forEach(step => {
 							serializedRecipe.sections[i].steps.push(step.value);
@@ -2124,7 +2142,9 @@
 						data: serializedRecipe
 					});
 
-					//TODO: Update to Firebase cloud services
+					this.updateFirestoreRecipe(serializedRecipe.docID, {
+						sections: serializedRecipe.sections,
+					});
 
 					this.stepsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
@@ -2157,7 +2177,9 @@
 					this.cookbook[id] = {};
 
 					//TODO: Delete all shared recipes
-					//Call delete recipe endpoint
+					this.updateFirestoreRecipe(serializedRecipe.docID, {
+						sections: serializedRecipe.sections,
+					});
 
 					this.navigateBackward();
 				},
@@ -2181,7 +2203,7 @@
 					doc.head.append(meta2);
 
 					var title = document.createElement('title');
-					title.innerHTML = this.selectedRecipe.title + ' | Project Pastro';
+					title.innerHTML = this.selectedRecipe.title + ' | Pantry';
 					doc.head.append(title);
 
 					doc.head.append(this.makeHeaderLink('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap'));
@@ -2414,6 +2436,194 @@
 						}
 					}
 				},
+				submitManagedRecipe: function () {
+					var self = this;
+					if (!this.showStickySubmit) {
+						//Activate smart button
+						var el = null;
+						var bs = null;
+
+						switch (this.manage_activePane) {
+							case this.manage_smartButtonProgress.overview:
+								el = this.$refs.manageCoverPhotoAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.coverPhoto:
+								el = this.$refs.manageTimeServingsAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.timeServings:
+								el = this.$refs.manageSectionsAccordionButton;
+								bs = new bootstrap.Collapse(el);
+								break;
+							case this.manage_smartButtonProgress.ingredients:
+								el = this.$refs.manageStepsTab;
+								bs = new bootstrap.Tab(el);
+								bs.show();
+								break;
+							case this.manage_smartButtonProgress.steps:
+								el = this.$refs.manageNutritionTab;
+								bs = new bootstrap.Tab(el);
+								bs.show();
+								break;
+							default:
+								break;
+						}
+						return;
+					}
+
+					var anyInvalid = false;
+					var serializedRecipe = {};
+
+					//Clear all form invalid classes
+					Array.prototype.slice.call(document.querySelectorAll('.is-invalid')).forEach(function (form) {
+						form.classList.remove('is-invalid');
+					});
+
+					//Check name
+					if (utils.isString(this.manage_recipeName)) {
+						serializedRecipe.title = this.manage_recipeName.toString().trim();
+					} else {
+						this.$refs.recipeNameRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check description
+					if (utils.isBigString(this.quillAddRecipeViewContent)) {
+						serializedRecipe.description = this.quillAddRecipeViewContent;
+					} else {
+						this.$refs.addRecipeViewEditor.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Serialize tag array
+					if (this.manage_recipeTagHolder.length > 0) {
+						serializedRecipe.tags = _.uniq(_.pluck(this.manage_recipeTagHolder, 'value'), false);
+					}
+
+					//Check special equipment
+					if (this.manage_specialEquipmentHolder.length > 0) {
+						serializedRecipe.specialEquipment = _.uniq(_.pluck(this.manage_specialEquipmentHolder, 'value'), false);
+					}
+
+					//Check notes
+					if (this.manage_recipeNotesHolder.length > 0) {
+						serializedRecipe.notes = _.uniq(_.pluck(this.manage_recipeNotesHolder, 'value'), false);
+					}
+
+					//Check prep time
+					if (utils.isNumber(this.manage_recipePrepTime)) {
+						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
+					} else {
+						this.$refs.recipePrepRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check cook time
+					if (utils.isNumber(this.manage_recipeCookTime)) {
+						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
+					} else {
+						this.$refs.recipeCookRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check total time
+					if (utils.isNumber(this.manage_recipeTotalTime)) {
+						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
+					} else {
+						this.$refs.recipeTotalRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Check active time
+					if (utils.isNumber(this.manage_recipeActiveTime)) {
+						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
+					} else {
+						this.$refs.recipeActiveRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					if (utils.isString(this.manage_recipeYield.toString())) {
+						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
+					} else {
+						this.$refs.recipeYieldRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					//Serialize recipe sections
+					if (this.manage_recipeSections.steps.length > 0) {
+						serializedRecipe.sections = [];
+						for (var i = 0; i < this.manage_recipeSections.length; i++) {
+							let o = {};
+
+							if (typeof this.manage_recipeSections.title === 'undefined') {
+								o.title = 'Recipe';
+							} else {
+								o.title = this.manage_recipeSections.title;
+							}
+
+							o.calories = 0;
+							o.fat = 0;
+							o.cholesterol = 0;
+							o.sodium = 0;
+							o.totalCarbs = 0;
+							o.fiber = 0;
+							o.sugar = 0;
+							o.protein = 0;
+
+							o.ingredients = _.map(this.manage_recipeSections[i].ingredients, function (row) {
+								return _.omit(row, ['isDeleted']);
+							});
+
+							o.steps = _.map(this.manage_recipeSections[i].steps, function (row) {
+								return _.omit(row, ['isDeleted']);
+							});
+
+							serializedRecipe.sections.push(o);
+						}
+					} else {
+						this.$refs.manageStepRef.classList.add('is-invalid');
+						anyInvalid = true;
+					}
+
+					if (anyInvalid) return;
+
+					this.isRecipeSubmitDisabled = true;
+
+					serializedRecipe.docID = uuidv4().toString();
+					let now = Date.now();
+					serializedRecipe.dateAdded = now;
+					serializedRecipe.dateModified = now;
+					serializedRecipe.favorite = false;
+
+					if (this.manage_coverPhotoURL === '') {
+						serializedRecipe.coverPhotoURL = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash.jpg?alt=media&token=ef21ab61-5730-47b8-8ed8-3b9b5b6fa757';
+					} else {
+						serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL;
+					}
+
+					if (this.manage_coverPhotoThumbnail === '') {
+						serializedRecipe.thumbnail = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash_thumbnail.png?alt=media&token=a3e0019c-f553-4c85-97b7-f405ab31609c';
+					} else {
+						serializedRecipe.thumbnail = this.manage_coverPhotoThumbnail;
+					}
+
+					console.log(serializedRecipe);
+
+					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
+						//Update flex index
+						serializedRecipe.id = self.injectedFlexIndex;
+						self.injectedFlexIndex = self.injectedFlexIndex + 1;
+
+						//Push to cookbook array
+						//Update tags & ingredients filters array
+
+						self.isRecipeSubmitDisabled = false;
+
+					}).catch(function (error) {
+						console.error(error);
+					});
+				},
 
 				/**** OptionsView Methods ****/
 				updateSetting: function (update) {
@@ -2475,12 +2685,6 @@
 				calcButtonDimensions: function (rem, vw) {
 					return utils.remToPixels(rem) + utils.vwToPixels(vw);
 				},
-				//When user clicks the button to open their personal billing portal
-				stripeBillingPortal: function (event) {
-					event.target.disabled = true;
-					event.target.textContent = 'Preparing your billing portal...';
-					goToPortal();
-				},
 				signOutApp: function () {
 					firebase.auth().signOut().then(function () {
 						window.location.replace('index.html');
@@ -2512,6 +2716,12 @@
 				},
 
 				/**** 3rd Party Methods & APIs ****/
+				//When user clicks the button to open their personal billing portal
+				stripeBillingPortal: function (event) {
+					event.target.disabled = true;
+					event.target.textContent = 'Preparing your billing portal...';
+					goToPortal();
+				},
 				//RecipeView
 				initRecipeViewQuill: function () {
 					this.quillRecipeViewInstance = new Quill('#recipeViewEditor', {
@@ -2612,6 +2822,12 @@
 						}, 15);
 						/* jshint ignore:end */
 					}
+				},
+				updateFirestoreRecipe: function(docID, change) {
+					this.db.collection('users/' + utils._UID + '/recipes').doc(docID).update(change)
+						.catch(function (error) {
+							console.error(error);
+						});
 				},
 				//Manage recipe methods
 				//TODO: when the user clicks on the X button for FilePond, destroy CropperJS instance (if it exists)
@@ -2897,194 +3113,6 @@
 					this.ocr_StepsCropperObject.destroy();
 					this.ocr_StepsCropperObject = null;
 					document.getElementById('ocrStepsCropWrapper').innerHTML = "";
-				},
-				submitManagedRecipe: function () {
-					var self = this;
-					if (!this.showStickySubmit) {
-						//Activate smart button
-						var el = null;
-						var bs = null;
-
-						switch (this.manage_activePane) {
-							case this.manage_smartButtonProgress.overview:
-								el = this.$refs.manageCoverPhotoAccordionButton;
-								bs = new bootstrap.Collapse(el);
-								break;
-							case this.manage_smartButtonProgress.coverPhoto:
-								el = this.$refs.manageTimeServingsAccordionButton;
-								bs = new bootstrap.Collapse(el);
-								break;
-							case this.manage_smartButtonProgress.timeServings:
-								el = this.$refs.manageSectionsAccordionButton;
-								bs = new bootstrap.Collapse(el);
-								break;
-							case this.manage_smartButtonProgress.ingredients:
-								el = this.$refs.manageStepsTab;
-								bs = new bootstrap.Tab(el);
-								bs.show();
-								break;
-							case this.manage_smartButtonProgress.steps:
-								el = this.$refs.manageNutritionTab;
-								bs = new bootstrap.Tab(el);
-								bs.show();
-								break;
-							default:
-								break;
-						}
-						return;
-					}
-
-					var anyInvalid = false;
-					var serializedRecipe = {};
-
-					//Clear all form invalid classes
-					Array.prototype.slice.call(document.querySelectorAll('.is-invalid')).forEach(function (form) {
-						form.classList.remove('is-invalid');
-					});
-
-					//Check name
-					if (utils.isString(this.manage_recipeName)) {
-						serializedRecipe.title = this.manage_recipeName.toString().trim();
-					} else {
-						this.$refs.recipeNameRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check description
-					if (utils.isBigString(this.quillAddRecipeViewContent)) {
-						serializedRecipe.description = this.quillAddRecipeViewContent;
-					} else {
-						this.$refs.addRecipeViewEditor.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Serialize tag array
-					if (this.manage_recipeTagHolder.length > 0) {
-						serializedRecipe.tags = _.uniq(_.pluck(this.manage_recipeTagHolder, 'value'), false);
-					}
-
-					//Check special equipment
-					if (this.manage_specialEquipmentHolder.length > 0) {
-						serializedRecipe.specialEquipment = _.uniq(_.pluck(this.manage_specialEquipmentHolder, 'value'), false);
-					}
-
-					//Check notes
-					if (this.manage_recipeNotesHolder.length > 0) {
-						serializedRecipe.notes = _.uniq(_.pluck(this.manage_recipeNotesHolder, 'value'), false);
-					}
-
-					//Check prep time
-					if (utils.isNumber(this.manage_recipePrepTime)) {
-						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
-					} else {
-						this.$refs.recipePrepRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check cook time
-					if (utils.isNumber(this.manage_recipeCookTime)) {
-						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
-					} else {
-						this.$refs.recipeCookRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check total time
-					if (utils.isNumber(this.manage_recipeTotalTime)) {
-						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
-					} else {
-						this.$refs.recipeTotalRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Check active time
-					if (utils.isNumber(this.manage_recipeActiveTime)) {
-						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
-					} else {
-						this.$refs.recipeActiveRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					if (utils.isString(this.manage_recipeYield.toString())) {
-						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
-					} else {
-						this.$refs.recipeYieldRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					//Serialize recipe sections
-					if (this.manage_recipeSections.steps.length > 0) {
-						serializedRecipe.sections = [];
-						for (var i = 0; i < this.manage_recipeSections.length; i++) {
-							let o = {};
-
-							if (typeof this.manage_recipeSections.title === 'undefined') {
-								o.title = 'Recipe';
-							} else {
-								o.title = this.manage_recipeSections.title;
-							}
-
-							o.calories = 0;
-							o.fat = 0;
-							o.cholesterol = 0;
-							o.sodium = 0;
-							o.totalCarbs = 0;
-							o.fiber = 0;
-							o.sugar = 0;
-							o.protein = 0;
-
-							o.ingredients = _.map(this.manage_recipeSections[i].ingredients, function (row) {
-								return _.omit(row, ['isDeleted']);
-							});
-
-							o.steps = _.map(this.manage_recipeSections[i].steps, function (row) {
-								return _.omit(row, ['isDeleted']);
-							});
-
-							serializedRecipe.sections.push(o);
-						}
-					} else {
-						this.$refs.manageStepRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					if (anyInvalid) return;
-
-					this.isRecipeSubmitDisabled = true;
-
-					serializedRecipe.docID = uuidv4().toString();
-					let now = Date.now();
-					serializedRecipe.dateAdded = now;
-					serializedRecipe.dateModified = now;
-					serializedRecipe.favorite = false;
-
-					if (this.manage_coverPhotoURL === '') {
-						serializedRecipe.coverPhotoURL = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash.jpg?alt=media&token=ef21ab61-5730-47b8-8ed8-3b9b5b6fa757';
-					} else {
-						serializedRecipe.coverPhotoURL = this.manage_coverPhotoURL;
-					}
-
-					if (this.manage_coverPhotoThumbnail === '') {
-						serializedRecipe.thumbnail = 'https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fkaren-sewell-silverware-medium-unsplash_thumbnail.png?alt=media&token=a3e0019c-f553-4c85-97b7-f405ab31609c';
-					} else {
-						serializedRecipe.thumbnail = this.manage_coverPhotoThumbnail;
-					}
-
-					console.log(serializedRecipe);
-
-					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
-						//Update flex index
-						serializedRecipe.id = self.injectedFlexIndex;
-						self.injectedFlexIndex = self.injectedFlexIndex + 1;
-
-						//Push to cookbook array
-						//Update tags & ingredients filters array
-
-						self.isRecipeSubmitDisabled = false;
-
-					}).catch(function (error) {
-						console.error(error);
-					});
 				}
 			}
 		});
