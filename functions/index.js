@@ -14,19 +14,18 @@ const ocrClient = new vision.ImageAnnotatorClient({
 	keyFilename: './project-pastro-c95b1-cb36ad6fa145.json'
 });
 
-const stripe = require('stripe')('sk_test_51IinkiCwcvKw4V4OXjDc13g6UysjMtxc5OayoYdo6QJvfb4iiEVP2GGXVbzA2QOG4aDKCaDIhRH5lm6FupBCBt5Z00MGMgQdCG');
-
 const XRegExp = require('xregexp');
 const unicodeLettersNumbersPunctuationRegex = new XRegExp("[^\\p{N}\\p{L}\\p{P} ⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅚⅜⅝⅞¼½¾]", "g");
 const sanitizeDash = new XRegExp("[-–—−]", "g");
 
 const _ = require('underscore');
 
+/*
 const jsdom = require('jsdom');
 const {
 	JSDOM
 } = jsdom;
-
+*/
 
 admin.initializeApp();
 

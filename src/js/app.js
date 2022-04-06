@@ -433,7 +433,7 @@
 					firebase.auth().onAuthStateChanged(function (user) {
 						if (user) { //user is signed in
 							utils._UID = user.uid;
-							self.userPhotoURL = utils.getProfilePhotoURL(user.photoURL);
+							self.userPhotoURL = user.photoURL;
 							//Fix for when people's Google account name is all caps
 							self.firstname = utils.capitalizeFirstLetter(user.displayName.substr(0, user.displayName.indexOf(' ')).toLowerCase());
 							//Check if user is paying customer
@@ -2177,9 +2177,20 @@
 					this.cookbook[id] = {};
 
 					//TODO: Delete all shared recipes
-					this.updateFirestoreRecipe(serializedRecipe.docID, {
+					/*
+					this.updateFirestoreRecipe(this.selectedRecipe.docID, {
 						sections: serializedRecipe.sections,
 					});
+					*/
+					//Delete shared recipes
+					this.db.collection('users/' + utils._UID + '/recipes')
+						.where('recipeID', '==', this.selectedRecipe.docID)
+						.get()
+						.then((querySnapshot) => {
+							querySnapshot.forEach((doc) => {
+								console.log(doc.data().sharedID);
+							});
+						});
 
 					this.navigateBackward();
 				},
@@ -2226,16 +2237,25 @@
 						contentType: 'text/html',
 					};
 
-					this.storage.child('users/' + utils._UID + '/recipes/' + this.selectedRecipe.docID + '/' + uuidv4() + '.html').putString(str).then((snapshot) => {
-						snapshot.ref.getDownloadURL().then((downloadURL) => {
-							snapshot.ref.updateMetadata(metadata).then((m) => {
-								utils.copyTextToClipboard(downloadURL);
-								self.toastHeader = 'Link shared';
-								self.toastBody = 'Link was copied to your clipboard!';
-								self.toastInstance.show();
-								self.isSharing = false;
+					var sharedID = uuidv4();
+
+					this.db.collection('users/' + utils._UID + '/shared/').doc().set({
+						recipeID: this.selectedRecipe.docID,
+						sharedID: sharedID
+					}).then(() => {
+						this.storage.child('users/' + utils._UID + '/recipes/' + this.selectedRecipe.docID + '/' + sharedID + '.html').putString(str).then((snapshot) => {
+							snapshot.ref.getDownloadURL().then((downloadURL) => {
+								snapshot.ref.updateMetadata(metadata).then((m) => {
+									utils.copyTextToClipboard(downloadURL);
+									self.toastHeader = 'Link shared';
+									self.toastBody = 'Link was copied to your clipboard!';
+									self.toastInstance.show();
+									self.isSharing = false;
+								});
 							});
 						});
+					}).catch((error) => {
+						console.error(error);
 					});
 				},
 				isRecipeViewInEditMode: function () {

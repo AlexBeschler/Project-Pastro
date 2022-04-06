@@ -19,5 +19,9 @@ service firebase.storage {
 			//Allow Functions and user access to OCR file
 			allow read, write, update, delete: if true;
 		}
+		match /users/{uid}/recipes/{document=**} {
+			allow read: if true;
+			allow write, delete: if request.auth.uid == uid;
+		}
 	}
 }

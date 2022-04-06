@@ -1479,20 +1479,20 @@
                             </li>
                         </ul>
                         <div class="my-4 mb-5 d-flex justify-content-center">Made with <span class="heart-emoji"
-                                style="margin: 0em 0.25em;">❤</span> by <a href="https://alexbeschler.com"
-                                target="_blank" rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a>
+                                style="margin: 0em 0.25em;">❤</span> by <a href="https://layer12.dev"
+                                target="_blank" rel="noopener noreferrer" style="margin: 0em 0.25em;">The Pantry Team</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Toast notification -->
-        <div class="toast-container position-absolute p-3 bottom-0 start-50 translate-middle-x">
+        <div class="toast-container position-absolute p-3 top-0 end-0 translate-middle-x">
             <div class="toast" ref="toastNotification">
                 <div v-if="toastHeader !== ''" class="toast-header">
-                    <!--img src="..." class="rounded me-2" alt="..."-->
+                    <img src="favicon.png" class="rounded toast-logo me-2" alt="logo">
                     <strong class="me-auto">{{ toastHeader }}</strong>
-                    <!--small>11 mins ago</small-->
+                    <small>just now</small>
                 </div>
                 <div class="toast-body">
                     {{ toastBody }}
@@ -1587,7 +1587,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body py-0">
-                        <p>Are you sure you want to delete this recipe? This is an <b>irreversible</b> process.</p>
+                        <p>Are you sure you want to delete this recipe? 
+                            This and its shared recipes will be removed. 
+                            This is an <b>irreversible</b> process.</p>
                     </div>
                     <div class="modal-footer flex-column border-top-0">
                         <button type="button" class="btn btn-lg btn-light w-100 mx-0 mb-2" @click="deleteRecipe"
