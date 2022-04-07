@@ -2168,30 +2168,40 @@
 					this.stepsAddModel = '';
 				},
 				deleteRecipe: function () {
-					var id = this.selectedRecipe.id;
-
-					//Update flex index
-					this.flexSearch.remove(id);
-					//Set this recipe to a blank object to effectively remove it from the cookbook
-					//The reason we don't splice is because the FlexSearch index is dependent on this recipe's position
-					this.cookbook[id] = {};
-
-					//TODO: Delete all shared recipes
-					/*
-					this.updateFirestoreRecipe(this.selectedRecipe.docID, {
-						sections: serializedRecipe.sections,
-					});
-					*/
+					var id = this.selectedRecipe.docID;
+					var position = this.selectedRecipe.id;
+					
 					//Delete shared recipes
-					this.db.collection('users/' + utils._UID + '/recipes')
-						.where('recipeID', '==', this.selectedRecipe.docID)
+					var storageRef = firebase.storage().ref();
+					this.db.collection('users/' + utils._UID + '/shared')
+						.where('recipeID', '==', id)
 						.get()
 						.then((querySnapshot) => {
 							querySnapshot.forEach((doc) => {
-								console.log(doc.data().sharedID);
+								storageRef.child('users/' + utils._UID + '/recipes/' + id + '/' + doc.data().sharedID + '.html')
+									.delete()
+									.then(() => {
+										console.log('Deleted ' + doc.data().sharedID);
+									})
+									.catch((error) => {
+										console.error(error);
+								});
 							});
 						});
+					this.db.collection('users/' + utils._UID + '/recipes').doc(id)
+						.delete()
+						.then(() => {
+							console.log('Deleted recipe');
+						}).catch((error) => {
+							console.error(error);
+						});
 
+					//Update flex index
+					this.flexSearch.remove(position);
+					//Set this recipe to a blank object to effectively remove it from the cookbook
+					//The reason we don't splice is because the FlexSearch index is dependent on this recipe's position
+					this.cookbook[position] = {};
+					
 					this.navigateBackward();
 				},
 				shareRecipe: function () {
