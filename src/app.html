@@ -53,7 +53,7 @@
                 <div class="container-fluid">
                     <div class="collapse navbar-collapse justify-content-end">
                         <button class="btn navbar-button" @click="clickedAddRecipe" ref="addRecipeButton">
-                            <reactive-svg class="navbar-button-icon" :fill="iconColor">
+                            <reactive-svg class="navbar-button-icon" :iconcolor="iconColor">
                                 <plus></plus>
                             </reactive-svg>
                         </button>
@@ -71,20 +71,19 @@
                         v-bind:class="{ 'my-2rem': isHeaderTextHidden }" @click="clickedSearchBar"
                         ref="searchBoxButton">
                         <div class="searchImgContainer">
-                            <reactive-svg id="innerSearchButtonImg1" class="pe-3" :fill="iconColor">
+                            <reactive-svg id="innerSearchButtonImg1" class="pe-3" :iconcolor="iconColor">
                                 <search></search>
                             </reactive-svg>
                             <div id="innerSearchButtonImg2" class="m-0 p-0 search-box-button-close"
                                 style="position: absolute;opacity: 0;top: 0;left: 0" ref="closeSearchButton">
-                                <reactive-svg class="pe-3" :fill="iconColor" width="34" height="34">
+                                <reactive-svg class="pe-3" :iconcolor="iconColor" width="34" height="34">
                                     <x-lg></x-lg>
                                 </reactive-svg>
                             </div>
                         </div>
                         <h4 id="innerSearchButtonText">Search recipes</h4>
                     </button>
-                    <input class="form-control search-box-input d-none"
-                        v-bind:style="{ height: searchButtonHeight + 'px!important' }" ref="searchBoxInput"
+                    <input class="form-control search-box-input d-none" ref="searchBoxInput"
                         v-model="searchQuery">
                     <div class="container d-none" ref="searchResultsContainer">
                         <div class="mb-4" v-if="searchResults_title.length">
@@ -129,7 +128,7 @@
                 <div class="exploreMenu px-1 my-2" ref="exploreMenuContainer">
                     <button class="btn home-button my-3" @click="clickedBrowse">
                         <div class="row">
-                            <reactive-svg class="home-icon me-3" width="24" height="24" :fill="iconColor">
+                            <reactive-svg class="home-icon me-3" width="24" height="24" :iconcolor="iconColor">
                                 <journal-richtext></journal-richtext>
                             </reactive-svg>
                             <h3 class="mb-0">Explore</h3>
@@ -165,7 +164,7 @@
                 <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
                     <div class="d-flex justify-content-between mb-4">
                         <button class="btn chip" @click="navigateBackward" :disabled="searchBarExpanded">
-                            <reactive-svg class="me-2" :fill="iconColor" ref="fromFilterToHomeBackButtonImg" height="24"
+                            <reactive-svg class="me-2" :iconcolor="iconColor" ref="fromFilterToHomeBackButtonImg" height="24"
                                 width="24">
                                 <arrow-left-short></arrow-left-short>
                             </reactive-svg>
@@ -175,7 +174,7 @@
                             <button class="btn chip-outline" v-if="showCreateFilterPresetButton"
                                 :disabled="searchBarExpanded" data-bs-toggle="modal"
                                 data-bs-target="#filterPresetNameModal">
-                                <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
+                                <reactive-svg class="me-2" :iconcolor="iconColor" height="24" width="24">
                                     <plus></plus>
                                 </reactive-svg>
                                 <h5>Save filter</h5>
@@ -185,7 +184,7 @@
                     <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags"
                         v-if="isTagsChecked">
                         <div class="col-1">
-                            <reactive-svg :fill="iconColor">
+                            <reactive-svg :iconcolor="iconColor">
                                 <tags></tags>
                             </reactive-svg>
                         </div>
@@ -202,7 +201,7 @@
                     <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTime"
                         v-if="isTimeChecked">
                         <div class="col-1">
-                            <reactive-svg :fill="iconColor">
+                            <reactive-svg :iconcolor="iconColor">
                                 <stopwatch></stopwatch>
                             </reactive-svg>
                         </div>
@@ -219,7 +218,7 @@
                     <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterIngredients"
                         v-if="isIngredientsChecked">
                         <div class="col-1">
-                            <reactive-svg :fill="iconColor">
+                            <reactive-svg :iconcolor="iconColor">
                                 <egg></egg>
                             </reactive-svg>
                         </div>
@@ -263,7 +262,7 @@
                         style="justify-content: space-between; position: absolute;">
                         <button class="btn chip border-dark shadow" :disabled="searchBarExpanded"
                             @click="navigateBackward">
-                            <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
+                            <reactive-svg class="me-2" :iconcolor="iconColor" height="24" width="24">
                                 <arrow-left-short></arrow-left-short>
                             </reactive-svg>
                             <h5>Back</h5>
@@ -271,7 +270,7 @@
                         <button class="btn chip border-dark shadow" style="z-index: 1;" @click="shareRecipe"
                             :disabled="isSharing">
                             <transition name="clickedShareAnimation" mode="out-in">
-                                <reactive-svg v-if="!isSharing" :fill="iconColor"
+                                <reactive-svg v-if="!isSharing" :iconcolor="iconColor"
                                     style="width: 1rem;height: 1rem;margin: inherit;">
                                     <share-fill></share-fill>
                                 </reactive-svg>
@@ -306,13 +305,13 @@
                                 <span class="remove-from-sharing">
                                     <button v-if="detailsDisplayState === 'view'" class="btn d-flex"
                                         @click="editRecipeDetailsRecipeView">
-                                        <reactive-svg :fill="iconColor">
+                                        <reactive-svg :iconcolor="iconColor">
                                             <edit></edit>
                                         </reactive-svg>
                                     </button>
                                     <button v-else-if="detailsDisplayState === 'edit'" class="btn d-flex"
                                         @click="editRecipeDetailsRecipeView">
-                                        <reactive-svg :fill="iconColor">
+                                        <reactive-svg :iconcolor="iconColor">
                                             <check-lg></check-lg>
                                         </reactive-svg>
                                     </button>
@@ -433,7 +432,7 @@
                                 </div>
                                 <div class="col-auto">
                                     <div class="chip" @click="createRecipeTagRecipeView">
-                                        <reactive-svg :fill="iconColor">
+                                        <reactive-svg :iconcolor="iconColor">
                                             <plus></plus>
                                         </reactive-svg>
                                     </div>
@@ -461,13 +460,13 @@
                                         <span class="remove-from-sharing">
                                             <button v-if="specialEquipmentDisplayState === 'view'" class="btn d-flex"
                                                 @click="editSpecialEquipmentRecipeView">
-                                                <reactive-svg :fill="iconColor">
+                                                <reactive-svg :iconcolor="iconColor">
                                                     <edit></edit>
                                                 </reactive-svg>
                                             </button>
                                             <button v-else-if="specialEquipmentDisplayState === 'edit'"
                                                 class="btn d-flex" @click="editSpecialEquipmentRecipeView">
-                                                <reactive-svg :fill="iconColor">
+                                                <reactive-svg :iconcolor="iconColor">
                                                     <check-lg></check-lg>
                                                 </reactive-svg>
                                             </button>
@@ -484,7 +483,7 @@
                                         </li>
                                     </ul>
                                     <div v-else>
-                                        <recipeview-special-equipment-list :lock-axis="'y'" :press-delay.number=100
+                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                             v-model="selectedRecipe.specialEquipment">
                                             <recipeview-special-equipment-item
                                                 v-for="(equipment, index) in selectedRecipe.specialEquipment"
@@ -493,7 +492,7 @@
                                                 @touchend.native="scrollMove"
                                                 v-on:delete-equipment="deleteSpecialEquipmentRecipeView(index)"
                                                 v-on:undo-delete-equipment="undoDeleteSpecialEquipmentRecipeView(index)" />
-                                        </recipeview-special-equipment-list>
+                                        </draggable-list-group>
                                         <div class="d-flex align-items-end">
                                             <input class="form-control mt-2" type="text"
                                                 placeholder="Add special equipment" v-model="specialEquipmentAddModel"
@@ -511,13 +510,13 @@
                                         <span class="remove-from-sharing">
                                             <button v-if="notesDisplayState === 'view'" class="btn d-flex"
                                                 @click="editRecipeNotesRecipeView">
-                                                <reactive-svg :fill="iconColor">
+                                                <reactive-svg :iconcolor="iconColor">
                                                     <edit></edit>
                                                 </reactive-svg>
                                             </button>
                                             <button v-else-if="notesDisplayState === 'edit'" class="btn d-flex"
                                                 @click="editRecipeNotesRecipeView">
-                                                <reactive-svg :fill="iconColor">
+                                                <reactive-svg :iconcolor="iconColor">
                                                     <check-lg></check-lg>
                                                 </reactive-svg>
                                             </button>
@@ -532,14 +531,14 @@
                                         </li>
                                     </ul>
                                     <div v-else>
-                                        <recipe-notes-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                             v-model="selectedRecipe.notes">
                                             <recipe-notes-draggable-item v-for="(note, index) in selectedRecipe.notes"
                                                 :index="index" :key="index" :note="note" :value="note.value"
                                                 @touchstart.native="scrollStop" @touchend.native="scrollMove"
                                                 v-on:delete-note="deleteRecipeNotesRecipeView(index)"
                                                 v-on:undo-delete-note="undoDeleteRecipeNotesRecipeView(index)" />
-                                        </recipe-notes-draggable-list>
+                                        </draggable-list-group>
                                         <div class="d-flex align-items-end">
                                             <input class="form-control mt-2" type="text" placeholder="Add recipe notes"
                                                 v-model="notesAddModel" v-on:keyup.enter="addRecipeNotesRecipeView"
@@ -562,13 +561,13 @@
                                     <span class="remove-from-sharing">
                                         <button v-if="ingredientsDisplayState === 'view'" class="btn d-flex"
                                             @click="editRecipeIngredientsRecipeView">
-                                            <reactive-svg :fill="iconColor">
+                                            <reactive-svg :iconcolor="iconColor">
                                                 <edit></edit>
                                             </reactive-svg>
                                         </button>
                                         <button v-if="ingredientsDisplayState === 'edit'" class="btn d-flex"
                                             @click="editRecipeIngredientsRecipeView">
-                                            <reactive-svg :fill="iconColor">
+                                            <reactive-svg :iconcolor="iconColor">
                                                 <check-lg></check-lg>
                                             </reactive-svg>
                                         </button>
@@ -588,7 +587,7 @@
                                     </li>
                                 </ul>
                                 <div v-else>
-                                    <recipe-ingredients-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                         v-model="section.ingredients">
                                         <recipe-ingredients-draggable-item
                                             v-for="(ingredient, index) in section.ingredients" :index="index"
@@ -597,7 +596,7 @@
                                             @touchstart.native="scrollStop" @touchend.native="scrollMove"
                                             v-on:delete-ingredient="deleteRecipeIngredientsRecipeView(sectionIndex, index)"
                                             v-on:undo-delete-ingredient="undoDeleteRecipeIngredientsRecipeView(sectionIndex, index)" />
-                                    </recipe-ingredients-draggable-list>
+                                    </draggable-list-group>
                                     <div class="d-flex align-items-end">
                                         <input class="form-control mt-2" type="text" placeholder="Add ingredient"
                                             v-on:keyup.enter="addRecipeIngredientsRecipeView(sectionIndex)"
@@ -619,13 +618,13 @@
                                     <span class="remove-from-sharing">
                                         <button v-if="stepsDisplayState === 'view'" class="btn d-flex"
                                             @click="editRecipeStepsRecipeView">
-                                            <reactive-svg :fill="iconColor">
+                                            <reactive-svg :iconcolor="iconColor">
                                                 <edit></edit>
                                             </reactive-svg>
                                         </button>
                                         <button v-if="stepsDisplayState === 'edit'" class="btn d-flex"
                                             @click="editRecipeStepsRecipeView">
-                                            <reactive-svg :fill="iconColor">
+                                            <reactive-svg :iconcolor="iconColor">
                                                 <check-lg></check-lg>
                                             </reactive-svg>
                                         </button>
@@ -645,7 +644,7 @@
                                     </li>
                                 </ul>
                                 <div v-else>
-                                    <recipe-steps-draggable-list :lock-axis="'y'" :press-delay.number=100
+                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                         v-model="section.steps">
                                         <recipe-steps-draggable-item v-for="(step, index) in section.steps"
                                             :index="index" :key="index" :step="step" :value="step.value"
@@ -653,7 +652,7 @@
                                             @touchend.native="scrollMove"
                                             v-on:delete-step="deleteRecipeStepsRecipeView(sectionIndex, index)"
                                             v-on:undo-delete-step="undoDeleteRecipeStepsRecipeView(sectionIndex, index)" />
-                                    </recipe-steps-draggable-list>
+                                    </draggable-list-group>
                                     <textarea class="form-control mt-2" type="text" placeholder="Add step"
                                         v-model="stepsAddModel" ref="recipeViewStepInputs"></textarea>
                                     <button class="btn btn-outline-primary mt-2"
@@ -750,7 +749,7 @@
                 <!-- AddRecipeView -->
                 <div class="addRecipeView" ref="addRecipeView">
                     <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
-                        <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
+                        <reactive-svg class="me-2" :iconcolor="iconColor" height="24" width="24">
                             <arrow-left-short></arrow-left-short>
                         </reactive-svg>
                         <h5>Back</h5>
@@ -808,7 +807,7 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_recipeTagHolder.length">
-                                                    <addrecipeview-tag-draggable-list :lock-axis="'y'"
+                                                    <draggable-list-group :lock-axis="'y'"
                                                         :press-delay.number=100 v-model="manage_recipeTagHolder">
                                                         <addrecipeview-tag-draggable-item
                                                             v-for="(tag, index) in manage_recipeTagHolder"
@@ -818,7 +817,7 @@
                                                             v-on:undo-delete-tag="undoTagAddRecipeView(index)"
                                                             @touchstart.native="scrollStop"
                                                             @touchend.native="scrollMove" />
-                                                    </addrecipeview-tag-draggable-list>
+                                                    </draggable-list-group>
                                                 </div>
                                             </div>
                                         </div>
@@ -851,7 +850,7 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_specialEquipmentHolder.length">
-                                                    <recipeview-special-equipment-list :lock-axis="'y'"
+                                                    <draggable-list-group :lock-axis="'y'"
                                                         :press-delay.number=100 v-model="manage_specialEquipmentHolder">
                                                         <recipeview-special-equipment-item
                                                             v-for="(equipment, index) in manage_specialEquipmentHolder"
@@ -860,7 +859,7 @@
                                                             @touchend.native="scrollMove"
                                                             v-on:delete-equipment="deleteSpecialEquipmentAddRecipeView(index)"
                                                             v-on:undo-delete-equipment="undoDeleteSpecialEquipmentAddRecipeView(index)" />
-                                                    </recipeview-special-equipment-list>
+                                                    </draggable-list-group>
                                                 </div>
                                             </div>
                                         </div>
@@ -877,7 +876,7 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_recipeNotesHolder.length">
-                                                    <recipe-notes-draggable-list :lock-axis="'y'"
+                                                    <draggable-list-group :lock-axis="'y'"
                                                         :press-delay.number=100 v-model="manage_recipeNotesHolder">
                                                         <recipe-notes-draggable-item
                                                             v-for="(note, index) in manage_recipeNotesHolder"
@@ -886,7 +885,7 @@
                                                             @touchend.native="scrollMove"
                                                             v-on:delete-note="deleteNotesAddRecipeView(index)"
                                                             v-on:undo-delete-note="undoDeleteNotesAddRecipeView(index)" />
-                                                    </recipe-notes-draggable-list>
+                                                    </draggable-list-group>
                                                 </div>
                                             </div>
                                         </div>
@@ -947,7 +946,7 @@
                                             <div class="col-2 ps-0 d-flex align-items-end">
                                                 <button class="btn h-100 w-100" type="button"
                                                     @click.prevent="autofillActiveTime" style="padding: 0.375rem;">
-                                                    <reactive-svg :fill="iconColor">
+                                                    <reactive-svg :iconcolor="iconColor">
                                                         <lightning></lightning>
                                                     </reactive-svg>
                                                 </button>
@@ -1004,7 +1003,7 @@
                                                         <button class="btn btn-outline-primary w-100 my-4" type="button"
                                                             data-bs-toggle="collapse"
                                                             data-bs-target="#ocrIngredientsFilePondWrapper">
-                                                            <reactive-svg :fill="iconColor">
+                                                            <reactive-svg :iconcolor="iconColor">
                                                                 <camera-fill></camera-fill>
                                                             </reactive-svg>
                                                         </button>
@@ -1033,7 +1032,7 @@
                                                                 <div class="col-12">
                                                                     <div v-for="(section, index) in manage_recipeSections"
                                                                         :index="index" :key="index">
-                                                                        <recipe-ingredients-draggable-list
+                                                                        <draggable-list-group
                                                                             :lock-axis="'y'" :press-delay.number=100
                                                                             v-model="section.ingredients">
                                                                             <recipe-ingredients-draggable-item
@@ -1047,7 +1046,7 @@
                                                                                 @touchend.native="scrollMove"
                                                                                 v-on:delete-ingredient="deleteIngredientsAddRecipeView(index, i)"
                                                                                 v-on:undo-delete-ingredient="undoDeleteIngredientsAddRecipeView(index, i)" />
-                                                                        </recipe-ingredients-draggable-list>
+                                                                        </draggable-list-group>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1071,7 +1070,7 @@
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-12">
-                                                                        <recipe-ingredients-draggable-list
+                                                                        <draggable-list-group
                                                                             :lock-axis="'y'" :press-delay.number=100
                                                                             v-model="section.ingredients">
                                                                             <recipe-ingredients-draggable-item
@@ -1085,7 +1084,7 @@
                                                                                 @touchend.native="scrollMove"
                                                                                 v-on:delete-ingredient="deleteIngredientsAddRecipeView(index, i)"
                                                                                 v-on:undo-delete-ingredient="undoDeleteIngredientsAddRecipeView(index, i)" />
-                                                                        </recipe-ingredients-draggable-list>
+                                                                        </draggable-list-group>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1098,7 +1097,7 @@
                                                         <button class="btn btn-outline-primary w-100 my-4" type="button"
                                                             data-bs-toggle="collapse"
                                                             data-bs-target="#ocrStepsFilePondWrapper">
-                                                            <reactive-svg :fill="iconColor">
+                                                            <reactive-svg :iconcolor="iconColor">
                                                                 <camera-fill></camera-fill>
                                                             </reactive-svg>
                                                         </button>
@@ -1129,7 +1128,7 @@
                                                                 <div class="col-12">
                                                                     <div v-for="(section, index) in manage_recipeSections"
                                                                         :index="index" :key="index">
-                                                                        <recipe-steps-draggable-list :lock-axis="'y'"
+                                                                        <draggable-list-group :lock-axis="'y'"
                                                                             :press-delay.number=100
                                                                             v-model="section.steps">
                                                                             <recipe-steps-draggable-item
@@ -1141,7 +1140,7 @@
                                                                                 v-on:undo-delete-step="undoDeleteStepsAddRecipeView(index, i)"
                                                                                 @touchstart.native="scrollStop"
                                                                                 @touchend.native="scrollMove" />
-                                                                        </recipe-steps-draggable-list>
+                                                                        </draggable-list-group>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1176,7 +1175,7 @@
                                                                     </div>
                                                                     <div class="row">
                                                                         <div class="col-12">
-                                                                            <recipe-steps-draggable-list
+                                                                            <draggable-list-group
                                                                                 :lock-axis="'y'" :press-delay.number=100
                                                                                 v-model="section.steps">
                                                                                 <recipe-steps-draggable-item
@@ -1188,7 +1187,7 @@
                                                                                     v-on:undo-delete-step="undoDeleteStepsAddRecipeView(index, i)"
                                                                                     @touchstart.native="scrollStop"
                                                                                     @touchend.native="scrollMove" />
-                                                                            </recipe-steps-draggable-list>
+                                                                            </draggable-list-group>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1316,7 +1315,7 @@
                     <div>
                         <div class="container">
                             <button class="btn chip mb-3" :disabled="searchBarExpanded" @click="navigateBackward">
-                                <reactive-svg class="me-2" :fill="iconColor" height="24" width="24">
+                                <reactive-svg class="me-2" :iconcolor="iconColor" height="24" width="24">
                                     <arrow-left-short></arrow-left-short>
                                 </reactive-svg>
                                 <h5>Back</h5>
@@ -1436,7 +1435,7 @@
                                     OpenDyslexic: A typeface for Dyslexia
                                 </a>
                                 <span class="form-check form-switch align-self-center">
-                                    <reactive-svg :fill="iconColor">
+                                    <reactive-svg :iconcolor="iconColor">
                                         <arrow-up-right></arrow-up-right>
                                     </reactive-svg>
                                 </span>
@@ -1446,7 +1445,7 @@
                                     FAQ / Contact Me
                                 </div>
                                 <span class="form-check form-switch align-self-center">
-                                    <reactive-svg :fill="iconColor">
+                                    <reactive-svg :iconcolor="iconColor">
                                         <arrow-up-right></arrow-up-right>
                                     </reactive-svg>
                                 </span>
@@ -1457,7 +1456,7 @@
                                     Terms of Service
                                 </a>
                                 <span class="form-check form-switch align-self-center">
-                                    <reactive-svg :fill="iconColor">
+                                    <reactive-svg :iconcolor="iconColor">
                                         <arrow-up-right></arrow-up-right>
                                     </reactive-svg>
                                 </span>
@@ -1468,7 +1467,7 @@
                                     Privacy Policy
                                 </a>
                                 <span class="form-check form-switch align-self-center">
-                                    <reactive-svg :fill="iconColor">
+                                    <reactive-svg :iconcolor="iconColor">
                                         <arrow-up-right></arrow-up-right>
                                     </reactive-svg>
                                 </span>
@@ -1480,20 +1479,20 @@
                             </li>
                         </ul>
                         <div class="my-4 mb-5 d-flex justify-content-center">Made with <span class="heart-emoji"
-                                style="margin: 0em 0.25em;">❤</span> by <a href="https://alexbeschler.com"
-                                target="_blank" rel="noopener noreferrer" style="margin: 0em 0.25em;">Alex Beschler</a>
+                                style="margin: 0em 0.25em;">❤</span> by <a href="https://layer12.dev"
+                                target="_blank" rel="noopener noreferrer" style="margin: 0em 0.25em;">The Pantry Team</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Toast notification -->
-        <div class="toast-container position-absolute p-3 bottom-0 start-50 translate-middle-x">
+        <div class="toast-container position-absolute p-3 top-0 end-0 translate-middle-x">
             <div class="toast" ref="toastNotification">
                 <div v-if="toastHeader !== ''" class="toast-header">
-                    <!--img src="..." class="rounded me-2" alt="..."-->
+                    <img src="favicon.png" class="rounded toast-logo me-2" alt="logo">
                     <strong class="me-auto">{{ toastHeader }}</strong>
-                    <!--small>11 mins ago</small-->
+                    <small>just now</small>
                 </div>
                 <div class="toast-body">
                     {{ toastBody }}
@@ -1506,7 +1505,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Tags</h5>
                 <button type="button" class="btn" @click="clickedClearTagFilters">
-                    <reactive-svg :fill="iconColor" width="20" height="20">
+                    <reactive-svg :iconcolor="iconColor" width="20" height="20">
                         <trash></trash>
                     </reactive-svg>
                 </button>
@@ -1525,7 +1524,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Time</h5>
                 <button type="button" class="btn" @click="clickedClearTimeFilters">
-                    <reactive-svg :fill="iconColor" width="20" height="20">
+                    <reactive-svg :iconcolor="iconColor" width="20" height="20">
                         <trash></trash>
                     </reactive-svg>
                 </button>
@@ -1549,7 +1548,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Ingredients</h5>
                 <button type="button" class="btn" @click="clickedClearIngredientFilters">
-                    <reactive-svg :fill="iconColor" width="20" height="20">
+                    <reactive-svg :iconcolor="iconColor" width="20" height="20">
                         <trash></trash>
                     </reactive-svg>
                 </button>
@@ -1569,7 +1568,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Explore by Nutrition</h5>
                 <button type="button" class="btn">
-                    <reactive-svg :fill="iconColor" width="20" height="20">
+                    <reactive-svg :iconcolor="iconColor" width="20" height="20">
                         <trash></trash>
                     </reactive-svg>
                 </button>
@@ -1588,7 +1587,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body py-0">
-                        <p>Are you sure you want to delete this recipe? This is an <b>irreversible</b> process.</p>
+                        <p>Are you sure you want to delete this recipe? 
+                            This and its shared recipes will be removed. 
+                            This is an <b>irreversible</b> process.</p>
                     </div>
                     <div class="modal-footer flex-column border-top-0">
                         <button type="button" class="btn btn-lg btn-light w-100 mx-0 mb-2" @click="deleteRecipe"
@@ -1604,7 +1605,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Filter Preset Name</h5>
+                        <h5 class="modal-title">Filter Preset Name</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -1615,7 +1616,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" @click="saveFilterPreset">Save</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveFilterPreset">Save</button>
                     </div>
                 </div>
             </div>
@@ -1641,7 +1642,7 @@
     -->
 
     <!-- RecipeView Special Equipment draggables -->
-    <template id="special-equipment-draggable-list-template">
+    <template id="draggable-list-group-template">
         <ul class="list-group list-group-flush">
             <slot />
         </ul>
@@ -1650,13 +1651,13 @@
         <li v-if="!equipment.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
                 <input class="form-control" type="text" v-model="equipment.value">
                 <button class="btn pe-0" @click="$emit('delete-equipment', index)">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <trash></trash>
                     </reactive-svg>
                 </button>
@@ -1665,7 +1666,7 @@
         <li v-else class="list-group-item">
             <div class="d-flex align-items-center" style="justify-content: space-between;">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
@@ -1675,23 +1676,17 @@
             </div>
         </li>
     </template>
-    <!-- RecipeView recipe notes draggables -->
-    <template id="recipe-notes-draggable-list-template">
-        <ul class="list-group list-group-flush">
-            <slot />
-        </ul>
-    </template>
     <template id="recipe-notes-draggable-item-template">
         <li v-if="!note.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
                 <input class="form-control" type="text" v-model="note.value">
                 <button class="btn pe-0" @click="$emit('delete-note', index)">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <trash></trash>
                     </reactive-svg>
                 </button>
@@ -1700,7 +1695,7 @@
         <li v-else class="list-group-item">
             <div class="d-flex align-items-center" style="justify-content: space-between;">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
@@ -1709,18 +1704,12 @@
             </div>
         </li>
     </template>
-    <!-- RecipeView recipe ingredients draggables -->
-    <template id="recipe-ingredients-draggable-list-template">
-        <ul class="list-group list-group-flush">
-            <slot />
-        </ul>
-    </template>
     <template id="recipe-ingredients-draggable-item-template">
         <li v-if="!ingredient.isDeleted" class="list-group-item">
             <div class="row">
                 <div class="col-1 d-flex align-items-center justify-content-center">
                     <div class="btn">
-                        <reactive-svg :fill="iconColor">
+                        <reactive-svg :iconcolor="iconColor">
                             <chevron-bar-expand></chevron-bar-expand>
                         </reactive-svg>
                     </div>
@@ -1731,7 +1720,7 @@
                 </div>
                 <div class="col-1 d-flex align-items-center justify-content-center">
                     <button class="btn" @click="$emit('delete-ingredient', index)">
-                        <reactive-svg :fill="iconColor">
+                        <reactive-svg :iconcolor="iconColor">
                             <trash></trash>
                         </reactive-svg>
                     </button>
@@ -1741,7 +1730,7 @@
         <li v-else class="list-group-item">
             <div class="d-flex align-items-center" style="justify-content: space-between;">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
@@ -1751,23 +1740,17 @@
             </div>
         </li>
     </template>
-    <!-- RecipeView recipe steps draggables -->
-    <template id="recipe-steps-draggable-list-template">
-        <ul class="list-group list-group-flush">
-            <slot />
-        </ul>
-    </template>
     <template id="recipe-steps-draggable-item-template">
         <li v-if="!step.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
                 <textarea class="form-control" rows="3" v-model="step.value"></textarea>
                 <button class="btn pe-0" @click="$emit('delete-step', index)">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <trash></trash>
                     </reactive-svg>
                 </button>
@@ -1776,7 +1759,7 @@
         <li v-else class="list-group-item">
             <div class="d-flex align-items-center" style="justify-content: space-between;">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
@@ -1785,23 +1768,17 @@
             </div>
         </li>
     </template>
-    <!-- AddRecipeView tags draggables -->
-    <template id="addrecipeview-tag-draggable-list-template">
-        <ul class="list-group">
-            <slot />
-        </ul>
-    </template>
     <template id="addrecipeview-tag-draggable-item-template">
         <li v-if="!tag.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
                 <input class="form-control" type="text" v-model="tag.value">
                 <button class="btn pe-0" @click="$emit('delete-tag', index)">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <trash></trash>
                     </reactive-svg>
                 </button>
@@ -1810,7 +1787,7 @@
         <li v-else class="list-group-item">
             <div class="d-flex align-items-center" style="justify-content: space-between;">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :fill="iconColor">
+                    <reactive-svg :iconcolor="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
@@ -1880,7 +1857,7 @@
     <!-- Reactive SVG Icons -->
     <template id="reactive-svg-template">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" role="presentation">
-            <g :fill="iconColor">
+            <g :fill="iconcolor">
                 <slot />
             </g>
         </svg>
@@ -2039,7 +2016,6 @@
     <!-- Custom -->
     <script src="js/project-pastro-utils.js"></script>
     <script src="js/nlp.js"></script>
-    <script src="js/range-index.js"></script>
     <script src="js/app.js"></script>
 </body>
 

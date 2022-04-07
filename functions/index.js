@@ -14,19 +14,18 @@ const ocrClient = new vision.ImageAnnotatorClient({
 	keyFilename: './project-pastro-c95b1-cb36ad6fa145.json'
 });
 
-const stripe = require('stripe')('sk_test_51IinkiCwcvKw4V4OXjDc13g6UysjMtxc5OayoYdo6QJvfb4iiEVP2GGXVbzA2QOG4aDKCaDIhRH5lm6FupBCBt5Z00MGMgQdCG');
-
 const XRegExp = require('xregexp');
 const unicodeLettersNumbersPunctuationRegex = new XRegExp("[^\\p{N}\\p{L}\\p{P} ⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅚⅜⅝⅞¼½¾]", "g");
 const sanitizeDash = new XRegExp("[-–—−]", "g");
 
 const _ = require('underscore');
 
+/*
 const jsdom = require('jsdom');
 const {
 	JSDOM
 } = jsdom;
-
+*/
 
 admin.initializeApp();
 
@@ -567,13 +566,7 @@ async function deleteQueryBatch(db, query, resolve) {
  */
 
 exports.embercleave = functions.https.onRequest((req, res) => {
-	
-	
-	
 	//TODO: Check for an empty request
-	
-	
-	
 	cors(req, res, () => {
 		var options = {
 			headers: {
@@ -581,103 +574,8 @@ exports.embercleave = functions.https.onRequest((req, res) => {
 				'X-Requested-With': 'XMLHttpRequest'
 			}
 		};
-		JSDOM.fromURL(req.body.url, options).then(dom => {
-			parseHTML(dom).then((recipe) => {
-				return res.status(200).send({
-					response: recipe
-				});
-			}).catch((error) => {
-				//
-			});
-		});
-		/*
-		.catch(function (error) {
-			return res.status(201).send({
-				error: error.toString()
-			});
-		});
-		*/
 	});
 });
-
-const parseHTML = function (dom) {
-	return new Promise(function (resolve, reject) {
-		var recipe = {};
-		var html = dom.serialize();
-
-		var parsedDOM = new JSDOM(html);
-
-		//Get recipe name
-		var name = parsedDOM.window.document.querySelector('head > title').innerHTML;
-		//recipe.name = name;
-		var token = '';
-		if (name.includes('|')) {
-			token = '|';
-		} else if (name.includes('—')) {
-			token = '—';
-		} else if (name.includes('–')) {
-			token = '–';
-		} else if (name.includes('-')) {
-			token = '-';
-		}
-		recipe.name = token !== '' ? name.split(token)[0].trim() : name.trim();
-
-		//Get ingredients
-		var body = parsedDOM.window.document.body;
-		var sections = body.querySelectorAll('section');
-		var articles = body.querySelectorAll('article');
-
-		//if (domHas(sections, ingredientsWebScraperTerms)) {
-			//recipe.ingredients = true;
-		//} else {
-			if (domHas(articles, ingredientsWebScraperTerms)) {
-				recipe.ingredients = true;
-			} else {
-				recipe.ingredients = false;
-			}
-		//}
-
-		recipe.dom = html;
-
-		//Do steps here
-
-		resolve(recipe);
-	});
-};
-
-function domHas(DOM, textToSearch) {
-	if (typeof DOM == 'undefined') return false;
-	
-	DOM.forEach(node => {
-		if (allDescendants(node, textToSearch)) {
-			return true;
-		}
-	});
-}
-
-function allDescendants(node, textToSearch) {
-	for (var i = 0; i < node.childNodes.length; i++) {
-		var child = node.childNodes[i];
-		//Check innerHTML for the given text
-		if (child.innerHTML != undefined && child.innerHTML !== 'undefined' && child.innerHTML !== null) {
-			var res = false;
-			textToSearch.forEach(t => { //jshint ignore:line
-				if (child.innerHTML.trim().toLowerCase().includes(t.trim().toLowerCase())) {
-					res = true;
-				}
-			});
-			if (res) {
-				//TODO: Call DOM parse for extracting ingredients
-				return true;
-			} else {
-				allDescendants(child, textToSearch);
-			}
-		} else {
-			allDescendants(child, textToSearch);
-		}
-	}
-	return false;
-}
 
 //Notify admin of any Pastro errors
 exports.notifyLoggedError = functions.firestore.document('errors/{docId}').onCreate((snap, context) => {
@@ -924,8 +822,4 @@ const unit_compound_dictionary = [
 	'fl. oz.',
 	'fl. oz',
 	'fl oz.'
-];
-
-const ingredientsWebScraperTerms = [
-	'ingredient'
 ];
