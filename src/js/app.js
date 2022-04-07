@@ -2638,8 +2638,6 @@
 						serializedRecipe.thumbnail = this.manage_coverPhotoThumbnail;
 					}
 
-					console.log(serializedRecipe);
-
 					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
 						//Update flex index
 						serializedRecipe.id = self.injectedFlexIndex;
