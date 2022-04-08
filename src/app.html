@@ -1992,7 +1992,22 @@
     <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
     <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
     <script src="/__/firebase/8.6.1/firebase-functions.js"></script>
-    <script src="/__/firebase/init.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1w_0DqygOe3Fhcpoj-TLLa5A5dzlecBQ",
+            authDomain: "project-pastro-c95b1.firebaseapp.com",
+            projectId: "project-pastro-c95b1",
+            storageBucket: "project-pastro-c95b1.appspot.com",
+            messagingSenderId: "389580897913",
+            appId: "1:389580897913:web:fe11112790994dae505ea8",
+            measurementId: "G-257QQ6YPWZ"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        } else {
+            firebase.app();
+        }
+    </script>
     <!-- Stripe -->
     <script src="https://js.stripe.com/v3/"></script>
     <!-- 3rd Party Helpers -->

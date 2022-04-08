@@ -26,17 +26,27 @@
 
 		async function uploadCoverPhoto(a) {
 			return new Promise((resolve, reject) => {
-				var task = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + a.name).put(a.file, a.meta);
-				task.on('state_changed', (snapshot) => {
-					//progress(snapshot.bytesTransferred / snapshot.totalBytes);
-				}, (error) => {
-					reject(error);
-				}, () => {
-					task.snapshot.ref.getDownloadURL().then((downloadURL) => {
-						resolve(downloadURL);
-					}).catch(error => {
-						reject(error);
-					});
+				new Compressor(a.file, {
+					quality: 0.9,
+					maxWidth: 2048,
+					maxHeight: 2048,
+					success(compressedResult) {
+						var task = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + a.name).put(compressedResult, a.meta);
+						task.on('state_changed', (snapshot) => {
+							//progress(snapshot.bytesTransferred / snapshot.totalBytes);
+						}, (error) => {
+							reject(error);
+						}, () => {
+							task.snapshot.ref.getDownloadURL().then((downloadURL) => {
+								resolve(downloadURL);
+							}).catch(error => {
+								reject(error);
+							});
+						});
+					},
+					error(error) {
+						console.error(error);
+					}
 				});
 			});
 		}
@@ -150,6 +160,7 @@
 				//Firebase db utils
 				db: null,
 				storage: null,
+				analytics: null,
 				firstname: '',
 				//Main app cookbook array
 				cookbook: [],
@@ -411,6 +422,7 @@
 			mounted() {
 				var self = this;
 				this.db = firebase.firestore();
+				this.analytics = firebase.analytics();
 				this.db.enablePersistence().then(function () {
 					//Get user auth
 					firebase.auth().getRedirectResult().then(function (result) {
@@ -2896,7 +2908,6 @@
 										name: fileName,
 										meta: metadata
 									}).then(function (downloadURL) {
-										console.log(downloadURL);
 										if (isThumbnail) {
 											self.manage_coverPhotoThumbnail = downloadURL;
 										} else {
