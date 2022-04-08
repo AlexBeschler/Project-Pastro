@@ -45,6 +45,7 @@
 						});
 					},
 					error(error) {
+						utils.reportError('error', error.toString(), 'Error with getting CompressorJS results');
 						console.error(error);
 					}
 				});
@@ -430,15 +431,8 @@
 							var token = result.credential.accessToken;
 						}
 					}).catch(function (error) {
-						var errorCode = error.code;
-						var errorMessage = error.message;
-						var email = error.email;
-						var credential = error.credential;
-						if (errorCode === 'auth/account-exists-with-different-credential') {
-							alert('You have already signed up with a different auth provider for that email.');
-						} else {
-							console.error(error);
-						}
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with firebase.auth().getRedirectResult');
+						console.error(error);
 					});
 
 					//When authstate changes
@@ -511,7 +505,8 @@
 												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
 											}
 										}).catch(function (error) {
-											console.log(error);
+											utils.reportError('error', error.toString(), 'Error with loading dyslexic font to DOM, defaulting to normal sans-serif');
+											console.error(error);
 											utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
 										});
 										if (doc.data().isHighContrastModeSet) {
@@ -617,9 +612,11 @@
 											self.showLoadingContainer = false;
 											self.showAppContainer = true;
 										}).catch((error) => {
+											utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Firestore error when getting user\'s cookbook');
 											console.error(error);
 										});
 									}).catch((error) => {
+										utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Firestore error when getting user document, including settings and filter presets');
 										console.error(error);
 									});
 								}
@@ -630,10 +627,11 @@
 						}
 					});
 				}).catch((error) => {
-					if (error.code == 'failed-precondition') {
-						//Multiple tabs open
-					} else if (error.code == 'unimplemented') {
+					if (error.code == 'unimplemented') {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Firestore error when enabling persistance. Specifically, the browser does not support this');
 						//Current browser doesn't support offline
+					} else {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Firestore error when enabling persistance');
 					}
 				});
 			},
@@ -678,7 +676,7 @@
 
 						this.getFilterTimeDuration(nowHours, nowMinutes, inputHours, inputMinutes);
 					} catch (e) {
-						console.error(e);
+						console.log(e);
 					}
 					this.updateFilters();
 				},
@@ -800,6 +798,7 @@
 										}
 									});
 								})
+								//TODO: Add permission modal
 								.catch(err => {
 									console.error('Failed to read clipboard contents: ', err);
 								});
@@ -2753,6 +2752,19 @@
 					var script = document.createElement('script');
 					script.src = link;
 					return script;
+				},
+				handleStorageError: function(error, context) {
+					switch(error.code) {
+						case 'storage/unauthenticated':
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, context);
+							break;
+						case 'storage/unauthorized':
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, context);
+							break;
+						default:
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, context);
+							break;
+					}
 				},
 
 				/**** 3rd Party Methods & APIs ****/
