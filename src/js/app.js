@@ -35,11 +35,15 @@
 						task.on('state_changed', (snapshot) => {
 							//progress(snapshot.bytesTransferred / snapshot.totalBytes);
 						}, (error) => {
+							console.error(error);
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with uploading cover photo task');
 							reject(error);
 						}, () => {
 							task.snapshot.ref.getDownloadURL().then((downloadURL) => {
 								resolve(downloadURL);
 							}).catch(error => {
+								console.error(error);
+								utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with getting cover photo download URL');
 								reject(error);
 							});
 						});
@@ -47,6 +51,7 @@
 					error(error) {
 						utils.reportError('error', error.toString(), 'Error with getting CompressorJS results');
 						console.error(error);
+						reject(error);
 					}
 				});
 			});
@@ -738,8 +743,9 @@
 										}
 									});
 								})
-								.catch(err => {
-									console.error('Failed to read clipboard contents: ', err);
+								.catch(error => {
+									console.error('Failed to read clipboard contents: ', error);
+									utils.reportError('error', error, 'Error with reading clipboard for recipe steps');
 								});
 							this.ingredientModelA = utils.deepClone(after);
 							this.addIngredientModel = [];
@@ -798,9 +804,10 @@
 										}
 									});
 								})
-								//TODO: Add permission modal
-								.catch(err => {
-									console.error('Failed to read clipboard contents: ', err);
+								.catch(error => {
+									new bootstrap.Modal(self.$refs.enableClipboardModal).show();
+									console.error('Failed to read clipboard contents: ', error);
+									utils.reportError('error', error, 'Error with reading clipboard for recipe steps');
 								});
 							this.stepModelA = utils.deepClone(after);
 							this.addStepModel = [];
@@ -1803,6 +1810,7 @@
 					this.db.collection('users').doc(utils._UID).update({
 						filterPresets: this.filterPresetsList
 					}).catch((error) => {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when saving filter preset');
 						console.error(error);
 					});
 				},
@@ -1812,6 +1820,7 @@
 					this.db.collection('users').doc(utils._UID).update({
 						filterPresets: this.filterPresetsList
 					}).catch((error) => {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when deleting filter preset');
 						console.error(error);
 					});
 				},
@@ -2195,6 +2204,7 @@
 										console.log('Deleted ' + doc.data().sharedID);
 									})
 									.catch((error) => {
+										utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when deleting shared recipe from storage');
 										console.error(error);
 								});
 							});
@@ -2204,6 +2214,7 @@
 						.then(() => {
 							console.log('Deleted recipe');
 						}).catch((error) => {
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when deleting recipe document from Firestore');
 							console.error(error);
 						});
 
@@ -2276,6 +2287,7 @@
 							});
 						});
 					}).catch((error) => {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when writing a recipe to storage when the user shared it');
 						console.error(error);
 					});
 				},
@@ -2660,6 +2672,7 @@
 						self.isRecipeSubmitDisabled = false;
 
 					}).catch(function (error) {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when writing adding recipe to Firestore');
 						console.error(error);
 					});
 				},
@@ -2668,6 +2681,7 @@
 				updateSetting: function (update) {
 					this.db.collection('users').doc(utils._UID).update(update)
 						.catch((error) => {
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when saving new setting to Firestore');
 							console.error(error);
 						});
 				},
@@ -2752,19 +2766,6 @@
 					var script = document.createElement('script');
 					script.src = link;
 					return script;
-				},
-				handleStorageError: function(error, context) {
-					switch(error.code) {
-						case 'storage/unauthenticated':
-							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, context);
-							break;
-						case 'storage/unauthorized':
-							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, context);
-							break;
-						default:
-							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, context);
-							break;
-					}
 				},
 
 				/**** 3rd Party Methods & APIs ****/
@@ -2878,6 +2879,7 @@
 				updateFirestoreRecipe: function(docID, change) {
 					this.db.collection('users/' + utils._UID + '/recipes').doc(docID).update(change)
 						.catch(function (error) {
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when updating Firestore document. The user was editing recipe from RecipeView');
 							console.error(error);
 						});
 				},
@@ -2925,6 +2927,8 @@
 										} else {
 											self.manage_coverPhotoURL = downloadURL;
 										}
+									}).catch((error) => {
+										console.error(error);
 									});
 
 								};
@@ -2962,8 +2966,9 @@
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
-									console.log('Error uploading file: ' + e);
-									error('Error uploading file: ' + e);
+									utils.reportError('error', error.toString(), 'Error when uploading description to OCR');
+									console.error('Error uploading file: ' + error);
+									error('Error uploading file: ' + error);
 								}, () => {
 									//Give user some sort of indications that something is going on behind the scenes
 									self.quillAddRecipeViewInstance.setText('Loading...');
@@ -2975,7 +2980,8 @@
 									}).then(res => {
 										//Asynchronously delete temp OCR file
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
-											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
+											utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with deleting temp OCR file');
+											console.error(error);
 										});
 
 										try {
@@ -2986,9 +2992,9 @@
 
 										self.quillAddRecipeViewInstance.setText(res.data.recognizedText);
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
-									}).catch(err => {
-										//console.log(err.response.data.message);
-										utils.reportError('Error', err.toString(), 'Functions error reported. Doc ID: ' + err.response.data.message.toString());
+									}).catch(error => {
+										console.error(error.response.data.message);
+										utils.reportError('Error', error.response.data.message.toString(), 'Axios error when POSTing to description OCR');
 									});
 								});
 
@@ -3036,8 +3042,9 @@
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
-									console.log('Error uploading file: ' + e);
-									error('Error uploading file: ' + e);
+									utils.reportError('error', error.toString(), 'Error when uploading ingredients to OCR');
+									console.error('Error uploading file: ' + error);
+									error('Error uploading file: ' + error);
 								}, () => {
 									//Perform upload to Firebase storage
 									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
@@ -3046,7 +3053,8 @@
 									}).then(res => {
 										//Asynchronously delete temp OCR file
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
-											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
+											utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with deleting temp OCR file');
+											console.error(error);
 										});
 
 										try {
@@ -3064,9 +3072,9 @@
 											});
 										});
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
-									}).catch(err => {
-										utils.reportError('Error', err.toString(), 'Functions error reported.');
-										console.log(err.toString());
+									}).catch(error => {
+										console.error(error.response.data.message);
+										utils.reportError('Error', error.response.data.message.toString(), 'Axios error when POSTing to ingredients OCR');
 									});
 								});
 
@@ -3114,8 +3122,9 @@
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
-									console.log('Error uploading file: ' + e);
-									error('Error uploading file: ' + e);
+									utils.reportError('error', error.toString(), 'Error when uploading steps to OCR');
+									console.error('Error uploading file: ' + error);
+									error('Error uploading file: ' + error);
 								}, () => {
 									//Perform upload to Firebase storage
 									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
@@ -3124,7 +3133,8 @@
 									}).then(res => {
 										//Asynchronously delete temp OCR file
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
-											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
+											utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with deleting temp OCR file');
+											console.error(error);
 										});
 
 										try {
@@ -3142,10 +3152,9 @@
 										});
 
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
-									}).catch(err => {
-										console.log(err.response.data);
-										utils.reportError('Error', err.toString(), 'Functions error reported.');
-										console.log(err.toString());
+									}).catch(error => {
+										console.error(error.response.data.message);
+										utils.reportError('Error', error.response.data.message.toString(), 'Axios error when POSTing to steps OCR');
 									});
 								});
 
