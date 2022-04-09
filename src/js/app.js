@@ -357,7 +357,7 @@
 				],
 
 				/** App Version **/
-				version: 'Pantry Beta 3.0_01'
+				version: 'Pantry Beta 3.0.1'
 			},
 			components: {
 				'sign-in-layout': {
@@ -401,7 +401,8 @@
 										sessionId
 									} = snap.data();
 									if (error) {
-										alert(`An error occurred: ${error.message}`);
+										Rollbar.critical("Connection error from remote Payments API", error);
+										alert(`Error with completing operation. This error has been reported. Please email support@pantryrecipes.app`);
 									}
 									if (sessionId) {
 										const stripe = Stripe(utils._STRIPE_CODE);
