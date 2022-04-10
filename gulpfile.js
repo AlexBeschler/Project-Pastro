@@ -10,6 +10,7 @@ const {
 const {
     series
 } = require('gulp');
+const jeditor = require('gulp-json-editor');
 const rev = require('gulp-rev');
 const revRewrite = require('gulp-rev-rewrite');
 const extend = require('gulp-extend');
@@ -20,8 +21,16 @@ const cleanCSS = require('gulp-clean-css');
 const del = require('del');
 
 /**** Tasks ****/
-task('clean', function(done) {
-    return new Promise(function(resolve) {
+task('predeployFirebase', function () {
+    src('./firebase.json')
+        .pipe(jeditor({
+            'hosting.public': 'public'
+        }))
+        .pipe(gulp.dest("./"));
+});
+
+task('clean', function (done) {
+    return new Promise(function (resolve) {
         resolve(del.sync(['public/*/'], done));
     });
 });
@@ -74,6 +83,10 @@ task('copyFiles', function (done) {
     src(['src/*.png', 'src/*.json', 'src/*.js', 'src/*.txt']).pipe(dest('public'));
 
     done();
+});
+
+task('postdeployFirebase', function () {
+    //
 });
 
 const clean = task('clean');
