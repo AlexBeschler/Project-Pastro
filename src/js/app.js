@@ -4,7 +4,7 @@
 	var nlp = new ProjectPastroNLP();
 	nlp.init();
 
-	window.addEventListener('load', function() {
+	window.addEventListener('load', function () {
 		//Progressive web app dependency
 		if ("serviceWorker" in navigator) {
 			navigator.serviceWorker.register("registerServiceWorker.js");
@@ -26,17 +26,33 @@
 
 		async function uploadCoverPhoto(a) {
 			return new Promise((resolve, reject) => {
-				var task = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + a.name).put(a.file, a.meta);
-				task.on('state_changed', (snapshot) => {
-					//progress(snapshot.bytesTransferred / snapshot.totalBytes);
-				}, (error) => {
-					reject(error);
-				}, () => {
-					task.snapshot.ref.getDownloadURL().then((downloadURL) => {
-						resolve(downloadURL);
-					}).catch(error => {
+				new Compressor(a.file, {
+					quality: 0.9,
+					maxWidth: 2048,
+					maxHeight: 2048,
+					success(compressedResult) {
+						var task = firebase.storage().ref().child('users/' + utils._UID + '/coverphotos/' + a.name).put(compressedResult, a.meta);
+						task.on('state_changed', (snapshot) => {
+							//progress(snapshot.bytesTransferred / snapshot.totalBytes);
+						}, (error) => {
+							console.error(error);
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with uploading cover photo task');
+							reject(error);
+						}, () => {
+							task.snapshot.ref.getDownloadURL().then((downloadURL) => {
+								resolve(downloadURL);
+							}).catch(error => {
+								console.error(error);
+								utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with getting cover photo download URL');
+								reject(error);
+							});
+						});
+					},
+					error(error) {
+						utils.reportError('error', error.toString(), 'Error with getting CompressorJS results');
+						console.error(error);
 						reject(error);
-					});
+					}
 				});
 			});
 		}
@@ -53,29 +69,29 @@
 		});
 		Vue.component('recipeview-special-equipment-item', {
 			mixins: [ElementMixin],
-			props: ['equipment'],
+			props: ['equipment', 'iconColor'],
 			template: '#special-equipment-draggable-item-template'
 		});
 		Vue.component('recipe-notes-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['note'],
+			props: ['note', 'iconColor'],
 			template: '#recipe-notes-draggable-item-template'
 		});
 		Vue.component('recipe-ingredients-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['ingredient'],
+			props: ['ingredient', 'iconColor'],
 			template: '#recipe-ingredients-draggable-item-template'
 		});
 		Vue.component('recipe-steps-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['step'],
+			props: ['step', 'iconColor'],
 			template: '#recipe-steps-draggable-item-template'
 		});
 
 		//** RecipeView component mixins **//
 		Vue.component('addrecipeview-tag-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['tag'],
+			props: ['tag', 'iconColor'],
 			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
@@ -150,6 +166,7 @@
 				//Firebase db utils
 				db: null,
 				storage: null,
+				analytics: null,
 				firstname: '',
 				//Main app cookbook array
 				cookbook: [],
@@ -340,7 +357,7 @@
 				],
 
 				/** App Version **/
-				version: 'Pantry Beta 3.0_01'
+				version: 'Pantry Beta 3.0.1'
 			},
 			components: {
 				'sign-in-layout': {
@@ -384,7 +401,8 @@
 										sessionId
 									} = snap.data();
 									if (error) {
-										alert(`An error occurred: ${error.message}`);
+										Rollbar.critical("Connection error from remote Payments API", error);
+										alert(`Error with completing operation. This error has been reported. Please email support@pantryrecipes.app`);
 									}
 									if (sessionId) {
 										const stripe = Stripe(utils._STRIPE_CODE);
@@ -411,22 +429,18 @@
 			mounted() {
 				var self = this;
 				this.db = firebase.firestore();
-				this.db.enablePersistence().then(function () {
+				this.analytics = firebase.analytics();
+				this.db.enablePersistence({
+					synchronizeTabs: true
+				}).then(function () {
 					//Get user auth
 					firebase.auth().getRedirectResult().then(function (result) {
 						if (result.credential) {
 							var token = result.credential.accessToken;
 						}
 					}).catch(function (error) {
-						var errorCode = error.code;
-						var errorMessage = error.message;
-						var email = error.email;
-						var credential = error.credential;
-						if (errorCode === 'auth/account-exists-with-different-credential') {
-							alert('You have already signed up with a different auth provider for that email.');
-						} else {
-							console.error(error);
-						}
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with firebase.auth().getRedirectResult');
+						console.error(error);
 					});
 
 					//When authstate changes
@@ -499,7 +513,8 @@
 												utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
 											}
 										}).catch(function (error) {
-											console.log(error);
+											utils.reportError('error', error.toString(), 'Error with loading dyslexic font to DOM, defaulting to normal sans-serif');
+											console.error(error);
 											utils.setLocalStorage(utils.DYSLEXIC_FONT_SET, 'false');
 										});
 										if (doc.data().isHighContrastModeSet) {
@@ -507,24 +522,26 @@
 										} else {
 											utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'false');
 										}
-				
+
 										//Load settings
 										self.is12HourFormatSet = (utils.getLocalStorage(utils.TWELVE_HOUR_FORMAT_SET) === 'true') ? true : false;
-				
+
 										self.isTagsChecked = (utils.getLocalStorage(utils.TAGS_CHECKED) === 'true') ? true : false;
 										self.isTimeChecked = (utils.getLocalStorage(utils.TIME_CHECKED) === 'true') ? true : false;
 										self.isIngredientsChecked = (utils.getLocalStorage(utils.INGREDIENTS_CHECKED) === 'true') ? true : false;
-				
+
 										self.isDarkModeSet = (utils.getLocalStorage(utils.DARK_MODE_SET) === 'true') ? true : false;
 										self.levelFontSize = utils.getLocalStorage(utils.LEVEL_FONT_SET);
 										self.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
 										self.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
-				
+
 										//Filter presets
 										self.filterPresetsList = doc.data().filterPresets;
 									}).then(() => {
 										var flexIndex = 0;
-										var cookbook = [], tags = [], ingredients = [];
+										var cookbook = [],
+											tags = [],
+											ingredients = [];
 										//Init cookbook meta index
 										var metaIndex = new FlexSearch.Document({
 											document: {
@@ -562,7 +579,7 @@
 
 												//Inject id for FlexSearch during runtime
 												recipe.id = flexIndex;
-												
+
 												//Adds recipe to sorted position
 												cookbook.push(recipe);
 
@@ -590,6 +607,7 @@
 											});
 										}).then(function () {
 											self.cookbook = cookbook;
+											self.filteredCookbook = cookbook;
 
 											self.tagList = tags;
 											self.filteredTagList = tags;
@@ -597,7 +615,7 @@
 											self.ingredientList = ingredients;
 											self.filteredIngredientList = ingredients;
 											self.ingredientsArray = ingredients;
-											
+
 											self.flexSearch = metaIndex;
 											self.numericIndex = numberMetaIndex;
 											self.injectedFlexIndex = flexIndex;
@@ -605,9 +623,11 @@
 											self.showLoadingContainer = false;
 											self.showAppContainer = true;
 										}).catch((error) => {
+											utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Firestore error when getting user\'s cookbook');
 											console.error(error);
 										});
 									}).catch((error) => {
+										utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Firestore error when getting user document, including settings and filter presets');
 										console.error(error);
 									});
 								}
@@ -618,10 +638,11 @@
 						}
 					});
 				}).catch((error) => {
-					if (error.code == 'failed-precondition') {
-						//Multiple tabs open
-					} else if (error.code == 'unimplemented') {
+					if (error.code == 'unimplemented') {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Firestore error when enabling persistance. Specifically, the browser does not support this');
 						//Current browser doesn't support offline
+					} else {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Firestore error when enabling persistance');
 					}
 				});
 			},
@@ -666,7 +687,7 @@
 
 						this.getFilterTimeDuration(nowHours, nowMinutes, inputHours, inputMinutes);
 					} catch (e) {
-						console.error(e);
+						console.log(e);
 					}
 					this.updateFilters();
 				},
@@ -728,8 +749,9 @@
 										}
 									});
 								})
-								.catch(err => {
-									console.error('Failed to read clipboard contents: ', err);
+								.catch(error => {
+									console.error('Failed to read clipboard contents: ', error);
+									utils.reportError('error', error, 'Error with reading clipboard for recipe steps');
 								});
 							this.ingredientModelA = utils.deepClone(after);
 							this.addIngredientModel = [];
@@ -788,8 +810,10 @@
 										}
 									});
 								})
-								.catch(err => {
-									console.error('Failed to read clipboard contents: ', err);
+								.catch(error => {
+									new bootstrap.Modal(self.$refs.enableClipboardModal).show();
+									console.error('Failed to read clipboard contents: ', error);
+									utils.reportError('error', error, 'Error with reading clipboard for recipe steps');
 								});
 							this.stepModelA = utils.deepClone(after);
 							this.addStepModel = [];
@@ -1711,7 +1735,7 @@
 
 					if (!filtersApplied) {
 						this.showCreateFilterPresetButton = false;
-						this.filteredCookbook = [];
+						this.filteredCookbook = this.cookbook;
 						return;
 					}
 
@@ -1792,6 +1816,7 @@
 					this.db.collection('users').doc(utils._UID).update({
 						filterPresets: this.filterPresetsList
 					}).catch((error) => {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when saving filter preset');
 						console.error(error);
 					});
 				},
@@ -1801,6 +1826,7 @@
 					this.db.collection('users').doc(utils._UID).update({
 						filterPresets: this.filterPresetsList
 					}).catch((error) => {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when deleting filter preset');
 						console.error(error);
 					});
 				},
@@ -2170,7 +2196,7 @@
 				deleteRecipe: function () {
 					var id = this.selectedRecipe.docID;
 					var position = this.selectedRecipe.id;
-					
+
 					//Delete shared recipes
 					var storageRef = firebase.storage().ref();
 					this.db.collection('users/' + utils._UID + '/shared')
@@ -2184,8 +2210,9 @@
 										console.log('Deleted ' + doc.data().sharedID);
 									})
 									.catch((error) => {
+										utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when deleting shared recipe from storage');
 										console.error(error);
-								});
+									});
 							});
 						});
 					this.db.collection('users/' + utils._UID + '/recipes').doc(id)
@@ -2193,6 +2220,7 @@
 						.then(() => {
 							console.log('Deleted recipe');
 						}).catch((error) => {
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when deleting recipe document from Firestore');
 							console.error(error);
 						});
 
@@ -2201,7 +2229,7 @@
 					//Set this recipe to a blank object to effectively remove it from the cookbook
 					//The reason we don't splice is because the FlexSearch index is dependent on this recipe's position
 					this.cookbook[position] = {};
-					
+
 					this.navigateBackward();
 				},
 				shareRecipe: function () {
@@ -2265,6 +2293,7 @@
 							});
 						});
 					}).catch((error) => {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when writing a recipe to storage when the user shared it');
 						console.error(error);
 					});
 				},
@@ -2649,6 +2678,7 @@
 						self.isRecipeSubmitDisabled = false;
 
 					}).catch(function (error) {
+						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when writing adding recipe to Firestore');
 						console.error(error);
 					});
 				},
@@ -2657,6 +2687,7 @@
 				updateSetting: function (update) {
 					this.db.collection('users').doc(utils._UID).update(update)
 						.catch((error) => {
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when saving new setting to Firestore');
 							console.error(error);
 						});
 				},
@@ -2851,9 +2882,10 @@
 						/* jshint ignore:end */
 					}
 				},
-				updateFirestoreRecipe: function(docID, change) {
+				updateFirestoreRecipe: function (docID, change) {
 					this.db.collection('users/' + utils._UID + '/recipes').doc(docID).update(change)
 						.catch(function (error) {
+							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when updating Firestore document. The user was editing recipe from RecipeView');
 							console.error(error);
 						});
 				},
@@ -2896,12 +2928,13 @@
 										name: fileName,
 										meta: metadata
 									}).then(function (downloadURL) {
-										console.log(downloadURL);
 										if (isThumbnail) {
 											self.manage_coverPhotoThumbnail = downloadURL;
 										} else {
 											self.manage_coverPhotoURL = downloadURL;
 										}
+									}).catch((error) => {
+										console.error(error);
 									});
 
 								};
@@ -2939,8 +2972,9 @@
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
-									console.log('Error uploading file: ' + e);
-									error('Error uploading file: ' + e);
+									utils.reportError('error', error.toString(), 'Error when uploading description to OCR');
+									console.error('Error uploading file: ' + error);
+									error('Error uploading file: ' + error);
 								}, () => {
 									//Give user some sort of indications that something is going on behind the scenes
 									self.quillAddRecipeViewInstance.setText('Loading...');
@@ -2952,7 +2986,8 @@
 									}).then(res => {
 										//Asynchronously delete temp OCR file
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
-											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
+											utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with deleting temp OCR file');
+											console.error(error);
 										});
 
 										try {
@@ -2963,9 +2998,9 @@
 
 										self.quillAddRecipeViewInstance.setText(res.data.recognizedText);
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
-									}).catch(err => {
-										//console.log(err.response.data.message);
-										utils.reportError('Error', err.toString(), 'Functions error reported. Doc ID: ' + err.response.data.message.toString());
+									}).catch(error => {
+										console.error(error.response.data.message);
+										utils.reportError('Error', error.response.data.message.toString(), 'Axios error when POSTing to description OCR');
 									});
 								});
 
@@ -3013,8 +3048,9 @@
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
-									console.log('Error uploading file: ' + e);
-									error('Error uploading file: ' + e);
+									utils.reportError('error', error.toString(), 'Error when uploading ingredients to OCR');
+									console.error('Error uploading file: ' + error);
+									error('Error uploading file: ' + error);
 								}, () => {
 									//Perform upload to Firebase storage
 									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
@@ -3023,7 +3059,8 @@
 									}).then(res => {
 										//Asynchronously delete temp OCR file
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
-											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
+											utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with deleting temp OCR file');
+											console.error(error);
 										});
 
 										try {
@@ -3041,9 +3078,9 @@
 											});
 										});
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
-									}).catch(err => {
-										utils.reportError('Error', err.toString(), 'Functions error reported.');
-										console.log(err.toString());
+									}).catch(error => {
+										console.error(error.response.data.message);
+										utils.reportError('Error', error.response.data.message.toString(), 'Axios error when POSTing to ingredients OCR');
 									});
 								});
 
@@ -3091,8 +3128,9 @@
 								uploadTask.on('state_changed', (snapshot) => {
 									progress(snapshot.bytesTransferred / snapshot.totalBytes);
 								}, (error) => {
-									console.log('Error uploading file: ' + e);
-									error('Error uploading file: ' + e);
+									utils.reportError('error', error.toString(), 'Error when uploading steps to OCR');
+									console.error('Error uploading file: ' + error);
+									error('Error uploading file: ' + error);
 								}, () => {
 									//Perform upload to Firebase storage
 									axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
@@ -3101,7 +3139,8 @@
 									}).then(res => {
 										//Asynchronously delete temp OCR file
 										firebase.storage().ref('users/' + utils._UID + '/tempOCR/' + fileName).delete().catch((error) => {
-											utils.reportError('Error', error, 'Error with deleting temp OCR file ' + fileName);
+											utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error with deleting temp OCR file');
+											console.error(error);
 										});
 
 										try {
@@ -3119,10 +3158,9 @@
 										});
 
 										load('gs://project-pastro-c95b1.appspot.com/users/' + utils._UID + '/tempOCR/' + fileName);
-									}).catch(err => {
-										console.log(err.response.data);
-										utils.reportError('Error', err.toString(), 'Functions error reported.');
-										console.log(err.toString());
+									}).catch(error => {
+										console.error(error.response.data.message);
+										utils.reportError('Error', error.response.data.message.toString(), 'Axios error when POSTing to steps OCR');
 									});
 								});
 

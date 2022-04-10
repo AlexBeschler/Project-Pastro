@@ -577,13 +577,6 @@ exports.embercleave = functions.https.onRequest((req, res) => {
 	});
 });
 
-//Notify admin of any Pastro errors
-exports.notifyLoggedError = functions.firestore.document('errors/{docId}').onCreate((snap, context) => {
-	const o = snap.data();
-	console.log(o.type + ' reported for user \'' + o.uid + '\' in document ' + o.docID);
-	return 0; //Dummy value
-});
-
 //Notify of any Functions errors
 exports.notifyFunctionsError = functions.firestore.document('functions_errors/{docId}').onCreate((snap, context) => {
 	const o = snap.data();

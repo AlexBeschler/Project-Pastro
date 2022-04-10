@@ -245,6 +245,12 @@ body {
     opacity: 1;
 }
 
+.list-group-item {
+    /* background-color: inherit; */
+    /* border: 1px solid rgba(0, 0, 0, 0.125) !important; */
+    /* border-radius: 8px !important; */
+}
+
 /* ==== Change Quill Styles ==== */
 
 .ql-toolbar.ql-snow {
