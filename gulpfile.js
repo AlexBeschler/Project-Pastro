@@ -88,10 +88,7 @@ task('copyFiles', function (done) {
 });
 
 task('deployFirebase', function (done) {
-    setTimeout(() => {
-        runCommand('echo "Hello World!"');
-        done();
-    }, 3000);
+    runCommand('firebase deploy --only hosting')().then(done);
 });
 
 task('postdeployFirebase', function (done) {
