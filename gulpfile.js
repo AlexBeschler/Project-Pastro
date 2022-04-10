@@ -14,9 +14,17 @@ const rev = require('gulp-rev');
 const revRewrite = require('gulp-rev-rewrite');
 const extend = require('gulp-extend');
 const minify = require('gulp-minify');
+//const uglify = require('gulp-uglify');
 const cleanCSS = require('gulp-clean-css');
+//const sourcemaps = require('gulp-sourcemaps');
+const del = require('del');
 
 /**** Tasks ****/
+task('clean', function(done) {
+    return new Promise(function(resolve) {
+        resolve(del.sync(['public/*/'], done));
+    });
+});
 
 task('minifyJS', function () {
     return src('src/js/*.js')
@@ -68,10 +76,11 @@ task('copyFiles', function (done) {
     done();
 });
 
+const clean = task('clean');
 const minifyJS = task('minifyJS');
 const minifyCSS = task('minifyCSS');
 const manifest = task('manifest');
 const copyFiles = task('copyFiles');
 const rewrite = task('rewrite');
 
-exports.default = series(minifyJS, minifyCSS, manifest, rewrite, copyFiles);
+exports.default = series(clean, minifyJS, minifyCSS, manifest, rewrite, copyFiles);
