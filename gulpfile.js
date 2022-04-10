@@ -19,14 +19,16 @@ const minify = require('gulp-minify');
 const cleanCSS = require('gulp-clean-css');
 //const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
+const runCommand = require('gulp-run-command').default;
 
 /**** Tasks ****/
 task('predeployFirebase', function () {
-    src('./firebase.json')
-        .pipe(jeditor({
-            'hosting.public': 'public'
+    return src('./firebase.json')
+        .pipe(jeditor(function (json) {
+            json.hosting.public = 'public';
+            return json;
         }))
-        .pipe(gulp.dest("./"));
+        .pipe(dest("./"));
 });
 
 task('clean', function (done) {
@@ -85,15 +87,41 @@ task('copyFiles', function (done) {
     done();
 });
 
-task('postdeployFirebase', function () {
-    //
+task('deployFirebase', function (done) {
+    setTimeout(() => {
+        runCommand('echo "Hello World!"');
+        done();
+    }, 3000);
 });
 
+task('postdeployFirebase', function (done) {
+    src('./firebase.json')
+        .pipe(jeditor(function (json) {
+            json.hosting.public = 'src';
+            return json; // must return JSON object.
+        }))
+        .pipe(dest("./"));
+    done();
+});
+
+const predeployFirebase = task('predeployFirebase');
 const clean = task('clean');
 const minifyJS = task('minifyJS');
 const minifyCSS = task('minifyCSS');
 const manifest = task('manifest');
-const copyFiles = task('copyFiles');
 const rewrite = task('rewrite');
+const copyFiles = task('copyFiles');
+const deployFirebase = task('deployFirebase');
+const postdeployFirebase = task('postdeployFirebase');
 
-exports.default = series(clean, minifyJS, minifyCSS, manifest, rewrite, copyFiles);
+exports.default = series(
+    predeployFirebase,
+    clean,
+    minifyJS,
+    minifyCSS,
+    manifest,
+    rewrite,
+    copyFiles,
+    deployFirebase,
+    postdeployFirebase
+);
