@@ -4,7 +4,7 @@
 	var nlp = new ProjectPastroNLP();
 	nlp.init();
 
-	window.addEventListener('load', function() {
+	window.addEventListener('load', function () {
 		//Progressive web app dependency
 		if ("serviceWorker" in navigator) {
 			navigator.serviceWorker.register("registerServiceWorker.js");
@@ -69,29 +69,29 @@
 		});
 		Vue.component('recipeview-special-equipment-item', {
 			mixins: [ElementMixin],
-			props: ['equipment'],
+			props: ['equipment', 'iconColor'],
 			template: '#special-equipment-draggable-item-template'
 		});
 		Vue.component('recipe-notes-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['note'],
+			props: ['note', 'iconColor'],
 			template: '#recipe-notes-draggable-item-template'
 		});
 		Vue.component('recipe-ingredients-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['ingredient'],
+			props: ['ingredient', 'iconColor'],
 			template: '#recipe-ingredients-draggable-item-template'
 		});
 		Vue.component('recipe-steps-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['step'],
+			props: ['step', 'iconColor'],
 			template: '#recipe-steps-draggable-item-template'
 		});
 
 		//** RecipeView component mixins **//
 		Vue.component('addrecipeview-tag-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['tag'],
+			props: ['tag', 'iconColor'],
 			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
@@ -430,7 +430,9 @@
 				var self = this;
 				this.db = firebase.firestore();
 				this.analytics = firebase.analytics();
-				this.db.enablePersistence().then(function () {
+				this.db.enablePersistence({
+					synchronizeTabs: true
+				}).then(function () {
 					//Get user auth
 					firebase.auth().getRedirectResult().then(function (result) {
 						if (result.credential) {
@@ -520,24 +522,26 @@
 										} else {
 											utils.setLocalStorage(utils.HIGH_CONTRAST_SET, 'false');
 										}
-				
+
 										//Load settings
 										self.is12HourFormatSet = (utils.getLocalStorage(utils.TWELVE_HOUR_FORMAT_SET) === 'true') ? true : false;
-				
+
 										self.isTagsChecked = (utils.getLocalStorage(utils.TAGS_CHECKED) === 'true') ? true : false;
 										self.isTimeChecked = (utils.getLocalStorage(utils.TIME_CHECKED) === 'true') ? true : false;
 										self.isIngredientsChecked = (utils.getLocalStorage(utils.INGREDIENTS_CHECKED) === 'true') ? true : false;
-				
+
 										self.isDarkModeSet = (utils.getLocalStorage(utils.DARK_MODE_SET) === 'true') ? true : false;
 										self.levelFontSize = utils.getLocalStorage(utils.LEVEL_FONT_SET);
 										self.isDyslexicFontSet = (utils.getLocalStorage(utils.DYSLEXIC_FONT_SET) === 'true') ? true : false;
 										self.isHighContrastModeSet = (utils.getLocalStorage(utils.HIGH_CONTRAST_SET) === 'true') ? true : false;
-				
+
 										//Filter presets
 										self.filterPresetsList = doc.data().filterPresets;
 									}).then(() => {
 										var flexIndex = 0;
-										var cookbook = [], tags = [], ingredients = [];
+										var cookbook = [],
+											tags = [],
+											ingredients = [];
 										//Init cookbook meta index
 										var metaIndex = new FlexSearch.Document({
 											document: {
@@ -575,7 +579,7 @@
 
 												//Inject id for FlexSearch during runtime
 												recipe.id = flexIndex;
-												
+
 												//Adds recipe to sorted position
 												cookbook.push(recipe);
 
@@ -603,6 +607,7 @@
 											});
 										}).then(function () {
 											self.cookbook = cookbook;
+											self.filteredCookbook = cookbook;
 
 											self.tagList = tags;
 											self.filteredTagList = tags;
@@ -610,7 +615,7 @@
 											self.ingredientList = ingredients;
 											self.filteredIngredientList = ingredients;
 											self.ingredientsArray = ingredients;
-											
+
 											self.flexSearch = metaIndex;
 											self.numericIndex = numberMetaIndex;
 											self.injectedFlexIndex = flexIndex;
@@ -1730,7 +1735,7 @@
 
 					if (!filtersApplied) {
 						this.showCreateFilterPresetButton = false;
-						this.filteredCookbook = [];
+						this.filteredCookbook = this.cookbook;
 						return;
 					}
 
@@ -2191,7 +2196,7 @@
 				deleteRecipe: function () {
 					var id = this.selectedRecipe.docID;
 					var position = this.selectedRecipe.id;
-					
+
 					//Delete shared recipes
 					var storageRef = firebase.storage().ref();
 					this.db.collection('users/' + utils._UID + '/shared')
@@ -2207,7 +2212,7 @@
 									.catch((error) => {
 										utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when deleting shared recipe from storage');
 										console.error(error);
-								});
+									});
 							});
 						});
 					this.db.collection('users/' + utils._UID + '/recipes').doc(id)
@@ -2224,7 +2229,7 @@
 					//Set this recipe to a blank object to effectively remove it from the cookbook
 					//The reason we don't splice is because the FlexSearch index is dependent on this recipe's position
 					this.cookbook[position] = {};
-					
+
 					this.navigateBackward();
 				},
 				shareRecipe: function () {
@@ -2877,7 +2882,7 @@
 						/* jshint ignore:end */
 					}
 				},
-				updateFirestoreRecipe: function(docID, change) {
+				updateFirestoreRecipe: function (docID, change) {
 					this.db.collection('users/' + utils._UID + '/recipes').doc(docID).update(change)
 						.catch(function (error) {
 							utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when updating Firestore document. The user was editing recipe from RecipeView');
