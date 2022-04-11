@@ -93,6 +93,7 @@ body {
 }
 
 .home-icon {
+    width: -moz-fit-content;
     width: fit-content;
     align-self: center;
 }
@@ -557,6 +558,7 @@ body {
 
 .offcanvas-full {
     border-top: none;
+    -webkit-background-clip: inherit;
     background-clip: inherit;
     border: none;
 }
@@ -569,6 +571,7 @@ body {
 .recipe-offcanvas,
 .recipe-delete-offcanvas {
     width: 100vw;
+    -webkit-background-clip: inherit;
     background-clip: inherit;
     border: none;
 }
