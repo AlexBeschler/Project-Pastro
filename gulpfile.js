@@ -81,6 +81,9 @@ task('copyFiles', function (done) {
     src('src/assets/**/*').pipe(dest('public/assets'));
     src('src/img/**/*').pipe(dest('public/img'));
     src('src/vendor/**/*').pipe(dest('public/vendor'));
+    
+    //Copy minified app.css (without cache busting) as a dependency for shared recipes
+    src('src/css/app.css').pipe(cleanCSS()).pipe(dest('public/css'));
 
     src(['src/*.png', 'src/*.json', 'src/*.js', 'src/*.txt']).pipe(dest('public'));
 

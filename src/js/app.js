@@ -949,12 +949,12 @@
 					var mHour = new Date().getHours();
 					switch (mHour) {
 						case 0:
+							greeting += 'evening';
+							break;
 						case 1:
 						case 2:
 						case 3:
 						case 4:
-							greeting += 'evening';
-							break;
 						case 5:
 						case 6:
 						case 7:
@@ -1129,7 +1129,6 @@
 					var smartTabListeners = [
 						this.$refs.manageIngredientsTab,
 						this.$refs.manageStepsTab,
-						//this.$refs.manageNutritionTab
 					];
 					smartTabListeners.forEach(element => {
 						element.addEventListener('shown.bs.tab', function () {
@@ -2499,31 +2498,18 @@
 					var self = this;
 					if (!this.showStickySubmit) {
 						//Activate smart button
-						var el = null;
-						var bs = null;
-
 						switch (this.manage_activePane) {
 							case this.manage_smartButtonProgress.overview:
-								el = this.$refs.manageCoverPhotoAccordionButton;
-								bs = new bootstrap.Collapse(el);
+								this.showCoverPhotoAndNotes();
 								break;
 							case this.manage_smartButtonProgress.coverPhoto:
-								el = this.$refs.manageTimeServingsAccordionButton;
-								bs = new bootstrap.Collapse(el);
+								this.showTimeAndServings();
 								break;
 							case this.manage_smartButtonProgress.timeServings:
-								el = this.$refs.manageSectionsAccordionButton;
-								bs = new bootstrap.Collapse(el);
+								this.showIngredientsCollapse();
 								break;
 							case this.manage_smartButtonProgress.ingredients:
-								el = this.$refs.manageStepsTab;
-								bs = new bootstrap.Tab(el);
-								bs.show();
-								break;
-							case this.manage_smartButtonProgress.steps:
-								el = this.$refs.manageNutritionTab;
-								bs = new bootstrap.Tab(el);
-								bs.show();
+								this.showStepsCollapse();
 								break;
 							default:
 								break;
@@ -2531,7 +2517,6 @@
 						return;
 					}
 
-					var anyInvalid = false;
 					var serializedRecipe = {};
 
 					//Clear all form invalid classes
@@ -2544,7 +2529,8 @@
 						serializedRecipe.title = this.manage_recipeName.toString().trim();
 					} else {
 						this.$refs.recipeNameRef.classList.add('is-invalid');
-						anyInvalid = true;
+						this.showRecipeOverview();
+						return;
 					}
 
 					//Check description
@@ -2552,7 +2538,8 @@
 						serializedRecipe.description = this.quillAddRecipeViewContent;
 					} else {
 						this.$refs.addRecipeViewEditor.classList.add('is-invalid');
-						anyInvalid = true;
+						this.showRecipeOverview();
+						return;
 					}
 
 					//Serialize tag array
@@ -2575,7 +2562,8 @@
 						serializedRecipe.prepTime = parseInt(this.manage_recipePrepTime);
 					} else {
 						this.$refs.recipePrepRef.classList.add('is-invalid');
-						anyInvalid = true;
+						this.showTimeAndServings();
+						return;
 					}
 
 					//Check cook time
@@ -2583,7 +2571,8 @@
 						serializedRecipe.cookTime = parseInt(this.manage_recipeCookTime);
 					} else {
 						this.$refs.recipeCookRef.classList.add('is-invalid');
-						anyInvalid = true;
+						this.showTimeAndServings();
+						return;
 					}
 
 					//Check total time
@@ -2591,7 +2580,8 @@
 						serializedRecipe.totalTime = parseInt(this.manage_recipeTotalTime);
 					} else {
 						this.$refs.recipeTotalRef.classList.add('is-invalid');
-						anyInvalid = true;
+						this.showTimeAndServings();
+						return;
 					}
 
 					//Check active time
@@ -2599,28 +2589,28 @@
 						serializedRecipe.activeTime = parseInt(this.manage_recipeActiveTime);
 					} else {
 						this.$refs.recipeActiveRef.classList.add('is-invalid');
-						anyInvalid = true;
+						this.showTimeAndServings();
+						return;
 					}
 
 					if (utils.isString(this.manage_recipeYield.toString())) {
 						serializedRecipe.yield = this.manage_recipeYield.toString().trim();
 					} else {
 						this.$refs.recipeYieldRef.classList.add('is-invalid');
-						anyInvalid = true;
+						this.showTimeAndServings();
+						return;
 					}
 
 					//Serialize recipe sections
-					if (this.manage_recipeSections.steps.length > 0) {
-						serializedRecipe.sections = [];
-						for (var i = 0; i < this.manage_recipeSections.length; i++) {
+					serializedRecipe.sections = [];
+					this.manage_recipeSections.forEach(section => {
+						if (section.steps.length > 0) {
 							let o = {};
-
-							if (typeof this.manage_recipeSections.title === 'undefined') {
+							if (typeof section.title === 'undefined') {
 								o.title = 'Recipe';
 							} else {
-								o.title = this.manage_recipeSections.title;
+								o.title = section.title;
 							}
-
 							o.calories = 0;
 							o.fat = 0;
 							o.cholesterol = 0;
@@ -2630,22 +2620,21 @@
 							o.sugar = 0;
 							o.protein = 0;
 
-							o.ingredients = _.map(this.manage_recipeSections[i].ingredients, function (row) {
+							o.ingredients = _.map(section.ingredients, function (row) {
 								return _.omit(row, ['isDeleted']);
 							});
 
-							o.steps = _.map(this.manage_recipeSections[i].steps, function (row) {
+							o.steps = _.map(section.steps, function (row) {
 								return _.omit(row, ['isDeleted']);
 							});
 
 							serializedRecipe.sections.push(o);
+						} else {
+							self.$refs.manageStepRef.classList.add('is-invalid');
+							self.showStepsCollapse();
+							return;
 						}
-					} else {
-						this.$refs.manageStepRef.classList.add('is-invalid');
-						anyInvalid = true;
-					}
-
-					if (anyInvalid) return;
+					});
 
 					this.isRecipeSubmitDisabled = true;
 
@@ -2677,10 +2666,35 @@
 
 						self.isRecipeSubmitDisabled = false;
 
+						self.navigateBackward();
+
 					}).catch(function (error) {
 						utils.reportError('error', error.code + ': ' + error.message + '\nDetails: ' + error.details, 'Error when writing adding recipe to Firestore');
 						console.error(error);
 					});
+				},
+
+				//TODO: manage_activePane
+				showRecipeOverview: function() {
+					new bootstrap.Collapse(this.$refs.addRecipeViewOverviewAccordionItem).show();
+				},
+				showCoverPhotoAndNotes: function() {
+					new bootstrap.Collapse(this.$refs.manageCoverPhotoAccordionButton).show();
+				},
+				showTimeAndServings: function() {
+					new bootstrap.Collapse(this.$refs.manageTimeServingsAccordionButton).show();
+				},
+				showIngredientsCollapse: function() {
+					if (!this.$refs.manageSectionsAccordionButton.classList.contains('show')) {
+						new bootstrap.Collapse(this.$refs.manageSectionsAccordionButton).show();
+					}
+					new bootstrap.Tab(this.$refs.manageIngredientsTab).show();
+				},
+				showStepsCollapse: function() {
+					if (!this.$refs.manageSectionsAccordionButton.classList.contains('show')) {
+						new bootstrap.Collapse(this.$refs.manageSectionsAccordionButton).show();
+					}
+					new bootstrap.Tab(this.$refs.manageStepsTab).show();
 				},
 
 				/**** OptionsView Methods ****/
