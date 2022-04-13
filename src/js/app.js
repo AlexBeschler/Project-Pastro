@@ -1072,7 +1072,7 @@
 								image.src = reader.result;
 								image.id = 'IngredientsCropper';
 								document.getElementById('ocrIngredientsCropWrapper').appendChild(image);
-								self.ocr_IngredientsCropperObject = new Cropper(document.getElementById('ingredientsCropper'));
+								self.ocr_IngredientsCropperObject = new Cropper(document.getElementById('IngredientsCropper'));
 							};
 							reader.readAsDataURL(file);
 						},
@@ -2496,6 +2496,7 @@
 				},
 				submitManagedRecipe: function () {
 					var self = this;
+					var unionIngredients = []; //Used for union-ing with the already-created ingredient list
 					if (!this.showStickySubmit) {
 						//Activate smart button
 						switch (this.manage_activePane) {
@@ -2606,7 +2607,7 @@
 					this.manage_recipeSections.forEach(section => {
 						if (section.steps.length > 0) {
 							let o = {};
-							if (typeof section.title === 'undefined') {
+							if (typeof section.title === 'undefined' || section.title === '') {
 								o.title = 'Recipe';
 							} else {
 								o.title = section.title;
@@ -2629,6 +2630,13 @@
 							});
 
 							serializedRecipe.sections.push(o);
+
+							//Populate ingredients
+							let i = [];
+							section.ingredients.forEach(ingredient => {
+								i = _.union(i, [utils.capitalizeFirstLetter(ingredient.value)]);
+							});
+							unionIngredients = _.union(i, o.ingredients);
 						} else {
 							self.$refs.manageStepRef.classList.add('is-invalid');
 							self.showStepsCollapse();
@@ -2659,6 +2667,24 @@
 					this.db.collection('users/' + utils._UID + '/recipes').doc(serializedRecipe.docID).set(serializedRecipe).then(function () {
 						//Update flex index
 						serializedRecipe.id = self.injectedFlexIndex;
+
+						self.cookbook.push(serializedRecipe);
+						self.flexIndex.add(serializedRecipe);
+
+						self.tagList = _.union(self.tagList, serializedRecipe.tags);
+						self.filteredTagList = _.union(self.filteredTagList, serializedRecipe.tags);
+						self.tagsArray = _.union(self.filteredTagList, serializedRecipe.tags);
+
+						self.ingredientList = _.union(self.ingredientList, unionIngredients);
+						self.filteredIngredientList = _.union(self.filteredIngredientList, unionIngredients);
+						self.ingredientsArray = _.union(self.ingredientsArray, unionIngredients);
+
+						//Time
+						self.numericIndex.totalTime.push({
+							id: flexIndex,
+							value: recipe.totalTime
+						});
+
 						self.injectedFlexIndex = self.injectedFlexIndex + 1;
 
 						//Push to cookbook array
@@ -2674,7 +2700,6 @@
 					});
 				},
 
-				//TODO: manage_activePane
 				showRecipeOverview: function() {
 					new bootstrap.Collapse(this.$refs.addRecipeViewOverviewAccordionItem).show();
 				},
@@ -3083,6 +3108,7 @@
 											//Instance may not exist yet 
 										}
 
+										self.manage_recipeSections[0].ingredients = [];
 										res.data.recognizedText.forEach(ingredient => {
 											var s = nlp.parseIngredient(ingredient);
 											self.manage_recipeSections[0].ingredients.push({
@@ -3163,6 +3189,7 @@
 											//Instance may not exist yet 
 										}
 
+										self.manage_recipeSections[0].steps = [];
 										var s = res.data.recognizedText.split('\n');
 										s.forEach(step => {
 											self.manage_recipeSections[0].steps.push({
