@@ -231,6 +231,14 @@
 
 				/** RecipeView data **/
 				selectedRecipe: {},
+				//Used for preserving text interpolation.
+				// ETA times change every time the user
+				// clicks on something. These are used to 
+				// store the value in RAM
+				prepTimeFinishedBy: '',
+				cookTimeFinishedBy: '',
+				totalTimeFinishedBy: '',
+
 				detailsDisplayState: 'view',
 				tagDisplayState: 'view',
 				specialEquipmentDisplayState: 'view',
@@ -1782,6 +1790,10 @@
 					}
 
 					this.selectedRecipe = r;
+
+					this.prepTimeFinishedBy = this.getTimeFromNowUsingMinutes(this.selectedRecipe.prepTime);
+					this.cookTimeFinishedBy = this.getTimeFromNowUsingMinutes(this.selectedRecipe.cookTime);
+					this.totalTimeFinishedBy = this.getTimeFromNowUsingMinutes(this.selectedRecipe.totalTime);
 
 					var self = this;
 					var timeout = utils.ViewStackEnterAnimationDuration + utils.ViewStackExitAnimationDuration + utils.ViewStackAnimationDelayDuration;

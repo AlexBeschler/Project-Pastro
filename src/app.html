@@ -373,7 +373,7 @@
                                                 <span>Prep Time</span>
                                                 <span>
                                                     <b>{{ selectedRecipe.prepTime }} min</b>
-                                                    ({{ getTimeFromNowUsingMinutes(selectedRecipe.prepTime) }})
+                                                    ({{ prepTimeFinishedBy }})
                                                 </span>
                                             </div>
                                         </div>
@@ -382,7 +382,7 @@
                                                 <span>Cook Time</span>
                                                 <span>
                                                     <b>{{ selectedRecipe.cookTime }} min</b>
-                                                    ({{ getTimeFromNowUsingMinutes(selectedRecipe.cookTime) }})
+                                                    ({{ cookTimeFinishedBy }})
                                                 </span>
                                             </div>
                                         </div>
@@ -391,7 +391,7 @@
                                                 <span>Total Time</span>
                                                 <span>
                                                     <b>{{ selectedRecipe.totalTime }} min</b>
-                                                    ({{ getTimeFromNowUsingMinutes(selectedRecipe.totalTime) }})
+                                                    ({{ totalTimeFinishedBy }})
                                                 </span>
                                             </div>
                                         </div>
