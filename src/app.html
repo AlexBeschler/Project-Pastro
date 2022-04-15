@@ -167,7 +167,7 @@
                         <div class="row mt-3">
                             <div class="col-6 col-md-4 col-lg-3 col-xl-2"
                                 v-for="(filterPreset, index) in filterPresetsList" :key="index" :index="index">
-                                <div class="box" @click="clickedFilterPreset(index)">
+                                <div class="box" @click="clickedFilterPreset(index)" :style="{ 'background-color': filterPreset.background }">
                                     <span
                                         class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                         v-if="isEditingFilterPresets" @click="deleteFilterPreset(index)">

@@ -92,7 +92,6 @@ var ProjectPastroUtils = function () {
             return flags.join('');
         }
     };
-
     this.copyTextToClipboard = function (text) {
         if (!navigator.clipboard) {
             var textArea = document.createElement("textarea");
@@ -123,6 +122,12 @@ var ProjectPastroUtils = function () {
         }, function (err) {
             console.error('Async: Could not copy text: ', err);
         });
+    };
+    this.getRandomFilterPresetColor = function(colorArray) {
+        var min = Math.ceil(0);
+        var max = Math.floor(colorArray.length);
+        //The maximum and minimum are inclusive
+        return colorArray[Math.floor(Math.random() * (max - min + 1) + min)];
     };
 
     //DOM utils

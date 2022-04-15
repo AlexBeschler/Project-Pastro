@@ -203,6 +203,16 @@
 				showCreateFilterPresetButton: false,
 				editFilterPresetButtonText: 'Edit Presets',
 				isEditingFilterPresets: false,
+				filterPresetPalette: [
+					'#C2E7FF',
+					'#DCE6F9',
+					'#E5F0D0',
+					'#FFD7E5',
+					'#FFA69E',
+					'#B8F2E6',
+					'#AED9E0',
+					'#CAFFBF'
+				],
 
 				//Tag helpers
 				tagModel: '',
@@ -1820,7 +1830,8 @@
 						tags: this.checkedTagsArray,
 						totalRecipeTime: this.totalRecipeTimeInput,
 						finishByTime: this.finishByTimeInput,
-						ingredients: this.checkedIngredientsArray
+						ingredients: this.checkedIngredientsArray,
+						background: utils.getRandomFilterPresetColor(this.filterPresetPalette)
 					});
 					this.navigateBackward();
 					//Add to Firebase
