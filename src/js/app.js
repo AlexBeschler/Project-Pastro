@@ -1610,6 +1610,12 @@
 							});
 						}
 					});
+
+					//Remove duplicate results from arrays 
+					// (this happens with recipes with multiple sections)
+					o = _.uniq(o);
+					p = _.uniq(p);
+					
 					this.searchResults_title = [];
 					this.searchResults_sectionTitle = [];
 					o.forEach(id => {
@@ -2069,7 +2075,7 @@
 					this.selectedRecipe.notes[index].isDeleted = false;
 				},
 				addRecipeNotesRecipeView: function () {
-					if (!utils.isString(this.notesAddModel)) {
+					if (!utils.isBigString(this.notesAddModel)) {
 						return false;
 					}
 
@@ -2379,7 +2385,7 @@
 					this.manage_specialEquipmentHolder[index].isDeleted = false;
 				},
 				addNotesAddRecipeView: function () {
-					if (utils.isString(this.manage_recipeNotesInput)) {
+					if (utils.isBigString(this.manage_recipeNotesInput)) {
 						this.manage_recipeNotesHolder.push({
 							value: this.manage_recipeNotesInput.trim(),
 							isDeleted: false
@@ -2569,16 +2575,22 @@
 					//Serialize tag array
 					if (this.manage_recipeTagHolder.length > 0) {
 						serializedRecipe.tags = _.uniq(_.pluck(this.manage_recipeTagHolder, 'value'), false);
+					} else {
+						serializedRecipe.tags = [];
 					}
 
 					//Check special equipment
 					if (this.manage_specialEquipmentHolder.length > 0) {
 						serializedRecipe.specialEquipment = _.uniq(_.pluck(this.manage_specialEquipmentHolder, 'value'), false);
+					} else {
+						serializedRecipe.specialEquipment = [];
 					}
 
 					//Check notes
 					if (this.manage_recipeNotesHolder.length > 0) {
 						serializedRecipe.notes = _.uniq(_.pluck(this.manage_recipeNotesHolder, 'value'), false);
+					} else {
+						serializedRecipe.notes = [];
 					}
 
 					//Check prep time
@@ -2625,6 +2637,7 @@
 						return;
 					}
 
+					var invalidRecipe = false;
 					//Serialize recipe sections
 					serializedRecipe.sections = [];
 					this.manage_recipeSections.forEach(section => {
@@ -2663,9 +2676,12 @@
 						} else {
 							self.$refs.manageStepRef.classList.add('is-invalid');
 							self.showStepsCollapse();
+							invalidRecipe = true;
 							return;
 						}
 					});
+
+					if (invalidRecipe) return;
 
 					this.isRecipeSubmitDisabled = true;
 
@@ -2692,7 +2708,7 @@
 						serializedRecipe.id = self.injectedFlexIndex;
 
 						self.cookbook.push(serializedRecipe);
-						self.flexIndex.add(serializedRecipe);
+						self.flexSearch.add(serializedRecipe);
 
 						self.tagList = _.union(self.tagList, serializedRecipe.tags);
 						self.filteredTagList = _.union(self.filteredTagList, serializedRecipe.tags);
@@ -2704,8 +2720,8 @@
 
 						//Time
 						self.numericIndex.totalTime.push({
-							id: flexIndex,
-							value: recipe.totalTime
+							id: self.injectedFlexIndex,
+							value: serializedRecipe.totalTime
 						});
 
 						self.injectedFlexIndex = self.injectedFlexIndex + 1;
