@@ -261,6 +261,7 @@
 				notesAddModel: '',
 				stepsAddModel: '',
 				isSharing: false,
+				isEditingTags: false,
 
 				/** AddRecipeView data **/
 				manage_smartButtonText: 'Cover Photo »',
@@ -1931,6 +1932,9 @@
 				createRecipeTagRecipeView: function () {
 					this.tagDisplayState = utils.DISPLAY_STATES.EDIT;
 					//this.$refs.tagInputRecipeView.focus();
+				},
+				toggleDeleteTagRecipeView: function() {
+					this.isEditingTags = this.isEditingTags ? false : true;
 				},
 				addTagRecipeView: function () {
 					if (!utils.isString(this.tagAddModel)) {

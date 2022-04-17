@@ -199,8 +199,8 @@ body {
 }
 
 .chip>svg {
-    height: 1.5rem;
-    width: 1.5rem;
+    height: 20px;
+    width: 20px;
 }
 
 .chip>img.right-margin {
@@ -250,6 +250,10 @@ body {
     /* background-color: inherit; */
     /* border: 1px solid rgba(0, 0, 0, 0.125) !important; */
     /* border-radius: 8px !important; */
+}
+
+.clickable {
+    cursor: pointer;
 }
 
 /* ==== Change Quill Styles ==== */

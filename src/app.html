@@ -446,16 +446,23 @@
                                     <div class="chip position-relative">
                                         {{ tag }}
                                         <span
-                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                            @click="deleteRecipeTagRecipeView(tagIndex)">
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger clickable"
+                                            @click="deleteRecipeTagRecipeView(tagIndex)" v-show="isEditingTags">
                                             x
                                         </span>
                                     </div>
                                 </div>
                                 <div class="col-auto">
-                                    <div class="chip" @click="createRecipeTagRecipeView">
+                                    <div class="chip clickable" @click="createRecipeTagRecipeView">
                                         <reactive-svg :iconcolor="iconColor">
                                             <plus></plus>
+                                        </reactive-svg>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="chip clickable" @click="toggleDeleteTagRecipeView">
+                                        <reactive-svg :iconcolor="iconColor">
+                                            <edit></edit>
                                         </reactive-svg>
                                     </div>
                                 </div>
