@@ -69,29 +69,29 @@
 		});
 		Vue.component('recipeview-special-equipment-item', {
 			mixins: [ElementMixin],
-			props: ['equipment', 'iconColor'],
+			props: ['equipment', 'iconColor', 'progress'],
 			template: '#special-equipment-draggable-item-template'
 		});
 		Vue.component('recipe-notes-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['note', 'iconColor'],
+			props: ['note', 'iconColor', 'progress'],
 			template: '#recipe-notes-draggable-item-template'
 		});
 		Vue.component('recipe-ingredients-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['ingredient', 'iconColor'],
+			props: ['ingredient', 'iconColor', 'progress'],
 			template: '#recipe-ingredients-draggable-item-template'
 		});
 		Vue.component('recipe-steps-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['step', 'iconColor'],
+			props: ['step', 'iconColor', 'progress'],
 			template: '#recipe-steps-draggable-item-template'
 		});
 
 		//** RecipeView component mixins **//
 		Vue.component('addrecipeview-tag-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['tag', 'iconColor'],
+			props: ['tag', 'iconColor', 'progress'],
 			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
@@ -101,6 +101,9 @@
 		});
 
 		//SVG Icons
+		Vue.component('arrow-counterclockwise', {
+			template: '#arrow-counterclockwise-template'
+		});
 		Vue.component('arrow-left-short', {
 			template: '#arrow-left-short-template'
 		});
@@ -348,10 +351,11 @@
 
 				iconColor: '#000000',
 
-				/** Utility data **/
+				/** Utility and animation data **/
 				toastInstance: null,
 				toastHeader: '',
 				toastBody: '',
+				undoTimer: 3000, //in milliseconds
 
 				/** 3rd Party & API data **/
 				//Quill
@@ -1412,6 +1416,27 @@
 
 					return Math.ceil(el.offsetHeight + margin);
 				},
+				undoAnimationHelper: function(index, child, array) {
+					var self = this;
+					array[index].isDeleted = true;
+					var progress = 0;
+					var seconds = 10;
+					var interval = setInterval(updateProgress, 10);
+					function updateProgress() {
+						if (progress >= 100) {
+							clearInterval(interval);
+						} else {
+							progress = Math.floor((seconds / self.undoTimer) * 100);
+							child.progress = progress;
+							seconds += 10;
+						}
+					}
+					setTimeout(function() {
+						if (array[index].isDeleted) {
+							array.splice(index, 1);
+						} //Otherwise the user clicked undo
+					}, this.undoTimer);
+				},
 
 				/**** Animation methods ****/
 				hideHeader: function () {
@@ -2020,8 +2045,8 @@
 
 					this.specialEquipmentDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteSpecialEquipmentRecipeView: function (index) {
-					this.selectedRecipe.specialEquipment[index].isDeleted = true;
+				deleteSpecialEquipmentRecipeView: function (index, child) {
+					this.undoAnimationHelper(index, child, this.selectedRecipe.specialEquipment);
 				},
 				undoDeleteSpecialEquipmentRecipeView: function (index) {
 					this.selectedRecipe.specialEquipment[index].isDeleted = false;
@@ -2033,7 +2058,8 @@
 
 					this.selectedRecipe.specialEquipment.push({
 						value: this.specialEquipmentAddModel,
-						isDeleted: false
+						isDeleted: false,
+						progress: 0
 					});
 					this.specialEquipmentAddModel = '';
 				},
@@ -2072,8 +2098,8 @@
 
 					this.notesDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteRecipeNotesRecipeView: function (index) {
-					this.selectedRecipe.notes[index].isDeleted = true;
+				deleteRecipeNotesRecipeView: function (index, child) {
+					this.undoAnimationHelper(index, child, this.selectedRecipe.notes);
 				},
 				undoDeleteRecipeNotesRecipeView: function (index) {
 					this.selectedRecipe.notes[index].isDeleted = false;
@@ -2085,7 +2111,8 @@
 
 					this.selectedRecipe.notes.push({
 						value: this.notesAddModel,
-						isDeleted: false
+						isDeleted: false,
+						progress: 0
 					});
 					this.notesAddModel = '';
 				},
@@ -2141,8 +2168,8 @@
 
 					this.ingredientsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteRecipeIngredientsRecipeView: function (sectionIndex, ingredientIndex) {
-					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = true;
+				deleteRecipeIngredientsRecipeView: function (sectionIndex, ingredientIndex, child) {
+					this.undoAnimationHelper(ingredientIndex, child, this.selectedRecipe.sections[sectionIndex].ingredients);
 				},
 				undoDeleteRecipeIngredientsRecipeView: function (sectionIndex, ingredientIndex) {
 					this.selectedRecipe.sections[sectionIndex].ingredients[ingredientIndex].isDeleted = false;
@@ -2156,7 +2183,8 @@
 					this.selectedRecipe.sections[sectionIndex].ingredients.push({
 						amount: ingredientObject.amount,
 						isDeleted: false,
-						value: ingredientObject.ingredient
+						value: ingredientObject.ingredient,
+						progress: 0
 					});
 					this.$refs.recipeViewIngredientsInputs[sectionIndex].value = '';
 				},
@@ -2206,8 +2234,8 @@
 
 					this.stepsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
-				deleteRecipeStepsRecipeView: function (sectionIndex, stepIndex) {
-					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = true;
+				deleteRecipeStepsRecipeView: function (sectionIndex, stepIndex, child) {
+					this.undoAnimationHelper(stepIndex, child, this.selectedRecipe.sections[sectionIndex].steps);
 				},
 				undoDeleteRecipeStepsRecipeView: function (sectionIndex, stepIndex) {
 					this.selectedRecipe.sections[sectionIndex].steps[stepIndex].isDeleted = false;
@@ -2219,9 +2247,10 @@
 					}
 
 					this.selectedRecipe.sections[sectionIndex].steps.push({
-						coverPhotoURL: 'https://via.placeholder.com/1024x1024.png',
+						coverPhotoURL: '',
 						isDeleted: false,
-						value: this.stepsAddModel
+						value: this.stepsAddModel,
+						progress: 0
 					});
 					this.stepsAddModel = '';
 				},
@@ -2362,13 +2391,14 @@
 					if (utils.isString(this.manage_recipeTagInput)) {
 						this.manage_recipeTagHolder.push({
 							value: this.manage_recipeTagInput.trim(),
-							isDeleted: false
+							isDeleted: false,
+							progress: 0
 						});
 						this.manage_recipeTagInput = '';
 					}
 				},
-				deleteTagAddRecipeView: function (index) {
-					this.manage_recipeTagHolder[index].isDeleted = true;
+				deleteTagAddRecipeView: function (index, child) {
+					this.undoAnimationHelper(index, child, this.manage_recipeTagHolder);
 				},
 				undoTagAddRecipeView: function (index) {
 					this.manage_recipeTagHolder[index].isDeleted = false;
@@ -2377,13 +2407,14 @@
 					if (utils.isString(this.manage_specialEquipmentInput)) {
 						this.manage_specialEquipmentHolder.push({
 							value: this.manage_specialEquipmentInput.trim(),
-							isDeleted: false
+							isDeleted: false,
+							progress: 0
 						});
 						this.manage_specialEquipmentInput = '';
 					}
 				},
-				deleteSpecialEquipmentAddRecipeView: function (index) {
-					this.manage_specialEquipmentHolder[index].isDeleted = true;
+				deleteSpecialEquipmentAddRecipeView: function (index, child) {
+					this.undoAnimationHelper(index, child, this.manage_specialEquipmentHolder);
 				},
 				undoDeleteSpecialEquipmentAddRecipeView: function (index) {
 					this.manage_specialEquipmentHolder[index].isDeleted = false;
@@ -2392,13 +2423,14 @@
 					if (utils.isBigString(this.manage_recipeNotesInput)) {
 						this.manage_recipeNotesHolder.push({
 							value: this.manage_recipeNotesInput.trim(),
-							isDeleted: false
+							isDeleted: false,
+							progress: 0
 						});
 						this.manage_recipeNotesInput = '';
 					}
 				},
-				deleteNotesAddRecipeView: function (index) {
-					this.manage_recipeNotesHolder[index].isDeleted = true;
+				deleteNotesAddRecipeView: function (index, child) {
+					this.undoAnimationHelper(index, child, this.manage_recipeNotesHolder);
 				},
 				undoDeleteNotesAddRecipeView: function (index) {
 					this.manage_recipeNotesHolder[index].isDeleted = false;
@@ -2424,7 +2456,8 @@
 						let x = {
 							amount: ingredient.amount,
 							value: ingredient.ingredient,
-							isDeleted: false
+							isDeleted: false,
+							progress: 0
 						};
 						this.manage_recipeSections[0].ingredients.push(x);
 						this.addIngredientModel[0] = '';
@@ -2433,15 +2466,15 @@
 						let x = {
 							amount: ingredient.amount,
 							value: ingredient.ingredient,
-							isDeleted: false
+							isDeleted: false,
+							progress: 0
 						};
 						this.manage_recipeSections[sectionIndex].ingredients.push(x);
 						this.addIngredientModel[sectionIndex] = '';
 					}
-
 				},
-				deleteIngredientsAddRecipeView: function (sectionIndex, index) {
-					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = true;
+				deleteIngredientsAddRecipeView: function (sectionIndex, index, child) {
+					this.undoAnimationHelper(index, child, this.manage_recipeSections[sectionIndex].ingredients);
 				},
 				undoDeleteIngredientsAddRecipeView: function (sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].ingredients[index].isDeleted = false;
@@ -2455,7 +2488,8 @@
 						let x = {
 							value: this.$refs.manageStepRef.value.trim(),
 							coverPhotoURL: '',
-							isDeleted: false
+							isDeleted: false,
+							progress: 0
 						};
 						this.manage_recipeSections[0].steps.push(x);
 						this.addStepModel[0] = '';
@@ -2467,16 +2501,15 @@
 						let x = {
 							value: this.$refs.manageStepRef[sectionIndex].value.trim(),
 							coverPhotoURL: '',
-							isDeleted: false
+							isDeleted: false,
+							progress: 0
 						};
 						this.manage_recipeSections[sectionIndex].steps.push(x);
 						this.addStepModel[sectionIndex] = '';
 					}
-
-
 				},
-				deleteStepsAddRecipeView: function (sectionIndex, index) {
-					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = true;
+				deleteStepsAddRecipeView: function (sectionIndex, index, child) {
+					this.undoAnimationHelper(index, child, this.manage_recipeSections[sectionIndex].steps);
 				},
 				undoDeleteStepsAddRecipeView: function (sectionIndex, index) {
 					this.manage_recipeSections[sectionIndex].steps[index].isDeleted = false;
@@ -2822,9 +2855,6 @@
 							return zeroPad(h).toString() + ':' + zeroPad(m).toString();
 						}
 					}
-				},
-				calcButtonDimensions: function (rem, vw) {
-					return utils.remToPixels(rem) + utils.vwToPixels(vw);
 				},
 				signOutApp: function () {
 					firebase.auth().signOut().then(function () {

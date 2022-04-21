@@ -256,6 +256,16 @@ body {
     cursor: pointer;
 }
 
+.progress {
+    height: 1px;
+    margin-bottom: 0.75rem;
+}
+
+.undo-progress {
+    width: 0%;
+    transition: none;
+}
+
 /* ==== Change Quill Styles ==== */
 
 .ql-toolbar.ql-snow {
