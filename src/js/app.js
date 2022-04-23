@@ -1934,13 +1934,8 @@
 					//Overwrite data in cookbook
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
-					//TODO: add filtered cookbook update
-
 					//Re-index recipe in the indices
-					//FIXME: this does not seem to correctly update the recipe title
-					this.flexSearch.update({
-						data: serializedRecipe
-					});
+					this.flexSearch.update(serializedRecipe);
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						title: serializedRecipe.title,
@@ -1974,13 +1969,8 @@
 					//Overwrite data in cookbook
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
-					//TODO: add filtered cookbook update
-
 					//Re-index recipe in the indices
-					//FIXME: this does not seem to correctly update the recipe title
-					this.flexSearch.update({
-						data: serializedRecipe
-					});
+					this.flexSearch.update(serializedRecipe);
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						tags: serializedRecipe.tags,
@@ -1998,13 +1988,8 @@
 					//Overwrite data in cookbook
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
-					//TODO: add filtered cookbook update
-
 					//Re-index recipe in the indices
-					//FIXME: this does not seem to correctly update the recipe title
-					this.flexSearch.update({
-						data: serializedRecipe
-					});
+					this.flexSearch.update(serializedRecipe);
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						tags: serializedRecipe.tags,
@@ -2035,9 +2020,7 @@
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
 					//Re-index recipe in the indices
-					this.flexSearch.update({
-						data: serializedRecipe
-					});
+					this.flexSearch.update(serializedRecipe);
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						specialEquipment: serializedRecipe.specialEquipment,
@@ -2088,9 +2071,7 @@
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
 					//Re-index recipe in the indices
-					this.flexSearch.update({
-						data: serializedRecipe
-					});
+					this.flexSearch.update(serializedRecipe);
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						notes: serializedRecipe.notes,
@@ -2158,9 +2139,7 @@
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
 					//Re-index recipe in the indices
-					this.flexSearch.update({
-						data: serializedRecipe
-					});
+					this.flexSearch.update(serializedRecipe);
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						sections: serializedRecipe.sections,
@@ -2224,9 +2203,7 @@
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
 					//Re-index recipe in the indices
-					this.flexSearch.update({
-						data: serializedRecipe
-					});
+					this.flexSearch.update(serializedRecipe);
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						sections: serializedRecipe.sections,

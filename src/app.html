@@ -585,14 +585,14 @@
                 <div id="recipeView" class="recipeView" ref="recipeView">
                     <div class="d-flex w-100 mt-3 remove-from-sharing"
                         style="justify-content: space-between; position: absolute;">
-                        <button class="btn chip border-dark shadow" :disabled="searchBarExpanded"
+                        <button class="btn chip border-dark shadow-sm" :disabled="searchBarExpanded"
                             @click="navigateBackward">
                             <reactive-svg class="me-2" :iconcolor="iconColor" height="24" width="24">
                                 <arrow-left-short></arrow-left-short>
                             </reactive-svg>
                             <h5>Back</h5>
                         </button>
-                        <button class="btn chip border-dark shadow" style="z-index: 1;" @click="shareRecipe"
+                        <button class="btn chip border-dark shadow-sm" style="z-index: 1;" @click="shareRecipe"
                             :disabled="isSharing">
                             <transition name="clickedShareAnimation" mode="out-in">
                                 <reactive-svg v-if="!isSharing" :iconcolor="iconColor"
