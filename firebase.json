@@ -3,12 +3,19 @@
 		"rules": "firestore.rules",
 		"indexes": "firestore.indexes.json"
 	},
-	"hosting": {
-		"public": "src",
+	"hosting": [{
+		"target": "home",
+		"public": "src/home",
 		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
 		"cleanUrls": true,
 		"trailingSlash": false
-	},
+	}, {
+		"target": "app",
+		"public": "src/app",
+		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+		"cleanUrls": true,
+		"trailingSlash": false
+	}],
 	"storage": {
 		"rules": "storage.rules"
 	},

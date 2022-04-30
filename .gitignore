@@ -67,7 +67,6 @@ node_modules/
 .firebaserc
 workspace.code-workspace
 .vscode/
-_PANTRY_ASSETS/
 functions/project-pastro-c95b1-cb36ad6fa145.json
 
 # Compiled files
