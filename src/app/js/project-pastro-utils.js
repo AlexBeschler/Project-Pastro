@@ -4,10 +4,8 @@ var ProjectPastroUtils = function () {
     this._UID = null;
     this._isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/g.test(navigator.userAgent || navigator.vendor || window.opera);
     this._PRICE = 'price_1KsKTBCwcvKw4V4Ot8g9bRkG';
-    this._SUCCESS_URL = 'https://pantryrecipes.app/app.html';
+    this._SUCCESS_URL = 'https://my.pantryrecipes.app';
     this._CANCEL_URL = 'https://pantryrecipes.app/';
-    //this._SUCCESS_URL = 'http://localhost:5000/app.html';
-    //this._CANCEL_URL = 'http://localhost:5000/';
     this._STRIPE_CODE = 'pk_test_51IinkiCwcvKw4V4OGf5Yv6eCKrA3tSXGgUUvF6tPmdlpRmgoX4yq8NApouvHn5Q0BkVre82I9qKDECymsTct3MNx00ekEDzexj';
     
     //OptionsView variables

@@ -476,7 +476,7 @@
 							//Fix for when people's Google account name is all caps
 							self.firstname = utils.capitalizeFirstLetter(user.displayName.substr(0, user.displayName.indexOf(' ')).toLowerCase());
 							//Check if user is paying customer
-							self.db.collection('customers').doc(user.uid).collection('subscriptions').where('status', '==', 'active').get().then(function (snapshot) {
+							self.db.collection('customers').doc(user.uid).collection('subscriptions').where('status', 'in', ['active', 'trialing']).get().then(function (snapshot) {
 								if (snapshot.empty) { //Customer is not actively subscribed
 									self.signin = false;
 									self.paysubscription = true;
@@ -1964,6 +1964,8 @@
 						yield: serializedRecipe.yield
 					});
 
+					this.rebuildIndex();
+
 					this.detailsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
 				createRecipeTagRecipeView: function () {
@@ -1986,11 +1988,13 @@
 					this.cookbook[serializedRecipe.id] = serializedRecipe;
 
 					//Re-index recipe in the indices
-					this.flexSearch.update(serializedRecipe);
+					this.flexSearch.update(serializedRecipe);					
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						tags: serializedRecipe.tags,
 					});
+
+					this.rebuildIndex();
 
 					this.tagDisplayState = utils.DISPLAY_STATES.VIEW;
 					this.tagAddModel = '';
@@ -2006,6 +2010,8 @@
 
 					//Re-index recipe in the indices
 					this.flexSearch.update(serializedRecipe);
+
+					this.rebuildIndex();
 
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						tags: serializedRecipe.tags,
@@ -2160,6 +2166,8 @@
 					this.updateFirestoreRecipe(serializedRecipe.docID, {
 						sections: serializedRecipe.sections,
 					});
+
+					this.rebuildIndex();
 
 					this.ingredientsDisplayState = utils.DISPLAY_STATES.VIEW;
 				},
@@ -2882,6 +2890,9 @@
 					var self = this;
 					this.filteredTagList = [];
 					this.filteredIngredientList = [];
+					this.numericIndex.totalTime = [];
+					
+					var index = 0;
 
 					this.cookbook.forEach(recipe => {
 						recipe.tags.forEach(tag => {
@@ -2890,12 +2901,19 @@
 							}
 						});
 
+						self.numericIndex.totalTime.push({
+							id: index,
+							value: recipe.totalTime
+						});
+
 						recipe.sections.forEach(section => {
 							//Ingredients
 							section.ingredients.forEach(ingredient => {
 								self.filteredIngredientList = _.union(self.filteredIngredientList, [utils.capitalizeFirstLetter(ingredient.value)]);
 							});
 						});
+
+						index += 1;
 					});
 				},
 
