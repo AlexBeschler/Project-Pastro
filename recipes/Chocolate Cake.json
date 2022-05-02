@@ -1,0 +1,170 @@
+{
+	"docID": "563ca5fb-1997-484e-b343-cec6c9d21251",
+	"dateAdded": "1637381364589",
+	"dateModified": "1637381387807",
+	"favorite": false,
+	"title": "Chocolate Cake",
+	"description": "<p>What an easy chocolate cake! No mixer required for the batter, simply whisk the dry ingredients in one bowl and the wet ingredients in another bowl. Pour the wet ingredients into the dry ingredients (or vice versa, it doesn’t make any difference), add the hot coffee, then whisk everything together. The cake batter is thin. Divide between 2 9-inch cake pans. You can easily stretch it to 3 or 4 8-inch or 9-inch cakes if needed. Or make a quarter sheet cake using a 9×13 inch cake pan. See my recipe notes for details.</p>",
+	"tags": [
+		"Dessert",
+		"Intermediate"
+	],
+	"prepTime": 15,
+	"cookTime": 30,
+	"totalTime": 120,
+	"activeTime": 25,
+	"yield": "24 slices",
+	"coverPhotoURL": "https://via.placeholder.com/2048x2048.png",
+	"thumbnail": "https://via.placeholder.com/64x64.png",
+	"specialEquipment": [
+		"Stand mixer",
+		"Cake pans"
+	],
+	"notes": [
+		"The cake batter will be very thin after adding the boiling water.",
+		"Let the baked cake layers cool completely. Wrap them well with plastic wrap and then with foil. Put each layer into a freezer bag and freeze up to 2 months. To serve, thaw in the refrigerator overnight with wrapping intact. The next day, the layers are ready to fill and frost."
+	],
+	"sections": [
+		{
+			"title": "Cake",
+			"ingredients": [
+				{
+					"amount": "2 cups",
+					"value": "all-purpose flour"
+				},
+				{
+					"amount": "2 cups",
+					"value": "sugar"
+				},
+				{
+					"amount": "3/4 cup",
+					"value": "unsweetened cocoa powder"
+				},
+				{
+					"amount": "2 teaspoons",
+					"value": "baking powder"
+				},
+				{
+					"amount": "1 1/2 teaspoons",
+					"value": "baking soda"
+				},
+				{
+					"amount": "1 teaspoon",
+					"value": "salt"
+				},
+				{
+					"amount": "1 teaspoon",
+					"value": "espresso powder homemade or store-bought"
+				},
+				{
+					"amount": "1 cup",
+					"value": "buttermilk"
+				},
+				{
+					"amount": "1/2 cup",
+					"value": "canola oil"
+				},
+				{
+					"amount": "2",
+					"value": "large eggs"
+				},
+				{
+					"amount": "2 teaspoons",
+					"value": "vanilla extract"
+				},
+				{
+					"amount": "1 cup",
+					"value": "boiling water"
+				}
+			],
+			"steps": [
+				{
+					"value": "Preheat oven to 350º F. Prepare two 9-inch cake pans by spraying with baking spray or buttering and lightly flouring.",
+					"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+				},
+				{
+					"value": "Add flour, sugar, cocoa, baking powder, baking soda, salt and espresso powder to a large bowl or the bowl of a stand mixer. Whisk through to combine or, using your paddle attachment, stir through flour mixture until combined well.",
+					"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
+				},
+				{
+					"value": "Add milk, vegetable oil, eggs, and vanilla to flour mixture and mix together on medium speed until well combined. Reduce speed and carefully add boiling water to the cake batter until well combined.",
+					"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
+				},
+				{
+					"value": "Distribute cake batter evenly between the two prepared cake pans. Bake for 30-35 minutes, until a toothpick or cake tester inserted in the center of the chocolate cake comes out clean.",
+					"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
+				},
+				{
+					"value": "Remove from the oven and allow to cool for about 10 minutes, remove from the pan and cool completely.",
+					"coverPhotoURL": "https://via.placeholder.com/2048x2048.png"
+				}
+			],
+			"nFat": 1,
+			"nCholesterol": 1,
+			"nSodium": 1,
+			"nTotalCarbs": 1,
+			"nFiber": 1,
+			"nSugar": 1,
+			"nProtein": 1 
+		},
+		{
+			"title": "Buttercream Frosting",
+			"ingredients": [
+				{
+					"amount": "1½ cups",
+					"value": "butter softened"
+				},
+				{
+					"amount": "1 cup",
+					"value": "unsweetened cocoa"
+				},
+				{
+					"amount": "5 cups",
+					"value": "confectioner’s sugar"
+				},
+				{
+					"amount": "½ cup",
+					"value": "milk"
+				},
+				{
+					"amount": "2 teaspoons",
+					"value": "vanilla extract"
+				},
+				{
+					"amount": "½ teaspoon",
+					"value": "espresso powder"
+				}
+			],
+			"steps": [
+				{
+					"value": "Add cocoa to a large bowl or bowl of stand mixer. Whisk through to remove any lumps.",
+					"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+				},
+				{
+					"value": "Cream together butter and cocoa powder until well-combined.",
+					"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+				},
+				{
+					"value": "Add sugar and milk to cocoa mixture by adding 1 cup of sugar followed by about a tablespoon of milk. After each addition has been combined, turn mixer onto a high speed for about a minute. Repeat until all sugar and milk have been added.",
+					"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+				},
+				{
+					"value": "Add vanilla extract and espresso powder and combine well.",
+					"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+				},
+				{
+					"value": "If frosting appears too dry, add more milk, a tablespoon at a time until it reaches the right consistency. If it appears to wet and does not hold its form, add more confectioner’s sugar, a tablespoon at a time until it reaches the right consistency.",
+					"coverPhotoURL": "https://via.placeholder.com/1024x1024.png"
+				}
+			],
+			"nCalories": 12,
+			"nFat": 1,
+			"nCholesterol": 1,
+			"nSodium": 1,
+			"nTotalCarbs": 1,
+			"nFiber": 1,
+			"nSugar": 1,
+			"nProtein": 1 
+		}
+	]
+}
