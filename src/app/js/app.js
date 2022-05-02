@@ -415,6 +415,7 @@
 							this.db.collection('customers').doc(utils._UID).collection('checkout_sessions').add({
 								price: utils._PRICE,
 								allow_promotion_codes: false,
+								trial_from_plan: true,
 								success_url: utils._SUCCESS_URL,
 								cancel_url: utils._CANCEL_URL
 							}).then(function (docRef) {
@@ -2876,6 +2877,26 @@
 					var script = document.createElement('script');
 					script.src = link;
 					return script;
+				},
+				rebuildIndex: function() {
+					var self = this;
+					this.filteredTagList = [];
+					this.filteredIngredientList = [];
+
+					this.cookbook.forEach(recipe => {
+						recipe.tags.forEach(tag => {
+							if (tag !== '') {
+								self.filteredTagList = _.union(self.filteredTagList, [tag]);
+							}
+						});
+
+						recipe.sections.forEach(section => {
+							//Ingredients
+							section.ingredients.forEach(ingredient => {
+								self.filteredIngredientList = _.union(self.filteredIngredientList, [utils.capitalizeFirstLetter(ingredient.value)]);
+							});
+						});
+					});
 				},
 
 				/**** 3rd Party Methods & APIs ****/
