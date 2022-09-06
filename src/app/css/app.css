@@ -22,6 +22,7 @@
 body {
     background-color: var(--ps-bg-color) !important;
     font-family: 'Montserrat', sans-serif;
+    scroll-behavior: smooth;
 }
 
 #sign-in-button {
@@ -38,11 +39,17 @@ body {
 
 #appContent {
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 .logo {
     width: auto;
     height: 6rem;
+}
+
+.nav-logo {
+    width: auto;
+    height: 3rem;
 }
 
 .navbar-button {
@@ -69,6 +76,88 @@ body {
     position: relative;
     height: 32px;
     width: 32px;
+}
+
+.nav-search-bar {
+    border-radius: 2.5rem !important;
+}
+
+.scroll-horizontal {
+    padding: 4px;
+    overflow: auto;
+    white-space: nowrap;
+    display: flex;
+}
+
+.scroll-horizontal>a {
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+}
+
+.generic-divider {
+    border-bottom: 1px solid #3c40438c;
+}
+
+.main-cookbook-list-group-item {
+    background-color: inherit;
+    border: inherit;
+}
+
+.home-screen-recipe-img-wrapper {
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.home-screen-recipe-img {
+    height: 56px;
+    width: 56px;
+}
+
+.filter-fab {
+    z-index: 32 !important;
+    background-color: #4A9653;
+    color: white;
+    width: 3em;
+    height: 3em;
+    align-items: center;
+}
+
+.filter-fab>svg {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.time-filter-nav-tabs {
+    border-bottom: none;
+    justify-content: space-around;
+}
+
+.time-filter-header-button>.nav-link {
+    border-radius: 50rem !important;
+    margin: 0;
+    border: 1px solid #4A9653;
+    color: inherit;
+}
+
+.time-filter-header-button>.nav-link.active {
+    background-color: #4A9653;
+    color: white;
+}
+
+.list-group > div {
+    display: inline-block;
+}
+
+.main-cookbook-transition-group-move,
+.main-cookbook-transition-group-enter,
+.main-cookbook-transition-group-leave-to {
+    transition: all 0.15s ease-in;
+    opacity: 0;
+    transform: translateY(-30px);
+}
+
+.main-cookbook-transition-group-leave-active {
+    position: absolute;
 }
 
 .form-check-input {
@@ -98,10 +187,6 @@ body {
     align-self: center;
 }
 
-.offcanvas {
-    width: 100vw;
-}
-
 .toast-container {
     z-index: 9;
 }
@@ -123,6 +208,11 @@ body {
 .my-2rem {
     margin-top: 2rem !important;
     margin-bottom: 2rem !important;
+}
+
+.svg-24pt>svg {
+    height: 24px;
+    width: 24px;
 }
 
 .collapse-important {
@@ -247,9 +337,7 @@ body {
 }
 
 .list-group-item {
-    /* background-color: inherit; */
-    /* border: 1px solid rgba(0, 0, 0, 0.125) !important; */
-    /* border-radius: 8px !important; */
+    cursor: pointer;
 }
 
 .clickable {
@@ -594,18 +682,6 @@ body {
     padding: 0.5em 0;
 }
 
-.offcanvas-full {
-    border-top: none;
-    -webkit-background-clip: inherit;
-    background-clip: inherit;
-    border: none;
-}
-
-.offcanvas-rounded-top {
-    border-top-left-radius: 0.75rem;
-    border-top-right-radius: 0.75rem;
-}
-
 .recipe-offcanvas,
 .recipe-delete-offcanvas {
     width: 100vw;
@@ -899,7 +975,8 @@ span.ingredient-amount-badge.strike-list-item {
 body.dark-theme,
 body.dark-theme .recipe-title,
 body.dark-theme .card-body,
-body.dark-theme .accordion-item {
+body.dark-theme .accordion-item,
+body.dark-theme .nav-pills {
     color: #eeeeee !important;
     background: #2d333b !important;
 }
@@ -938,6 +1015,10 @@ body.dark-theme textarea {
     border: 1px solid #444c56;
     color: #ccc !important;
     box-shadow: none;
+}
+
+body.dark-theme .box-content {
+    color: var(--bs-body-color) !important;
 }
 
 body.dark-theme #innerSearchButtonText {
@@ -996,6 +1077,12 @@ body.font-increase-4 {
     font-size: var(--font-size-4);
 }
 
+/* For mobile */
+@media (max-width: 400px) {
+    .offcanvas {
+        border-left: none;
+    }
+}
 
 /* For desktops */
 @media (min-width: 992px) {
@@ -1007,15 +1094,9 @@ body.font-increase-4 {
         min-width: 500px;
     }
 
-    .offcanvas {
-        max-width: 50vw;
-        max-height: 50%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
     .filter-switch-pills {
         justify-content: start;
-        margin-bottom: 1rem;
+        margin-bottom: 1.75rem;
+        margin-top: 2rem;
     }
 }

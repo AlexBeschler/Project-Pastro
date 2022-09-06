@@ -1,0 +1,77 @@
+:root {
+    --ps-primary-color: #4a9653b8;
+}
+
+#appContent {
+    height: 100vh;
+}
+
+.add-recipe-container {
+    min-height: 75vh;
+}
+
+.lottie-add-recipe-animation {
+    width: 100%!important;
+    height: 100%!important;
+    max-width: 400px;
+    max-height: 400px;
+}
+
+.mobile-lottie-bar {
+    background-color: var(--ps-primary-color);
+    border-radius: 12%;
+}
+
+.desktop-lottie-bar {
+    justify-content: flex-end;
+}
+
+.desktop-lottie-bar > lottie-player {
+    width: 100%!important;
+    height: 100%!important;
+}
+
+.desktop-lottie-bar > div.color-background {
+    background-color: var(--ps-primary-color);
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    max-width: 320px;
+    width: calc(100vw - 80vw);
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-size: 100% 100%;
+}
+
+/* Mobile */
+@media only screen and (max-width: 767px) {
+    .bottom-block {
+        position: fixed;
+        left: 0;
+        bottom: 10rem;
+        z-index: 40;
+        width: 100%;
+    }
+}
+
+/* Tablet/desktop */
+@media only screen and (min-width: 768px) {
+    .add-recipe-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+    .desktop-lottie-bar > lottie-player {
+    position: static;
+    top: 50%;
+    right: 0;
+    }
+    .bottom-block {
+        display: flex;
+        align-self: center;
+    }
+}

@@ -91,7 +91,7 @@
 		//** RecipeView component mixins **//
 		Vue.component('addrecipeview-tag-draggable-item', {
 			mixins: [ElementMixin],
-			props: ['tag', 'iconColor', 'progress'],
+			props: ['tag', 'icon-color', 'progress'],
 			template: '#addrecipeview-tag-draggable-item-template'
 		});
 
@@ -189,9 +189,6 @@
 				showAppContainer: false,
 
 				/** Home screen data **/
-				headerText: '',
-				headerTextAnimeObject: null,
-				isHeaderTextHidden: false,
 				searchBarExpanded: false,
 
 				///Used for 'Explore' pane
@@ -394,7 +391,7 @@
 								firebase.auth().signInWithRedirect(provider);
 							} else {
 								firebase.auth().signOut().then(function () {
-									window.location.replace('../index.html');
+									window.location.replace('https://my.pantryrecipes.app');
 								});
 							}
 						}
@@ -975,85 +972,10 @@
 					}
 
 					//Add the main menu to the view stack
-					this.ViewStack.push(this.$refs.exploreMenuContainer);
-
-					var greeting = 'Good ';
-					var mHour = new Date().getHours();
-					switch (mHour) {
-						case 0:
-							greeting += 'evening';
-							break;
-						case 1:
-						case 2:
-						case 3:
-						case 4:
-						case 5:
-						case 6:
-						case 7:
-						case 8:
-						case 9:
-						case 10:
-						case 11:
-							greeting += 'morning';
-							break;
-						case 12:
-						case 13:
-						case 14:
-						case 15:
-						case 16:
-							greeting += 'afternoon';
-							break;
-						case 17:
-						case 18:
-						case 19:
-						case 20:
-						case 21:
-						case 22:
-						case 23:
-							greeting += 'evening';
-							break;
-					}
-					greeting += ' ';
-					greeting += this.firstname;
-					this.headerText = greeting;
-
-					this.headerTextAnimeObject = anime.timeline({});
-
-					this.headerTextAnimeObject
-						.add({
-							targets: this.$refs.addRecipeButton,
-							translateX: function (el, i, l) {
-								return ['32px', '0px'];
-							},
-							opacity: {
-								value: 1,
-								duration: 250
-							},
-							rotate: [45, 0],
-							delay: 250,
-							duration: 450,
-							easing: 'easeOutBack'
-						})
-						.add({
-							targets: this.$refs.headerText,
-							translateY: ['0%', '50%'],
-							opacity: [1, 0],
-							duration: 200,
-							easing: 'easeInOutQuad',
-							complete: function (anim) {
-								self.headerText = 'Let\'s get started';
-							}
-						}, '+=575')
-						.add({
-							targets: this.$refs.headerText,
-							translateY: ['-50%', '0%'],
-							opacity: [0, 1],
-							duration: 200,
-							easing: 'easeInOutQuad'
-						}, '+=30');
+					this.ViewStack.push(this.$refs.homePaneContent);
 
 					anime({
-						targets: this.$refs.explorePaneContent,
+						targets: this.$refs.homePaneContent,
 						translateY: ['5%', '0%'],
 						opacity: [0, 1],
 						duration: 250,
@@ -1254,8 +1176,6 @@
 								self.$refs.searchResultsContainer.classList.remove('d-none');
 							},
 						}, '-=5');
-
-					this.hideHeader();
 					this.searchBarExpanded = true;
 				},
 				clickedCloseSearch: function () {
@@ -1458,36 +1378,6 @@
 				},
 
 				/**** Animation methods ****/
-				hideHeader: function () {
-					if (this.isHeaderTextHidden) {
-						return;
-					}
-
-					this.headerTextAnimeObject.pause();
-
-					var self = this;
-					var headerTextHeight = this.getAbsoluteHeight(this.$refs.headerText);
-					var h = '-' + headerTextHeight + 'px';
-
-					var headerTextTimeline = anime.timeline({});
-					headerTextTimeline
-						.add({
-							targets: this.$refs.headerText,
-							translateY: ['0px', h],
-							opacity: [1, 0],
-							duration: 250,
-							easing: 'easeInOutQuad',
-							complete: function (anim) {
-								self.isHeaderTextHidden = true;
-							}
-						})
-						.add({
-							targets: this.$refs.explorePaneContent,
-							translateY: ['0px', h],
-							duration: 250,
-							easing: 'easeInOutQuad'
-						}, '-=250');
-				},
 				navigateForward: function (navigateTo, backButtonImg, backButtonText) {
 					var self = this;
 
@@ -1562,8 +1452,6 @@
 									}
 								}, '-=250');
 						}
-
-						self.hideHeader();
 
 						self.ViewStack.push(navigateTo);
 					});
@@ -1944,6 +1832,8 @@
 					}
 
 					this.detailsDisplayState = utils.DISPLAY_STATES.LOADING;
+
+					this.selectedRecipe.description = this.quillRecipeViewContent;
 
 					//Clean data
 					var serializedRecipe = JSON.parse(JSON.stringify(this.selectedRecipe)); //Create deep copy to prevent unwanted changes

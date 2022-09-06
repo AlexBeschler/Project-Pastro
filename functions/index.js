@@ -346,9 +346,9 @@ async function createAccount(uid) {
 	}).catch(function(error) {
 		console.error('Error writing settings: ', error);
 	});
-	var helloWorldRecipe = db.collection('users/' + uid + '/recipes').doc('helloworld_recipe');
+	var helloWorldRecipe = db.collection('users/' + uid + '/recipes').doc('thai_tea_stock_recipe');
 	helloWorldRecipe.set({
-		"docID": "thai_tea_hello_world",
+		"docID": "thai_tea_stock_recipe",
 		"dateAdded": Date.now(),
 		"dateModified": Date.now(),
 		"favorite": false,
@@ -365,8 +365,8 @@ async function createAccount(uid) {
 		"totalTime": 15,
 		"activeTime": 10,
 		"yield": "3 cups of Thai tea",
-		"coverPhotoURL": "https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fthai-tea.png?alt=media&token=668863fa-56df-4577-b91a-c365c235808c",
-		"thumbnail": "https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fthai-tea_thumb.png?alt=media&token=1b0070e8-a8c7-470f-8012-f46b4e5786a0",
+		"coverPhotoURL": "https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fthai%20tea.png?alt=media&token=a6711e32-8e09-4fa1-b24e-bd5ae5063714",
+		"thumbnail": "https://firebasestorage.googleapis.com/v0/b/project-pastro-c95b1.appspot.com/o/assets%2Fthai%20tea_thumb.png?alt=media&token=58427f37-120d-4c90-a9c4-f8c821b9462d",
 		"specialEquipment": [
 			"Cheesecloth",
 			"2x 4 cup beakers (or 2 containers with an easy-pour spout)",

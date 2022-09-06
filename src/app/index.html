@@ -361,7 +361,7 @@
 </head>
 
 <body>
-    <div id="appContent" class="container mt-4" v-cloak>
+    <div id="appContent" class="container-fluid" v-cloak>
         <div id="login-container" v-show="showLogInContainer">
             <sign-in-layout v-if="signin"></sign-in-layout>
             <purchase-subscription-layout v-if="paysubscription" :firstname="firstname" :db="db">
@@ -371,121 +371,156 @@
             <div style="position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);">
                 <!-- Used for greeting -->
                 <div class="row">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
         </div>
         <div v-show="showAppContainer">
-            <nav class="navbar navbar-expand">
+            <nav class="navbar navbar-expand container mt-3">
                 <div class="container-fluid">
-                    <div class="collapse navbar-collapse justify-content-end">
-                        <button class="btn navbar-button" @click="clickedAddRecipe" ref="addRecipeButton">
+                    <div class="collapse navbar-collapse" style="justify-content: inherit;">
+                        <button class="btn btn-lg py-1 pe-0" @click="clickedAddRecipe" ref="addRecipeButton">
                             <reactive-svg class="navbar-button-icon" :iconcolor="iconColor">
                                 <plus></plus>
                             </reactive-svg>
                         </button>
-                        <button class="btn navbar-button" @click="clickedSettings" ref="settingsButton">
-                            <img class="navbar-profile-icon" referrerpolicy="no-referrer" v-bind:src="userPhotoURL">
+                        <img class="nav-logo" src="assets/pantry.svg">
+                        <button class="btn btn-lg py-1 ps-0" @click="clickedSettings" ref="settingsButton">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                                class="navbar-button-icon" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z">
+                                </path>
+                            </svg>
                         </button>
                     </div>
                 </div>
             </nav>
-            <h1 class="display-6 px-3 mt-5 mb-2" ref="headerText">{{ headerText }}</h1>
-            <div class="explorePaneContent" ref="explorePaneContent">
-                <!-- Explore Pane -->
-                <div class="px-1 my-4">
-                    <button id="searchBar" role="button" class="btn py-2 search-box-button"
-                        v-bind:class="{ 'my-2rem': isHeaderTextHidden }" @click="clickedSearchBar"
-                        ref="searchBoxButton">
-                        <div class="searchImgContainer">
-                            <reactive-svg id="innerSearchButtonImg1" class="pe-3" :iconcolor="iconColor">
-                                <search></search>
-                            </reactive-svg>
-                            <div id="innerSearchButtonImg2" class="m-0 p-0 search-box-button-close"
-                                style="position: absolute;opacity: 0;top: 0;left: 0" ref="closeSearchButton">
-                                <reactive-svg class="pe-3" :iconcolor="iconColor" width="34" height="34">
-                                    <x-lg></x-lg>
-                                </reactive-svg>
-                            </div>
-                        </div>
-                        <h4 id="innerSearchButtonText">Search recipes</h4>
-                    </button>
-                    <input class="form-control search-box-input d-none" ref="searchBoxInput" v-model="searchQuery">
-                    <div class="container d-none" ref="searchResultsContainer">
-                        <div class="mb-4" v-if="searchResults_title.length">
-                            <h6>Recipes</h6>
-                            <ul class="list-group list-group-flush cookbook-list-group">
-                                <li class="row d-flex list-group-item recipe-list-group-item"
-                                    v-for="(recipe, index) in searchResults_title" :key="index" :index="index"
-                                    @click="clickedRecipeTitleFromSearch(index)">
-                                    <div class="col-3">
-                                        <img src="https://via.placeholder.com/48">
-                                    </div>
-                                    <div class="col-9 recipe-thumbnail-description">
-                                        <span>{{ recipe.title }}</span>
-                                        <span>{{ recipe.totalTime }} min • Finished by
-                                            {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div v-if="searchResults_sectionTitle.length">
-                            <h6>Sections</h6>
-                            <ul class="list-group list-group-flush cookbook-list-group">
-                                <li class="row d-flex list-group-item recipe-list-group-item"
-                                    v-for="(recipe, index) in searchResults_sectionTitle" :key="index" :index="index"
-                                    @click="clickedRecipeSectionFromSearch(index)">
-                                    <div class="col-3">
-                                        <img src="https://via.placeholder.com/48">
-                                    </div>
-                                    <div class="col-9 recipe-thumbnail-description">
-                                        <span>{{ recipe.title }}</span>
-                                        <span>{{ recipe.totalTime }} min • Finished by
-                                            {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <p v-else>Search results populate here</p>
+            <div class="container">
+                <input type="text" class="form-control my-3 p-2" placeholder="Search your recipes">
+            </div>
+            <div ref="homePaneContent">
+                <div class="container">
+                    <div class="scroll-horizontal">
+                        <a href="#" tabindex="-1" class="btn btn-primary"
+                            v-for="(filterPreset, index) in filterPresetsList" :key="index" :index="index">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-pin-angle" viewBox="0 0 16 16">
+                                <path
+                                    d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a5.927 5.927 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707-.195-.195.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a5.922 5.922 0 0 1 1.013.16l3.134-3.133a2.772 2.772 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146zm.122 2.112v-.002.002zm0-.002v.002a.5.5 0 0 1-.122.51L6.293 6.878a.5.5 0 0 1-.511.12H5.78l-.014-.004a4.507 4.507 0 0 0-.288-.076 4.922 4.922 0 0 0-.765-.116c-.422-.028-.836.008-1.175.15l5.51 5.509c.141-.34.177-.753.149-1.175a4.924 4.924 0 0 0-.192-1.054l-.004-.013v-.001a.5.5 0 0 1 .12-.512l3.536-3.535a.5.5 0 0 1 .532-.115l.096.022c.087.017.208.034.344.034.114 0 .23-.011.343-.04L9.927 2.028c-.029.113-.04.23-.04.343a1.779 1.779 0 0 0 .062.46z">
+                                </path>
+                            </svg>
+                            <small>{{ filterPreset.name }}</small>
+                        </a>
                     </div>
                 </div>
-
-                <!-- Explore Menu Container -->
-                <div class="exploreMenu px-1 my-2" ref="exploreMenuContainer">
-                    <button class="btn home-button my-3" @click="clickedBrowse">
-                        <div class="row">
-                            <reactive-svg class="home-icon me-3" width="24" height="24" :iconcolor="iconColor">
-                                <journal-richtext></journal-richtext>
-                            </reactive-svg>
-                            <h3 class="mb-0">Explore</h3>
-                        </div>
-                    </button>
-                    <hr>
-                    <div class="container mt-2">
-                        <div class="row">
-                            <div class="col d-flex justify-content-end">
-                                <button type="button" class="btn btn-secondary btn-sm"
-                                    @click="clickedEditFilterPreset">{{ editFilterPresetButtonText }}</button>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-6 col-md-4 col-lg-3 col-xl-2"
-                                v-for="(filterPreset, index) in filterPresetsList" :key="index" :index="index">
-                                <div class="box" @click="clickedFilterPreset(index)"
-                                    :style="{ 'background-color': filterPreset.background }">
-                                    <span
-                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                        v-if="isEditingFilterPresets" @click="deleteFilterPreset(index)">
-                                        <button type="button" class="btn-close btn-close-white"></button>
-                                    </span>
-                                    <h6 class="box-content">
-                                        {{ filterPreset.name }}
-                                    </h6>
+                <div class="container generic-divider my-4"></div>
+                <div class="container mt-4">
+                    <div class="row justify-content-between">
+                        <div class="col-xl-3 d-none d-xl-block">
+                            <div class="widget">
+                                <span class="d-flex small text-muted mb-2">Time</span>
+                                <ul class="nav nav-tabs time-filter-nav-tabs" role="tablist">
+                                    <li class="nav-item time-filter-header-button" role="presentation">
+                                        <button class="nav-link  active" data-bs-toggle="tab"
+                                            data-bs-target="#total-time" type="button" role="tab">Total Time</button>
+                                    </li>
+                                    <li class="nav-item time-filter-header-button" role="presentation">
+                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#finished-by"
+                                            type="button" role="tab">Finished By</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content mt-3">
+                                    <div class="tab-pane fade show active" id="total-time" role="tabpanel" tabindex="0">
+                                        <input type="number" class="form-control" placeholder="i.e. 25 minutes">
+                                    </div>
+                                    <div class="tab-pane fade" id="finished-by" role="tabpanel" tabindex="0">
+                                        <input type="time" class="form-control" placeholder="10:00">
+                                    </div>
                                 </div>
                             </div>
+                            <div class="widget mt-4">
+                                <span class="d-flex small text-muted mb-2">Tags</span>
+                                <ul class="list-unstyled">
+                                    <input class="form-control mb-2" type="text" placeholder="Search Tags"
+                                        v-model="tagModel">
+                                    <li class="mt-1" v-for="(tag, $index) in filteredTagList" :key="$index">
+                                        <input class="form-check-input" type="checkbox" value=""
+                                            v-model="checkedTagsArray" :value="tag">
+                                        <label class="form-check-label text-truncate">
+                                            {{ tag }}
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="widget mt-4">
+                                <span class="d-flex small text-muted mb-2">Ingredients</span>
+                                <ul class="list-unstyled">
+                                    <input class="form-control mb-2" type="text" placeholder="Search Ingredients"
+                                        v-model="ingredientModel">
+                                    <li v-for="(ingredient, $index) in filteredIngredientList" :key="$index">
+                                        <input class="form-check-input" type="checkbox" value=""
+                                            v-model="checkedIngredientsArray" :value="ingredient">
+                                        <label class="form-check-label text-truncate">
+                                            {{ ingredient }}
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-xl-9">
+                            <div class="list-group list-group-flush">
+                                <transition-group name="main-cookbook-transition-group" tag="div" mode="out-in">
+                                    <div class="row mx-0 d-flex list-group-item main-cookbook-list-group-item"
+                                        v-for="(recipe, index) in filteredCookbook" :key="index + 0" :index="index"
+                                        @click="clickedRecipeFromExplorePane(index)">
+                                        <div class="col-10 px-0">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h5 class="mb-1 text-truncate">{{ recipe.title }}</h5>
+                                            </div>
+                                            <p class="mb-1 text-truncate" v-html="recipe.description"></p>
+                                            <small>{{ recipe.totalTime }} min • Finished by
+                                                {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</small>
+                                        </div>
+                                        <div class="col-2 home-screen-recipe-img-wrapper d-flex px-0">
+                                            <img :src="recipe.thumbnail"
+                                                class="rounded float-end home-screen-recipe-img">
+                                        </div>
+                                    </div>
+                                </transition-group>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="position-fixed bottom-0 end-0 pe-3 pb-3">
+                <button class="btn btn-lg d-xl-none d-flex rounded-pill shadow filter-fab" type="button"
+                    data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterRecipes">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-funnel" viewBox="0 0 16 16">
+                        <path
+                            d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div class="explorePaneContent">
                 <!-- Filter recipe content -->
                 <div class="filter-recipes-container px-3 my-2" ref="filterRecipesContainer">
                     <div class="d-flex justify-content-between mb-4">
@@ -521,79 +556,6 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTags"
-                        v-if="isTagsChecked">
-                        <div class="col-1">
-                            <reactive-svg :iconcolor="iconColor">
-                                <tags></tags>
-                            </reactive-svg>
-                        </div>
-                        <div class="col-11 text-start">
-                            <h5>Tags</h5>
-                            <div v-if="checkedTagsArray.length">
-                                <small><strong>{{ checkedTagsArray.length }} applied</strong></small>
-                            </div>
-                            <div v-else>
-                                <small>None applied</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterTime"
-                        v-if="isTimeChecked">
-                        <div class="col-1">
-                            <reactive-svg :iconcolor="iconColor">
-                                <stopwatch></stopwatch>
-                            </reactive-svg>
-                        </div>
-                        <div class="col-11 text-start">
-                            <h5>Time</h5>
-                            <div v-if="totalRecipeTimeInput.length || finishByTimeInput.length">
-                                <small><strong>Filters applied</strong></small>
-                            </div>
-                            <div v-else>
-                                <small>None applied</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterIngredients"
-                        v-if="isIngredientsChecked">
-                        <div class="col-1">
-                            <reactive-svg :iconcolor="iconColor">
-                                <egg></egg>
-                            </reactive-svg>
-                        </div>
-                        <div class="col-11 text-start">
-                            <h5>Ingredients</h5>
-                            <div v-if="checkedIngredientsArray.length">
-                                <small><strong>{{ checkedIngredientsArray.length }} applied</strong></small>
-                            </div>
-                            <div v-else>
-                                <small>None applied</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--div class="row btn d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterNutrition">
-                        <div class="col-1">
-                            <img src="assets/icons/info-circle.svg">
-                        </div>
-                        <div class="col-11 text-start">
-                            <h5>Nutrition</h5>
-                            <small>None applied</small>
-                        </div>
-                    </div-->
-                    <hr>
-                    <ul class="list-group list-group-flush cookbook-list-group">
-                        <li class="row d-flex list-group-item recipe-list-group-item"
-                            v-for="(recipe, index) in filteredCookbook" :key="index" :index="index"
-                            @click="clickedRecipeFromExplorePane(index)">
-                            <img src="https://via.placeholder.com/48" class="recipe-list-group-thumbnail me-3">
-                            <div class="recipe-thumbnail-description">
-                                <span>{{ recipe.title }}</span>
-                                <span>{{ recipe.totalTime }} min • Finished by
-                                    {{ getTimeFromNowUsingMinutes(recipe.totalTime) }}</span>
-                            </div>
-                        </li>
-                    </ul>
                 </div>
 
                 <!-- RecipeView -->
@@ -830,7 +792,7 @@
                                         </li>
                                     </ul>
                                     <div v-else>
-                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=100
+                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=175
                                             v-model="selectedRecipe.specialEquipment">
                                             <recipeview-special-equipment-item
                                                 v-for="(equipment, index) in selectedRecipe.specialEquipment"
@@ -878,7 +840,7 @@
                                         </li>
                                     </ul>
                                     <div v-else>
-                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=100
+                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=175
                                             v-model="selectedRecipe.notes">
                                             <recipe-notes-draggable-item v-for="(note, index) in selectedRecipe.notes"
                                                 :index="index" :key="index" :note="note" :value="note.value"
@@ -935,7 +897,7 @@
                                     </li>
                                 </ul>
                                 <div v-else>
-                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
+                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=175
                                         v-model="section.ingredients">
                                         <recipe-ingredients-draggable-item
                                             v-for="(ingredient, index) in section.ingredients" :index="index"
@@ -993,7 +955,7 @@
                                     </li>
                                 </ul>
                                 <div v-else>
-                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
+                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=175
                                         v-model="section.steps">
                                         <recipe-steps-draggable-item v-for="(step, index) in section.steps"
                                             :index="index" :key="index" :step="step" :value="step.value"
@@ -1013,78 +975,6 @@
                         <div class="container">
                             <hr>
                         </div>
-                        <!-- Nutrition -->
-                        <!--div class="container mb-4">
-                            <h5 class="lead heading">Nutrition</h5>
-                            <div v-for="(section, sectionIndex) in selectedRecipe.sections" :key="sectionIndex">
-                                <div class="accordion accordion-flush" :id="'accordionNutrition' + sectionIndex">
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse" :data-bs-target="'#item' + sectionIndex">
-                                                <small
-                                                    class="mb-3 d-flex text-muted uppercase subheading">{{ section.title }}</small>
-                                            </button>
-                                        </h2>
-                                        <div v-bind:id="'item' + sectionIndex" class="accordion-collapse collapse"
-                                            :data-bs-parent="'#accordionNutrition' + sectionIndex">
-                                            <div class="accordion-body">
-                                                <ul class="list-group list-group-flush mb-4">
-                                                    <li class="list-group-item d-flex justify-content-between">
-                                                        <span>
-                                                            <b>Calories</b>
-                                                        </span>
-                                                        <span>{{ section.nCalories }}</span>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between mt-3">
-                                                        <span>
-                                                            <b>Total Fat</b>
-                                                        </span>
-                                                        <span>{{ section.nFat }} g</span>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between">
-                                                        <span>
-                                                            <b>Cholesterol</b>
-                                                        </span>
-                                                        <span>{{ section.nCholesterol }} mg</span>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between">
-                                                        <span>
-                                                            <b>Sodium</b>
-                                                        </span>
-                                                        <span>{{ section.nSodium }} mg</span>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between">
-                                                        <span>
-                                                            <b>Carbohydrate</b>
-                                                        </span>
-                                                        <span>
-                                                            {{ section.nTotalCarbs }} g
-                                                        </span>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between">
-                                                        <span class="ms-3">Fiber</span>
-                                                        <span>
-                                                            {{ section.nFiber }} g
-                                                        </span>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between">
-                                                        <span class="ms-3">Sugar</span>
-                                                        <span>{{ section.nSugar }} g</span>
-                                                    </li>
-                                                    <li class="list-group-item d-flex justify-content-between">
-                                                        <span>
-                                                            <b>Protein</b>
-                                                        </span>
-                                                        <span>{{ section.nProtein }} g</span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div-->
                         <!-- Action buttons -->
                         <div class="container mt-4 py-0 d-flex" style="justify-content: space-around;">
                             <button class="btn btn-large w-100 btn-outline-danger remove-from-sharing"
@@ -1156,12 +1046,13 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_recipeTagHolder.length">
-                                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
+                                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=175
                                                         v-model="manage_recipeTagHolder">
                                                         <addrecipeview-tag-draggable-item
                                                             v-for="(tag, index) in manage_recipeTagHolder"
                                                             :index="index" :key="index" :tag="tag" :value="tag.value"
                                                             :progress="tag.progress" :is-deleted="tag.isDeleted"
+                                                            :icon-color="iconColor"
                                                             v-on:delete-tag="deleteTagAddRecipeView(index, tag)"
                                                             v-on:undo-delete-tag="undoTagAddRecipeView(index)"
                                                             @touchstart.native="scrollStop"
@@ -1199,7 +1090,7 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_specialEquipmentHolder.length">
-                                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
+                                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=175
                                                         v-model="manage_specialEquipmentHolder">
                                                         <recipeview-special-equipment-item
                                                             v-for="(equipment, index) in manage_specialEquipmentHolder"
@@ -1226,7 +1117,7 @@
                                         <div class="mt-3">
                                             <div class="col-lg-12">
                                                 <div v-if="manage_recipeNotesHolder.length">
-                                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=100
+                                                    <draggable-list-group :lock-axis="'y'" :press-delay.number=175
                                                         v-model="manage_recipeNotesHolder">
                                                         <recipe-notes-draggable-item
                                                             v-for="(note, index) in manage_recipeNotesHolder"
@@ -1383,7 +1274,7 @@
                                                                     <div v-for="(section, index) in manage_recipeSections"
                                                                         :index="index" :key="index">
                                                                         <draggable-list-group :lock-axis="'y'"
-                                                                            :press-delay.number=100
+                                                                            :press-delay.number=175
                                                                             v-model="section.ingredients">
                                                                             <recipe-ingredients-draggable-item
                                                                                 v-for="(ingredient, i) in section.ingredients"
@@ -1422,7 +1313,7 @@
                                                                 <div class="row">
                                                                     <div class="col-12">
                                                                         <draggable-list-group :lock-axis="'y'"
-                                                                            :press-delay.number=100
+                                                                            :press-delay.number=175
                                                                             v-model="section.ingredients">
                                                                             <recipe-ingredients-draggable-item
                                                                                 v-for="(ingredient, i) in section.ingredients"
@@ -1481,7 +1372,7 @@
                                                                     <div v-for="(section, index) in manage_recipeSections"
                                                                         :index="index" :key="index">
                                                                         <draggable-list-group :lock-axis="'y'"
-                                                                            :press-delay.number=100
+                                                                            :press-delay.number=175
                                                                             v-model="section.steps">
                                                                             <recipe-steps-draggable-item
                                                                                 v-for="(step, i) in section.steps"
@@ -1529,7 +1420,7 @@
                                                                     <div class="row">
                                                                         <div class="col-12">
                                                                             <draggable-list-group :lock-axis="'y'"
-                                                                                :press-delay.number=100
+                                                                                :press-delay.number=175
                                                                                 v-model="section.steps">
                                                                                 <recipe-steps-draggable-item
                                                                                     v-for="(step, i) in section.steps"
@@ -1854,81 +1745,82 @@
             </div>
         </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <!-- Filtering offcanvas -->
-        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTags">
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilterRecipes">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title">Explore by Tags</h5>
-                <button type="button" class="btn" @click="clickedClearTagFilters">
-                    <reactive-svg :iconcolor="iconColor" width="20" height="20">
-                        <trash></trash>
-                    </reactive-svg>
-                </button>
+                <h5 class="offcanvas-title">Filters</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
             </div>
-            <div class="offcanvas-body small">
-                <input class="form-control mb-4" type="text" placeholder="Search Tags" v-model="tagModel">
-                <div v-for="(tag, $index) in filteredTagList" :key="$index">
-                    <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray" :value="tag">
-                    <label class="form-check-label">
-                        {{ tag }}
-                    </label>
+            <div class="offcanvas-body">
+                <div class="row justify-content-between">
+                    <div class="widget">
+                        <span class="d-flex small text-muted mb-2">Time</span>
+                        <ul class="nav nav-tabs time-filter-nav-tabs" role="tablist">
+                            <li class="nav-item time-filter-header-button" role="presentation">
+                                <button class="nav-link active" data-bs-toggle="tab"
+                                    data-bs-target="#total-time-offcanvas" type="button" role="tab">Total Time</button>
+                            </li>
+                            <li class="nav-item time-filter-header-button" role="presentation">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#finished-by-offcanvas"
+                                    type="button" role="tab">Finished By</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-3">
+                            <div class="tab-pane fade show active" id="total-time-offcanvas" role="tabpanel"
+                                tabindex="0">
+                                <input type="number" class="form-control" placeholder="i.e. 25 minutes">
+                            </div>
+                            <div class="tab-pane fade" id="finished-by-offcanvas" role="tabpanel" tabindex="0">
+                                <input type="time" class="form-control" placeholder="10:00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="widget mt-4">
+                        <span class="d-flex small text-muted mb-2">Tags</span>
+                        <ul class="list-unstyled">
+                            <input class="form-control mb-2" type="text" placeholder="Search Tags" v-model="tagModel">
+                            <li class="mt-1" v-for="(tag, $index) in filteredTagList" :key="$index">
+                                <input class="form-check-input" type="checkbox" value="" v-model="checkedTagsArray"
+                                    :value="tag">
+                                <label class="form-check-label text-truncate">
+                                    {{ tag }}
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="widget mt-4">
+                        <span class="d-flex small text-muted mb-2">Ingredients</span>
+                        <ul class="list-unstyled">
+                            <input class="form-control mb-4" type="text" placeholder="Search Ingredients"
+                                v-model="ingredientModel">
+                            <li v-for="(ingredient, $index) in filteredIngredientList" :key="$index">
+                                <input class="form-check-input" type="checkbox" value=""
+                                    v-model="checkedIngredientsArray" :value="ingredient">
+                                <label class="form-check-label text-truncate">
+                                    {{ ingredient }}
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterTime">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">Explore by Time</h5>
-                <button type="button" class="btn" @click="clickedClearTimeFilters">
-                    <reactive-svg :iconcolor="iconColor" width="20" height="20">
-                        <trash></trash>
-                    </reactive-svg>
-                </button>
-            </div>
-            <div class="offcanvas-body small">
-                <h4>Total recipe time</h4>
-                <div class="mb-3">
-                    <input type="number" class="form-control" id="totalTimeInput" v-model="totalRecipeTimeInput"
-                        placeholder="i.e. 25">
-                </div>
-                <h4>Or pick a time to be finished by</h4>
-                <div class="form-floating mb-3">
-                    <input type="time" class="form-control" id="totalTimeInput" placeholder="10"
-                        v-model="finishByTimeInput">
-                    <label for="totalTimeInput">Finish by</label>
-                </div>
-            </div>
-        </div>
-        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1"
-            id="offcanvasFilterIngredients">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">Explore by Ingredients</h5>
-                <button type="button" class="btn" @click="clickedClearIngredientFilters">
-                    <reactive-svg :iconcolor="iconColor" width="20" height="20">
-                        <trash></trash>
-                    </reactive-svg>
-                </button>
-            </div>
-            <div class="offcanvas-body small">
-                <input class="form-control mb-4" type="text" placeholder="Search Ingredients" v-model="ingredientModel">
-                <div v-for="(ingredient, $index) in filteredIngredientList" :key="$index">
-                    <input class="form-check-input" type="checkbox" value="" v-model="checkedIngredientsArray"
-                        :value="ingredient">
-                    <label class="form-check-label">
-                        {{ ingredient }}
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="offcanvas offcanvas-bottom offcanvas-rounded-top h-50" tabindex="-1" id="offcanvasFilterNutrition">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">Explore by Nutrition</h5>
-                <button type="button" class="btn">
-                    <reactive-svg :iconcolor="iconColor" width="20" height="20">
-                        <trash></trash>
-                    </reactive-svg>
-                </button>
-            </div>
-            <div class="offcanvas-body small">
-                <p>To implement</p>
             </div>
         </div>
         <!-- Delete recipe modal -->
@@ -1993,25 +1885,6 @@
             </div>
         </div>
     </div>
-
-
-    <!--
-    <h5 class="lead">Nutrition</h5>
-    <div v-for="(block, blockIndex) in proto_blocks" :key="blockIndex">
-        <small class="mb-3 d-flex text-muted uppercase subheading">{{ block.header }}</small>
-        <ul class="list-group list-group-flush mb-4">
-            <li class="list-group-item">Calories: {{ block.nCalories }} g</li>
-            <li class="list-group-item">Total Fat: {{ block.nFat }} g</li>
-            <li class="list-group-item">Cholesterol: {{ block.nCholesterol }} mg</li>
-            <li class="list-group-item">Sodium: {{ block.nSodium }} mg</li>
-            <li class="list-group-item">Carbohydrate: {{ block.nCarbohydrate }} g</li>
-            <li class="list-group-item">Fiber: {{ block.nFiber }} g</li>
-            <li class="list-group-item">Sugar: {{ block.nSugars }} g</li>
-            <li class="list-group-item">Protein: {{ block.nProtein }} g</li>
-        </ul>
-    </div>
-    -->
-
     <!-- RecipeView Special Equipment draggables -->
     <template id="draggable-list-group-template">
         <ul class="list-group list-group-flush">
@@ -2169,7 +2042,7 @@
         <li v-if="!tag.isDeleted" class="list-group-item">
             <div class="d-flex align-items-end">
                 <div class="btn ps-0 pe-2">
-                    <reactive-svg :iconcolor="iconColor">
+                    <reactive-svg :icon-color="iconColor">
                         <chevron-bar-expand></chevron-bar-expand>
                     </reactive-svg>
                 </div>
