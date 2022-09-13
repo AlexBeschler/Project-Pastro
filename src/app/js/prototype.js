@@ -4,9 +4,13 @@
         new Vue({
             el: '#appContent',
             data: {
-                showStep1: true,
+                showStep1: false,
                 showStep2: false,
-                showStep3: false
+                showStep3: true,
+                addRecipeSelectedTags: []
+            },
+            components: {
+                "tags-input": VoerroTagsInput
             },
             methods: {
                 addRecipe_ToStepOne() {
