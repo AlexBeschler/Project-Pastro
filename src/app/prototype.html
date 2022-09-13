@@ -77,7 +77,8 @@
                             <div class="px-4" style="display: flex; flex-direction: column; align-items: flex-start;"
                                 v-if="showStep1" key="first">
                                 <h2 class="fw-bold display-2 add-recipe-title">Add a new recipe</h2>
-                                <input type="text" class="form-control" placeholder="Recipe name">
+                                <input type="text" class="form-control" placeholder="Recipe name"
+                                    v-model="addRecipe_recipeName">
                                 <button role="button" class="btn btn-primary mt-4" style="align-self: flex-end;"
                                     @click="addRecipe_ToStepTwo">Next</button>
                             </div>
@@ -92,33 +93,34 @@
                                 <!-- Recipe description/notes -->
                                 <div class="mb-3 w-100">
                                     <label for="descriptionInput" class="form-label">Description/Notes</label>
-                                    <textarea class="form-control" id="descriptionInput" rows="3"></textarea>
+                                    <textarea class="form-control" id="descriptionInput" rows="3"
+                                        v-model="addRecipe_recipeDescription"></textarea>
                                 </div>
                                 <div class="mb-3 w-100">
                                     <label for="tagsInput" class="form-label">Tags</label>
-                                    <tags-input element-id="tagsInput" v-model="addRecipeSelectedTags"
+                                    <tags-input element-id="tagsInput" v-model="addRecipe_recipeTags"
                                         :existing-tags="[]" :typeahead="false"></tags-input>
                                 </div>
                                 <div class="mb-3 w-100">
                                     <label class="form-label w-100">Time/Yield</label>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Prep Time</span>
-                                        <input type="number" class="form-control">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipePrepTime">
                                         <span class="input-group-text">min</span>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Cook Time</span>
-                                        <input type="number" class="form-control">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipeCookTime">
                                         <span class="input-group-text">min</span>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Total Time</span>
-                                        <input type="number" class="form-control">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipeTotalTime">
                                         <span class="input-group-text">min</span>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Yield</span>
-                                        <input type="text" class="form-control">
+                                        <input type="text" class="form-control" v-model="addRecipe_recipeYield">
                                     </div>
                                 </div>
                                 <div class="d-flex w-100 justify-content-between my-4">
@@ -136,16 +138,18 @@
                                     <div class="accordion accordion-flush" id="accordionFlushExample">
                                         <div class="accordion-item add-recipe-accordion-item">
                                             <h2 class="accordion-header" id="flush-headingOne">
-                                                <button class="accordion-button add-recipe-accordion-button" type="button"
-                                                    data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
-                                                    aria-expanded="false" aria-controls="flush-collapseOne">
+                                                <button class="accordion-button add-recipe-accordion-button"
+                                                    type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#flush-collapseOne" aria-expanded="false"
+                                                    aria-controls="flush-collapseOne">
                                                     Ingredients
                                                 </button>
                                             </h2>
                                             <div id="flush-collapseOne" class="accordion-collapse collapse show"
                                                 aria-labelledby="flush-headingOne"
                                                 data-bs-parent="#accordionFlushExample">
-                                                <div class="accordion-body add-recipe-accordion-body">Placeholder content for this accordion,
+                                                <div class="accordion-body add-recipe-accordion-body">Placeholder
+                                                    content for this accordion,
                                                     which is intended to demonstrate the
                                                     <code>.accordion-flush</code> class. This is the first item's
                                                     accordion body.</div>
@@ -153,16 +157,18 @@
                                         </div>
                                         <div class="accordion-item add-recipe-accordion-item">
                                             <h2 class="accordion-header" id="flush-headingTwo">
-                                                <button class="accordion-button add-recipe-accordion-button collapsed" type="button"
-                                                    data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo"
-                                                    aria-expanded="false" aria-controls="flush-collapseTwo">
+                                                <button class="accordion-button add-recipe-accordion-button collapsed"
+                                                    type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#flush-collapseTwo" aria-expanded="false"
+                                                    aria-controls="flush-collapseTwo">
                                                     Steps
                                                 </button>
                                             </h2>
                                             <div id="flush-collapseTwo" class="accordion-collapse collapse"
                                                 aria-labelledby="flush-headingTwo"
                                                 data-bs-parent="#accordionFlushExample">
-                                                <div class="accordion-body add-recipe-accordion-body">Placeholder content for this accordion,
+                                                <div class="accordion-body add-recipe-accordion-body">Placeholder
+                                                    content for this accordion,
                                                     which is intended to demonstrate the
                                                     <code>.accordion-flush</code> class. This is the second item's
                                                     accordion body. Let's imagine this being filled with some actual
@@ -176,6 +182,24 @@
                                         @click="addRecipe_ToStepTwo">Back</button>
                                     <button role="button" class="btn btn-success"
                                         @click="clickedFinishAddRecipe">Finish</button>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-start;"
+                                v-if="showStep4" key="fourth">
+                                <h2 class="fw-bold display-3 add-recipe-title px-4">Uploading your recipe</h2>
+                                <!-- Upload cover photo -->
+                                <div class="my-4 w-100">
+                                    <transition @enter="enterUploadRecipeLottieAnimation"
+                                        @leave="leaveUploadRecipeLottieAnimation" mode="out-in" appear>
+                                        <lottie-player src="assets/animation/add-to-cloud.json"
+                                            class="lottie-add-recipe-animation" background="transparent" speed="1"
+                                            autoplay loop v-if="isUploading">
+                                        </lottie-player>
+                                        <lottie-player src="assets/animation/confetti.json"
+                                            class="lottie-add-recipe-animation" background="transparent" speed="0.5"
+                                            autoplay v-if="isFinishedUploading">
+                                        </lottie-player>
+                                    </transition>
                                 </div>
                             </div>
                         </transition>

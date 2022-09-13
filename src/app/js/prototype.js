@@ -4,10 +4,28 @@
         new Vue({
             el: '#appContent',
             data: {
-                showStep1: false,
+                /* Add Recipe View States */
+                showStep1: true,
                 showStep2: false,
-                showStep3: true,
-                addRecipeSelectedTags: []
+                showStep3: false,
+                showStep4: false,
+                isUploading: false,
+                isFinishedUploading: false,
+                //Add recipe name
+                addRecipe_recipeName: '',
+                //Add recipe cover photo variables
+                //Add recipe description notes
+                addRecipe_recipeDescription: '',
+                //Add recipe tags
+                addRecipe_recipeTags: [],
+                //Add recipe prep time
+                addRecipe_recipePrepTime: 0,
+                //Add recipe cook time
+                addRecipe_recipeCookTime: 0,
+                //Add recipe total time
+                addRecipe_recipeTotalTime: 0,
+                //Add recipe yield time
+                addRecipe_recipeYield: '',
             },
             components: {
                 "tags-input": VoerroTagsInput
@@ -29,7 +47,19 @@
                     this.showStep3 = true;
                 },
                 clickedFinishAddRecipe() {
-                    console.log('Added Recipe!');
+                    console.log('Uploading');
+                    var self = this;
+                    this.isUploading = true;
+                    this.showStep1 = false;
+                    this.showStep2 = false;
+                    this.showStep3 = false;
+                    this.showStep4 = true;
+                    //Perform checks
+                    setTimeout(function () {
+                        console.log('Finish animation');
+                        self.isUploading = false;
+                        self.isFinishedUploading = true;
+                    }, 2000);
                 },
                 /* Add Recipe Lottie enter/exit animations */
                 enterAddRecipeLottieAnimation(el, done) {
@@ -67,6 +97,26 @@
                     anime({
                         targets: el,
                         translateX: [0, -30],
+                        opacity: [1, 0],
+                        easing: 'easeInOutSine',
+                        duration: 105,
+                        complete: done
+                    });
+                },
+                enterUploadRecipeLottieAnimation(el, done) {
+                    anime({
+                        targets: el,
+                        translateX: ['33vw', 0],
+                        opacity: [0, 1],
+                        easing: 'easeInOutSine',
+                        duration: 105,
+                        complete: done,
+                    });
+                },
+                leaveUploadRecipeLottieAnimation(el, done) {
+                    anime({
+                        targets: el,
+                        translateX: [0, '33vw'],
                         opacity: [1, 0],
                         easing: 'easeInOutSine',
                         duration: 105,
