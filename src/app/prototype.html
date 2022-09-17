@@ -72,18 +72,22 @@
                 <div class="col-xl-1 d-none d-md-block"></div>
                 <div class="col-xl-8 bottom-block">
                     <div class="row">
-                        <transition @enter="enterAddRecipeContentAnimation" @leave="leaveAddRecipeContentAnimation"
+                        <transition-group @enter="enterAddRecipeContentAnimation" @leave="leaveAddRecipeContentAnimation"
                             v-bind:css="false" mode="out-in">
                             <div class="px-4" style="display: flex; flex-direction: column; align-items: flex-start;"
-                                v-if="showStep1" key="first">
+                                v-show="showStep1" key="first">
                                 <h2 class="fw-bold display-2 add-recipe-title">Add a new recipe</h2>
-                                <input type="text" class="form-control" placeholder="Recipe name"
-                                    v-model="addRecipe_recipeName">
+                                <div class="input-group has-validation">
+                                    <input type="text" class="form-control" placeholder="Recipe name" v-model="addRecipe_recipeName" ref="addRecipe_recipeNameRef">
+                                    <div class="invalid-tooltip">
+                                        Please enter a valid recipe name
+                                    </div>
+                                </div>
                                 <button role="button" class="btn btn-primary mt-4" style="align-self: flex-end;"
                                     @click="addRecipe_ToStepTwo">Next</button>
                             </div>
                             <div class="px-4" style="display: flex; flex-direction: column; align-items: flex-start;"
-                                v-if="showStep2" key="second">
+                                v-show="showStep2" key="second">
                                 <h2 class="fw-bold display-3 add-recipe-title">Describe your new recipe</h2>
                                 <!-- Upload cover photo -->
                                 <div class="mt-4 mb-3 w-100">
@@ -99,31 +103,43 @@
                                 <div class="mb-3 w-100">
                                     <label for="tagsInput" class="form-label">Tags</label>
                                     <tags-input element-id="tagsInput" v-model="addRecipe_recipeTags"
-                                        :existing-tags="[]" :typeahead="false"></tags-input>
+                                        :existing-tags="[]" :typeahead="false" ref="addRecipe_recipeTagsRef"></tags-input>
                                 </div>
                                 <div class="mb-3 w-100">
                                     <label class="form-label w-100">Time/Yield</label>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Prep Time</span>
-                                        <input type="number" class="form-control" v-model="addRecipe_recipePrepTime">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipePrepTime" ref="addRecipe_recipePrepTimeRef">
                                         <span class="input-group-text">min</span>
+                                        <div class="invalid-tooltip">
+                                            Please enter a valid number
+                                        </div>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Cook Time</span>
-                                        <input type="number" class="form-control" v-model="addRecipe_recipeCookTime">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipeCookTime" ref="addRecipe_recipeCookTimeRef">
                                         <span class="input-group-text">min</span>
+                                        <div class="invalid-tooltip">
+                                            Please enter a valid number
+                                        </div>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Total Time</span>
-                                        <input type="number" class="form-control" v-model="addRecipe_recipeTotalTime">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipeTotalTime" ref="addRecipe_recipeTotalTimeRef">
                                         <span class="input-group-text">min</span>
+                                        <div class="invalid-tooltip">
+                                            Please enter a valid number
+                                        </div>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Yield</span>
                                         <input type="text" class="form-control" v-model="addRecipe_recipeYield">
+                                        <div class="invalid-tooltip">
+                                            Please enter a valid yield
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="d-flex w-100 justify-content-between my-4">
+                                <div class="d-flex w-100 justify-content-between mt-4 mb-5">
                                     <button role="button" class="btn btn-outline-primary"
                                         @click="addRecipe_ToStepOne">Back</button>
                                     <button role="button" class="btn btn-primary"
@@ -131,7 +147,7 @@
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: column; align-items: flex-start;"
-                                v-if="showStep3" key="third">
+                                v-show="showStep3" key="third">
                                 <h2 class="fw-bold display-3 add-recipe-title px-4">Describe your new recipe</h2>
                                 <!-- Upload cover photo -->
                                 <div class="mt-4 mb-3 w-100">
@@ -177,7 +193,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex w-100 justify-content-between px-4 my-4">
+                                <div class="d-flex w-100 justify-content-between px-4 mt-4 mb-5">
                                     <button role="button" class="btn btn-outline-primary"
                                         @click="addRecipe_ToStepTwo">Back</button>
                                     <button role="button" class="btn btn-success"
@@ -185,24 +201,27 @@
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: column; align-items: flex-start;"
-                                v-if="showStep4" key="fourth">
-                                <h2 class="fw-bold display-3 add-recipe-title px-4">Uploading your recipe</h2>
+                                v-show="showStep4" key="fourth">
+                                <transition @enter="enterFinishedAddRecipeUploadTextAnimation" @leave="leaveFinishedAddRecipeUploadTextAnimation" mode="out-in" appear>
+                                    <h2 class="fw-bold display-3 add-recipe-title px-4" v-if="addRecipe_isUploading" key="one">Finalizing your recipe</h2>
+                                    <h2 class="fw-bold display-3 add-recipe-title px-4" v-if="addRecipe_isFinishedUploading" key="two">Added your recipe!</h2>
+                                </transition>
                                 <!-- Upload cover photo -->
                                 <div class="my-4 w-100">
                                     <transition @enter="enterUploadRecipeLottieAnimation"
                                         @leave="leaveUploadRecipeLottieAnimation" mode="out-in" appear>
-                                        <lottie-player src="assets/animation/add-to-cloud.json"
+                                        <lottie-player key="1" src="assets/animation/bouncing-shapes-loader.json"
                                             class="lottie-add-recipe-animation" background="transparent" speed="1"
-                                            autoplay loop v-if="isUploading">
+                                            autoplay loop v-if="addRecipe_isUploading">
                                         </lottie-player>
-                                        <lottie-player src="assets/animation/confetti.json"
+                                        <lottie-player key="2" src="assets/animation/confetti.json"
                                             class="lottie-add-recipe-animation" background="transparent" speed="0.5"
-                                            autoplay v-if="isFinishedUploading">
+                                            autoplay v-if="addRecipe_isFinishedUploading">
                                         </lottie-player>
                                     </transition>
                                 </div>
                             </div>
-                        </transition>
+                        </transition-group>
                     </div>
                 </div>
                 <div class="col-xl-3 d-none d-xl-flex desktop-lottie-bar">
@@ -653,6 +672,7 @@
     <script src="vendor/animejs/lib/animejs-3.2.1.min.js"></script>
     <script src="vendor/lottie/lottie-player@1.5.7.min.js"></script>
     <script src="vendor/voerro-vue-tagsinput/vue-tags-input.js"></script>
+    <script src="js/project-pastro-utils.js"></script>
     <script src="js/prototype.js"></script>
 </body>
 

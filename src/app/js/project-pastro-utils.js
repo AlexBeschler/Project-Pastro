@@ -7,7 +7,7 @@ var ProjectPastroUtils = function () {
     this._SUCCESS_URL = 'https://my.pantryrecipes.app';
     this._CANCEL_URL = 'https://pantryrecipes.app/';
     this._STRIPE_CODE = 'pk_test_51IinkiCwcvKw4V4OGf5Yv6eCKrA3tSXGgUUvF6tPmdlpRmgoX4yq8NApouvHn5Q0BkVre82I9qKDECymsTct3MNx00ekEDzexj';
-    
+
     //OptionsView variables
     this.TWELVE_HOUR_FORMAT_SET = 'is12HourFormatSet';
     this.TAGS_CHECKED = 'isTagsChecked';
@@ -17,7 +17,7 @@ var ProjectPastroUtils = function () {
     this.LEVEL_FONT_SET = 'levelFontSize';
     this.DYSLEXIC_FONT_SET = 'isDyslexicFontSet';
     this.HIGH_CONTRAST_SET = 'isHighContrastModeSet';
-    
+
     this.DISPLAY_STATES = {
         VIEW: "view",
         EDIT: "edit",
@@ -33,7 +33,7 @@ var ProjectPastroUtils = function () {
     };
 
     //Firebase utils
-    this.getProfilePhotoURL = function(str) {
+    this.getProfilePhotoURL = function (str) {
         return str.replace('s96-c', 's492-c');
     };
 
@@ -60,7 +60,7 @@ var ProjectPastroUtils = function () {
         }
         return result;
     };
-    this.isEmptyArray = function(array) {
+    this.isEmptyArray = function (array) {
         if (array.length === 0) {
             return true;
         }
@@ -120,7 +120,7 @@ var ProjectPastroUtils = function () {
             console.error('Async: Could not copy text: ', err);
         });
     };
-    this.getRandomFilterPresetColor = function(colorArray) {
+    this.getRandomFilterPresetColor = function (colorArray) {
         var min = Math.ceil(0);
         var max = Math.floor(colorArray.length);
         //The maximum and minimum are inclusive
@@ -167,8 +167,12 @@ var ProjectPastroUtils = function () {
     this.isAllUppercase = function (s) {
         return s === s.toUpperCase();
     };
-    this.checkMaximumFirebaseDocumentSize = function(doc) {
+    this.checkMaximumFirebaseDocumentSize = function (doc) {
         return new Blob([doc]).size <= 1048576;
+    };
+    this.checkForInvalidNumberCharacters = function (event) {
+        var invalidChars = ['-', '+', 'e'];
+        return invalidChars.includes(event.key) ? event.preventDefault() : true;
     };
     //Numeric Index utils
     this.queryNumericIndex = function (index, query) {
@@ -203,7 +207,7 @@ var ProjectPastroUtils = function () {
         */
     };
     //Crop data utilities
-    this.getCropData = function(cropData, canvasData) {
+    this.getCropData = function (cropData, canvasData) {
         //Ratio of selected crop area
         var cropAreaRatio = cropData.height / cropData.width;
 
