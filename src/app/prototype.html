@@ -10,9 +10,11 @@
     <meta name="theme-color" content="#4A9653" />
 
     <link href="vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/quilljs/css/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="css/app.css">
-    <link rel="stylesheet" href="css/prototype.css">
     <link rel="stylesheet" href="vendor/voerro-vue-tagsinput/vue-tags-input.css">
+    <link rel="stylesheet" href="vendor/pintura/pintura.css">
+    <link rel="stylesheet" href="css/prototype.css">
 </head>
 
 <body>
@@ -72,13 +74,14 @@
                 <div class="col-xl-1 d-none d-md-block"></div>
                 <div class="col-xl-8 bottom-block">
                     <div class="row">
-                        <transition-group @enter="enterAddRecipeContentAnimation" @leave="leaveAddRecipeContentAnimation"
-                            v-bind:css="false" mode="out-in">
+                        <transition-group @enter="enterAddRecipeContentAnimation"
+                            @leave="leaveAddRecipeContentAnimation" v-bind:css="false" mode="out-in">
                             <div class="px-4" style="display: flex; flex-direction: column; align-items: flex-start;"
                                 v-show="showStep1" key="first">
                                 <h2 class="fw-bold display-2 add-recipe-title">Add a new recipe</h2>
                                 <div class="input-group has-validation">
-                                    <input type="text" class="form-control" placeholder="Recipe name" v-model="addRecipe_recipeName" ref="addRecipe_recipeNameRef">
+                                    <input type="text" class="form-control" placeholder="Recipe name"
+                                        v-model="addRecipe_recipeName" ref="addRecipe_recipeNameRef">
                                     <div class="invalid-tooltip">
                                         Please enter a valid recipe name
                                     </div>
@@ -92,48 +95,55 @@
                                 <!-- Upload cover photo -->
                                 <div class="mt-4 mb-3 w-100">
                                     <label for="coverPhotoInput" class="form-label">Cover photo</label>
-                                    <input class="form-control" type="file" id="coverPhotoInput">
+                                    <input class="form-control" type="file" id="coverPhotoInput"
+                                        ref="coverPhotoInput">
+                                    <transition-group @enter="enterPinturaAnimation" @leave="leavePinturaAnimation"
+                                        v-bind:css="false" mode="out-in">
+                                        <div v-show="showPinturaCoverPhotoEditor" key="editorKey" class="pintura-editor my-3" ref="coverPhotoPinturaEditor"></div>
+                                        <img v-show="showPinturaCoverPhotoThumbnail" key="thumbnailKey" src="" alt="" class="img-thumbnail rounded mx-auto my-3 coverPhotoPreview" ref="coverPhotoPinturaResult" />
+                                    </transition-group>
                                 </div>
                                 <!-- Recipe description/notes -->
                                 <div class="mb-3 w-100">
                                     <label for="descriptionInput" class="form-label">Description/Notes</label>
-                                    <textarea class="form-control" id="descriptionInput" rows="3"
-                                        v-model="addRecipe_recipeDescription"></textarea>
+                                    <div id="addRecipeViewEditor" ref="addRecipeViewEditor"></div>
+                                    <div class="invalid-feedback">
+                                        Please enter a description
+                                    </div>
                                 </div>
                                 <div class="mb-3 w-100">
                                     <label for="tagsInput" class="form-label">Tags</label>
                                     <tags-input element-id="tagsInput" v-model="addRecipe_recipeTags"
-                                        :existing-tags="[]" :typeahead="false" ref="addRecipe_recipeTagsRef"></tags-input>
+                                        :existing-tags="[]" :typeahead="false" ref="addRecipe_recipeTagsRef">
+                                    </tags-input>
                                 </div>
                                 <div class="mb-3 w-100">
                                     <label class="form-label w-100">Time/Yield</label>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Prep Time</span>
-                                        <input type="number" class="form-control" v-model="addRecipe_recipePrepTime" ref="addRecipe_recipePrepTimeRef">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipePrepTime"
+                                            ref="addRecipe_recipePrepTimeRef">
                                         <span class="input-group-text">min</span>
-                                        <div class="invalid-tooltip">
-                                            Please enter a valid number
-                                        </div>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Cook Time</span>
-                                        <input type="number" class="form-control" v-model="addRecipe_recipeCookTime" ref="addRecipe_recipeCookTimeRef">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipeCookTime"
+                                            ref="addRecipe_recipeCookTimeRef">
                                         <span class="input-group-text">min</span>
-                                        <div class="invalid-tooltip">
-                                            Please enter a valid number
-                                        </div>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Total Time</span>
-                                        <input type="number" class="form-control" v-model="addRecipe_recipeTotalTime" ref="addRecipe_recipeTotalTimeRef">
+                                        <input type="number" class="form-control" v-model="addRecipe_recipeTotalTime"
+                                            ref="addRecipe_recipeTotalTimeRef">
                                         <span class="input-group-text">min</span>
                                         <div class="invalid-tooltip">
-                                            Please enter a valid number
+                                            Please enter a total time more than 0
                                         </div>
                                     </div>
                                     <div class="input-group mb-3 w-100">
                                         <span class="input-group-text">Yield</span>
-                                        <input type="text" class="form-control" v-model="addRecipe_recipeYield">
+                                        <input type="text" class="form-control" v-model="addRecipe_recipeYield"
+                                            ref="addRecipe_recipeYieldRef">
                                         <div class="invalid-tooltip">
                                             Please enter a valid yield
                                         </div>
@@ -148,7 +158,7 @@
                             </div>
                             <div style="display: flex; flex-direction: column; align-items: flex-start;"
                                 v-show="showStep3" key="third">
-                                <h2 class="fw-bold display-3 add-recipe-title px-4">Describe your new recipe</h2>
+                                <h2 class="fw-bold display-3 add-recipe-title px-4">Finally, create your recipe</h2>
                                 <!-- Upload cover photo -->
                                 <div class="mt-4 mb-3 w-100">
                                     <div class="accordion accordion-flush" id="accordionFlushExample">
@@ -202,9 +212,12 @@
                             </div>
                             <div style="display: flex; flex-direction: column; align-items: flex-start;"
                                 v-show="showStep4" key="fourth">
-                                <transition @enter="enterFinishedAddRecipeUploadTextAnimation" @leave="leaveFinishedAddRecipeUploadTextAnimation" mode="out-in" appear>
-                                    <h2 class="fw-bold display-3 add-recipe-title px-4" v-if="addRecipe_isUploading" key="one">Finalizing your recipe</h2>
-                                    <h2 class="fw-bold display-3 add-recipe-title px-4" v-if="addRecipe_isFinishedUploading" key="two">Added your recipe!</h2>
+                                <transition @enter="enterFinishedAddRecipeUploadTextAnimation"
+                                    @leave="leaveFinishedAddRecipeUploadTextAnimation" mode="out-in" appear>
+                                    <h2 class="fw-bold display-3 add-recipe-title px-4" v-if="addRecipe_isUploading"
+                                        key="one">Finalizing your recipe</h2>
+                                    <h2 class="fw-bold display-3 add-recipe-title px-4"
+                                        v-if="addRecipe_isFinishedUploading" key="two">Added your recipe!</h2>
                                 </transition>
                                 <!-- Upload cover photo -->
                                 <div class="my-4 w-100">
@@ -672,8 +685,11 @@
     <script src="vendor/animejs/lib/animejs-3.2.1.min.js"></script>
     <script src="vendor/lottie/lottie-player@1.5.7.min.js"></script>
     <script src="vendor/voerro-vue-tagsinput/vue-tags-input.js"></script>
+    <script src="vendor/quilljs/js/quill.min.js"></script>
+    <script src="vendor/T-vK/DynamicQuillTools.min.js"></script>
+    <script type="module" src="vendor/pintura/pintura.js"></script>
     <script src="js/project-pastro-utils.js"></script>
-    <script src="js/prototype.js"></script>
+    <script type="module" src="js/prototype.js"></script>
 </body>
 
 </html>

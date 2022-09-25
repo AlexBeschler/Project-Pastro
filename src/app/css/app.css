@@ -1,6 +1,7 @@
 :root {
     --ps-bg-color: #FFFCE8;
     --ps-primary-color: #4A9653;
+    --ps-primary-color-hover: #43894B;
     --ps-primary-rgb: 74, 132, 167;
     --ps-secondary-color: #58443a;
     --ps-light-color: #eff5dd;

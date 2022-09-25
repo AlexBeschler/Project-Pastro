@@ -10,6 +10,8 @@ var ProjectPastroNLP = function () {
         'eight',
         'nine',
         'ten',
+        'eleven',
+        'twelve',
         '50',
         '49',
         '48',
@@ -59,7 +61,13 @@ var ProjectPastroNLP = function () {
         '4',
         '3',
         '2',
-        '1'
+        '1',
+        '1/2',
+        '1/3',
+        '1/4',
+        '2/3',
+        '3/4',
+        '1/8' 
     ];
     this.unit_dictionary = [
         'can',
