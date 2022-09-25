@@ -25,6 +25,22 @@ setPlugins(plugin_crop, plugin_resize);
 (function () {
     window.addEventListener('load', function () {
         var utils = new ProjectPastroUtils();
+        var nlp = new ProjectPastroNLP();
+        nlp.init();
+
+        //Load vue dependencies
+		Vue.use('vue-slicksort');
+		//List group draggables
+		Vue.component('draggable-list-group', {
+			mixins: [ContainerMixin],
+			template: '#draggable-list-group-template'
+		});
+        Vue.component('addrecipeview-step-draggable-item', {
+			mixins: [ElementMixin],
+			props: ['step'],
+			template: '#addrecipeview-step-draggable-item-template'
+		});
+
         new Vue({
             el: '#appContent',
             data: {
@@ -45,6 +61,13 @@ setPlugins(plugin_crop, plugin_resize);
                 addRecipe_recipeTotalTime: 0,
                 //Add recipe yield time
                 addRecipe_recipeYield: '',
+                //Add recipe ingredients input
+                addRecipe_recipeIngredientsInput: '',
+                //Add recipe steps input
+                addRecipe_recipeStepsInput: '',
+
+                recipeIngredientBreakdown: [],
+                recipeStepBreakdown: [],
 
                 //Added Recipe Animation Controllers
                 addRecipe_isUploading: false,
@@ -85,7 +108,10 @@ setPlugins(plugin_crop, plugin_resize);
                 //Init Quill for AddRecipeView
                 this.initAddRecipeViewQuill();
             },
+            watch: {
+            },
             methods: {
+                /**** ADD_RECIPE VIEW CONTROLLER METHODS ****/
                 addRecipe_ToStepOne() {
                     //Show views
                     this.showStep1 = true;
@@ -192,7 +218,20 @@ setPlugins(plugin_crop, plugin_resize);
                         self.addRecipe_isFinishedUploading = true;
                     }, 2000);
                 },
-                /* Add Recipe Lottie enter/exit animations */
+                /**** ADD_RECIPE BUTTON HELPERS ****/
+                addRecipe_clickedAddIngredients() {
+                    this.addRecipe_recipeIngredientsInput.split('\n').forEach(ingredient => {
+                        this.recipeIngredientBreakdown.push(nlp.parseIngredient(ingredient));
+                    });
+                },
+                addRecipe_clickedAddSteps() {
+                    this.addRecipe_recipeStepsInput.split('\n').forEach(step => {
+                        this.recipeStepBreakdown.push({
+                            value: step
+                        });
+                    });
+                },
+                /**** ANIMATION METHODS ****/
                 enterAddRecipeLottieAnimation(el, done) {
                     anime({
                         targets: el,
@@ -213,7 +252,6 @@ setPlugins(plugin_crop, plugin_resize);
                         complete: done
                     });
                 },
-                /* Add Recipe Content */
                 enterAddRecipeContentAnimation(el, done) {
                     anime({
                         targets: el,
@@ -267,6 +305,7 @@ setPlugins(plugin_crop, plugin_resize);
                         complete: done
                     });
                 },
+                /**** 3rd PARTY LIBRARY METHODS ****/
                 enterPinturaAnimation(el, done) {
                     anime({
                         targets: el,
@@ -339,6 +378,20 @@ setPlugins(plugin_crop, plugin_resize);
                         /* jshint ignore:end */
                     }
                 },
+                /**** UTILITY METHODS ****/
+                scrollStop: function () {
+					document.body.addEventListener('touchmove', this.touchMove(), {
+						passive: false
+					});
+				},
+				scrollMove: function () {
+					document.body.removeEventListener('touchmove', this.touchMove());
+				},
+				touchMove: function (event) {
+					try {
+						event.preventDefault();
+					} catch (e) {}
+				},
             }
         });
     });

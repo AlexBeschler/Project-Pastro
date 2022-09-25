@@ -1,3 +1,4 @@
+/*jshint esversion: 9 */
 var ProjectPastroNLP = function () {
     this.cardinal_dictionary = [
         'one',
@@ -89,6 +90,8 @@ var ProjectPastroNLP = function () {
         'tb.',
         'tbps',
         'tbps.',
+        'tbsp',
+        'tbsp.',
         'packet',
         'packets',
         'pkt',
@@ -234,6 +237,12 @@ var ProjectPastroNLP = function () {
         this.sanitizeDash = new XRegExp("[-–—−]", "g");
     };
     this.parseIngredient = function (str) {
+        if (!str) {
+            return {
+                amount: '',
+                ingredient: ''
+            };
+        }
         var r = this.cleanAndTokenize(str);
         if (r === null) {
             return {

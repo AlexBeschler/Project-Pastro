@@ -9,6 +9,8 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <meta name="theme-color" content="#4A9653" />
 
+    <!-- Custom font for fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
     <link href="vendor/quilljs/css/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="css/app.css">
@@ -95,12 +97,14 @@
                                 <!-- Upload cover photo -->
                                 <div class="mt-4 mb-3 w-100">
                                     <label for="coverPhotoInput" class="form-label">Cover photo</label>
-                                    <input class="form-control" type="file" id="coverPhotoInput"
-                                        ref="coverPhotoInput">
+                                    <input class="form-control" type="file" id="coverPhotoInput" ref="coverPhotoInput">
                                     <transition-group @enter="enterPinturaAnimation" @leave="leavePinturaAnimation"
                                         v-bind:css="false" mode="out-in">
-                                        <div v-show="showPinturaCoverPhotoEditor" key="editorKey" class="pintura-editor my-3" ref="coverPhotoPinturaEditor"></div>
-                                        <img v-show="showPinturaCoverPhotoThumbnail" key="thumbnailKey" src="" alt="" class="img-thumbnail rounded mx-auto my-3 coverPhotoPreview" ref="coverPhotoPinturaResult" />
+                                        <div v-show="showPinturaCoverPhotoEditor" key="editorKey"
+                                            class="pintura-editor my-3" ref="coverPhotoPinturaEditor"></div>
+                                        <img v-show="showPinturaCoverPhotoThumbnail" key="thumbnailKey" src="" alt=""
+                                            class="img-thumbnail rounded mx-auto my-3 coverPhotoPreview"
+                                            ref="coverPhotoPinturaResult" />
                                     </transition-group>
                                 </div>
                                 <!-- Recipe description/notes -->
@@ -159,7 +163,6 @@
                             <div style="display: flex; flex-direction: column; align-items: flex-start;"
                                 v-show="showStep3" key="third">
                                 <h2 class="fw-bold display-3 add-recipe-title px-4">Finally, create your recipe</h2>
-                                <!-- Upload cover photo -->
                                 <div class="mt-4 mb-3 w-100">
                                     <div class="accordion accordion-flush" id="accordionFlushExample">
                                         <div class="accordion-item add-recipe-accordion-item">
@@ -174,11 +177,17 @@
                                             <div id="flush-collapseOne" class="accordion-collapse collapse show"
                                                 aria-labelledby="flush-headingOne"
                                                 data-bs-parent="#accordionFlushExample">
-                                                <div class="accordion-body add-recipe-accordion-body">Placeholder
-                                                    content for this accordion,
-                                                    which is intended to demonstrate the
-                                                    <code>.accordion-flush</code> class. This is the first item's
-                                                    accordion body.</div>
+                                                <div class="accordion-body add-recipe-accordion-body">
+                                                    <textarea class="form-control" placeholder="Enter ingredients here"
+                                                        id="ingredientParseTextarea" style="height: 100px"
+                                                        v-model="addRecipe_recipeIngredientsInput"></textarea>
+                                                    <div class="d-flex justify-content-end mt-3">
+                                                        <button role="button" class="btn btn-success" 
+                                                            @click="addRecipe_clickedAddIngredients">
+                                                            Add
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="accordion-item add-recipe-accordion-item">
@@ -193,14 +202,33 @@
                                             <div id="flush-collapseTwo" class="accordion-collapse collapse"
                                                 aria-labelledby="flush-headingTwo"
                                                 data-bs-parent="#accordionFlushExample">
-                                                <div class="accordion-body add-recipe-accordion-body">Placeholder
-                                                    content for this accordion,
-                                                    which is intended to demonstrate the
-                                                    <code>.accordion-flush</code> class. This is the second item's
-                                                    accordion body. Let's imagine this being filled with some actual
-                                                    content.</div>
+                                                <div class="accordion-body add-recipe-accordion-body">
+                                                    <textarea class="form-control" placeholder="Enter steps here"
+                                                        id="stepParseTextarea" style="height: 100px"
+                                                        v-model="addRecipe_recipeStepsInput"></textarea>
+                                                    <div class="d-flex justify-content-end mt-3">
+                                                        <button role="button" class="btn btn-success" 
+                                                            @click="addRecipe_clickedAddSteps">
+                                                            Add
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3 w-100">
+                                    <h6>Ingredients</h6>
+                                    <p>{{ recipeIngredientBreakdown }}</p>
+                                    <h6>Steps</h6>
+                                    <div v-if="recipeStepBreakdown.length">
+                                        <draggable-list-group :lock-axis="'y'" :press-delay.number=175
+                                            v-model="recipeStepBreakdown">
+                                            <addrecipeview-step-draggable-item
+                                                v-for="(step, index) in recipeStepBreakdown" :index="index"
+                                                :key="index" :step="step" :step="step.value"
+                                                @touchstart.native="scrollStop" @touchend.native="scrollMove" />
+                                        </draggable-list-group>
                                     </div>
                                 </div>
                                 <div class="d-flex w-100 justify-content-between px-4 mt-4 mb-5">
@@ -680,15 +708,44 @@
             <div id="mobile-padding"></div-->
         </div>
     </div>
+    <template id="draggable-list-group-template">
+        <ul class="list-group list-group-flush">
+            <slot />
+        </ul>
+    </template>
+    <template id="addrecipeview-step-draggable-item-template">
+        <li class="list-group-item">
+            <div class="d-flex align-items-end">
+                <input class="form-control" type="text" v-model="step.value">
+            </div>
+        </li>
+    </template>
+    <!-- Core libraries -->
     <script src="vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.10/dist/vue.js"></script>
+    <!-- Utilities -->
+    <script src="vendor/underscore/underscore-umd-min.js"></script>
+    <script src="vendor/uuidv4/uuidv4.min.js"></script>
+    <!-- NLP dependency -->
+    <script src="vendor/xregexp/xregexp-all.min.js"></script>
+    <!-- Animation libraries -->
     <script src="vendor/animejs/lib/animejs-3.2.1.min.js"></script>
     <script src="vendor/lottie/lottie-player@1.5.7.min.js"></script>
+    <!-- Functionality extension libs -->
     <script src="vendor/voerro-vue-tagsinput/vue-tags-input.js"></script>
+    <script src="vendor/vue-slicksort/vue-slicksort.min.js"></script>
+    <script>
+        var {
+            ContainerMixin,
+            ElementMixin,
+            HandleDirective
+        } = window.VueSlicksort;
+    </script>
     <script src="vendor/quilljs/js/quill.min.js"></script>
     <script src="vendor/T-vK/DynamicQuillTools.min.js"></script>
     <script type="module" src="vendor/pintura/pintura.js"></script>
     <script src="js/project-pastro-utils.js"></script>
+    <script src="js/nlp.js"></script>
     <script type="module" src="js/prototype.js"></script>
 </body>
 
