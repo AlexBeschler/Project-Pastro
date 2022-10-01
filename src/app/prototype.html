@@ -80,7 +80,7 @@
                             @leave="leaveAddRecipeContentAnimation" v-bind:css="false" mode="out-in">
                             <div class="px-4" style="display: flex; flex-direction: column; align-items: flex-start;"
                                 v-show="showStep1" key="first">
-                                <h2 class="fw-bold display-2 add-recipe-title">Add a new recipe</h2>
+                                <h2 class="display-2 add-recipe-title">Add a new recipe</h2>
                                 <div class="input-group has-validation">
                                     <input type="text" class="form-control" placeholder="Recipe name"
                                         v-model="addRecipe_recipeName" ref="addRecipe_recipeNameRef">
@@ -93,7 +93,7 @@
                             </div>
                             <div class="px-4" style="display: flex; flex-direction: column; align-items: flex-start;"
                                 v-show="showStep2" key="second">
-                                <h2 class="fw-bold display-3 add-recipe-title">Describe your new recipe</h2>
+                                <h2 class="display-3 add-recipe-title">Describe your new recipe</h2>
                                 <!-- Upload cover photo -->
                                 <div class="mt-4 mb-3 w-100">
                                     <label for="coverPhotoInput" class="form-label">Cover photo</label>
@@ -162,7 +162,7 @@
                             </div>
                             <div style="display: flex; flex-direction: column; align-items: flex-start;"
                                 v-show="showStep3" key="third">
-                                <h2 class="fw-bold display-3 add-recipe-title px-4">Finally, create your recipe</h2>
+                                <h2 class="display-3 add-recipe-title px-4">Finally, create your recipe</h2>
                                 <div class="mt-4 mb-3 w-100">
                                     <div class="accordion accordion-flush" id="accordionFlushExample">
                                         <div class="accordion-item add-recipe-accordion-item">
@@ -242,9 +242,9 @@
                                 v-show="showStep4" key="fourth">
                                 <transition @enter="enterFinishedAddRecipeUploadTextAnimation"
                                     @leave="leaveFinishedAddRecipeUploadTextAnimation" mode="out-in" appear>
-                                    <h2 class="fw-bold display-3 add-recipe-title px-4" v-if="addRecipe_isUploading"
+                                    <h2 class="display-3 add-recipe-title px-4" v-if="addRecipe_isUploading"
                                         key="one">Finalizing your recipe</h2>
-                                    <h2 class="fw-bold display-3 add-recipe-title px-4"
+                                    <h2 class="display-3 add-recipe-title px-4"
                                         v-if="addRecipe_isFinishedUploading" key="two">Added your recipe!</h2>
                                 </transition>
                                 <!-- Upload cover photo -->

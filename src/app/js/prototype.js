@@ -121,6 +121,9 @@ setPlugins(plugin_crop, plugin_resize);
                 addRecipe_ToStepTwo() {
                     var self = this;
 
+                    //Remove any potential error checks
+                    this.$refs.addRecipe_recipeNameRef.classList.remove('is-invalid');
+
                     //Perform Step 1 validation checks
                     if (!utils.isString(this.addRecipe_recipeName)) {
                         this.$refs.addRecipe_recipeNameRef.classList.add('is-invalid');
@@ -172,6 +175,17 @@ setPlugins(plugin_crop, plugin_resize);
                     }
                 },
                 addRecipe_ToStepThree() {
+                    var isError = false;
+                    //Remove any potential error checks
+                    this.$refs.addRecipe_recipeTagsRef.$el.classList.remove('is-invalid');
+                    var node = document.getElementById('tag-invalid-input');
+                    if (node != null) {
+                        node.remove();
+                    }
+                    //document.getElementById('tag-invalid-input').remove();
+                    this.$refs.addRecipe_recipeTotalTimeRef.classList.remove('is-invalid');
+                    this.$refs.addRecipe_recipeYieldRef.classList.remove('is-invalid');
+
                     //Cover photo not required
                     //Description not required
                     //Tags required
@@ -181,23 +195,27 @@ setPlugins(plugin_crop, plugin_resize);
                         //The reason is because vue-tags is a VueJS component and
                         // does not have a built-in API to inject HTML
                         //So we do it ourselves.
-                        var invalidDOM = `<div class="invalid-tooltip" style="display: block;">Please enter at least 1 tag</div>`;
+                        var invalidDOM = `<div id="tag-invalid-input" class="invalid-tooltip" style="display: block;">Please enter at least 1 tag</div>`;
                         //Get the input of the tags Vue library
                         var addRecipeTagsInput = this.$refs.addRecipe_recipeTagsRef.$el.getElementsByTagName('input')[0];
                         //Insert the invalid information text box after the input tag in the DOM
                         addRecipeTagsInput.insertAdjacentHTML('afterend', invalidDOM);
-                        return;
+                        isError = true;
                     }
                     //Prep time has to be a number
                     //Cook time has to be a number
                     //Total time has to be a number greater than 1
                     if (this.addRecipe_recipeTotalTime < 1) {
                         this.$refs.addRecipe_recipeTotalTimeRef.classList.add('is-invalid');
-                        return;
+                        isError = true;
                     }
                     //Yield required, has to be string
                     if (!utils.isString(this.addRecipe_recipeYield)) {
                         this.$refs.addRecipe_recipeYieldRef.classList.add('is-invalid');
+                        isError = true;
+                    }
+                    //If there's a user error, don't continue forward
+                    if (isError) {
                         return;
                     }
                     //Show views
@@ -223,6 +241,7 @@ setPlugins(plugin_crop, plugin_resize);
                     this.addRecipe_recipeIngredientsInput.split('\n').forEach(ingredient => {
                         this.recipeIngredientBreakdown.push(nlp.parseIngredient(ingredient));
                     });
+                    this.addRecipe_recipeIngredientsInput = '';
                 },
                 addRecipe_clickedAddSteps() {
                     this.addRecipe_recipeStepsInput.split('\n').forEach(step => {
@@ -230,6 +249,7 @@ setPlugins(plugin_crop, plugin_resize);
                             value: step
                         });
                     });
+                    this.addRecipe_recipeStepsInput = '';
                 },
                 /**** ANIMATION METHODS ****/
                 enterAddRecipeLottieAnimation(el, done) {
