@@ -263,7 +263,7 @@ var ProjectPastroNLP = function () {
             ingredient: ''
         };
         this.identifyEntities(r, 0);
-        return this.ingredientObject;
+        return this.removeManualPrefix(this.ingredientObject);
     };
 
     this.cleanAndTokenize = function (str) {
@@ -410,5 +410,16 @@ var ProjectPastroNLP = function () {
             s += ' ';
         }
         return s;
+    };
+
+    //This removes the word 'of' i.e. 1 tsp of parsley -> 1 tsp / parsley
+    this.removeManualPrefix = function(o) {
+        if (o.ingredient.substring(0, 2).toLowerCase() === 'of') {
+            var p = o.ingredient.slice(3); //Get rid of the word 'of' and trailing whitespace char
+            o.ingredient = p;
+            return o;
+        } else {
+            return o;
+        }
     };
 };

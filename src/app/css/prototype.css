@@ -130,6 +130,12 @@
     border-bottom-right-radius: 24px !important;
 }
 
+/* Bootstrap */
+.bi-grip-vertical, .bi-trash3 {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
 /* ==== Change Quill Styles ==== */
 .ql-toolbar.ql-snow {
     border-top-right-radius: 0.25rem;

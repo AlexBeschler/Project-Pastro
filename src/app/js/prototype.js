@@ -45,9 +45,9 @@ setPlugins(plugin_crop, plugin_resize);
             el: '#appContent',
             data: {
                 /* Add Recipe View States */
-                showStep1: true,
+                showStep1: false,
                 showStep2: false,
-                showStep3: false,
+                showStep3: true,
                 showStep4: false,
                 //Add recipe name
                 addRecipe_recipeName: '',
@@ -66,6 +66,8 @@ setPlugins(plugin_crop, plugin_resize);
                 //Add recipe steps input
                 addRecipe_recipeStepsInput: '',
 
+                showReplaceIngredientsButton: false,
+                showReplaceStepsButton: false,
                 recipeIngredientBreakdown: [],
                 recipeStepBreakdown: [],
 
@@ -109,6 +111,73 @@ setPlugins(plugin_crop, plugin_resize);
                 this.initAddRecipeViewQuill();
             },
             watch: {
+                recipeIngredientBreakdown(b, a) {
+                    /* 
+                    handler: function (after, before) {
+						if (utils.isEmptyArray(after)) {
+							this.ingredientModelA = [];
+							return;
+						}
+						var self = this;
+						var pasteDetected = false;
+						var k = 0;
+						if (utils.isEmptyArray(this.ingredientModelA)) {
+							for (var i = 0; i < after.length; i++) {
+								if (typeof after[i] == 'undefined') {
+									continue;
+								}
+								if (after[i].length >= 2) {
+									pasteDetected = true;
+									k = i;
+								}
+							}
+						} else {
+							for (var j = 0; j < this.ingredientModelA.length; j++) {
+								if (typeof after[j] == 'undefined') {
+									continue;
+								}
+								if (after[j].length >= (this.ingredientModelA[j].length + 2)) {
+									pasteDetected = true;
+									k = j;
+								}
+							}
+						}
+						if (pasteDetected) {
+							//Do NLP stuff here
+							navigator.clipboard.readText()
+								.then(text => {
+									//Split by newline character
+									var lines = text.split('\n');
+									lines.forEach(line => {
+										if (!utils.isEmpty(line)) {
+											var s = nlp.parseIngredient(line);
+											self.manage_recipeSections[k].ingredients.push({
+												amount: s.amount,
+												value: s.ingredient,
+												isDeleted: false
+											});
+										}
+									});
+								})
+								.catch(error => {
+									console.error('Failed to read clipboard contents: ', error);
+									utils.reportError('error', error, 'Error with reading clipboard for recipe steps');
+								});
+							this.ingredientModelA = utils.deepClone(after);
+							this.addIngredientModel = [];
+						} else {
+							this.ingredientModelA = utils.deepClone(after);
+						}
+					},
+					deep: true
+                    */
+
+                    if (b.length >= 1) {
+                        this.showReplaceIngredientsButton = true;
+                    } else {
+                        this.showReplaceIngredientsButton = false;
+                    }
+                }
             },
             methods: {
                 /**** ADD_RECIPE VIEW CONTROLLER METHODS ****/
@@ -238,17 +307,43 @@ setPlugins(plugin_crop, plugin_resize);
                 },
                 /**** ADD_RECIPE BUTTON HELPERS ****/
                 addRecipe_clickedAddIngredients() {
+                    if (this.addRecipe_recipeIngredientsInput == '')
+                        return;
                     this.addRecipe_recipeIngredientsInput.split('\n').forEach(ingredient => {
                         this.recipeIngredientBreakdown.push(nlp.parseIngredient(ingredient));
                     });
                     this.addRecipe_recipeIngredientsInput = '';
                 },
+                addRecipe_clickedReplaceIngredients() {
+                    if (this.addRecipe_recipeIngredientsInput == '')
+                        return;
+                    var l = [];
+                    this.addRecipe_recipeIngredientsInput.split('\n').forEach(ingredient => {
+                        l.push(nlp.parseIngredient(ingredient));
+                    });
+                    this.recipeIngredientBreakdown = l;
+                    this.addRecipe_recipeIngredientsInput = '';
+                },
                 addRecipe_clickedAddSteps() {
+                    if (this.addRecipe_recipeStepsInput == '')
+                        return;
                     this.addRecipe_recipeStepsInput.split('\n').forEach(step => {
                         this.recipeStepBreakdown.push({
                             value: step
                         });
                     });
+                    this.addRecipe_recipeStepsInput = '';
+                },
+                addRecipe_clickedReplaceSteps() {
+                    if (this.addRecipe_recipeStepsInput == '')
+                        return;
+                    var l = [];
+                    this.addRecipe_recipeStepsInput.split('\n').forEach(step => {
+                        l.push({
+                            value: step
+                        });
+                    });
+                    this.recipeStepBreakdown = l;
                     this.addRecipe_recipeStepsInput = '';
                 },
                 /**** ANIMATION METHODS ****/
