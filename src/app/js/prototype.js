@@ -35,6 +35,11 @@ setPlugins(plugin_crop, plugin_resize);
 			mixins: [ContainerMixin],
 			template: '#draggable-list-group-template'
 		});
+        Vue.component('addrecipeview-ingredient-draggable-item', {
+            mixins: [ElementMixin],
+            props: ['ingredient'],
+            template: '#addrecipeview-ingredient-draggable-item-template'
+        });
         Vue.component('addrecipeview-step-draggable-item', {
 			mixins: [ElementMixin],
 			props: ['step'],
@@ -112,70 +117,15 @@ setPlugins(plugin_crop, plugin_resize);
             },
             watch: {
                 recipeIngredientBreakdown(b, a) {
-                    /* 
-                    handler: function (after, before) {
-						if (utils.isEmptyArray(after)) {
-							this.ingredientModelA = [];
-							return;
-						}
-						var self = this;
-						var pasteDetected = false;
-						var k = 0;
-						if (utils.isEmptyArray(this.ingredientModelA)) {
-							for (var i = 0; i < after.length; i++) {
-								if (typeof after[i] == 'undefined') {
-									continue;
-								}
-								if (after[i].length >= 2) {
-									pasteDetected = true;
-									k = i;
-								}
-							}
-						} else {
-							for (var j = 0; j < this.ingredientModelA.length; j++) {
-								if (typeof after[j] == 'undefined') {
-									continue;
-								}
-								if (after[j].length >= (this.ingredientModelA[j].length + 2)) {
-									pasteDetected = true;
-									k = j;
-								}
-							}
-						}
-						if (pasteDetected) {
-							//Do NLP stuff here
-							navigator.clipboard.readText()
-								.then(text => {
-									//Split by newline character
-									var lines = text.split('\n');
-									lines.forEach(line => {
-										if (!utils.isEmpty(line)) {
-											var s = nlp.parseIngredient(line);
-											self.manage_recipeSections[k].ingredients.push({
-												amount: s.amount,
-												value: s.ingredient,
-												isDeleted: false
-											});
-										}
-									});
-								})
-								.catch(error => {
-									console.error('Failed to read clipboard contents: ', error);
-									utils.reportError('error', error, 'Error with reading clipboard for recipe steps');
-								});
-							this.ingredientModelA = utils.deepClone(after);
-							this.addIngredientModel = [];
-						} else {
-							this.ingredientModelA = utils.deepClone(after);
-						}
-					},
-					deep: true
-                    */
-
                     if (b.length >= 1) {
                         this.showReplaceIngredientsButton = true;
-                    } else {
-                        this.showReplaceIngredientsButton = false;
+                        this.showAddRecipePreviewCollapsable();
+                    }
+                },
+                recipeStepBreakdown(b, a) {
+                    if (b.length >= 1) {
+                        this.showReplaceStepsButton = true;
+                        this.showAddRecipePreviewCollapsable();
                     }
                 }
             },
@@ -310,7 +260,11 @@ setPlugins(plugin_crop, plugin_resize);
                     if (this.addRecipe_recipeIngredientsInput == '')
                         return;
                     this.addRecipe_recipeIngredientsInput.split('\n').forEach(ingredient => {
-                        this.recipeIngredientBreakdown.push(nlp.parseIngredient(ingredient));
+                        var t = nlp.parseIngredient(ingredient);
+                        this.recipeIngredientBreakdown.push({
+                            amount: t.amount,
+                            value: t.ingredient
+                        });
                     });
                     this.addRecipe_recipeIngredientsInput = '';
                 },
@@ -319,7 +273,11 @@ setPlugins(plugin_crop, plugin_resize);
                         return;
                     var l = [];
                     this.addRecipe_recipeIngredientsInput.split('\n').forEach(ingredient => {
-                        l.push(nlp.parseIngredient(ingredient));
+                        var t = nlp.parseIngredient(ingredient);
+                        l.push({
+                            amount: t.amount,
+                            value: t.ingredient
+                        });
                     });
                     this.recipeIngredientBreakdown = l;
                     this.addRecipe_recipeIngredientsInput = '';
@@ -507,6 +465,9 @@ setPlugins(plugin_crop, plugin_resize);
 						event.preventDefault();
 					} catch (e) {}
 				},
+                showAddRecipePreviewCollapsable: function() {
+                    new bootstrap.Collapse(this.$refs.addRecipePreviewCollapsable, { toggle: false }).show();
+                }
             }
         });
     });

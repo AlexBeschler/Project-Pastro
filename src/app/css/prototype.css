@@ -130,6 +130,19 @@
     border-bottom-right-radius: 24px !important;
 }
 
+.addrecipe-preview-container {
+    background-color: var(--ps-light-grey-color);
+    border-radius: 24px;
+    padding: 1rem 1.25rem;
+}
+
+.addrecipe-preview-title {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    color: #3C4043 !important;
+}
+
 /* Bootstrap */
 .bi-grip-vertical, .bi-trash3 {
     height: 1.5rem;
