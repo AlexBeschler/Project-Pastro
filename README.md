@@ -6,5 +6,16 @@
   <a href="https://pantryrecipes.app"><strong>Visit the website »</strong></a>
   <br>
   <br>
-  Created with ❤ by <a href="https://layer12.dev/">The Pantry Team</a>
+</p>
+<p>
+  To run app tests
+  <code>firebase emulators:start --only hosting:app</code>
+</p>
+<p>
+  To run home page tests
+  <code>firebase emulators:start --only hosting:home</code>
+</p>
+<br>
+<p align="center">
+Created with ❤ by <a href="https://layer12.dev/">The Pantry Team</a>
 </p>

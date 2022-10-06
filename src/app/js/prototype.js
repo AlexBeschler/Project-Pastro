@@ -29,30 +29,30 @@ setPlugins(plugin_crop, plugin_resize);
         nlp.init();
 
         //Load vue dependencies
-		Vue.use('vue-slicksort');
-		//List group draggables
-		Vue.component('draggable-list-group', {
-			mixins: [ContainerMixin],
-			template: '#draggable-list-group-template'
-		});
+        Vue.use('vue-slicksort');
+        //List group draggables
+        Vue.component('draggable-list-group', {
+            mixins: [ContainerMixin],
+            template: '#draggable-list-group-template'
+        });
         Vue.component('addrecipeview-ingredient-draggable-item', {
             mixins: [ElementMixin],
             props: ['ingredient'],
             template: '#addrecipeview-ingredient-draggable-item-template'
         });
         Vue.component('addrecipeview-step-draggable-item', {
-			mixins: [ElementMixin],
-			props: ['step'],
-			template: '#addrecipeview-step-draggable-item-template'
-		});
+            mixins: [ElementMixin],
+            props: ['step'],
+            template: '#addrecipeview-step-draggable-item-template'
+        });
 
         new Vue({
             el: '#appContent',
             data: {
                 /* Add Recipe View States */
-                showStep1: false,
+                showStep1: true,
                 showStep2: false,
-                showStep3: true,
+                showStep3: false,
                 showStep4: false,
                 //Add recipe name
                 addRecipe_recipeName: '',
@@ -85,6 +85,9 @@ setPlugins(plugin_crop, plugin_resize);
                 showPinturaCoverPhotoEditor: false,
                 showPinturaCoverPhotoThumbnail: false,
                 addRecipe_recipePinturaPhotoResult: null,
+                //Pintura OCR Ingredients
+                showPinturaOCRIngredientsEditor: false,
+                addRecipe_IngredientsOCR_Result: null,
 
                 /* Quill Variables */
                 quillAddRecipeViewInstance: null,
@@ -114,6 +117,9 @@ setPlugins(plugin_crop, plugin_resize);
 
                 //Init Quill for AddRecipeView
                 this.initAddRecipeViewQuill();
+
+                //Init Pantry Lens
+
             },
             watch: {
                 recipeIngredientBreakdown(b, a) {
@@ -194,6 +200,7 @@ setPlugins(plugin_crop, plugin_resize);
                     }
                 },
                 addRecipe_ToStepThree() {
+                    var self = this;
                     var isError = false;
                     //Remove any potential error checks
                     this.$refs.addRecipe_recipeTagsRef.$el.classList.remove('is-invalid');
@@ -241,6 +248,70 @@ setPlugins(plugin_crop, plugin_resize);
                     this.showStep1 = false;
                     this.showStep2 = false;
                     this.showStep3 = true;
+
+                    //Inflate step 3 view
+                    if (this.$refs.uploadIngredientsOCR.getAttribute('listener') !== 'true') {
+                        this.$refs.uploadIngredientsOCR.addEventListener('change', function () { //Create change event listener
+                            self.showPinturaOCRIngredientsEditor = true;
+
+                            const editor = appendEditor(self.$refs.ingredientsOCR_PinturaEditor, {
+                                imageReader: createDefaultImageReader(),
+                                imageWriter: createDefaultImageWriter({
+                                    store: (state, options, onprogress) =>
+                                        new Promise((resolve, reject) => {
+                                            // Get file object reference
+                                            const {
+                                                dest
+                                            } = state;
+
+                                            const key = utils.generateFileName(dest.name);
+                                            //TODO: Switch utils._UID
+                                            var uploadTask = firebase.storage().ref().child('users/' + 'localhost' + '/tempOCR/' + key).put(dest, {
+                                                contentType: dest.type
+                                            }).then((snapshot) => {
+                                                state.store = key;
+                                                //Perform upload to Firebase storage
+                                                axios.post('https://us-central1-project-pastro-c95b1.cloudfunctions.net/shadowspear', {
+                                                    fileLocation: 'gs://project-pastro-c95b1.appspot.com/users/' + 'localhost' + '/tempOCR/' + key,
+                                                    compressParagraphs: false
+                                                }).then(res => {
+                                                    self.showPinturaOCRIngredientsEditor = false;
+                                                    self.$refs.uploadIngredientsOCR.value = null;
+                                                    editor.destroy();
+                                                    //Asynchronously delete temp OCR file
+                                                    firebase.storage().ref('users/' + 'localhost' + '/tempOCR/' + key).delete().catch((error) => {
+                                                        console.error(error);
+                                                    });
+                                                    res.data.recognizedText.forEach(ingredient => {
+                                                        var s = nlp.parseIngredient(ingredient);
+                                                        console.log({
+                                                            amount: s.amount,
+                                                            value: s.ingredient
+                                                        });
+                                                    });
+                                                    resolve(state);
+                                                }).catch(error => {
+                                                    console.error(error.response.data.message);
+                                                });
+                                            }).error((e) => {
+                                                console.error(e);
+                                                return reject();
+                                            });
+                                            uploadTask.on('state_changed', (snapshot) => {
+                                                onprogress(snapshot.bytesTransferred / snapshot.totalBytes);
+                                            });
+                                        }),
+                                }),
+                                locale: {
+                                    ...locale_en_gb,
+                                    ...plugin_crop_locale_en_gb,
+                                    ...plugin_resize_locale_en_gb
+                                },
+                            });
+
+                            editor.loadImage(this.files[0]);
+                        }, false);
+                    }
                 },
                 clickedFinishAddRecipe() {
                     var self = this;
@@ -453,20 +524,22 @@ setPlugins(plugin_crop, plugin_resize);
                 },
                 /**** UTILITY METHODS ****/
                 scrollStop: function () {
-					document.body.addEventListener('touchmove', this.touchMove(), {
-						passive: false
-					});
-				},
-				scrollMove: function () {
-					document.body.removeEventListener('touchmove', this.touchMove());
-				},
-				touchMove: function (event) {
-					try {
-						event.preventDefault();
-					} catch (e) {}
-				},
-                showAddRecipePreviewCollapsable: function() {
-                    new bootstrap.Collapse(this.$refs.addRecipePreviewCollapsable, { toggle: false }).show();
+                    document.body.addEventListener('touchmove', this.touchMove(), {
+                        passive: false
+                    });
+                },
+                scrollMove: function () {
+                    document.body.removeEventListener('touchmove', this.touchMove());
+                },
+                touchMove: function (event) {
+                    try {
+                        event.preventDefault();
+                    } catch (e) {}
+                },
+                showAddRecipePreviewCollapsable: function () {
+                    new bootstrap.Collapse(this.$refs.addRecipePreviewCollapsable, {
+                        toggle: false
+                    }).show();
                 }
             }
         });

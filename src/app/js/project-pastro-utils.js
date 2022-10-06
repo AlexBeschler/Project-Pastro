@@ -206,61 +206,15 @@ var ProjectPastroUtils = function () {
         return filterIDs;
         */
     };
-    //Crop data utilities
-    this.getCropData = function (cropData, canvasData) {
-        //Ratio of selected crop area
-        var cropAreaRatio = cropData.height / cropData.width;
-
-        //Center point of crop area in percent
-        var percentX = (cropData.x + cropData.width / 2) / canvasData.naturalWidth;
-        var percentY = (cropData.y + cropData.height / 2) / canvasData.naturalHeight;
-
-        //Calculate available space round image center position
-        var cx = percentX > 0.5 ? 1 - percentX : percentX;
-        var cy = percentY > 0.5 ? 1 - percentY : percentY;
-
-        //Calculate image rectangle respecting space round image from crop area
-        var width = canvasData.naturalWidth;
-        var height = width * cropAreaRatio;
-
-        if (height > canvasData.naturalHeight) {
-            height = canvasData.naturalHeight;
-            width = height / cropAreaRatio;
-        }
-        var rectWidth = cx * 2 * width;
-        var rectHeight = cy * 2 * height;
-
-        //Calculate zoom
-        //If the crop rectangle is TALLER than wider, use Math.min
-        //If the crop rectangle is WIDER than taller, use Math.max
-        var zoom = 0.0;
-        if (rectHeight / cropData.height > rectWidth / cropData.width) {
-            zoom = Math.min(rectWidth / cropData.width, rectHeight / cropData.height);
-        } else {
-            zoom = Math.max(rectWidth / cropData.width, rectHeight / cropData.height);
-        }
-        //TODO: Cropper does not quite nail edges. If a taller crop rectangle shares a border
-        // with the image, it seems to include superfluous detail.
-        //Use https://github.com/pqina/filepond-plugin-image-edit/issues/1 as reference
-
-        return {
-            data: {
-                crop: {
-                    center: {
-                        x: percentX,
-                        y: percentY
-                    },
-                    flip: {
-                        horizontal: cropData.scaleX < 0,
-                        vertical: cropData.scaleY < 0
-                    },
-                    zoom: zoom,
-                    //There were some rotation issues with certain types of photos. Switched to 0 rotation
-                    rotation: 0,
-                    aspectRatio: cropAreaRatio
-                }
-            }
-        };
+    
+    /* File utils */
+    //Accepts a file input, returns the file extension or filename if no extension
+    this.getFileExtension = function(filename) {
+        return filename.substring(filename.lastIndexOf('.')+1, filename.length) || filename;
+    };
+    //Generates a UUID filename and preserves the file extension
+    this.generateFileName = function(file) {
+        return uuidv4().toString() + '.' + this.getFileExtension(file);
     };
     //Error Reporting
     /*

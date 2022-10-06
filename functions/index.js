@@ -512,6 +512,7 @@ async function visionImageAnnotator(req, res) {
 	try {
 		const [result] = await ocrClient.textDetection(req.body.fileLocation);
 		const detections = result.fullTextAnnotation;
+		console.log(detections);
 		var toSend = processOCR(detections, req.body.compressParagraphs);
 		return res.status(200).send({
 			recognizedText: toSend

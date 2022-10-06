@@ -181,17 +181,34 @@
                                                     <textarea class="form-control" placeholder="Enter ingredients here"
                                                         id="ingredientParseTextarea" style="height: 100px"
                                                         v-model="addRecipe_recipeIngredientsInput"></textarea>
-                                                    <div class="d-flex justify-content-end mt-3">
-                                                        <button v-show="showReplaceIngredientsButton" role="button"
-                                                            class="btn btn-outline-success me-3"
-                                                            @click="addRecipe_clickedReplaceIngredients">
-                                                            Replace
-                                                        </button>
-                                                        <button role="button" class="btn btn-success"
-                                                            @click="addRecipe_clickedAddIngredients">
-                                                            Add
-                                                        </button>
+                                                    <div class="d-flex justify-content-between mt-3">
+                                                        <div class="d-flex justify-content-end">
+                                                            <label for="file-upload" class="btn btn-outline-success">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor" class="bi bi-magic"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707ZM7.293 4A.5.5 0 1 0 8 3.293L6.707 2A.5.5 0 0 0 6 2.707L7.293 4Zm-.621 2.5a.5.5 0 1 0 0-1H4.843a.5.5 0 1 0 0 1h1.829Zm8.485 0a.5.5 0 1 0 0-1h-1.829a.5.5 0 0 0 0 1h1.829ZM13.293 10A.5.5 0 1 0 14 9.293L12.707 8a.5.5 0 1 0-.707.707L13.293 10ZM9.5 11.157a.5.5 0 0 0 1 0V9.328a.5.5 0 0 0-1 0v1.829Zm1.854-5.097a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L8.646 5.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0l1.293-1.293Zm-3 3a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L.646 13.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0L8.354 9.06Z" />
+                                                                </svg> Pantry Lens
+                                                            </label>
+                                                            <input id="file-upload" type="file" class="d-none"
+                                                                ref="uploadIngredientsOCR" />
+                                                        </div>
+                                                        <div class="d-flex justify-content-end">
+                                                            <button v-show="showReplaceIngredientsButton" role="button"
+                                                                class="btn btn-outline-success me-3"
+                                                                @click="addRecipe_clickedReplaceIngredients">
+                                                                Replace
+                                                            </button>
+                                                            <button role="button" class="btn btn-success"
+                                                                @click="addRecipe_clickedAddIngredients">
+                                                                Add
+                                                            </button>
+                                                        </div>
                                                     </div>
+                                                    <div v-show="showPinturaOCRIngredientsEditor"
+                                                        class="pintura-editor my-3"
+                                                        ref="ingredientsOCR_PinturaEditor"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -211,35 +228,46 @@
                                                     <textarea class="form-control" placeholder="Enter steps here"
                                                         id="stepParseTextarea" style="height: 100px"
                                                         v-model="addRecipe_recipeStepsInput"></textarea>
-                                                    <div class="d-flex justify-content-end mt-3">
-                                                        <button v-show="showReplaceStepsButton" role="button"
-                                                            class="btn btn-outline-success me-3"
-                                                            @click="addRecipe_clickedReplaceSteps">
-                                                            Replace
-                                                        </button>
-                                                        <button role="button" class="btn btn-success"
-                                                            @click="addRecipe_clickedAddSteps">
-                                                            Add
-                                                        </button>
+                                                    <div class="d-flex justify-content-between mt-3">
+                                                        <div class="d-flex justify-content-end">
+                                                            <label for="file-upload" class="btn btn-outline-success">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor" class="bi bi-magic"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707ZM7.293 4A.5.5 0 1 0 8 3.293L6.707 2A.5.5 0 0 0 6 2.707L7.293 4Zm-.621 2.5a.5.5 0 1 0 0-1H4.843a.5.5 0 1 0 0 1h1.829Zm8.485 0a.5.5 0 1 0 0-1h-1.829a.5.5 0 0 0 0 1h1.829ZM13.293 10A.5.5 0 1 0 14 9.293L12.707 8a.5.5 0 1 0-.707.707L13.293 10ZM9.5 11.157a.5.5 0 0 0 1 0V9.328a.5.5 0 0 0-1 0v1.829Zm1.854-5.097a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L8.646 5.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0l1.293-1.293Zm-3 3a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L.646 13.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0L8.354 9.06Z" />
+                                                                </svg> Pantry Lens
+                                                            </label>
+                                                            <input id="file-upload" type="file" class="d-none" ref="" />
+                                                        </div>
+                                                        <div class="d-flex justify-content-end">
+                                                            <button v-show="showReplaceStepsButton" role="button"
+                                                                class="btn btn-outline-success me-3"
+                                                                @click="addRecipe_clickedReplaceSteps">
+                                                                Replace
+                                                            </button>
+                                                            <button role="button" class="btn btn-success"
+                                                                @click="addRecipe_clickedAddSteps">
+                                                                Add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="addrecipe-preview-container collapse mb-3 w-100" ref="addRecipePreviewCollapsable">
-                                    <h6 class="addrecipe-preview-title" v-show="showReplaceIngredientsButton">Ingredients</h6>
+                                <div class="addrecipe-preview-container collapse mb-3 w-100"
+                                    ref="addRecipePreviewCollapsable">
+                                    <h6 class="addrecipe-preview-title" v-show="showReplaceIngredientsButton">
+                                        Ingredients</h6>
                                     <div v-if="recipeIngredientBreakdown.length">
                                         <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                             v-model="recipeIngredientBreakdown">
                                             <addrecipeview-ingredient-draggable-item
-                                                v-for="(ingredient, index) in recipeIngredientBreakdown"
-                                                :index="index"
-                                                :key="index"
-                                                :ingredient="ingredient"
-                                                :amount="ingredient.amount"
-                                                :value="ingredient.value"
-                                                @touchstart.native="scrollStop"
+                                                v-for="(ingredient, index) in recipeIngredientBreakdown" :index="index"
+                                                :key="index" :ingredient="ingredient" :amount="ingredient.amount"
+                                                :value="ingredient.value" @touchstart.native="scrollStop"
                                                 @touchend.native="scrollMove" />
                                         </draggable-list-group>
                                     </div>
@@ -248,12 +276,8 @@
                                         <draggable-list-group :lock-axis="'y'" :press-delay.number=100
                                             v-model="recipeStepBreakdown">
                                             <addrecipeview-step-draggable-item
-                                                v-for="(step, index) in recipeStepBreakdown"
-                                                :index="index"
-                                                :key="index"
-                                                :step="step"
-                                                :step="step.value"
-                                                @touchstart.native="scrollStop"
+                                                v-for="(step, index) in recipeStepBreakdown" :index="index" :key="index"
+                                                :step="step" :step="step.value" @touchstart.native="scrollStop"
                                                 @touchend.native="scrollMove" />
                                         </draggable-list-group>
                                     </div>
@@ -325,7 +349,7 @@
                 </svg>
                 <input class="form-control me-1" type="text" v-model="ingredient.amount">
                 <input class="form-control ms-1" type="text" v-model="ingredient.value">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" 
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-trash3 ms-3" viewBox="0 0 16 16">
                     <path
                         d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
@@ -342,7 +366,7 @@
                         d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
                 </svg>
                 <input class="form-control" type="text" v-model="step.value">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" 
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-trash3 ms-3" viewBox="0 0 16 16">
                     <path
                         d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
@@ -353,9 +377,33 @@
     <!-- Core libraries -->
     <script src="vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.10/dist/vue.js"></script>
+    <!-- Firebase -->
+    <script src="/__/firebase/8.6.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-analytics.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-auth.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-storage.js"></script>
+    <script src="/__/firebase/8.6.1/firebase-functions.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1w_0DqygOe3Fhcpoj-TLLa5A5dzlecBQ",
+            authDomain: "project-pastro-c95b1.firebaseapp.com",
+            projectId: "project-pastro-c95b1",
+            storageBucket: "project-pastro-c95b1.appspot.com",
+            messagingSenderId: "389580897913",
+            appId: "1:389580897913:web:fe11112790994dae505ea8",
+            measurementId: "G-257QQ6YPWZ"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        } else {
+            firebase.app();
+        }
+    </script>
     <!-- Utilities -->
     <script src="vendor/underscore/underscore-umd-min.js"></script>
     <script src="vendor/uuidv4/uuidv4.min.js"></script>
+    <script src="vendor/axios/axios.min.js"></script>
     <!-- NLP dependency -->
     <script src="vendor/xregexp/xregexp-all.min.js"></script>
     <!-- Animation libraries -->
